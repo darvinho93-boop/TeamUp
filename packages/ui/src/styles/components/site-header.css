@@ -1,0 +1,110 @@
+/* En-tête de la vitrine.
+   Cahier des charges §4 : sur mobile, « Rejoindre une partie » et « Demander un devis »
+   restent visibles hors du menu burger — le burger ne contient que les liens de navigation. */
+
+.tu-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--tu-bg);
+  border-bottom: var(--tu-border-width) solid var(--tu-border);
+}
+
+.tu-site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-6);
+  min-height: var(--tu-header-height);
+  padding-block: var(--tu-space-3);
+}
+
+.tu-site-header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-3);
+  font-family: var(--tu-font-display);
+  font-weight: 700;
+  font-size: var(--tu-size-xl);
+  text-decoration: none;
+}
+
+.tu-site-header__logo {
+  height: var(--tu-space-12);
+  width: auto;
+}
+
+.tu-site-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-6);
+}
+
+.tu-site-header__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tu-tap-min);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.tu-site-header__link:hover,
+.tu-site-header__link[aria-current='page'] {
+  color: var(--tu-navy-500);
+  text-decoration: underline;
+}
+
+.tu-site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-3);
+}
+
+.tu-site-header__burger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--tu-tap-min);
+  height: var(--tu-tap-min);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: transparent;
+  cursor: pointer;
+}
+
+.tu-site-header__drawer {
+  display: none;
+  flex-direction: column;
+  padding-bottom: var(--tu-space-4);
+  border-top: var(--tu-border-width) solid var(--tu-border);
+}
+
+.tu-site-header__drawer[data-open='true'] {
+  display: flex;
+}
+
+@media (max-width: 60rem) {
+  .tu-site-header__inner {
+    flex-wrap: wrap;
+  }
+
+  .tu-site-header__nav {
+    display: none;
+  }
+
+  .tu-site-header__burger {
+    display: inline-flex;
+  }
+
+  /* Deuxième rangée, pleine largeur : les deux appels à l'action restent atteignables. */
+  .tu-site-header__actions {
+    order: 3;
+    width: 100%;
+    padding-bottom: var(--tu-space-3);
+  }
+
+  .tu-site-header__actions > .tu-btn {
+    flex: 1;
+    padding-inline: var(--tu-space-3);
+  }
+}

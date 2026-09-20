@@ -1,0 +1,17 @@
+{
+  "name": "@teamup/brand",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kit de marque Team Up! — source unique de vérité des design tokens.",
+  "exports": {
+    "./tokens.css": "./tokens.css",
+    "./tokens.json": "./tokens.json",
+    "./manifest.webmanifest": {
+      "types": "./manifest.webmanifest.d.ts",
+      "default": "./manifest.webmanifest"
+    },
+    "./logo/*": "./logo/*",
+    "./icons/*": "./icons/*"
+  }
+}

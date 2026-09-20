@@ -1,0 +1,69 @@
+.tu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-2);
+  min-height: var(--tu-tap-min);
+  padding-inline: var(--tu-space-6);
+  border: var(--tu-border-width) solid transparent;
+  border-radius: var(--tu-radius-pill);
+  background: transparent;
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+  font-size: var(--tu-size-base);
+  line-height: var(--tu-leading-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--tu-dur-base) var(--tu-ease),
+    border-color var(--tu-dur-base) var(--tu-ease),
+    color var(--tu-dur-base) var(--tu-ease);
+}
+
+.tu-btn:disabled,
+.tu-btn[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Navy : l'action structurante (navigation, validation) */
+.tu-btn--primary {
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-btn--primary:hover:not(:disabled) {
+  background: var(--tu-navy-900);
+}
+
+/* Corail : « c'est à toi de jouer ». Réservé à l'action, jamais en décor. */
+.tu-btn--accent {
+  background: var(--tu-accent);
+  color: var(--tu-on-accent);
+}
+
+.tu-btn--accent:hover:not(:disabled) {
+  background: var(--tu-coral-700);
+  color: var(--tu-text-invert);
+}
+
+.tu-btn--ghost {
+  border-color: var(--tu-border);
+  color: var(--tu-text);
+}
+
+.tu-btn--ghost:hover:not(:disabled) {
+  background: var(--tu-surface-muted);
+}
+
+.tu-btn--block {
+  width: 100%;
+}
+
+/* Écran joueur : une action par écran, prise en main debout. */
+.tu-btn--lg {
+  min-height: calc(var(--tu-tap-min) * 1.25);
+  padding-inline: var(--tu-space-8);
+  font-size: var(--tu-size-lg);
+}

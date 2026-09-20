@@ -1,0 +1,57 @@
+/* Pastille d'équipe : reconnaître son équipe d'un coup d'œil, à dix mètres. */
+
+.tu-team {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+}
+
+.tu-team__dot {
+  flex: none;
+  width: var(--tu-space-4);
+  height: var(--tu-space-4);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-team-color);
+}
+
+.tu-team--badge {
+  padding: var(--tu-space-2) var(--tu-space-4);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+}
+
+.tu-team--badge .tu-team__dot {
+  display: none;
+}
+
+.tu-team--lg {
+  font-size: var(--tu-size-xl);
+}
+
+.tu-team--lg .tu-team__dot {
+  width: var(--tu-space-6);
+  height: var(--tu-space-6);
+}
+
+.tu-team--1 {
+  --tu-team-color: var(--tu-team-1);
+  --tu-team-on: var(--tu-text-invert);
+}
+
+.tu-team--2 {
+  --tu-team-color: var(--tu-team-2);
+  --tu-team-on: var(--tu-navy-900);
+}
+
+.tu-team--3 {
+  --tu-team-color: var(--tu-team-3);
+  --tu-team-on: var(--tu-navy-900);
+}
+
+.tu-team--4 {
+  --tu-team-color: var(--tu-team-4);
+  --tu-team-on: var(--tu-navy-900);
+}

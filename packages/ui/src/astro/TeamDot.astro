@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { cx } from '../classNames';
+import { teamModifier } from '../teams';
+
+type Props = HTMLAttributes<'span'> & {
+  /** Index de 1 à 4. Au-delà, on lève : les couleurs 5 à 8 ne sont pas tranchées. */
+  index: number;
+  name: string;
+  variant?: 'dot' | 'badge';
+  size?: 'md' | 'lg';
+};
+
+const { index, name, variant = 'dot', size = 'md', class: className, ...rest } = Astro.props;
+---
+
+<span
+  class={cx(
+    'tu-team',
+    teamModifier(index),
+    variant === 'badge' && 'tu-team--badge',
+    size === 'lg' && 'tu-team--lg',
+    typeof className === 'string' ? className : undefined,
+  )}
+  {...rest}
+>
+  <span class="tu-team__dot" aria-hidden="true"></span>
+  {name}
+</span>

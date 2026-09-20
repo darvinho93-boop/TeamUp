@@ -1,0 +1,25 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { cx } from '../classNames';
+
+type Props = HTMLAttributes<'div'> & {
+  title?: string;
+  lift?: boolean;
+};
+
+const { title, lift = false, class: className, ...rest } = Astro.props;
+---
+
+<div
+  class={cx(
+    'tu-card',
+    lift && 'tu-card--lift',
+    typeof className === 'string' ? className : undefined,
+  )}
+  {...rest}
+>
+  {title && <h3 class="tu-card__title">{title}</h3>}
+  <div class="tu-card__body">
+    <slot />
+  </div>
+</div>

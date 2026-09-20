@@ -1,0 +1,26 @@
+/* Feuille unique de Team Up! : polices auto-hébergées, tokens de marque, reset, composants.
+   À importer une fois par application, avant toute autre feuille. */
+
+/* Inter — texte courant */
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+
+/* Poppins — titres, chiffres, timers */
+@import '@fontsource/poppins/latin-500.css';
+@import '@fontsource/poppins/latin-600.css';
+@import '@fontsource/poppins/latin-700.css';
+
+/* Source unique de vérité des tokens : design/brand/tokens.css */
+@import '@teamup/brand/tokens.css';
+@import './tokens-layout.css';
+
+@import './reset.css';
+
+@import './components/layout.css';
+@import './components/button.css';
+@import './components/field.css';
+@import './components/card.css';
+@import './components/team-dot.css';
+@import './components/site-header.css';
+@import './components/site-footer.css';

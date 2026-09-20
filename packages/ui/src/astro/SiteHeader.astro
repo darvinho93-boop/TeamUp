@@ -1,0 +1,110 @@
+---
+import logo from '@teamup/brand/logo/teamupmark2x.png';
+import Button from './Button.astro';
+
+type Props = {
+  /** Chemin de la page courante, pour marquer le lien actif. */
+  currentPath?: string;
+};
+
+const { currentPath } = Astro.props;
+
+const navItems = [
+  { href: '/particuliers', label: 'Particuliers' },
+  { href: '/entreprises', label: 'Entreprises' },
+  { href: '/les-jeux', label: 'Les jeux' },
+  { href: '/comment-ca-marche', label: 'Comment ça marche' },
+];
+
+const isCurrent = (href: string) => currentPath === href;
+---
+
+<header class="tu-site-header">
+  <div class="tu-container tu-site-header__inner">
+    <a class="tu-site-header__brand" href="/" aria-label="Team Up! — accueil">
+      <img
+        class="tu-site-header__logo"
+        src={logo.src}
+        width={logo.width}
+        height={logo.height}
+        alt=""
+      />
+      <span>Team Up!</span>
+    </a>
+
+    <nav class="tu-site-header__nav" aria-label="Navigation principale">
+      {navItems.map((item) => (
+        <a
+          class="tu-site-header__link"
+          href={item.href}
+          aria-current={isCurrent(item.href) ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="tu-site-header__actions">
+      <Button href="/rejoindre" variant="ghost">
+        Rejoindre une partie
+      </Button>
+      <Button href="/devis" variant="accent">
+        Demander un devis
+      </Button>
+    </div>
+
+    <button
+      class="tu-site-header__burger"
+      type="button"
+      aria-label="Ouvrir le menu"
+      aria-expanded="false"
+      aria-controls="tu-site-menu"
+      data-tu-burger
+    >
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M4 7h16"></path>
+        <path d="M4 12h16"></path>
+        <path d="M4 17h16"></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav
+    class="tu-container tu-site-header__drawer"
+    id="tu-site-menu"
+    aria-label="Navigation principale (mobile)"
+    data-open="false"
+  >
+    {navItems.map((item) => (
+      <a
+        class="tu-site-header__link"
+        href={item.href}
+        aria-current={isCurrent(item.href) ? 'page' : undefined}
+      >
+        {item.label}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<script>
+  // Seul script de la vitrine : sans lui, les liens restent atteignables par le pied de page.
+  const burger = document.querySelector<HTMLButtonElement>('[data-tu-burger]');
+  const drawer = document.querySelector<HTMLElement>('#tu-site-menu');
+
+  burger?.addEventListener('click', () => {
+    const open = drawer?.dataset.open === 'true';
+    if (drawer) drawer.dataset.open = String(!open);
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Ouvrir le menu' : 'Fermer le menu');
+  });
+</script>

@@ -1,0 +1,56 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { cx } from '../classNames';
+
+type Props = HTMLAttributes<'input'> & {
+  label: string;
+  name: string;
+  hint?: string;
+  /** Message d'erreur en toutes lettres : la couleur seule ne porte jamais l'information. */
+  error?: string;
+};
+
+const { label, name, hint, error, class: className, required, id, ...rest } = Astro.props;
+
+const fieldId = typeof id === 'string' ? id : `tu-field-${name}`;
+const hintId = `${fieldId}-hint`;
+const errorId = `${fieldId}-error`;
+const describedBy = cx(hint && hintId, error && errorId) || undefined;
+---
+
+<div
+  class={cx(
+    'tu-field',
+    error && 'tu-field--invalid',
+    typeof className === 'string' ? className : undefined,
+  )}
+>
+  <label class="tu-field__label" for={fieldId}>
+    {label}
+    {required && (
+      <span class="tu-field__required" aria-hidden="true">
+        {' '}
+        *
+      </span>
+    )}
+  </label>
+  <input
+    id={fieldId}
+    name={name}
+    class="tu-field__control"
+    required={required}
+    aria-invalid={error ? 'true' : undefined}
+    aria-describedby={describedBy}
+    {...rest}
+  />
+  {hint && (
+    <p class="tu-field__hint" id={hintId}>
+      {hint}
+    </p>
+  )}
+  {error && (
+    <p class="tu-field__error" id={errorId}>
+      {error}
+    </p>
+  )}
+</div>

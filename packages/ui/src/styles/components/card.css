@@ -1,0 +1,24 @@
+.tu-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  padding: var(--tu-space-6);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+  box-shadow: var(--tu-shadow-sm);
+}
+
+.tu-card--lift {
+  box-shadow: var(--tu-shadow-md);
+}
+
+.tu-card__title {
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-lg);
+  font-weight: 600;
+}
+
+.tu-card__body {
+  color: var(--tu-text-muted);
+}

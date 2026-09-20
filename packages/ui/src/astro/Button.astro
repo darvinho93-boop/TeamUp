@@ -1,0 +1,39 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { cx } from '../classNames';
+
+type Props = (HTMLAttributes<'button'> | HTMLAttributes<'a'>) & {
+  /** `accent` = corail : réservé à l'action. */
+  variant?: 'primary' | 'accent' | 'ghost';
+  size?: 'md' | 'lg';
+  block?: boolean;
+  href?: string;
+};
+
+const {
+  variant = 'primary',
+  size = 'md',
+  block = false,
+  href,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = cx(
+  'tu-btn',
+  `tu-btn--${variant}`,
+  size === 'lg' && 'tu-btn--lg',
+  block && 'tu-btn--block',
+  typeof className === 'string' ? className : undefined,
+);
+---
+
+{href ? (
+  <a href={href} class={classes} {...rest}>
+    <slot />
+  </a>
+) : (
+  <button type="button" class={classes} {...rest}>
+    <slot />
+  </button>
+)}

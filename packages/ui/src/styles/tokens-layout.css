@@ -1,0 +1,19 @@
+/* Extensions de tokens propres à la mise en page.
+   La charte ne couvre que couleurs, typo, espacements, rayons et ombres ;
+   ces valeurs-ci sont les seules dimensions de gabarit du projet.
+   À remonter dans design/brand/tokens.css si la charte les adopte. */
+
+:root {
+  --tu-container-max: 75rem; /* 1200px */
+  --tu-container-gutter: var(--tu-space-6);
+  --tu-header-height: 6rem;
+  --tu-border-width: 1px;
+  --tu-focus-width: 3px;
+}
+
+@media (max-width: 60rem) {
+  :root {
+    --tu-container-gutter: var(--tu-space-4);
+    --tu-header-height: auto;
+  }
+}

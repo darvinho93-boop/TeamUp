@@ -1,0 +1,64 @@
+---
+import logo from '@teamup/brand/logo/teamupmark2x.png';
+
+type Props = {
+  /** Lien discret vers la régie ; le sous-domaine réel est fixé au déploiement. */
+  regieUrl?: string;
+};
+
+const { regieUrl = '/regie' } = Astro.props;
+
+const pages = [
+  { href: '/particuliers', label: 'Particuliers' },
+  { href: '/entreprises', label: 'Entreprises' },
+  { href: '/les-jeux', label: 'Les jeux' },
+  { href: '/comment-ca-marche', label: 'Comment ça marche' },
+];
+
+const legal = [
+  { href: '/mentions-legales', label: 'Mentions légales' },
+  { href: '/confidentialite', label: 'Confidentialité' },
+  { href: '/cgv', label: 'CGV' },
+];
+---
+
+<footer class="tu-site-footer">
+  <div class="tu-container tu-site-footer__inner">
+    <div class="tu-site-footer__brand">
+      <span class="tu-site-footer__wordmark">
+        <img
+          class="tu-site-footer__logo"
+          src={logo.src}
+          width={logo.width}
+          height={logo.height}
+          alt=""
+        />
+        Team Up!
+      </span>
+      <!-- Contenus à fournir : laissés en placeholder, rien n'est inventé. -->
+      <p class="tu-site-footer__contact">[EMAIL] · [TÉLÉPHONE]</p>
+    </div>
+
+    <nav class="tu-site-footer__nav" aria-label="Pied de page">
+      <div class="tu-site-footer__column">
+        <p class="tu-site-footer__title">Le jeu</p>
+        {pages.map((item) => (
+          <a class="tu-site-footer__link" href={item.href}>
+            {item.label}
+          </a>
+        ))}
+      </div>
+      <div class="tu-site-footer__column">
+        <p class="tu-site-footer__title">Informations</p>
+        {legal.map((item) => (
+          <a class="tu-site-footer__link" href={item.href}>
+            {item.label}
+          </a>
+        ))}
+        <a class="tu-site-footer__link tu-site-footer__link--muted" href={regieUrl}>
+          Espace animateur
+        </a>
+      </div>
+    </nav>
+  </div>
+</footer>
