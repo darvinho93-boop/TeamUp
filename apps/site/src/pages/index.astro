@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '@teamup/ui/astro/Button.astro';
+---
+
+<Base
+  title="Team Up! — On joue. On se rencontre. On crée du lien."
+  description="Animation de soirée en salle : un animateur Team Up! fait jouer vos invités en équipes mélangées. Mariages, anniversaires, séminaires, team building."
+>
+  <section class="tu-container accueil">
+    <!-- Contenu réel des neuf pages : lot 1. Ici, la structure minimale. -->
+    <h1>On joue. On se rencontre. On crée du lien.</h1>
+    <p class="accueil__baseline">
+      Un animateur Team Up! fait jouer vos invités en équipes mélangées, sur grand écran.
+    </p>
+    <div class="tu-cluster">
+      <Button href="/devis" variant="accent" size="lg">
+        Demander un devis
+      </Button>
+      <Button href="/comment-ca-marche" variant="ghost" size="lg">
+        Comment ça marche
+      </Button>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .accueil {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-6);
+    padding-block: var(--tu-space-16);
+    max-width: 48rem;
+  }
+
+  .accueil h1 {
+    font-size: var(--tu-size-3xl);
+  }
+
+  .accueil__baseline {
+    font-size: var(--tu-size-lg);
+    color: var(--tu-text-muted);
+  }
+</style>

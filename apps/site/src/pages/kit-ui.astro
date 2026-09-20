@@ -1,0 +1,164 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '@teamup/ui/astro/Button.astro';
+import Card from '@teamup/ui/astro/Card.astro';
+import TeamDot from '@teamup/ui/astro/TeamDot.astro';
+import TextField from '@teamup/ui/astro/TextField.astro';
+
+const teams = [
+  { index: 1, name: 'Navy' },
+  { index: 2, name: 'Corail' },
+  { index: 3, name: 'Sauge' },
+  { index: 4, name: 'Ambre' },
+];
+---
+
+<Base
+  title="Kit d'interface — Team Up!"
+  description="Page de contrôle des composants partagés, en thème clair et en thème stage."
+  noindex
+>
+  <div class="tu-container kit">
+    <header class="kit__intro">
+      <h1>Kit d'interface</h1>
+      <p>
+        Les composants de <code>@teamup/ui</code> rendus côté Astro. La même page existe côté app
+        sur <code>/kit-ui</code>, avec les composants React : les deux doivent être identiques.
+      </p>
+    </header>
+
+    <section class="kit__theme" aria-labelledby="theme-clair">
+      <h2 id="theme-clair">Thème clair — vitrine et écran joueur</h2>
+      <div class="kit__demo">
+        <div class="tu-cluster">
+          <Button variant="primary">Action structurante</Button>
+          <Button variant="accent">Demander un devis</Button>
+          <Button variant="ghost">Secondaire</Button>
+          <Button variant="primary" disabled>
+            Indisponible
+          </Button>
+        </div>
+
+        <div class="tu-cluster">
+          <Button variant="accent" size="lg">
+            C'est à toi de jouer
+          </Button>
+        </div>
+
+        <div class="kit__grid">
+          <TextField label="Prénom" name="prenom-clair" placeholder="Camille" required />
+          <TextField
+            label="Nombre d'invités"
+            name="invites-clair"
+            type="number"
+            hint="Le nombre d'équipes découle du nombre d'invités."
+          />
+          <TextField
+            label="E-mail"
+            name="email-clair"
+            type="email"
+            error="Cette adresse ne semble pas valide."
+          />
+        </div>
+
+        <div class="kit__grid">
+          <Card title="Points communs">
+            Une équipe, dos à l'écran, devine ce qui rassemble les invités debout.
+          </Card>
+          <Card title="Surenchère" lift>
+            Les champions s'avancent, puis le sujet est dévoilé.
+          </Card>
+        </div>
+
+        <div class="tu-cluster">
+          {teams.map((team) => (
+            <TeamDot index={team.index} name={team.name} />
+          ))}
+        </div>
+        <div class="tu-cluster">
+          {teams.map((team) => (
+            <TeamDot index={team.index} name={team.name} variant="badge" />
+          ))}
+        </div>
+        <div class="tu-cluster">
+          <TeamDot index={2} name="Équipe Corail" size="lg" />
+        </div>
+      </div>
+    </section>
+
+    <section class="kit__theme" data-theme="stage" aria-labelledby="theme-stage">
+      <h2 id="theme-stage">Thème stage — écran commun et régie</h2>
+      <div class="kit__demo">
+        <div class="tu-cluster">
+          <Button variant="primary">Action structurante</Button>
+          <Button variant="accent">Lancer le chrono</Button>
+          <Button variant="ghost">Secondaire</Button>
+          <Button variant="primary" disabled>
+            Indisponible
+          </Button>
+        </div>
+
+        <div class="kit__grid">
+          <TextField label="Mot de mime" name="mime-stage" placeholder="Parapluie" />
+          <TextField label="Score" name="score-stage" type="number" hint="Correction manuelle." />
+        </div>
+
+        <div class="kit__grid">
+          <Card title="Manche en cours">Mime — équipe 3, passage 2 sur 4.</Card>
+          <Card title="Chrono" lift>
+            2 min 30 par passage.
+          </Card>
+        </div>
+
+        <div class="tu-cluster">
+          {teams.map((team) => (
+            <TeamDot index={team.index} name={team.name} />
+          ))}
+        </div>
+        <div class="tu-cluster">
+          {teams.map((team) => (
+            <TeamDot index={team.index} name={team.name} variant="badge" />
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .kit {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-12);
+    padding-block: var(--tu-space-12);
+  }
+
+  .kit__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  .kit__theme {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-6);
+    padding: var(--tu-space-8);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-bg);
+    color: var(--tu-text);
+  }
+
+  .kit__demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-6);
+  }
+
+  .kit__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--tu-space-4);
+  }
+</style>
