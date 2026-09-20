@@ -1,0 +1,77 @@
+---
+import Icon from '../Icon.astro';
+
+type IconName = 'users' | 'cross' | 'hand' | 'mime' | 'camera';
+
+type Props = {
+  icon: IconName;
+  title: string;
+  body: string;
+  duration: string;
+  /** Teinte du pictogramme, pour distinguer les cinq jeux d'un coup d'œil. */
+  tone?: 'navy' | 'sage' | 'amber';
+};
+
+const { icon, title, body, duration, tone = 'navy' } = Astro.props;
+---
+
+<article class="game-card">
+  <span class:list={['game-card__icon', `game-card__icon--${tone}`]}>
+    <Icon name={icon} size="md" />
+  </span>
+  <h3 class="game-card__title">{title}</h3>
+  <p class="game-card__body">{body}</p>
+  <p class="game-card__duration">{duration}</p>
+</article>
+
+<style>
+  .game-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+    height: 100%;
+    padding: var(--tu-space-6);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-surface);
+    box-shadow: var(--tu-shadow-sm);
+  }
+
+  .game-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tu-space-12);
+    height: var(--tu-space-12);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface-muted);
+  }
+
+  .game-card__icon--navy {
+    color: var(--tu-primary);
+  }
+
+  .game-card__icon--sage {
+    color: var(--tu-success-text);
+  }
+
+  .game-card__icon--amber {
+    color: var(--tu-warning-text);
+  }
+
+  .game-card__title {
+    font-size: var(--tu-size-lg);
+  }
+
+  .game-card__body {
+    flex: 1;
+    color: var(--tu-text-muted);
+  }
+
+  .game-card__duration {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+    color: var(--tu-text);
+  }
+</style>

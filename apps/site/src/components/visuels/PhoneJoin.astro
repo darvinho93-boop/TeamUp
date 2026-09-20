@@ -1,0 +1,71 @@
+---
+import PhoneFrame from './PhoneFrame.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+---
+
+<PhoneFrame
+  label="Rejoindre la partie"
+  caption="Illustration : pour rejoindre, un invité saisit le code de salle et son prénom. Aucun compte, aucune application."
+  class={className}
+>
+  <div class="join__field">
+    <span class="join__label">Code de salle</span>
+    <span class="join__value join__value--code">K7P2M9</span>
+  </div>
+  <div class="join__field">
+    <span class="join__label">Ton prénom</span>
+    <span class="join__value">Nadia</span>
+  </div>
+  <span class="join__button">Rejoindre</span>
+  <span class="join__note">Aucune application, aucun compte</span>
+</PhoneFrame>
+
+<style>
+  .join__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+  }
+
+  .join__label {
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+  }
+
+  .join__value {
+    display: flex;
+    align-items: center;
+    min-height: var(--tu-tap-min);
+    padding-inline: var(--tu-space-4);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+  }
+
+  .join__value--code {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-lg);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .join__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tu-tap-min);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-accent);
+    color: var(--tu-on-accent);
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+  }
+
+  .join__note {
+    font-size: var(--tu-size-xs);
+    color: var(--tu-text-muted);
+    text-align: center;
+  }
+</style>

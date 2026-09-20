@@ -1,0 +1,67 @@
+---
+import ScreenFrame from './ScreenFrame.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+
+const scores = [
+  { label: 'É1', value: '420', teamClass: 'tu-team--1' },
+  { label: 'É2', value: '385', teamClass: 'tu-team--2' },
+  { label: 'É3', value: '310', teamClass: 'tu-team--3' },
+  { label: 'É4', value: '290', teamClass: 'tu-team--4' },
+];
+---
+
+<ScreenFrame
+  label="Écran de la salle · Mime"
+  meta="Équipe 2"
+  caption="Illustration : pendant un passage de Mime, l'écran affiche le chrono et les scores des quatre équipes."
+  class={className}
+>
+  <span class="live__timer">01:52</span>
+  <div class="live__scores">
+    {scores.map((score) => (
+      <span class={`live__score ${score.teamClass}`}>
+        <span class="live__dot" />
+        {score.label} · {score.value}
+      </span>
+    ))}
+  </div>
+</ScreenFrame>
+
+<style>
+  .live__timer {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-4xl);
+    font-weight: 700;
+    line-height: var(--tu-leading-tight);
+    text-align: center;
+    color: var(--tu-primary);
+  }
+
+  .live__scores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tu-space-2);
+    justify-content: center;
+  }
+
+  .live__score {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--tu-space-2);
+    padding: var(--tu-space-2) var(--tu-space-3);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-surface);
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+  }
+
+  .live__dot {
+    width: var(--tu-space-2);
+    height: var(--tu-space-2);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-team-color);
+  }
+</style>

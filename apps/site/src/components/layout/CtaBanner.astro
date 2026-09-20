@@ -1,0 +1,81 @@
+---
+import Button from '@teamup/ui/astro/Button.astro';
+
+type Props = {
+  title: string;
+  /** Le délai de réponse est un contenu à fournir : il reste en placeholder. */
+  note?: string;
+  label?: string;
+};
+
+const {
+  title,
+  note = 'Devis gratuit, réponse sous [DÉLAI].',
+  label = 'Demander un devis',
+} = Astro.props;
+---
+
+<section class="cta">
+  <div class="tu-container cta__inner">
+    <div class="cta__text">
+      <h2 class="cta__title">{title}</h2>
+      <p class="cta__note">{note}</p>
+    </div>
+    <Button href="/devis" variant="accent" size="lg">
+      {label}
+    </Button>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-block: var(--tu-space-16);
+  }
+
+  .cta__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--tu-space-8);
+    padding: var(--tu-space-12);
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-surface);
+    border: var(--tu-border-width) solid var(--tu-border);
+    box-shadow: var(--tu-shadow-md);
+  }
+
+  .cta__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+  }
+
+  .cta__title {
+    font-size: var(--tu-size-2xl);
+    max-width: 22ch;
+  }
+
+  .cta__note {
+    color: var(--tu-text-muted);
+  }
+
+  @media (max-width: 60rem) {
+    .cta {
+      padding-block: var(--tu-space-12);
+    }
+
+    .cta__inner {
+      padding: var(--tu-space-6);
+      gap: var(--tu-space-6);
+    }
+
+    .cta__title {
+      font-size: var(--tu-size-xl);
+    }
+
+    .cta__inner > :global(.tu-btn) {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,112 @@
+---
+type Props = { class?: string };
+const { class: className } = Astro.props;
+
+/** Les cinq étapes manuelles de Points communs, plus l'échec. Spec v3, jeu 01. */
+const steps = ['Afficher', 'Masquer', 'Lancer', 'Indice', 'Valider', 'Échec'];
+---
+
+<figure class:list={['regie-figure', className]}>
+  <div class="regie" data-theme="stage" aria-hidden="true">
+    <div class="regie__bar">
+      <span>Régie · Points communs</span>
+      <span class="regie__team">Équipe 1</span>
+    </div>
+    <div class="regie__body">
+      <div class="regie__steps">
+        {steps.map((step) => (
+          <span class="regie__step">{step}</span>
+        ))}
+      </div>
+      <div class="regie__timer">
+        <span class="regie__label">Chrono</span>
+        <span class="regie__value">00:48</span>
+      </div>
+    </div>
+  </div>
+  <figcaption class="tu-visually-hidden">
+    Illustration : la régie de l'animateur, avec les grosses touches d'étape de Points communs et le
+    chrono en cours.
+  </figcaption>
+</figure>
+
+<style>
+  .regie-figure {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .regie {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-bg);
+    color: var(--tu-text);
+    box-shadow: var(--tu-shadow-lift);
+    overflow: hidden;
+  }
+
+  .regie__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--tu-space-4);
+    padding: var(--tu-space-3) var(--tu-space-4);
+    background: var(--tu-surface);
+    border-bottom: var(--tu-border-width) solid var(--tu-border);
+    font-size: var(--tu-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tu-text-muted);
+  }
+
+  .regie__team {
+    color: var(--tu-primary);
+    font-weight: 600;
+  }
+
+  .regie__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+    padding: var(--tu-space-6);
+  }
+
+  .regie__steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--tu-space-2);
+  }
+
+  /* Grosses touches : l'animateur pilote d'une main, en salle sombre. */
+  .regie__step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tu-tap-min);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+  }
+
+  .regie__timer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--tu-space-3);
+  }
+
+  .regie__label {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+
+  .regie__value {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-2xl);
+    font-weight: 700;
+    color: var(--tu-primary);
+  }
+</style>

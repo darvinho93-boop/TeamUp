@@ -1,0 +1,74 @@
+---
+import ScreenFrame from './ScreenFrame.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+
+const answers = [
+  { key: 'A', label: '6' },
+  { key: 'B', label: '8' },
+  { key: 'C', label: '10' },
+  { key: 'D', label: '12' },
+];
+---
+
+<ScreenFrame
+  label="Écran de la salle · Quiz"
+  meta="00:24"
+  caption="Illustration : l'écran de la salle affiche une question de quiz et ses quatre réponses, disposées comme les quatre zones tracées au sol."
+  class={className}
+>
+  <p class="quiz__question">Combien de pattes a une araignée ?</p>
+  <div class="quiz__grid">
+    {answers.map((answer) => (
+      <div class="quiz__answer">
+        <span class="quiz__key">{answer.key}</span>
+        <span class="quiz__label">{answer.label}</span>
+      </div>
+    ))}
+  </div>
+</ScreenFrame>
+
+<style>
+  .quiz__question {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-xl);
+    font-weight: 600;
+    line-height: var(--tu-leading-tight);
+  }
+
+  .quiz__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-3);
+  }
+
+  .quiz__answer {
+    display: flex;
+    align-items: center;
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-3) var(--tu-space-4);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+  }
+
+  .quiz__key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tu-space-6);
+    height: var(--tu-space-6);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-primary);
+    color: var(--tu-on-primary);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 700;
+  }
+
+  .quiz__label {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-lg);
+    font-weight: 600;
+  }
+</style>

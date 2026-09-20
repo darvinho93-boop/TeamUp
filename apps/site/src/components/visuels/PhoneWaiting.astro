@@ -1,0 +1,113 @@
+---
+import PhoneFrame from './PhoneFrame.astro';
+
+type Props = {
+  name?: string;
+  team?: string;
+  teamClass?: string;
+  hint?: string;
+  score?: string;
+  next?: string;
+  class?: string;
+};
+
+const {
+  name = 'Léa',
+  team = 'Équipe 3',
+  teamClass = 'tu-team--3',
+  hint,
+  score,
+  next,
+  class: className,
+} = Astro.props;
+---
+
+<PhoneFrame
+  label={`Salut ${name}`}
+  meta="FR"
+  caption={`Illustration : le téléphone d'un invité affiche son équipe, ${team}, et l'invite à regarder l'écran de la salle.`}
+  class={className}
+>
+  <div class={`wait__team ${teamClass}`}>
+    <span class="wait__label">Ton équipe</span>
+    <span class="wait__name">{team}</span>
+    {hint && <span class="wait__hint">{hint}</span>}
+  </div>
+
+  {score && (
+    <div class="wait__score">
+      <span class="wait__label">Score</span>
+      <span class="wait__points">{score}</span>
+    </div>
+  )}
+
+  <div class="wait__cue">
+    <span class="wait__watch">Regarde l'écran</span>
+    {next && <span class="wait__next">{next}</span>}
+  </div>
+</PhoneFrame>
+
+<style>
+  .wait__team {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-1);
+    padding: var(--tu-space-4);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-team-color);
+    color: var(--tu-team-on);
+  }
+
+  .wait__label {
+    font-size: var(--tu-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.8;
+  }
+
+  .wait__name {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-xl);
+    font-weight: 700;
+  }
+
+  .wait__hint {
+    font-size: var(--tu-size-sm);
+  }
+
+  .wait__score {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-3) var(--tu-space-4);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface-muted);
+  }
+
+  .wait__points {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-lg);
+    font-weight: 700;
+  }
+
+  .wait__cue {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-1);
+    text-align: center;
+    padding: var(--tu-space-4);
+    border: var(--tu-border-width) dashed var(--tu-border);
+    border-radius: var(--tu-radius-md);
+  }
+
+  .wait__watch {
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+  }
+
+  .wait__next {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+</style>

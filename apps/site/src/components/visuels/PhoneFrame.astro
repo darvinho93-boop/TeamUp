@@ -1,0 +1,70 @@
+---
+/**
+ * Le cadre « téléphone d'un invité ». Même principe que ScreenFrame : illustration
+ * masquée aux lecteurs d'écran, légende explicite.
+ */
+type Props = {
+  /** Barre du haut : prénom, rôle… tel qu'il apparaît dans l'app. */
+  label: string;
+  meta?: string | undefined;
+  caption: string;
+  class?: string | undefined;
+};
+
+const { label, meta, caption, class: className } = Astro.props;
+---
+
+<figure class:list={['phone-figure', className]}>
+  <div class="phone" aria-hidden="true">
+    <div class="phone__bar">
+      <span>{label}</span>
+      {meta && <span class="phone__meta">{meta}</span>}
+    </div>
+    <div class="phone__body">
+      <slot />
+    </div>
+  </div>
+  <figcaption class="tu-visually-hidden">{caption}</figcaption>
+</figure>
+
+<style>
+  .phone-figure {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .phone {
+    display: flex;
+    flex-direction: column;
+    max-width: 20rem;
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-surface);
+    box-shadow: var(--tu-shadow-md);
+    overflow: hidden;
+  }
+
+  .phone__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-3) var(--tu-space-4);
+    background: var(--tu-surface-muted);
+    border-bottom: var(--tu-border-width) solid var(--tu-border);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+  }
+
+  .phone__meta {
+    color: var(--tu-text-muted);
+    font-weight: 500;
+  }
+
+  .phone__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+    padding: var(--tu-space-6);
+  }
+</style>

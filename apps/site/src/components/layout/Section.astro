@@ -1,0 +1,102 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'section'> & {
+  /** Surtitre en petites capitales, au-dessus du titre. */
+  eyebrow?: string;
+  title?: string;
+  lead?: string;
+  /** Fond alterné, pour séparer deux sections voisines sans trait. */
+  tone?: 'default' | 'muted';
+  align?: 'start' | 'center';
+  headingLevel?: 'h2' | 'h3';
+};
+
+const {
+  eyebrow,
+  title,
+  lead,
+  tone = 'default',
+  align = 'start',
+  headingLevel = 'h2',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const Heading = headingLevel;
+const hasHeader = Boolean(eyebrow ?? title ?? lead);
+---
+
+<section class:list={['section', `section--${tone}`, className]} {...rest}>
+  <div class="tu-container section__inner">
+    {hasHeader && (
+      <header class:list={['section__header', `section__header--${align}`]}>
+        {eyebrow && <p class="section__eyebrow">{eyebrow}</p>}
+        {title && <Heading class="section__title">{title}</Heading>}
+        {lead && <p class="section__lead">{lead}</p>}
+      </header>
+    )}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--tu-space-16);
+  }
+
+  .section--muted {
+    background: var(--tu-surface-muted);
+  }
+
+  .section__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-8);
+  }
+
+  .section__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+    max-width: 44rem;
+  }
+
+  .section__header--center {
+    align-items: center;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .section__eyebrow {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tu-text-muted);
+  }
+
+  .section__title {
+    font-size: var(--tu-size-2xl);
+  }
+
+  .section__lead {
+    font-size: var(--tu-size-lg);
+    color: var(--tu-text-muted);
+  }
+
+  @media (max-width: 60rem) {
+    .section {
+      padding-block: var(--tu-space-12);
+    }
+
+    .section__title {
+      font-size: var(--tu-size-xl);
+    }
+
+    .section__lead {
+      font-size: var(--tu-size-base);
+    }
+  }
+</style>

@@ -1,0 +1,79 @@
+---
+import ScreenFrame from './ScreenFrame.astro';
+import Icon from '../Icon.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+
+const shots = [
+  { team: 'Photo équipe 1', winner: false },
+  { team: 'Photo équipe 2', winner: true },
+  { team: 'Photo équipe 3', winner: false },
+  { team: 'Photo équipe 4', winner: false },
+];
+---
+
+<ScreenFrame
+  label="Écran de la salle · Diffusion photo"
+  meta="Thème 2 / 3"
+  caption="Illustration : la diffusion de fin de soirée montre les quatre photos du thème « La pyramide humaine », celle de l'équipe 2 est désignée gagnante."
+  class={className}
+>
+  <span class="photo__theme">La pyramide humaine</span>
+  <div class="photo__grid">
+    {shots.map((shot) => (
+      <div class:list={['photo__shot', shot.winner && 'photo__shot--winner']}>
+        <Icon name="image" size="md" class="photo__icon" />
+        <span class="photo__team">{shot.team}</span>
+        {shot.winner && <span class="photo__badge">Gagnante</span>}
+      </div>
+    ))}
+  </div>
+</ScreenFrame>
+
+<style>
+  .photo__theme {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-xl);
+    font-weight: 600;
+  }
+
+  .photo__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-3);
+  }
+
+  .photo__shot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--tu-space-2);
+    padding: var(--tu-space-6) var(--tu-space-3);
+    border-radius: var(--tu-radius-md);
+    border: var(--tu-border-width) solid var(--tu-border);
+    background: var(--tu-surface);
+  }
+
+  .photo__shot--winner {
+    border-color: var(--tu-accent);
+  }
+
+  .photo__icon {
+    color: var(--tu-text-muted);
+  }
+
+  .photo__team {
+    font-size: var(--tu-size-xs);
+    color: var(--tu-text-muted);
+  }
+
+  .photo__badge {
+    padding: var(--tu-space-1) var(--tu-space-3);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-accent);
+    color: var(--tu-on-accent);
+    font-size: var(--tu-size-xs);
+    font-weight: 600;
+  }
+</style>

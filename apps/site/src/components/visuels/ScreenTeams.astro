@@ -1,0 +1,92 @@
+---
+import ScreenFrame from './ScreenFrame.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+
+const teams = [
+  {
+    name: 'Équipe 1',
+    teamClass: 'tu-team--1',
+    players: ['Léa', 'Anbu', 'Thomas', 'Meena', 'Karim'],
+  },
+  {
+    name: 'Équipe 2',
+    teamClass: 'tu-team--2',
+    players: ['Priya', 'Hugo', 'Nila', 'Julie', 'Arjun'],
+  },
+  {
+    name: 'Équipe 3',
+    teamClass: 'tu-team--3',
+    players: ['Chloé', 'Kavin', 'Sarah', 'Ravi', 'Paul'],
+  },
+  {
+    name: 'Équipe 4',
+    teamClass: 'tu-team--4',
+    players: ['Divya', 'Lucas', 'Inès', 'Vijay', 'Emma'],
+  },
+];
+---
+
+<ScreenFrame
+  label="Écran de la salle · Les équipes"
+  meta="36 joueurs"
+  caption="Illustration : l'écran de la salle affiche la composition des quatre équipes, chacune mélangeant des prénoms de familles et de cercles différents."
+  class={className}
+>
+  <div class="teams">
+    {teams.map((team) => (
+      <div class={`teams__row ${team.teamClass}`}>
+        <span class="teams__name">{team.name}</span>
+        <span class="teams__players">
+          {team.players.map((player) => (
+            <span class="teams__player">{player}</span>
+          ))}
+          <span class="teams__more">+ 4</span>
+        </span>
+      </div>
+    ))}
+  </div>
+</ScreenFrame>
+
+<style>
+  .teams {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  .teams__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-3);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+    border-inline-start: var(--tu-space-1) solid var(--tu-team-color);
+  }
+
+  .teams__name {
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+    font-size: var(--tu-size-sm);
+    min-width: 6rem;
+  }
+
+  .teams__players {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tu-space-2);
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+
+  .teams__player::after {
+    content: ' ·';
+  }
+
+  .teams__more {
+    font-weight: 600;
+  }
+</style>

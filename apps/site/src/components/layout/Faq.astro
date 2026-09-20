@@ -1,0 +1,77 @@
+---
+import Icon from '../Icon.astro';
+
+export type FaqItem = {
+  question: string;
+  /** Absent = réponse à fournir : la maquette ne la rédige pas, on n'invente pas. */
+  answer?: string;
+};
+
+type Props = {
+  items: FaqItem[];
+};
+
+const { items } = Astro.props;
+---
+
+<div class="faq">
+  {items.map((item) => (
+    <details class="faq__item">
+      <summary class="faq__question">
+        <span>{item.question}</span>
+        <Icon name="chevron" size="sm" class="faq__chevron" />
+      </summary>
+      <div class="faq__answer">
+        <p>{item.answer ?? '[RÉPONSE À FOURNIR]'}</p>
+      </div>
+    </details>
+  ))}
+</div>
+
+<style>
+  /* <details> : ouverture au clavier et lecture d'écran gérées par le navigateur,
+     donc aucun script et aucun piège de focus à écrire. */
+  .faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+    max-width: 52rem;
+  }
+
+  .faq__item {
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+  }
+
+  .faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--tu-space-4);
+    min-height: var(--tu-tap-min);
+    padding: var(--tu-space-3) var(--tu-space-6);
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__chevron {
+    transition: transform var(--tu-dur-base) var(--tu-ease);
+  }
+
+  .faq__item[open] .faq__chevron {
+    transform: rotate(180deg);
+  }
+
+  .faq__answer {
+    padding: 0 var(--tu-space-6) var(--tu-space-6);
+    color: var(--tu-text-muted);
+    max-width: 62ch;
+  }
+</style>

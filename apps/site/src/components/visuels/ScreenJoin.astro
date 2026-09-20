@@ -1,0 +1,66 @@
+---
+import ScreenFrame from './ScreenFrame.astro';
+import QrDecor from './QrDecor.astro';
+
+type Props = {
+  /** Le compteur n'apparaît pas sur la page « Rejoindre ». */
+  connected?: string;
+  invitation?: string;
+  class?: string;
+};
+
+const {
+  connected,
+  invitation = 'Scannez pour rejoindre la partie',
+  class: className,
+} = Astro.props;
+---
+
+<ScreenFrame
+  label="Écran de la salle · Accueil"
+  meta="En attente"
+  caption="Illustration : l'écran de la salle affiche un QR code et le code de salle K7 P2 M9 pour rejoindre la partie."
+  class={className}
+>
+  <div class="join">
+    <QrDecor />
+    <div class="join__text">
+      <span class="join__invite">{invitation}</span>
+      <span class="join__code">K7 P2 M9</span>
+      {connected && <span class="join__count">{connected}</span>}
+    </div>
+  </div>
+</ScreenFrame>
+
+<style>
+  .join {
+    display: flex;
+    align-items: center;
+    gap: var(--tu-space-6);
+    flex-wrap: wrap;
+  }
+
+  .join__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+    min-width: 0;
+  }
+
+  .join__invite {
+    color: var(--tu-text-muted);
+  }
+
+  .join__code {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-3xl);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--tu-primary);
+  }
+
+  .join__count {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+</style>

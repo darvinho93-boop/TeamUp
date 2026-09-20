@@ -1,0 +1,73 @@
+---
+import ScreenFrame from './ScreenFrame.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+
+/** Ordre d'affichage : 2e, 1re, 3e — comme sur un vrai podium. */
+const places = [
+  { rank: 2, team: 'Équipe 3', score: '980', height: '72%', teamClass: 'tu-team--3' },
+  { rank: 1, team: 'Équipe 2', score: '1 240', height: '100%', teamClass: 'tu-team--2' },
+  { rank: 3, team: 'Équipe 4', score: '860', height: '56%', teamClass: 'tu-team--4' },
+];
+---
+
+<ScreenFrame
+  label="Écran de la salle · Podium"
+  meta="Fin de soirée"
+  caption="Illustration : le podium de fin de soirée, l'équipe 2 en tête avec 1 240 points devant les équipes 3 et 4."
+  class={className}
+>
+  <div class="podium">
+    {places.map((place) => (
+      <div class="podium__column">
+        <span class="podium__team">
+          {place.team} · {place.score}
+        </span>
+        <div class={`podium__block ${place.teamClass}`} style={`height:${place.height}`}>
+          <span class="podium__rank">{place.rank}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+</ScreenFrame>
+
+<style>
+  .podium {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+    gap: var(--tu-space-3);
+    min-height: 12rem;
+  }
+
+  .podium__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .podium__team {
+    font-size: var(--tu-size-xs);
+    color: var(--tu-text-muted);
+    text-align: center;
+  }
+
+  .podium__block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--tu-radius-md) var(--tu-radius-md) 0 0;
+    background: var(--tu-team-color);
+    min-height: var(--tu-space-8);
+  }
+
+  .podium__rank {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-2xl);
+    font-weight: 700;
+    color: var(--tu-team-on);
+  }
+</style>

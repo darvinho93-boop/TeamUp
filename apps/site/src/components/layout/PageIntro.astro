@@ -1,0 +1,124 @@
+---
+type Props = {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  /** Une intro centrée sans visuel (Les jeux, Comment ça marche). */
+  centered?: boolean;
+};
+
+const { eyebrow, title, lead, centered = false } = Astro.props;
+const hasVisual = Astro.slots.has('visual');
+---
+
+<section class:list={['intro', centered && 'intro--centered', hasVisual && 'intro--split']}>
+  <div class="tu-container intro__inner">
+    <div class="intro__text">
+      {eyebrow && <p class="intro__eyebrow">{eyebrow}</p>}
+      <h1 class="intro__title">{title}</h1>
+      {lead && <p class="intro__lead">{lead}</p>}
+      {Astro.slots.has('actions') && (
+        <div class="intro__actions">
+          <slot name="actions" />
+        </div>
+      )}
+      <slot name="footnote" />
+    </div>
+    {hasVisual && (
+      <div class="intro__visual">
+        <slot name="visual" />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .intro {
+    padding-block: var(--tu-space-16) var(--tu-space-12);
+  }
+
+  .intro__inner {
+    display: grid;
+    gap: var(--tu-space-12);
+    align-items: center;
+  }
+
+  .intro--split .intro__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .intro--centered .intro__text {
+    max-width: 48rem;
+    margin-inline: auto;
+    text-align: center;
+    align-items: center;
+  }
+
+  .intro__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+  }
+
+  .intro__eyebrow {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tu-text-muted);
+  }
+
+  .intro__title {
+    font-size: var(--tu-size-3xl);
+    max-width: 18ch;
+  }
+
+  .intro--centered .intro__title {
+    max-width: 24ch;
+  }
+
+  .intro__lead {
+    font-size: var(--tu-size-lg);
+    color: var(--tu-text-muted);
+    max-width: 52ch;
+  }
+
+  .intro__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tu-space-3);
+    margin-top: var(--tu-space-2);
+  }
+
+  .intro__visual {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+    min-width: 0;
+  }
+
+  @media (max-width: 60rem) {
+    .intro {
+      padding-block: var(--tu-space-8);
+    }
+
+    .intro--split .intro__inner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-8);
+    }
+
+    .intro__title {
+      font-size: var(--tu-size-2xl);
+      max-width: none;
+    }
+
+    .intro__lead {
+      font-size: var(--tu-size-base);
+    }
+
+    .intro__actions > :global(.tu-btn) {
+      flex: 1 1 12rem;
+    }
+  }
+</style>

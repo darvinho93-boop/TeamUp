@@ -1,0 +1,131 @@
+---
+import Base from '../../layouts/Base.astro';
+
+type Props = {
+  title: string;
+  description: string;
+  heading: string;
+};
+
+const { title, description, heading } = Astro.props;
+
+const pages = [
+  { href: '/mentions-legales', label: 'Mentions légales' },
+  { href: '/confidentialite', label: 'Politique de confidentialité' },
+  { href: '/cgv', label: 'CGV' },
+  { href: '/cookies', label: 'Cookies' },
+];
+
+const current = Astro.url.pathname.replace(/\/$/, '');
+---
+
+<Base title={title} description={description} actionBar={false}>
+  <div class="tu-container legal">
+    <nav class="legal__nav" aria-label="Pages légales">
+      {pages.map((page) => (
+        <a
+          class="legal__tab"
+          href={page.href}
+          aria-current={current === page.href ? 'page' : undefined}
+        >
+          {page.label}
+        </a>
+      ))}
+    </nav>
+
+    <article class="legal__article">
+      <header class="legal__header">
+        <h1 class="legal__title">{heading}</h1>
+        <p class="legal__updated">Dernière mise à jour : [DATE]</p>
+      </header>
+      <slot />
+    </article>
+  </div>
+</Base>
+
+<style>
+  .legal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-8);
+    padding-block: var(--tu-space-12);
+  }
+
+  .legal__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tu-space-2);
+  }
+
+  .legal__tab {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tu-tap-min);
+    padding-inline: var(--tu-space-4);
+    border-radius: var(--tu-radius-pill);
+    border: var(--tu-border-width) solid var(--tu-border);
+    background: var(--tu-surface);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .legal__tab[aria-current='page'] {
+    background: var(--tu-primary);
+    color: var(--tu-on-primary);
+    border-color: var(--tu-primary);
+  }
+
+  .legal__article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-8);
+    max-width: 48rem;
+  }
+
+  .legal__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+  }
+
+  .legal__title {
+    font-size: var(--tu-size-3xl);
+  }
+
+  .legal__updated {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+
+  /* Styles du contenu injecté par chaque page légale. */
+  .legal__article :global(section) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  .legal__article :global(h2) {
+    font-size: var(--tu-size-xl);
+  }
+
+  .legal__article :global(p) {
+    color: var(--tu-text-muted);
+  }
+
+  .legal__article :global(ul) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+    color: var(--tu-text-muted);
+    padding-inline-start: var(--tu-space-6);
+    list-style: disc;
+  }
+
+  @media (max-width: 60rem) {
+    .legal__title {
+      font-size: var(--tu-size-2xl);
+    }
+  }
+</style>

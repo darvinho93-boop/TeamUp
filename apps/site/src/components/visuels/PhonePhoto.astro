@@ -1,0 +1,91 @@
+---
+import PhoneFrame from './PhoneFrame.astro';
+import Icon from '../Icon.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+
+const themes = [
+  { title: 'La pyramide humaine', state: 'Photo envoyée', done: true },
+  { title: 'Trois générations, un selfie', state: 'Photo envoyée', done: true },
+  { title: "Rejouer une photo d'enfance du héros de la fête", state: 'À faire', done: false },
+];
+---
+
+<PhoneFrame
+  label="Photo challenge · Équipe 2"
+  meta="Capitaine"
+  caption="Illustration : le capitaine d'équipe voit les trois thèmes photo de la soirée et l'état de ses envois."
+  class={className}
+>
+  <p class="shots__title">Vos thèmes de la soirée</p>
+  <ul class="shots__list">
+    {themes.map((theme) => (
+      <li class="shots__item">
+        <Icon name={theme.done ? 'check' : 'camera'} size="sm" class="shots__icon" />
+        <span class="shots__text">
+          <span class="shots__name">{theme.title}</span>
+          <span class:list={['shots__state', theme.done && 'shots__state--done']}>
+            {theme.state}
+          </span>
+        </span>
+      </li>
+    ))}
+  </ul>
+  <span class="shots__button">Envoyer une photo</span>
+</PhoneFrame>
+
+<style>
+  .shots__title {
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+  }
+
+  .shots__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  .shots__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--tu-space-3);
+  }
+
+  .shots__icon {
+    margin-top: 0.2em;
+    color: var(--tu-text-muted);
+  }
+
+  .shots__text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shots__name {
+    font-size: var(--tu-size-sm);
+  }
+
+  .shots__state {
+    font-size: var(--tu-size-xs);
+    color: var(--tu-text-muted);
+  }
+
+  .shots__state--done {
+    color: var(--tu-success-text);
+  }
+
+  /* Simple image d'un bouton : l'élément interactif est dans l'app, pas ici. */
+  .shots__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tu-tap-min);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-accent);
+    color: var(--tu-on-accent);
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+  }
+</style>

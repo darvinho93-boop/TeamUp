@@ -1,0 +1,74 @@
+---
+import ScreenFrame from './ScreenFrame.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+
+const rows = [
+  { name: 'Équipe 2', score: 785, teamClass: 'tu-team--2' },
+  { name: 'Équipe 3', score: 660, teamClass: 'tu-team--3' },
+  { name: 'Équipe 1', score: 550, teamClass: 'tu-team--1' },
+  { name: 'Équipe 4', score: 400, teamClass: 'tu-team--4' },
+];
+
+const max = Math.max(...rows.map((row) => row.score));
+---
+
+<ScreenFrame
+  label="Écran de la salle · Classement"
+  meta="après 3 jeux"
+  caption="Illustration : le classement projeté après trois jeux, de 785 à 400 points."
+  class={className}
+>
+  <div class="ranking">
+    {rows.map((row) => (
+      <div class={`ranking__row ${row.teamClass}`}>
+        <span class="ranking__name">{row.name}</span>
+        <span class="ranking__track">
+          <span class="ranking__bar" style={`width:${Math.round((row.score / max) * 100)}%`} />
+        </span>
+        <span class="ranking__score">{row.score}</span>
+      </div>
+    ))}
+  </div>
+</ScreenFrame>
+
+<style>
+  .ranking {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  .ranking__row {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr) 3rem;
+    align-items: center;
+    gap: var(--tu-space-3);
+  }
+
+  .ranking__name {
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+  }
+
+  .ranking__track {
+    height: var(--tu-space-4);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-surface);
+    overflow: hidden;
+  }
+
+  .ranking__bar {
+    display: block;
+    height: 100%;
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-team-color);
+  }
+
+  .ranking__score {
+    font-family: var(--tu-font-numeric);
+    font-weight: 700;
+    text-align: end;
+  }
+</style>

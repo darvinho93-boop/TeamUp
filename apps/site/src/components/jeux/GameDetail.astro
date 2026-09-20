@@ -1,0 +1,164 @@
+---
+type Props = {
+  id: string;
+  number: string;
+  title: string;
+  lead: string;
+  steps: string[];
+  facts: { label: string; value: string }[];
+  /** `visual-first` inverse l'ordre en desktop, pour alterner d'un jeu à l'autre. */
+  reversed?: boolean;
+};
+
+const { id, number, title, lead, steps, facts, reversed = false } = Astro.props;
+---
+
+<section class:list={['game', reversed && 'game--reversed']} id={id}>
+  <div class="tu-container game__inner">
+    <div class="game__text">
+      <span class="game__number" aria-hidden="true">
+        {number}
+      </span>
+      <h2 class="game__title">{title}</h2>
+      <p class="game__lead">{lead}</p>
+      <ol class="game__steps">
+        {steps.map((step, index) => (
+          <li class="game__step">
+            <span class="game__step-number" aria-hidden="true">
+              {index + 1}
+            </span>
+            <span>{step}</span>
+          </li>
+        ))}
+      </ol>
+      <dl class="game__facts">
+        {facts.map((fact) => (
+          <div class="game__fact">
+            <dt class="game__fact-label">{fact.label}</dt>
+            <dd class="game__fact-value">{fact.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+    <div class="game__visual">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .game {
+    padding-block: var(--tu-space-12);
+    scroll-margin-top: var(--tu-header-height);
+  }
+
+  .game__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--tu-space-12);
+  }
+
+  .game--reversed .game__visual {
+    order: -1;
+  }
+
+  .game__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+  }
+
+  .game__number {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-sm);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--tu-text-muted);
+  }
+
+  .game__title {
+    font-size: var(--tu-size-2xl);
+  }
+
+  .game__lead {
+    font-size: var(--tu-size-lg);
+    color: var(--tu-text-muted);
+  }
+
+  .game__steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  .game__step {
+    display: flex;
+    gap: var(--tu-space-3);
+    align-items: flex-start;
+  }
+
+  .game__step-number {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tu-space-6);
+    height: var(--tu-space-6);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-navy-50);
+    color: var(--tu-primary);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 700;
+  }
+
+  .game__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--tu-space-3);
+    margin-top: var(--tu-space-2);
+  }
+
+  .game__fact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-1);
+    padding: var(--tu-space-3) var(--tu-space-4);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface-muted);
+  }
+
+  .game__fact-label {
+    font-size: var(--tu-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tu-text-muted);
+  }
+
+  .game__fact-value {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  @media (max-width: 60rem) {
+    .game__inner {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-8);
+    }
+
+    /* Sur mobile, le visuel passe toujours en premier : il explique le jeu. */
+    .game__visual,
+    .game--reversed .game__visual {
+      order: -1;
+    }
+
+    .game__title {
+      font-size: var(--tu-size-xl);
+    }
+
+    .game__lead {
+      font-size: var(--tu-size-base);
+    }
+  }
+</style>

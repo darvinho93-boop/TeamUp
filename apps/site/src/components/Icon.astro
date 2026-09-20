@@ -1,0 +1,69 @@
+---
+/**
+ * Jeu de pictogrammes local — pas de librairie d'icônes pour un site qui en utilise douze.
+ * Tracé en `currentColor` : la couleur vient toujours du contexte, donc des tokens.
+ */
+type Props = {
+  name: keyof typeof paths;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+};
+
+const paths = {
+  users:
+    '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 14.5c3 0 6 1.8 6 5.5"/>',
+  cross:
+    '<path d="M12 3v18"/><path d="M3 12h18"/><path d="M6.5 6.5h.01"/><path d="M17.5 6.5h.01"/><path d="M6.5 17.5h.01"/><path d="M17.5 17.5h.01"/>',
+  hand: '<path d="M7 11v-4a2 2 0 0 1 4 0v4"/><path d="M11 10V5a2 2 0 0 1 4 0v6"/><path d="M15 10a2 2 0 0 1 4 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.5L3 14a2 2 0 0 1 3.4-2l.6 1"/>',
+  mime: '<circle cx="12" cy="5" r="2.5"/><path d="M12 8v6"/><path d="M6 10l6-1 6-3"/><path d="M9 21l3-7 3 7"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  check: '<path d="M4 12.5l5 5L20 6.5"/>',
+  checkCircle: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>',
+  chevron: '<path d="M6 9l6 6 6-6"/>',
+  arrow: '<path d="M4 12h15"/><path d="M13 6l6 6-6 6"/>',
+  screen:
+    '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>',
+  floor: '<path d="M3 20l4-14h10l4 14z"/><path d="M8 13h8"/>',
+  wifi: '<path d="M2.5 9a15 15 0 0 1 19 0"/><path d="M6 12.5a10 10 0 0 1 12 0"/><path d="M9.5 16a5 5 0 0 1 5 0"/><path d="M12 19.5h.01"/>',
+  eye: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/>',
+  image:
+    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M4 18l5-4 4 3 3-2 4 3"/>',
+} as const;
+
+const { name, size = 'md', class: className } = Astro.props;
+---
+
+<svg
+  class:list={['icon', `icon--${size}`, className]}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={paths[name]}
+/>
+
+<style>
+  .icon {
+    flex: none;
+    display: block;
+  }
+
+  .icon--sm {
+    width: var(--tu-space-4);
+    height: var(--tu-space-4);
+  }
+
+  .icon--md {
+    width: var(--tu-space-6);
+    height: var(--tu-space-6);
+  }
+
+  .icon--lg {
+    width: var(--tu-space-8);
+    height: var(--tu-space-8);
+  }
+</style>

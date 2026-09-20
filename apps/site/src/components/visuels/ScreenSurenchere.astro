@@ -1,0 +1,82 @@
+---
+import ScreenFrame from './ScreenFrame.astro';
+
+type Props = { class?: string };
+const { class: className } = Astro.props;
+---
+
+<ScreenFrame
+  label="Écran de la salle · Surenchère"
+  meta="Adjugé · Équipe 3"
+  caption="Illustration : le sujet de surenchère est dévoilé, l'annonce est à douze et le chrono géant tourne."
+  class={className}
+>
+  <div class="enchere__subject">
+    <span class="enchere__theme">Thème : le monde animal</span>
+    <span class="enchere__topic">Citer des animaux qui vivent dans l'eau</span>
+  </div>
+  <div class="enchere__bid">
+    <div class="enchere__amount">
+      <span class="enchere__label">Annonce</span>
+      <span class="enchere__value">12</span>
+    </div>
+    <span class="enchere__timer">00:41</span>
+  </div>
+</ScreenFrame>
+
+<style>
+  .enchere__subject {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+    padding: var(--tu-space-6);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+  }
+
+  .enchere__theme {
+    font-size: var(--tu-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tu-text-muted);
+  }
+
+  .enchere__topic {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-xl);
+    font-weight: 600;
+  }
+
+  .enchere__bid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--tu-space-4);
+    flex-wrap: wrap;
+  }
+
+  .enchere__amount {
+    display: flex;
+    align-items: baseline;
+    gap: var(--tu-space-3);
+  }
+
+  .enchere__label {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+
+  .enchere__value {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-2xl);
+    font-weight: 700;
+  }
+
+  .enchere__timer {
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-4xl);
+    font-weight: 700;
+    line-height: var(--tu-leading-tight);
+    color: var(--tu-accent);
+  }
+</style>
