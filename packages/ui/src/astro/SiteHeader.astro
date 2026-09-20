@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import logo from '@teamup/brand/logo/teamup-mark-transparent.png';
 import Button from './Button.astro';
 
@@ -22,12 +23,14 @@ const isCurrent = (href: string) => currentPath === href;
 <header class="tu-site-header">
   <div class="tu-container tu-site-header__inner">
     <a class="tu-site-header__brand" href="/" aria-label="Team Up! — accueil">
-      <img
+      <Image
         class="tu-site-header__logo"
-        src={logo.src}
-        width={logo.width}
-        height={logo.height}
+        src={logo}
+        width={96}
+        height={96}
+        densities={[1, 2]}
         alt=""
+        loading="eager"
       />
       <span>Team Up!</span>
     </a>

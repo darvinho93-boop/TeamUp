@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import logo from '@teamup/brand/logo/teamup-mark-transparent.png';
 
 type Props = {
@@ -26,11 +27,12 @@ const legal = [
   <div class="tu-container tu-site-footer__inner">
     <div class="tu-site-footer__brand">
       <span class="tu-site-footer__wordmark">
-        <img
+        <Image
           class="tu-site-footer__logo"
-          src={logo.src}
-          width={logo.width}
-          height={logo.height}
+          src={logo}
+          width={64}
+          height={64}
+          densities={[1, 2]}
           alt=""
         />
         Team Up!

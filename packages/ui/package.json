@@ -23,9 +23,13 @@
     "@teamup/brand": "workspace:*"
   },
   "peerDependencies": {
+    "astro": "^7.0.0",
     "react": "^19.0.0"
   },
   "peerDependenciesMeta": {
+    "astro": {
+      "optional": true
+    },
     "react": {
       "optional": true
     }
