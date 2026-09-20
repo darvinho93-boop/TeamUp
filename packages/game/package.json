@@ -1,0 +1,19 @@
+{
+  "name": "@teamup/game",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Logique de jeu pure : barèmes, paliers, chronos, durée d'un programme. Aucune I/O.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "^5.0.1"
+  }
+}
