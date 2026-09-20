@@ -84,10 +84,6 @@
 }
 
 @media (max-width: 60rem) {
-  .tu-site-header__inner {
-    flex-wrap: wrap;
-  }
-
   .tu-site-header__nav {
     display: none;
   }
@@ -96,15 +92,8 @@
     display: inline-flex;
   }
 
-  /* Deuxième rangée, pleine largeur : les deux appels à l'action restent atteignables. */
+  /* Les deux appels à l'action descendent dans .tu-site-action-bar, à portée de pouce. */
   .tu-site-header__actions {
-    order: 3;
-    width: 100%;
-    padding-bottom: var(--tu-space-3);
-  }
-
-  .tu-site-header__actions > .tu-btn {
-    flex: 1;
-    padding-inline: var(--tu-space-3);
+    display: none;
   }
 }

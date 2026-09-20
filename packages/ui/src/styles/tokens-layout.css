@@ -9,6 +9,14 @@
   --tu-header-height: 6rem;
   --tu-border-width: 1px;
   --tu-focus-width: 3px;
+
+  /* Variantes destinées au TEXTE. Les couleurs sémantiques de la charte sont
+     calibrées pour servir de fond ; sur le crème elles tombent sous le seuil AA
+     (danger 4,32:1 · success 3,60:1 · warning 2,12:1). Les maquettes font déjà ce
+     choix : l'icône Surenchère y est en ambre assombri, pas en --tu-warning. */
+  --tu-danger-text: #b8291e; /* 5,82:1 sur --tu-bg */
+  --tu-success-text: #2c6e5b; /* 5,63:1 */
+  --tu-warning-text: #8a6200; /* 5,13:1 */
 }
 
 @media (max-width: 60rem) {

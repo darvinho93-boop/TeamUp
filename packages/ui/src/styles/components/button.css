@@ -45,7 +45,6 @@
 
 .tu-btn--accent:hover:not(:disabled) {
   background: var(--tu-coral-700);
-  color: var(--tu-text-invert);
 }
 
 .tu-btn--ghost {

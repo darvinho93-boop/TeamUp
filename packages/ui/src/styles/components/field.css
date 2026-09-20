@@ -10,7 +10,7 @@
 }
 
 .tu-field__required {
-  color: var(--tu-danger);
+  color: var(--tu-danger-text);
 }
 
 .tu-field__control {
@@ -52,7 +52,7 @@ textarea.tu-field__control {
 .tu-field__error {
   font-size: var(--tu-size-sm);
   font-weight: 600;
-  color: var(--tu-danger);
+  color: var(--tu-danger-text);
 }
 
 .tu-field--invalid .tu-field__control {

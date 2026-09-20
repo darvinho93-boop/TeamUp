@@ -1,0 +1,20 @@
+---
+import Button from './Button.astro';
+
+type Props = {
+  /** Libellé court pour tenir à 390 px. */
+  joinLabel?: string;
+  quoteLabel?: string;
+};
+
+const { joinLabel = 'Rejoindre', quoteLabel = 'Demander un devis' } = Astro.props;
+---
+
+<div class="tu-site-action-bar">
+  <Button href="/rejoindre" variant="ghost">
+    {joinLabel}
+  </Button>
+  <Button href="/devis" variant="accent">
+    {quoteLabel}
+  </Button>
+</div>
