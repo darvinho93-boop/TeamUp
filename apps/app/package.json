@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "dev:host": "next dev -H 0.0.0.0"
   },
   "dependencies": {
     "@teamup/brand": "workspace:*",
