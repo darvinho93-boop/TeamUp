@@ -83,17 +83,17 @@ Ne les tranche pas seul :
 
 Node 22.20 (`.nvmrc`) et pnpm 10.17. Toutes les commandes se lancent depuis la racine.
 
-| Commande | Effet |
-| --- | --- |
-| `pnpm install` | Installe le monorepo |
-| `pnpm dev` | Démarre les deux apps : vitrine sur `:4321`, app sur `:3000` |
-| `pnpm dev:site` / `pnpm dev:app` | Une seule des deux |
-| `pnpm lint` | Garde-fou tokens (`scripts/check-tokens.mjs`) puis ESLint |
-| `pnpm typecheck` | `tsc` sur les paquets, `astro check` sur la vitrine |
-| `pnpm test` | Vitest (`packages/game`) |
-| `pnpm build` | Build des deux apps |
-| `pnpm format` / `pnpm format:check` | Prettier |
-| **`pnpm verify`** | lint + typecheck + test + build — ce que lance la CI |
+| Commande                            | Effet                                                        |
+| ----------------------------------- | ------------------------------------------------------------ |
+| `pnpm install`                      | Installe le monorepo                                         |
+| `pnpm dev`                          | Démarre les deux apps : vitrine sur `:4321`, app sur `:3000` |
+| `pnpm dev:site` / `pnpm dev:app`    | Une seule des deux                                           |
+| `pnpm lint`                         | Garde-fou tokens (`scripts/check-tokens.mjs`) puis ESLint    |
+| `pnpm typecheck`                    | `tsc` sur les paquets, `astro check` sur la vitrine          |
+| `pnpm test`                         | Vitest (`packages/game`)                                     |
+| `pnpm build`                        | Build des deux apps                                          |
+| `pnpm format` / `pnpm format:check` | Prettier                                                     |
+| **`pnpm verify`**                   | lint + typecheck + test + build — ce que lance la CI         |
 
 Pages de contrôle des composants, dans les deux thèmes :
 `http://localhost:4321/kit-ui` (Astro) et `http://localhost:3000/kit-ui` (React).
