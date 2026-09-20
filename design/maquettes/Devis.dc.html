@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Demande de devis — desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;family=Noto+Sans+Tamil:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF7F2;font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;color:#0F2D5B}
+a{color:#0F2D5B}a:hover{color:#1F4B8F}
+</style>
+</helmet>
+<div style="width: 1440px; height: 2460px; box-sizing: border-box; background: #FAF7F2; display: flex; flex-direction: column; font-family: 'Inter', system-ui, sans-serif; color: #0F2D5B;">
+
+<header style="height: 96px; box-sizing: border-box; padding: 0 80px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E2DCD2;">
+<a href="Main.dc.html" aria-label="Team Up! — accueil" style="display: flex; align-items: center; gap: 12px; text-decoration: none;"><img src="/_blob/68caf03739029baf96c92c908c8a417b" alt="" style="height: 48px; width: 48px;"><span style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.02em; color: #0F2D5B;">Team <span style="color: #65C3A6;">Up</span><span style="color: #FF8A7A;">!</span></span></a>
+<nav style="display: flex; gap: 36px; font-size: 16px; font-weight: 500;">
+<a href="Particuliers.dc.html" style="text-decoration: none;">Particuliers</a>
+<a href="Entreprises.dc.html" style="text-decoration: none;">Entreprises</a>
+<a href="Les-jeux.dc.html" style="text-decoration: none;">Les jeux</a>
+<a href="Comment-ca-marche.dc.html" style="text-decoration: none;">Comment ça marche</a>
+</nav>
+<div style="display: flex; gap: 12px; align-items: center;">
+<a href="#" style="min-height: 48px; box-sizing: border-box; padding: 0 22px; display: flex; align-items: center; border: 2px solid #E2DCD2; border-radius: 999px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; text-decoration: none;">Rejoindre une partie</a>
+<a href="#" style="min-height: 48px; box-sizing: border-box; padding: 0 24px; display: flex; align-items: center; background: #FF8A7A; color: #071A38; border-radius: 999px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; text-decoration: none;">Demander un devis</a>
+</div>
+</header>
+
+<section style="padding: 80px 80px 112px; display: flex; flex-direction: column; gap: 48px;">
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 820px;">
+<p style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #3E9077;">Demande de devis</p>
+<h1 style="margin: 0; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 52px; line-height: 1.1; letter-spacing: -0.02em;">Parlez-nous de votre événement.</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.55; color: #5C6B85;">Deux minutes pour remplir, gratuit et sans engagement. Les champs marqués d'une étoile sont obligatoires.</p>
+</div>
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px; align-items: start;">
+<form style="background: #FFFFFF; border: 1px solid #E2DCD2; border-radius: 24px; padding: 48px; display: flex; flex-direction: column; gap: 32px;">
+<fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;"><legend style="font-size: 14px; font-weight: 600; padding: 0; margin-bottom: 8px;">Vous êtes <span style="color: #D9382B;" aria-hidden="true">*</span></legend>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+<label style="min-height: 64px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 0 20px; border: 2px solid #0F2D5B; border-radius: 16px; background: #EDF2FA; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 17px;"><input type="radio" name="type" checked style="width: 20px; height: 20px; accent-color: #0F2D5B; margin: 0;">Un particulier</label>
+<label style="min-height: 64px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; padding: 0 20px; border: 2px solid #E2DCD2; border-radius: 16px; background: #FFFFFF; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 17px;"><input type="radio" name="type" style="width: 20px; height: 20px; accent-color: #0F2D5B; margin: 0;">Une entreprise</label>
+</div></fieldset>
+<h3 style="margin: 0; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 22px;">Votre événement</h3>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="occasion" style="font-size: 14px; font-weight: 600;">Occasion <span style="color: #D9382B;" aria-hidden="true">*</span></label><select id="occasion" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"><option>Anniversaire</option><option>Mariage</option><option>Anniversaire de mariage</option><option>Fête de famille</option><option>Autre</option></select></div>
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="date" style="font-size: 14px; font-weight: 600;">Date <span style="color: #D9382B;" aria-hidden="true">*</span></label><input id="date" type="text" placeholder="jj/mm/aaaa" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"></div>
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="lieu" style="font-size: 14px; font-weight: 600;">Ville ou lieu <span style="color: #D9382B;" aria-hidden="true">*</span></label><input id="lieu" type="text" placeholder="Strasbourg, salle des fêtes…" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"></div>
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="invites" style="font-size: 14px; font-weight: 600;">Nombre d'invités <span style="color: #D9382B;" aria-hidden="true">*</span></label><input id="invites" type="number" placeholder="Ex. 80" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"></div>
+</div>
+<h3 style="margin: 0; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 22px;">Vos coordonnées</h3>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="nom" style="font-size: 14px; font-weight: 600;">Nom et prénom <span style="color: #D9382B;" aria-hidden="true">*</span></label><input id="nom" type="text" placeholder="" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"></div>
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="tel" style="font-size: 14px; font-weight: 600;">Téléphone <span style="color: #D9382B;" aria-hidden="true">*</span></label><input id="tel" type="tel" placeholder="06 …" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="email" style="font-size: 14px; font-weight: 600;">E-mail <span style="color: #D9382B;" aria-hidden="true">*</span></label><input id="email" type="email" placeholder="vous@exemple.fr" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"></div>
+<div style="border-top: 1px solid #E2DCD2; padding-top: 32px; display: flex; flex-direction: column; gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 6px;"><h3 style="margin: 0; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 22px;">Pour préparer au mieux (facultatif)</h3><p style="margin: 0; font-size: 15px; color: #5C6B85;">Ces informations nous aident à proposer le bon programme dès le devis.</p></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="creneau" style="font-size: 14px; font-weight: 600;">Durée du créneau disponible</label><select id="creneau" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"><option>Je ne sais pas encore</option><option>40 minutes</option><option>60 minutes</option><option>Plus de 60 minutes</option></select></div>
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="groupes" style="font-size: 14px; font-weight: 600;">Nombre de groupes à mélanger</label><input id="groupes" type="text" placeholder="Ex. 2 familles et des amis" style="min-height: 56px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B;"></div>
+</div>
+<fieldset style="border: 0; margin: 0; padding: 0;"><legend style="font-size: 14px; font-weight: 600; padding: 0; margin-bottom: 12px;">Langues parlées par les invités</legend><div style="display: flex; gap: 10px; flex-wrap: wrap;"><label for="l-fr" style="min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 2px solid #0F2D5B; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 500; "><input id="l-fr" type="checkbox" checked style="width: 18px; height: 18px; accent-color: #0F2D5B; margin: 0;">Français</label><label for="l-ta" style="min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 2px solid #E2DCD2; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 500; font-family: 'Noto Sans Tamil', sans-serif;"><input id="l-ta" type="checkbox" style="width: 18px; height: 18px; accent-color: #0F2D5B; margin: 0;">தமிழ்</label><label for="l-en" style="min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 2px solid #E2DCD2; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 500; "><input id="l-en" type="checkbox" style="width: 18px; height: 18px; accent-color: #0F2D5B; margin: 0;">English</label><label for="l-autre" style="min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 2px solid #E2DCD2; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 500; "><input id="l-autre" type="checkbox" style="width: 18px; height: 18px; accent-color: #0F2D5B; margin: 0;">Autre</label></div></fieldset>
+<fieldset style="border: 0; margin: 0; padding: 0;"><legend style="font-size: 14px; font-weight: 600; padding: 0; margin-bottom: 12px;">Équipement déjà présent dans la salle</legend><div style="display: flex; gap: 10px; flex-wrap: wrap;"><label for="e-video" style="min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 2px solid #E2DCD2; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 500; "><input id="e-video" type="checkbox" style="width: 18px; height: 18px; accent-color: #0F2D5B; margin: 0;">Vidéoprojecteur ou écran</label><label for="e-sono" style="min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 2px solid #E2DCD2; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 500; "><input id="e-sono" type="checkbox" style="width: 18px; height: 18px; accent-color: #0F2D5B; margin: 0;">Sono et micro</label><label for="e-wifi" style="min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 2px solid #E2DCD2; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 500; "><input id="e-wifi" type="checkbox" style="width: 18px; height: 18px; accent-color: #0F2D5B; margin: 0;">Wi-Fi</label><label for="e-nsp" style="min-height: 48px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 16px; border: 2px solid #E2DCD2; border-radius: 999px; background: #FFFFFF; font-size: 15px; font-weight: 500; "><input id="e-nsp" type="checkbox" style="width: 18px; height: 18px; accent-color: #0F2D5B; margin: 0;">Je ne sais pas</label></div></fieldset>
+<div style="display: flex; flex-direction: column; gap: 8px;"><label for="msg" style="font-size: 14px; font-weight: 600;">Votre message</label><textarea id="msg" rows="4" placeholder="Ce qui compte pour vous, les héros de la fête, le déroulé prévu…" style="min-height: 120px; box-sizing: border-box; width: 100%; border: 2px solid #E2DCD2; border-radius: 14px; background: #FFFFFF; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #0F2D5B; padding: 14px 16px; resize: vertical;"></textarea></div>
+</div>
+<label for="rgpd" style="display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: #5C6B85;"><input id="rgpd" type="checkbox" style="width: 20px; height: 20px; accent-color: #0F2D5B; margin: 2px 0 0; flex-shrink: 0;">J'accepte que Team Up! utilise ces informations pour me recontacter au sujet de ma demande. <a href="#" style="color: #0F2D5B;">Politique de confidentialité</a></label>
+<button type="button" style="min-height: 64px; border: 0; border-radius: 999px; background: #FF8A7A; color: #071A38; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; cursor: pointer;">Envoyer ma demande</button>
+</form>
+<aside style="display: flex; flex-direction: column; gap: 24px;">
+<div style="border-radius: 24px; background: #071A38; color: #FFFFFF; padding: 36px; display: flex; flex-direction: column; gap: 24px;">
+<h2 style="margin: 0; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 24px;">Et ensuite ?</h2>
+<div style="display: flex; gap: 14px;"><span style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 28px; line-height: 1; color: #65C3A6; width: 22px; flex-shrink: 0;">1</span><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 17px;">On vous rappelle</span><span style="font-size: 15px; line-height: 1.5; color: #A9BCD9;">Sous [DÉLAI], pour un appel de cadrage.</span></div></div><div style="display: flex; gap: 14px;"><span style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 28px; line-height: 1; color: #65C3A6; width: 22px; flex-shrink: 0;">2</span><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 17px;">Vous recevez le devis</span><span style="font-size: 15px; line-height: 1.5; color: #A9BCD9;">Avec un programme adapté à votre créneau.</span></div></div><div style="display: flex; gap: 14px;"><span style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 28px; line-height: 1; color: #65C3A6; width: 22px; flex-shrink: 0;">3</span><div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 17px;">On prépare ensemble</span><span style="font-size: 15px; line-height: 1.5; color: #A9BCD9;">Équipes, contenus, langues.</span></div></div>
+</div>
+<div style="border-radius: 24px; background: #FFFFFF; border: 1px solid #E2DCD2; padding: 32px; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 17px;">Vous préférez en parler ?</span>
+<span style="font-size: 15px; color: #5C6B85;">[TÉLÉPHONE] · [EMAIL]</span>
+</div>
+</aside>
+</div>
+</section>
+<footer style="margin-top: auto; background: #F4F0E9; border-top: 1px solid #E2DCD2; padding: 56px 80px; display: flex; justify-content: space-between; align-items: flex-start;">
+<div style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: center; gap: 10px;"><img src="/_blob/68caf03739029baf96c92c908c8a417b" alt="" style="height: 40px; width: 40px;"><span style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: #0F2D5B;">Team <span style="color: #65C3A6;">Up</span><span style="color: #FF8A7A;">!</span></span></div>
+<p style="margin: 0; font-size: 14px; color: #5C6B85;">[EMAIL] · [TÉLÉPHONE]</p>
+</div>
+<nav style="display: flex; gap: 64px; font-size: 15px;">
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<a href="Particuliers.dc.html" style="text-decoration: none;">Particuliers</a>
+<a href="Entreprises.dc.html" style="text-decoration: none;">Entreprises</a>
+<a href="Les-jeux.dc.html" style="text-decoration: none;">Les jeux</a>
+<a href="Comment-ca-marche.dc.html" style="text-decoration: none;">Comment ça marche</a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<a href="#" style="text-decoration: none;">Mentions légales</a>
+<a href="#" style="text-decoration: none;">Confidentialité</a>
+<a href="#" style="text-decoration: none;">CGV</a>
+<a href="#" style="text-decoration: none; color: #5C6B85;">Espace animateur</a>
+</div>
+</nav>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2460}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

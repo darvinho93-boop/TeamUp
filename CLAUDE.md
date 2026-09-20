@@ -1,0 +1,82 @@
+# Team Up!
+
+Animation de soirée en salle, vendue sur devis. Un animateur Team Up! fait jouer des invités
+répartis en équipes mélangées (mariages, anniversaires, séminaires, team building).
+Le produit numérique a deux parties : un **site vitrine** qui génère des demandes de devis,
+et une **app de jeu** (écran joueur, écran commun projeté, régie animateur, back-office).
+
+Projet repris **de zéro** : aucun code ni aucune base de la V1 n'est réutilisé.
+
+## Documents de référence
+
+Lis-les avant de concevoir quoi que ce soit. En cas de contradiction, l'ordre ci-dessous fait foi.
+
+1. `docs/spec-jeux-v3.md` — règles des 5 jeux et des 2 duels, barèmes, chronos, budget de minutes.
+   Ignore les lignes « Existant réutilisé » (numéros de migration, RPC) : elles concernent la V1.
+2. `docs/cahier-des-charges.md` — acteurs, architecture, pages, écrans, exigences transverses.
+3. `docs/charte-marque.md` + `design/brand/tokens.css` — charte et design tokens.
+4. `design/maquettes/*.dc.html` — maquettes du site vitrine (desktop et `-mobile`).
+5. `docs/lots.md` — découpage du travail.
+
+## Stack
+
+- Monorepo **pnpm + Turborepo**, TypeScript strict partout.
+- `apps/site` : **Astro**, site vitrine statique, en français. Domaine `teamup.fr`.
+- `apps/app` : **Next.js** (App Router), PWA. Domaine `app.teamup.fr`.
+  Surfaces : `/[code]` (joueur), `/ecran/[code]` (écran commun), `/regie`, `/admin`.
+- `packages/ui` : tokens (importés depuis `tokens.css`) et composants partagés.
+- `packages/game` : logique de jeu **pure**, sans I/O (barèmes, paliers, chronos,
+  calcul de durée d'un programme). Entièrement testée.
+- **Supabase** (région UE) : Postgres, Auth (animateurs et admins uniquement), Realtime, Storage (photos).
+- i18n de l'app : FR, EN, tamoul (`next-intl`). Vitrine : FR seulement.
+- E-mails du formulaire de devis : Resend.
+- Tests : Vitest (`packages/game`, logique serveur), Playwright (parcours critiques).
+- Déploiement : Vercel, un projet par app.
+
+## Règles non négociables
+
+**Design**
+- Toute couleur, taille, espacement, rayon passe par les tokens. Aucune valeur en dur.
+- Corail (`--tu-accent`) réservé aux actions (« Demander un devis », « Envoyer », « c'est à toi »). Jamais en décor.
+- Cibles tactiles ≥ 56 px (`--tu-tap-min`) sur l'écran joueur.
+- Deux thèmes : clair (vitrine, joueur) et `data-theme="stage"` (écran commun, régie).
+- Polices : Poppins (titres, chiffres), Inter (texte), Noto Sans Tamil (obligatoire pour le tamoul).
+- `prefers-reduced-motion` respecté.
+- Vitrine : **aucune photo d'événement**, uniquement des visuels du jeu.
+- Les maquettes sont une **référence visuelle** : reconstruis-les avec des composants et les tokens,
+  ne recopie pas leurs styles inline. Les logos des maquettes pointent vers `/_blob/…` :
+  utilise ceux de `design/brand/logo/`.
+- Tout texte entre crochets dans les maquettes (`[DÉLAI]`, `[CITATION CLIENT]`, `[LOGO CLIENT]`…)
+  est un contenu à fournir. Garde-le en placeholder, n'invente rien.
+
+**Produit**
+- Seuls les 5 jeux et les 2 duels de la spec v3 existent. N'en ajoute aucun.
+- Le téléphone est un instrument de régie, pas un support de jeu (voir spec v3).
+- Les joueurs sont anonymes : prénom seul, aucun compte, aucune donnée de contact.
+- Les secrets (mot de mime, sujet de surenchère, réponse de points communs) ne quittent
+  jamais le serveur vers un téléphone non désigné. À garantir côté base (RLS / fonctions),
+  pas en masquant côté interface.
+- Comportement en cas de coupure réseau : celui décrit jeu par jeu dans la spec v3.
+- Capacité cible : 150 joueurs par événement, mise à jour des écrans en moins d'1 s.
+
+## Façon de travailler
+
+- Un lot de `docs/lots.md` à la fois. Commence chaque lot en mode plan et attends ma validation.
+- Petits commits, un sujet chacun. Tests obligatoires pour `packages/game`.
+- Si un point listé dans « Décisions ouvertes » bloque, **pose la question** au lieu de trancher.
+- Si la spec et une maquette divergent, signale-le.
+
+## Décisions ouvertes
+
+Ne les tranche pas seul :
+
+- Repêchage du quiz (3-4 questions sans repêchage, ou 6 avec).
+- Clôture des envois photo : manuelle par la régie, ou automatique au lancement de la diffusion.
+- Longueur maximale de la file de mime (6 ou 8 maillons).
+- Couleurs d'équipe 5 à 8.
+- Durée de conservation des photos.
+- Espace client (hors périmètre v1 par défaut).
+
+## Commandes
+
+À compléter à la fin du lot 0 (install, dev, test, lint, build, migrations Supabase).

@@ -1,0 +1,20 @@
+{
+  "name": "Team Up!",
+  "short_name": "Team Up!",
+  "description": "On joue. On se rencontre. On crée du lien.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7F2",
+  "theme_color": "#0F2D5B",
+  "categories": ["entertainment", "social", "games"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

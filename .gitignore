@@ -1,0 +1,24 @@
+# Dépendances
+node_modules/
+.pnpm-store/
+
+# Sorties de build
+dist/
+.astro/
+.next/
+out/
+*.tsbuildinfo
+
+# Caches
+.turbo/
+.cache/
+coverage/
+
+# Environnement
+.env
+.env.*
+!.env.example
+
+# Système
+.DS_Store
+Thumbs.db

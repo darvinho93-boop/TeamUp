@@ -1,0 +1,133 @@
+/* Team Up! — design tokens
+   Source unique de vérité pour l'app web. À importer avant toute autre feuille. */
+
+:root {
+  /* ---- Palette de marque ---- */
+  --tu-navy: #0F2D5B;      /* confiance, événementiel, élégance */
+  --tu-sage: #65C3A6;      /* ouverture, mixité, positif */
+  --tu-coral: #FF8A7A;     /* jeu, énergie, chaleur */
+  --tu-stone: #EAE3D7;     /* équilibre, simplicité, intemporalité */
+
+  /* Déclinaisons (générées par éclaircissement/assombrissement) */
+  --tu-navy-900: #071A38;
+  --tu-navy-700: #0F2D5B;
+  --tu-navy-500: #1F4B8F;
+  --tu-navy-200: #C3D2E8;
+  --tu-navy-50:  #EDF2FA;
+
+  --tu-sage-700: #3E9077;
+  --tu-sage-500: #65C3A6;
+  --tu-sage-200: #C4E8DB;
+  --tu-sage-50:  #EDF9F4;
+
+  --tu-coral-700: #D9604F;
+  --tu-coral-500: #FF8A7A;
+  --tu-coral-200: #FFD3CC;
+  --tu-coral-50:  #FFF0ED;
+
+  --tu-stone-500: #EAE3D7;
+  --tu-stone-200: #F4F0E9;
+
+  /* ---- Rôles sémantiques (thème clair, écran des joueurs) ---- */
+  --tu-bg:            #FAF7F2;
+  --tu-surface:       #FFFFFF;
+  --tu-surface-muted: var(--tu-stone-200);
+  --tu-border:        #E2DCD2;
+
+  --tu-text:          var(--tu-navy-700);
+  --tu-text-muted:    #5C6B85;
+  --tu-text-invert:   #FFFFFF;
+
+  --tu-primary:       var(--tu-navy-700);
+  --tu-on-primary:    #FFFFFF;
+  --tu-accent:        var(--tu-coral-500);
+  --tu-on-accent:     var(--tu-navy-900);
+
+  --tu-success:       var(--tu-sage-700);
+  --tu-warning:       #E0A100;
+  --tu-danger:        #D9382B;
+  --tu-focus:         var(--tu-coral-500);
+
+  /* ---- Couleurs d'équipe (les 4 groupes qu'on veut mélanger) ---- */
+  --tu-team-1: var(--tu-navy-700);
+  --tu-team-2: var(--tu-coral-500);
+  --tu-team-3: var(--tu-sage-500);
+  --tu-team-4: #E0A100;   /* ambre : le stone est trop clair pour porter une identité */
+
+  /* ---- Typographie ---- */
+  --tu-font-display: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --tu-font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --tu-font-tamil: "Noto Sans Tamil", "Latha", sans-serif;
+  --tu-font-numeric: "Poppins", system-ui, sans-serif; /* scores, timers */
+
+  --tu-size-xs: 0.75rem;
+  --tu-size-sm: 0.875rem;
+  --tu-size-base: 1rem;
+  --tu-size-lg: 1.25rem;
+  --tu-size-xl: 1.5rem;
+  --tu-size-2xl: 2rem;
+  --tu-size-3xl: 2.75rem;
+  --tu-size-4xl: 4rem;      /* timer / score sur écran commun */
+  --tu-size-5xl: 6rem;      /* podium, décompte */
+
+  --tu-leading-tight: 1.15;
+  --tu-leading-normal: 1.55;
+  --tu-tracking-display: -0.02em;
+
+  /* ---- Espacement (base 4px) ---- */
+  --tu-space-1: 0.25rem;
+  --tu-space-2: 0.5rem;
+  --tu-space-3: 0.75rem;
+  --tu-space-4: 1rem;
+  --tu-space-6: 1.5rem;
+  --tu-space-8: 2rem;
+  --tu-space-12: 3rem;
+  --tu-space-16: 4rem;
+
+  /* ---- Rayons ---- */
+  --tu-radius-sm: 8px;
+  --tu-radius-md: 14px;
+  --tu-radius-lg: 24px;
+  --tu-radius-pill: 999px;
+
+  /* ---- Ombres ---- */
+  --tu-shadow-sm: 0 1px 2px rgba(15, 45, 91, 0.08);
+  --tu-shadow-md: 0 6px 20px rgba(15, 45, 91, 0.10);
+  --tu-shadow-lift: 0 14px 40px rgba(15, 45, 91, 0.16);
+
+  /* ---- Cibles tactiles (invités debout, verre à la main, salle sombre) ---- */
+  --tu-tap-min: 56px;
+
+  /* ---- Motion ---- */
+  --tu-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --tu-dur-fast: 120ms;
+  --tu-dur-base: 220ms;
+  --tu-dur-reveal: 600ms;
+}
+
+/* ---- Thème sombre : écran commun projeté en salle ---- */
+[data-theme="stage"] {
+  --tu-bg:            var(--tu-navy-900);
+  --tu-surface:       #10254A;
+  --tu-surface-muted: #16305C;
+  --tu-border:        #23406F;
+
+  --tu-text:          #FFFFFF;
+  --tu-text-muted:    #A9BCD9;
+  --tu-text-invert:   var(--tu-navy-900);
+
+  --tu-primary:       var(--tu-sage-500);
+  --tu-on-primary:    var(--tu-navy-900);
+  --tu-accent:        var(--tu-coral-500);
+
+  --tu-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.35);
+  --tu-shadow-lift: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --tu-dur-fast: 0ms;
+    --tu-dur-base: 0ms;
+    --tu-dur-reveal: 0ms;
+  }
+}
