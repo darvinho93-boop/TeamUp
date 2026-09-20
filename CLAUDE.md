@@ -36,6 +36,7 @@ Lis-les avant de concevoir quoi que ce soit. En cas de contradiction, l'ordre ci
 ## Règles non négociables
 
 **Design**
+
 - Toute couleur, taille, espacement, rayon passe par les tokens. Aucune valeur en dur.
 - Corail (`--tu-accent`) réservé aux actions (« Demander un devis », « Envoyer », « c'est à toi »). Jamais en décor.
 - Cibles tactiles ≥ 56 px (`--tu-tap-min`) sur l'écran joueur.
@@ -50,6 +51,7 @@ Lis-les avant de concevoir quoi que ce soit. En cas de contradiction, l'ordre ci
   est un contenu à fournir. Garde-le en placeholder, n'invente rien.
 
 **Produit**
+
 - Seuls les 5 jeux et les 2 duels de la spec v3 existent. N'en ajoute aucun.
 - Le téléphone est un instrument de régie, pas un support de jeu (voir spec v3).
 - Les joueurs sont anonymes : prénom seul, aucun compte, aucune donnée de contact.
@@ -79,4 +81,32 @@ Ne les tranche pas seul :
 
 ## Commandes
 
-À compléter à la fin du lot 0 (install, dev, test, lint, build, migrations Supabase).
+Node 22.20 (`.nvmrc`) et pnpm 10.17. Toutes les commandes se lancent depuis la racine.
+
+| Commande | Effet |
+| --- | --- |
+| `pnpm install` | Installe le monorepo |
+| `pnpm dev` | Démarre les deux apps : vitrine sur `:4321`, app sur `:3000` |
+| `pnpm dev:site` / `pnpm dev:app` | Une seule des deux |
+| `pnpm lint` | Garde-fou tokens (`scripts/check-tokens.mjs`) puis ESLint |
+| `pnpm typecheck` | `tsc` sur les paquets, `astro check` sur la vitrine |
+| `pnpm test` | Vitest (`packages/game`) |
+| `pnpm build` | Build des deux apps |
+| `pnpm format` / `pnpm format:check` | Prettier |
+| **`pnpm verify`** | lint + typecheck + test + build — ce que lance la CI |
+
+Pages de contrôle des composants, dans les deux thèmes :
+`http://localhost:4321/kit-ui` (Astro) et `http://localhost:3000/kit-ui` (React).
+
+Migrations Supabase : à compléter au lot 3.
+
+## Conventions posées au lot 0
+
+- `design/brand` est le paquet `@teamup/brand` : `tokens.css` reste la source unique de vérité,
+  `packages/ui` l'importe, personne ne le recopie.
+- Les styles ne sont écrits qu'une fois, en CSS dans `packages/ui/src/styles`. Les composants
+  Astro (`@teamup/ui/astro/*.astro`) et React (`@teamup/ui/react`) ne font que poser les classes.
+  La vitrine n'embarque donc aucun React.
+- Polices auto-hébergées (`@fontsource`) : aucune requête vers Google.
+- Les paquets du workspace sont consommés en TypeScript source, sans étape de build.
+- TypeScript reste en 5.9 tant que `typescript-eslint` n'accepte pas la 7.
