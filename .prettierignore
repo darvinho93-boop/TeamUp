@@ -1,5 +1,8 @@
 pnpm-lock.yaml
-design/maquettes/
 .next/
 .astro/
 dist/
+
+# Documents de référence et kit de marque : livrés tels quels, jamais reformatés.
+docs/
+design/
