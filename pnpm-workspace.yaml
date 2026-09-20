@@ -1,0 +1,8 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'design/brand'
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
