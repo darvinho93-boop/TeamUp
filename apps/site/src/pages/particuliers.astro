@@ -1,0 +1,230 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '@teamup/ui/astro/Button.astro';
+import PageIntro from '../components/layout/PageIntro.astro';
+import Section from '../components/layout/Section.astro';
+import StepList from '../components/layout/StepList.astro';
+import CtaBanner from '../components/layout/CtaBanner.astro';
+import Faq from '../components/layout/Faq.astro';
+import type { FaqItem } from '../components/layout/Faq.astro';
+import ScreenTeams from '../components/visuels/ScreenTeams.astro';
+import PhoneSecret from '../components/visuels/PhoneSecret.astro';
+import PhonePhoto from '../components/visuels/PhonePhoto.astro';
+import PhoneLang from '../components/visuels/PhoneLang.astro';
+
+const occasions = [
+  {
+    title: 'Anniversaire',
+    body: "Amis d'enfance, collègues, famille : les cercles de la personne fêtée se rencontrent enfin.",
+  },
+  {
+    title: 'Mariage',
+    body: "Les deux familles et les deux bandes d'amis dans les mêmes équipes, entre le dîner et la piste.",
+  },
+  {
+    title: 'Anniversaire de mariage',
+    body: "Plusieurs générations autour du couple, avec des jeux qui s'expliquent en une phrase.",
+  },
+  {
+    title: 'Fête de famille',
+    body: 'Cousins éloignés, nouvelles pièces rapportées, petits et grands : chacun repart en connaissant les autres.',
+  },
+];
+
+const raisons = [
+  {
+    title: "Des équipes composées à l'avance",
+    body: 'On répartit ensemble les invités pour que chaque équipe mélange vos groupes : familles, amis, collègues.',
+  },
+  {
+    title: 'Tout le monde debout, personne sur son écran',
+    body: "Le téléphone ne sert qu'à recevoir un secret ou envoyer une photo. Le jeu se passe dans la salle.",
+  },
+  {
+    title: 'Les héros de la fête au centre',
+    body: 'Ce sont eux qui désignent les photos gagnantes en fin de soirée, devant tout le monde.',
+  },
+];
+
+const programme = [
+  { label: 'Points communs', duration: '8 min 40' },
+  { label: 'Quiz', duration: '2 min' },
+  { label: 'Surenchère', duration: '6 min' },
+  { label: 'Mime', duration: '10 min' },
+  { label: 'Diffusion photo', duration: '5 min' },
+  { label: 'Transitions', duration: '≈ 4 min' },
+];
+
+/* Seule la première réponse est rédigée dans la maquette. Les autres sont à fournir. */
+const faq: FaqItem[] = [
+  {
+    question: "Pour combien d'invités ?",
+    answer: "De [MIN] à [MAX] invités. Le nombre d'équipes et la durée s'ajustent en conséquence.",
+  },
+  { question: "Combien de temps dure l'animation ?" },
+  { question: 'Mes invités doivent-ils installer une application ?' },
+  { question: 'De quoi avez-vous besoin sur place ?' },
+  { question: 'Quelles langues sont disponibles ?' },
+  { question: 'Combien ça coûte ?' },
+];
+---
+
+<Base
+  title="Anniversaire, mariage, fête de famille — Team Up!"
+  description="Une fête où tout le monde finit par se parler : un animateur Team Up! mélange vos tablées en équipes et fait jouer toute la salle."
+>
+  <PageIntro
+    eyebrow="Particuliers"
+    title="Une fête où tout le monde finit par se parler."
+    lead="Anniversaire, mariage, fête de famille : on transforme des tablées qui s'observent en équipes qui jouent ensemble. Vous, vous profitez de vos invités."
+  >
+    <Fragment slot="actions">
+      <Button href="/devis" variant="accent" size="lg">
+        Demander un devis
+      </Button>
+      <Button href="#programme" variant="ghost" size="lg">
+        Voir un exemple de soirée
+      </Button>
+    </Fragment>
+    <Fragment slot="visual">
+      <ScreenTeams />
+      <PhoneSecret />
+    </Fragment>
+  </PageIntro>
+
+  <Section eyebrow="Les occasions" title="Dès que plusieurs cercles se retrouvent." tone="muted">
+    <div class="occasions">
+      {occasions.map((occasion) => (
+        <article class="occasion">
+          <h3 class="occasion__title">{occasion.title}</h3>
+          <p class="occasion__body">{occasion.body}</p>
+        </article>
+      ))}
+    </div>
+  </Section>
+
+  <Section eyebrow="Pourquoi ça marche" title="Le mélange ne se fait pas tout seul. On l'organise.">
+    <div class="why">
+      <StepList steps={raisons} layout="stack" />
+      <PhonePhoto />
+    </div>
+  </Section>
+
+  <Section
+    id="programme"
+    eyebrow="Exemple de soirée"
+    title="40 minutes, 4 équipes, 5 jeux."
+    tone="muted"
+  >
+    <ol class="programme">
+      {programme.map((item) => (
+        <li class="programme__item">
+          <span class="programme__label">{item.label}</span>
+          <span class="programme__duration">{item.duration}</span>
+        </li>
+      ))}
+    </ol>
+    <p class="programme__note">
+      Les photos se prennent tout au long de la soirée, entre les jeux. Le programme s'adapte au
+      nombre d'invités : au-delà de cinq équipes, on prévoit un créneau de 60 minutes.
+    </p>
+  </Section>
+
+  <Section eyebrow="Multilingue" title="Chacun joue dans sa langue.">
+    <div class="multi">
+      <p class="multi__body">
+        Les familles ne parlent pas toutes la même langue ? Chaque invité choisit la sienne en
+        rejoignant la partie. Les jeux reposent sur le geste et le mouvement, pas sur les mots.
+      </p>
+      <PhoneLang />
+    </div>
+  </Section>
+
+  <Section eyebrow="Questions fréquentes" title="Avant de vous lancer." tone="muted">
+    <Faq items={faq} />
+  </Section>
+
+  <CtaBanner title="Racontez-nous votre fête." />
+</Base>
+
+<style>
+  .occasions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--tu-space-4);
+  }
+
+  .occasion {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+    padding: var(--tu-space-6);
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-surface);
+    border: var(--tu-border-width) solid var(--tu-border);
+  }
+
+  .occasion__title {
+    font-size: var(--tu-size-lg);
+  }
+
+  .occasion__body {
+    color: var(--tu-text-muted);
+  }
+
+  .why,
+  .multi {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--tu-space-12);
+    align-items: center;
+  }
+
+  .multi__body {
+    font-size: var(--tu-size-lg);
+    color: var(--tu-text-muted);
+  }
+
+  .programme {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--tu-space-3);
+  }
+
+  .programme__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-1);
+    padding: var(--tu-space-4);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+    border: var(--tu-border-width) solid var(--tu-border);
+  }
+
+  .programme__label {
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+  }
+
+  .programme__duration {
+    font-family: var(--tu-font-numeric);
+    color: var(--tu-text-muted);
+  }
+
+  .programme__note {
+    color: var(--tu-text-muted);
+    max-width: 62ch;
+  }
+
+  @media (max-width: 60rem) {
+    .why,
+    .multi {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-8);
+    }
+
+    .multi__body {
+      font-size: var(--tu-size-base);
+    }
+  }
+</style>

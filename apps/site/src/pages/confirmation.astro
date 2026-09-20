@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '@teamup/ui/astro/Button.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<Base
+  title="Demande envoyée — Team Up!"
+  description="Votre demande de devis est bien partie. On vous rappelle sous [DÉLAI]."
+  noindex
+  actionBar={false}
+>
+  <div class="tu-container merci">
+    <span class="merci__mark">
+      <Icon name="checkCircle" size="lg" />
+    </span>
+    <h1 class="merci__title">Merci, votre demande est bien partie.</h1>
+    <p class="merci__body">
+      On vous rappelle sous [DÉLAI] pour caler l'appel de cadrage. Un e-mail de confirmation vient
+      d'être envoyé à l'adresse indiquée.
+    </p>
+    <div class="merci__actions">
+      <Button href="/" variant="primary" size="lg">
+        Retour à l'accueil
+      </Button>
+      <Button href="/les-jeux" variant="ghost" size="lg">
+        Découvrir les jeux
+      </Button>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .merci {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--tu-space-4);
+    max-width: 44rem;
+    padding-block: var(--tu-space-16);
+    text-align: center;
+  }
+
+  .merci__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tu-space-16);
+    height: var(--tu-space-16);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-sage-50);
+    color: var(--tu-success-text);
+  }
+
+  .merci__title {
+    font-size: var(--tu-size-3xl);
+  }
+
+  .merci__body {
+    font-size: var(--tu-size-lg);
+    color: var(--tu-text-muted);
+  }
+
+  .merci__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--tu-space-3);
+    margin-top: var(--tu-space-4);
+  }
+
+  @media (max-width: 60rem) {
+    .merci__title {
+      font-size: var(--tu-size-2xl);
+    }
+
+    .merci__body {
+      font-size: var(--tu-size-base);
+    }
+
+    .merci__actions > :global(.tu-btn) {
+      flex: 1 1 12rem;
+    }
+  }
+</style>

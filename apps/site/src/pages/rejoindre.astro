@@ -1,0 +1,217 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '@teamup/ui/astro/Button.astro';
+import ScreenJoin from '../components/visuels/ScreenJoin.astro';
+
+/**
+ * Filet de sécurité : la plupart des invités arrivent par le QR code, directement dans l'app.
+ * Le sous-domaine réel se règle par variable d'environnement — le choix
+ * « sous-domaine ou chemin /jouer » reste ouvert (cahier des charges §8).
+ */
+const appUrl = import.meta.env['PUBLIC_APP_URL'] ?? 'https://app.teamup.fr';
+
+const slots = [1, 2, 3, 4, 5, 6];
+---
+
+<Base
+  title="Rejoindre une partie — Team Up!"
+  description="Entrez le code de salle à six caractères affiché sur le grand écran. Pas de compte, pas d'application."
+  actionBar={false}
+>
+  <div class="tu-container rejoindre">
+    <div class="rejoindre__form-side">
+      <p class="rejoindre__eyebrow">Rejoindre une partie</p>
+      <h1 class="rejoindre__title">Entrez le code de la salle.</h1>
+      <p class="rejoindre__lead">
+        Six caractères, affichés sur le grand écran. Pas de compte, pas d'application.
+      </p>
+
+      <form class="rejoindre__form" data-tu-join data-app-url={appUrl}>
+        <fieldset class="rejoindre__fieldset">
+          <legend class="tu-visually-hidden">Code de salle, six caractères</legend>
+          <div class="rejoindre__slots">
+            {slots.map((slot) => (
+              <input
+                class="rejoindre__slot"
+                type="text"
+                inputmode="text"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                maxlength="1"
+                aria-label={`Caractère ${slot}`}
+                data-tu-slot
+                required
+              />
+            ))}
+          </div>
+        </fieldset>
+
+        <p class="rejoindre__error" data-tu-join-error hidden>
+          Ce code doit faire six caractères.
+        </p>
+
+        <Button type="submit" variant="accent" size="lg" block>
+          Rejoindre
+        </Button>
+      </form>
+
+      <p class="rejoindre__tip">
+        Vous avez un QR code sous les yeux ? Scannez-le avec l'appareil photo de votre téléphone,
+        c'est encore plus rapide.
+      </p>
+    </div>
+
+    <div class="rejoindre__visual">
+      <ScreenJoin invitation="Rejoignez la partie avec le code" />
+      <p class="rejoindre__where">Où trouver le code : sur le grand écran, en début de soirée.</p>
+    </div>
+  </div>
+</Base>
+
+<script>
+  // Seul script de cette page : avance automatique entre les cases, puis redirection.
+  const form = document.querySelector<HTMLFormElement>('[data-tu-join]');
+  const slots = Array.from(document.querySelectorAll<HTMLInputElement>('[data-tu-slot]'));
+  const error = document.querySelector<HTMLElement>('[data-tu-join-error]');
+
+  const readCode = () => slots.map((slot) => slot.value.trim().toUpperCase()).join('');
+
+  slots.forEach((slot, index) => {
+    slot.addEventListener('input', () => {
+      slot.value = slot.value.toUpperCase();
+      if (slot.value && index < slots.length - 1) slots[index + 1]?.focus();
+    });
+
+    slot.addEventListener('keydown', (event) => {
+      if (event.key === 'Backspace' && !slot.value && index > 0) slots[index - 1]?.focus();
+    });
+
+    // Un code collé d'un coup remplit toutes les cases.
+    slot.addEventListener('paste', (event) => {
+      const pasted = event.clipboardData?.getData('text') ?? '';
+      if (pasted.length < 2) return;
+      event.preventDefault();
+      const characters = pasted.toUpperCase().replace(/\s/g, '').split('');
+      slots.forEach((target, position) => {
+        target.value = characters[position] ?? '';
+      });
+      slots[Math.min(characters.length, slots.length - 1)]?.focus();
+    });
+  });
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const code = readCode();
+    if (code.length < slots.length) {
+      if (error) error.hidden = false;
+      slots.find((slot) => !slot.value)?.focus();
+      return;
+    }
+    if (error) error.hidden = true;
+    const base = form.dataset['appUrl'] ?? '';
+    window.location.href = `${base}/${code}`;
+  });
+</script>
+
+<style>
+  .rejoindre {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--tu-space-12);
+    align-items: center;
+    padding-block: var(--tu-space-16);
+  }
+
+  .rejoindre__form-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+  }
+
+  .rejoindre__eyebrow {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tu-text-muted);
+  }
+
+  .rejoindre__title {
+    font-size: var(--tu-size-3xl);
+  }
+
+  .rejoindre__lead {
+    color: var(--tu-text-muted);
+  }
+
+  .rejoindre__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+  }
+
+  .rejoindre__fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .rejoindre__slots {
+    display: flex;
+    gap: var(--tu-space-2);
+  }
+
+  .rejoindre__slot {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: calc(var(--tu-tap-min) * 1.2);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+    font-family: var(--tu-font-numeric);
+    font-size: var(--tu-size-2xl);
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .rejoindre__slot:focus-visible {
+    border-color: var(--tu-primary);
+  }
+
+  .rejoindre__error {
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+    color: var(--tu-danger-text);
+  }
+
+  .rejoindre__tip,
+  .rejoindre__where {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+
+  .rejoindre__visual {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  @media (max-width: 60rem) {
+    .rejoindre {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-8);
+      padding-block: var(--tu-space-8);
+    }
+
+    .rejoindre__title {
+      font-size: var(--tu-size-2xl);
+    }
+
+    .rejoindre__slot {
+      font-size: var(--tu-size-xl);
+    }
+  }
+</style>

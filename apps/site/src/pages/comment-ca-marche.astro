@@ -1,0 +1,296 @@
+---
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/layout/PageIntro.astro';
+import Section from '../components/layout/Section.astro';
+import StepList from '../components/layout/StepList.astro';
+import CtaBanner from '../components/layout/CtaBanner.astro';
+import IconList from '../components/layout/IconList.astro';
+import ScreenMimeLive from '../components/visuels/ScreenMimeLive.astro';
+import PhoneWaiting from '../components/visuels/PhoneWaiting.astro';
+import RegiePanel from '../components/visuels/RegiePanel.astro';
+import { fourni, surPlace } from '../data/equipement';
+
+const avant = [
+  {
+    title: 'Demande de devis',
+    body: "Vous remplissez le formulaire : date, lieu, nombre d'invités, groupes à mélanger.",
+  },
+  {
+    title: 'Appel de cadrage',
+    body: 'On fixe ensemble le créneau, les langues parlées et ce que vous attendez de la soirée.',
+  },
+  {
+    title: 'Préparation',
+    body: 'On compose les équipes, on cale le programme sur votre créneau et on choisit les contenus.',
+  },
+  {
+    title: 'Le jour J',
+    body: "L'animateur arrive [DÉLAI] avant le début pour installer l'écran et tester la salle.",
+  },
+];
+
+const deroule = [
+  'Les invités rejoignent',
+  "Les équipes s'affichent",
+  "Les jeux s'enchaînent",
+  'Diffusion des photos',
+  'Podium',
+];
+
+const durees = [
+  { teams: '4 équipes', jeu: '≈ 36 min', creneau: '40 min', programme: 'Programme complet' },
+  {
+    teams: '5 équipes',
+    jeu: '≈ 42 min',
+    creneau: '40 min',
+    programme: "Programme resserré d'un thème ou d'une question",
+  },
+  { teams: '6 équipes', jeu: '≈ 47 min', creneau: '60 min', programme: 'Programme complet' },
+  { teams: '8 équipes', jeu: '≈ 58 min', creneau: '60 min', programme: 'Programme complet' },
+];
+---
+
+<Base
+  title="Comment ça marche — Team Up!"
+  description="De la demande de devis au podium : vous décrivez l'événement, on prépare tout avec vous, un animateur fait jouer la salle. Rien à installer."
+>
+  <PageIntro
+    eyebrow="Comment ça marche"
+    title="De la demande de devis au podium."
+    lead="Vous nous décrivez l'événement, on prépare tout avec vous, et le jour venu un animateur Team Up! fait jouer la salle. Vous n'avez rien à installer."
+    centered
+  />
+
+  <Section eyebrow="Avant la soirée" title="Quatre étapes, un seul interlocuteur." tone="muted">
+    <StepList steps={avant} />
+  </Section>
+
+  <Section eyebrow="Pendant la soirée" title="Un écran, des téléphones, un animateur.">
+    <div class="surfaces">
+      <article class="surface">
+        <ScreenMimeLive />
+        <h3 class="surface__title">L'écran de la salle</h3>
+        <p class="surface__body">
+          Projeté en grand : règles, chronos, scores et révélations. C'est lui que tout le monde
+          regarde.
+        </p>
+      </article>
+
+      <article class="surface">
+        <PhoneWaiting name="Karim" team="Équipe 2" teamClass="tu-team--2" />
+        <h3 class="surface__title">Le téléphone des invités</h3>
+        <p class="surface__body">
+          On rejoint la partie en scannant un QR code. Ensuite, il reste presque toujours en poche.
+        </p>
+      </article>
+
+      <article class="surface">
+        <RegiePanel />
+        <h3 class="surface__title">L'animateur et sa régie</h3>
+        <p class="surface__body">
+          Il tient la salle au micro et pilote chaque étape depuis une tablette.
+        </p>
+      </article>
+    </div>
+  </Section>
+
+  <Section eyebrow="Le déroulé" title="Du QR code au podium." tone="muted">
+    <ol class="flow">
+      {deroule.map((step, index) => (
+        <li class="flow__step">
+          <span class="flow__number" aria-hidden="true">
+            {index + 1}
+          </span>
+          <span class="flow__label">{step}</span>
+        </li>
+      ))}
+    </ol>
+    <p class="flow__note">
+      Les photos se prennent tout au long de la soirée, entre les jeux. L'animateur annonce les
+      scores après chaque jeu.
+    </p>
+  </Section>
+
+  <Section
+    eyebrow="Combien de temps ?"
+    title="Tout dépend du nombre d'équipes."
+    lead="Deux jeux se jouent équipe par équipe : chaque équipe en plus ajoute du temps. Une équipe compte environ [TAILLE D'ÉQUIPE] personnes."
+  >
+    <div class="durees">
+      <table class="durees__table">
+        <thead>
+          <tr>
+            <th scope="col">Équipes</th>
+            <th scope="col">Durée de jeu</th>
+            <th scope="col">Créneau</th>
+            <th scope="col">Programme</th>
+          </tr>
+        </thead>
+        <tbody>
+          {durees.map((row) => (
+            <tr>
+              <th scope="row">{row.teams}</th>
+              <td data-label="Durée de jeu">{row.jeu}</td>
+              <td data-label="Créneau">{row.creneau}</td>
+              <td data-label="Programme">{row.programme}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section tone="muted">
+    <div class="equipement">
+      <IconList title="Ce que nous apportons" items={fourni} />
+      <IconList title="Ce qu'il faut sur place" items={surPlace} />
+    </div>
+  </Section>
+
+  <CtaBanner title="Première étape : nous décrire votre événement." />
+</Base>
+
+<style>
+  .surfaces {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--tu-space-8);
+    align-items: start;
+  }
+
+  .surface {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  .surface__title {
+    font-size: var(--tu-size-lg);
+    margin-top: var(--tu-space-2);
+  }
+
+  .surface__body {
+    color: var(--tu-text-muted);
+  }
+
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tu-space-3);
+  }
+
+  .flow__step {
+    display: flex;
+    align-items: center;
+    gap: var(--tu-space-3);
+    flex: 1 1 12rem;
+    padding: var(--tu-space-4);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+    border: var(--tu-border-width) solid var(--tu-border);
+  }
+
+  .flow__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: var(--tu-space-6);
+    height: var(--tu-space-6);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-primary);
+    color: var(--tu-on-primary);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 700;
+  }
+
+  .flow__label {
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+    font-size: var(--tu-size-sm);
+  }
+
+  .flow__note {
+    color: var(--tu-text-muted);
+    max-width: 62ch;
+  }
+
+  .durees {
+    overflow-x: auto;
+  }
+
+  .durees__table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: start;
+  }
+
+  .durees__table th,
+  .durees__table td {
+    padding: var(--tu-space-4);
+    border-bottom: var(--tu-border-width) solid var(--tu-border);
+    text-align: start;
+  }
+
+  .durees__table thead th {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tu-text-muted);
+  }
+
+  .durees__table tbody th {
+    font-family: var(--tu-font-display);
+    font-weight: 600;
+  }
+
+  .equipement {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: var(--tu-space-4);
+  }
+
+  /* Sous 60 rem le tableau se lit en cartes : chaque cellule porte son intitulé. */
+  @media (max-width: 60rem) {
+    .durees__table,
+    .durees__table tbody,
+    .durees__table tr,
+    .durees__table td,
+    .durees__table tbody th {
+      display: block;
+    }
+
+    .durees__table thead {
+      display: none;
+    }
+
+    .durees__table tr {
+      margin-bottom: var(--tu-space-3);
+      border: var(--tu-border-width) solid var(--tu-border);
+      border-radius: var(--tu-radius-md);
+      background: var(--tu-surface);
+      overflow: hidden;
+    }
+
+    .durees__table tbody th {
+      background: var(--tu-surface-muted);
+      border-bottom: var(--tu-border-width) solid var(--tu-border);
+    }
+
+    .durees__table td {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--tu-space-4);
+      border-bottom: none;
+      padding-block: var(--tu-space-2);
+    }
+
+    .durees__table td::before {
+      content: attr(data-label);
+      color: var(--tu-text-muted);
+      font-size: var(--tu-size-sm);
+    }
+  }
+</style>

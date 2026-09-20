@@ -1,0 +1,445 @@
+---
+import Base from '../layouts/Base.astro';
+import TextField from '@teamup/ui/astro/TextField.astro';
+import Button from '@teamup/ui/astro/Button.astro';
+
+/*
+ * Le formulaire est complet et accessible, mais pas encore branché : validation
+ * serveur, honeypot, e-mails Resend et redirection vers /confirmation sont le lot 2.
+ */
+
+const occasions = [
+  'Anniversaire',
+  'Mariage',
+  'Anniversaire de mariage',
+  'Fête de famille',
+  'Autre',
+];
+
+const creneaux = ['Je ne sais pas encore', '40 minutes', '60 minutes', 'Plus de 60 minutes'];
+
+const langues = [
+  { id: 'fr', label: 'Français', lang: 'fr', checked: true },
+  { id: 'ta', label: 'தமிழ்', lang: 'ta', checked: false },
+  { id: 'en', label: 'English', lang: 'en', checked: false },
+  { id: 'autre', label: 'Autre', lang: 'fr', checked: false },
+];
+
+const equipements = [
+  { id: 'video', label: 'Vidéoprojecteur ou écran' },
+  { id: 'sono', label: 'Sono et micro' },
+  { id: 'wifi', label: 'Wi-Fi' },
+  { id: 'nsp', label: 'Je ne sais pas' },
+];
+
+const suites = [
+  { title: 'On vous rappelle', body: 'Sous [DÉLAI], pour un appel de cadrage.' },
+  { title: 'Vous recevez le devis', body: 'Avec un programme adapté à votre créneau.' },
+  { title: 'On prépare ensemble', body: 'Équipes, contenus, langues.' },
+];
+---
+
+<Base
+  title="Demander un devis — Team Up!"
+  description="Deux minutes pour décrire votre événement. Devis gratuit et sans engagement, réponse sous [DÉLAI]."
+  actionBar={false}
+>
+  <div class="tu-container devis">
+    <header class="devis__intro">
+      <p class="devis__eyebrow">Demande de devis</p>
+      <h1 class="devis__title">Parlez-nous de votre événement.</h1>
+      <p class="devis__lead">
+        Deux minutes pour remplir, gratuit et sans engagement. Les champs marqués d'une étoile sont
+        obligatoires.
+      </p>
+    </header>
+
+    <div class="devis__grid">
+      <form class="devis__form" data-tu-form="devis">
+        <fieldset class="tu-field devis__choice">
+          <legend class="tu-field__label">
+            Vous êtes{' '}
+            <span class="tu-field__required" aria-hidden="true">
+              *
+            </span>
+          </legend>
+          <div class="devis__radios">
+            <label class="devis__radio">
+              <input type="radio" name="type" value="particulier" checked />
+              Un particulier
+            </label>
+            <label class="devis__radio">
+              <input type="radio" name="type" value="entreprise" />
+              Une entreprise
+            </label>
+          </div>
+        </fieldset>
+
+        <h2 class="devis__legend">Votre événement</h2>
+        <div class="devis__row">
+          <div class="tu-field">
+            <label class="tu-field__label" for="occasion">
+              Occasion{' '}
+              <span class="tu-field__required" aria-hidden="true">
+                *
+              </span>
+            </label>
+            <select class="tu-field__control" id="occasion" name="occasion" required>
+              {occasions.map((occasion) => (
+                <option value={occasion}>{occasion}</option>
+              ))}
+            </select>
+          </div>
+
+          <TextField label="Date" name="date" type="date" required />
+          <TextField
+            label="Ville ou lieu"
+            name="lieu"
+            placeholder="Strasbourg, salle des fêtes…"
+            required
+          />
+          <TextField
+            label="Nombre d'invités"
+            name="invites"
+            type="number"
+            min="1"
+            placeholder="Ex. 80"
+            required
+          />
+        </div>
+
+        <h2 class="devis__legend">Vos coordonnées</h2>
+        <div class="devis__row">
+          <TextField label="Nom et prénom" name="nom" autocomplete="name" required />
+          <TextField label="Téléphone" name="tel" type="tel" autocomplete="tel" required />
+        </div>
+        <TextField
+          label="E-mail"
+          name="email"
+          type="email"
+          autocomplete="email"
+          placeholder="vous@exemple.fr"
+          required
+        />
+
+        <div class="devis__optional">
+          <div class="devis__optional-head">
+            <h2 class="devis__legend">Pour préparer au mieux (facultatif)</h2>
+            <p class="devis__hint">
+              Ces informations nous aident à proposer le bon programme dès le devis.
+            </p>
+          </div>
+
+          <div class="devis__row">
+            <div class="tu-field">
+              <label class="tu-field__label" for="creneau">
+                Durée du créneau disponible
+              </label>
+              <select class="tu-field__control" id="creneau" name="creneau">
+                {creneaux.map((creneau) => (
+                  <option value={creneau}>{creneau}</option>
+                ))}
+              </select>
+            </div>
+            <TextField
+              label="Nombre de groupes à mélanger"
+              name="groupes"
+              placeholder="Ex. 2 familles et des amis"
+            />
+          </div>
+
+          <fieldset class="tu-field devis__choice">
+            <legend class="tu-field__label">Langues parlées par les invités</legend>
+            <div class="devis__checks">
+              {langues.map((langue) => (
+                <label class="devis__check" lang={langue.lang}>
+                  <input
+                    type="checkbox"
+                    name="langues"
+                    value={langue.id}
+                    checked={langue.checked}
+                  />
+                  {langue.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset class="tu-field devis__choice">
+            <legend class="tu-field__label">Équipement déjà présent dans la salle</legend>
+            <div class="devis__checks">
+              {equipements.map((equipement) => (
+                <label class="devis__check">
+                  <input type="checkbox" name="equipement" value={equipement.id} />
+                  {equipement.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div class="tu-field">
+            <label class="tu-field__label" for="message">
+              Votre message
+            </label>
+            <textarea
+              class="tu-field__control"
+              id="message"
+              name="message"
+              rows="4"
+              placeholder="Ce qui compte pour vous, les héros de la fête, le déroulé prévu…"
+            ></textarea>
+          </div>
+        </div>
+
+        <label class="devis__consent">
+          <input type="checkbox" name="consentement" required />
+          <span>
+            J'accepte que Team Up! utilise ces informations pour me recontacter au sujet de ma
+            demande. <a href="/confidentialite">Politique de confidentialité</a>
+          </span>
+        </label>
+
+        <Button type="submit" variant="accent" size="lg" block>
+          Envoyer ma demande
+        </Button>
+      </form>
+
+      <aside class="devis__aside">
+        <div class="devis__card">
+          <h2 class="devis__card-title">Et ensuite ?</h2>
+          <ol class="devis__next">
+            {suites.map((suite, index) => (
+              <li class="devis__next-item">
+                <span class="devis__next-number" aria-hidden="true">
+                  {index + 1}
+                </span>
+                <span class="devis__next-text">
+                  <span class="devis__next-title">{suite.title}</span>
+                  <span class="devis__next-body">{suite.body}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div class="devis__card devis__card--muted">
+          <span class="devis__card-title">Vous préférez en parler ?</span>
+          <p class="devis__contact">[TÉLÉPHONE] · [EMAIL]</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .devis {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-12);
+    padding-block: var(--tu-space-12);
+  }
+
+  .devis__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+    max-width: 44rem;
+  }
+
+  .devis__eyebrow {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--tu-text-muted);
+  }
+
+  .devis__title {
+    font-size: var(--tu-size-3xl);
+  }
+
+  .devis__lead {
+    font-size: var(--tu-size-lg);
+    color: var(--tu-text-muted);
+  }
+
+  .devis__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--tu-space-12);
+    align-items: start;
+  }
+
+  .devis__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-6);
+  }
+
+  .devis__legend {
+    font-size: var(--tu-size-lg);
+  }
+
+  .devis__hint {
+    color: var(--tu-text-muted);
+    font-size: var(--tu-size-sm);
+  }
+
+  .devis__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--tu-space-4);
+  }
+
+  .devis__choice {
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .devis__radios,
+  .devis__checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tu-space-3);
+  }
+
+  .devis__radio,
+  .devis__check {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--tu-space-3);
+    min-height: var(--tu-tap-min);
+    padding-inline: var(--tu-space-4);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-surface);
+    cursor: pointer;
+  }
+
+  .devis__radio:has(input:checked),
+  .devis__check:has(input:checked) {
+    border-color: var(--tu-primary);
+    background: var(--tu-navy-50);
+  }
+
+  .devis__check:lang(ta) {
+    font-family: var(--tu-font-tamil);
+  }
+
+  .devis__optional {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-6);
+    padding: var(--tu-space-6);
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-surface-muted);
+  }
+
+  .devis__optional-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+  }
+
+  .devis__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-4);
+    border-radius: var(--tu-radius-md);
+    border: var(--tu-border-width) solid var(--tu-border);
+    cursor: pointer;
+  }
+
+  .devis__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+    position: sticky;
+    top: calc(var(--tu-header-height) + var(--tu-space-4));
+  }
+
+  .devis__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+    padding: var(--tu-space-6);
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-surface);
+    border: var(--tu-border-width) solid var(--tu-border);
+  }
+
+  .devis__card--muted {
+    background: var(--tu-surface-muted);
+    gap: var(--tu-space-2);
+  }
+
+  .devis__card-title {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-lg);
+    font-weight: 600;
+  }
+
+  .devis__next {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+  }
+
+  .devis__next-item {
+    display: flex;
+    gap: var(--tu-space-3);
+    align-items: flex-start;
+  }
+
+  .devis__next-number {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tu-space-6);
+    height: var(--tu-space-6);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-navy-50);
+    color: var(--tu-primary);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-sm);
+    font-weight: 700;
+  }
+
+  .devis__next-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .devis__next-title {
+    font-weight: 600;
+  }
+
+  .devis__next-body,
+  .devis__contact {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+
+  @media (max-width: 60rem) {
+    .devis__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-8);
+    }
+
+    .devis__aside {
+      position: static;
+    }
+
+    .devis__title {
+      font-size: var(--tu-size-2xl);
+    }
+
+    .devis__lead {
+      font-size: var(--tu-size-base);
+    }
+  }
+</style>
