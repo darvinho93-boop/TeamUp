@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /kit-ui
+
+Sitemap: https://teamup.fr/sitemap-index.xml

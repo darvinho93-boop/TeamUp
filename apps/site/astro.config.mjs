@@ -7,8 +7,8 @@ export default defineConfig({
   output: 'static',
   integrations: [
     sitemap({
-      // La page de démonstration des composants n'a rien à faire dans l'index.
-      filter: (page) => !page.includes('/kit-ui'),
+      // Ni la page de démonstration des composants, ni la page de remerciement.
+      filter: (page) => !page.includes('/kit-ui') && !page.includes('/confirmation'),
     }),
   ],
 });
