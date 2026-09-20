@@ -22,3 +22,6 @@ coverage/
 # Système
 .DS_Store
 Thumbs.db
+
+# Régénéré par Next à chaque dev/build, et son contenu diffère entre les deux.
+apps/app/next-env.d.ts
