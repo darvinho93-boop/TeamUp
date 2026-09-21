@@ -1,0 +1,121 @@
+---
+/**
+ * Le haut d'un téléphone d'invité qui dépasse d'un fond pierre : juste son équipe et
+ * « Regarde l'écran ». Illustration, masquée aux lecteurs d'écran.
+ */
+type Props = {
+  name?: string;
+  team?: string;
+  teamClass?: string;
+  class?: string;
+};
+
+const {
+  name = 'Karim',
+  team = 'Équipe 2',
+  teamClass = 'tu-team--2',
+  class: className,
+} = Astro.props;
+---
+
+<figure class:list={['peek-figure', className]}>
+  <div class="peek" aria-hidden="true">
+    <div class="peek__phone">
+      <span class="peek__hello">Salut {name} · FR</span>
+      <div class={`peek__team ${teamClass}`}>
+        <span class="peek__label">Ton équipe</span>
+        <span class="peek__name">{team}</span>
+      </div>
+      <span class="peek__cue">Regarde l'écran</span>
+    </div>
+  </div>
+  <figcaption class="tu-visually-hidden">
+    Illustration : le téléphone d'un invité affiche son équipe, {team}, et l'invite à regarder
+    l'écran de la salle.
+  </figcaption>
+</figure>
+
+<style>
+  .peek-figure {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .peek {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-radius: var(--tu-screen-radius);
+    background: var(--tu-surface-muted);
+    overflow: hidden;
+  }
+
+  .peek__phone {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+    width: 10.625rem;
+    height: 14.75rem;
+    padding: var(--tu-space-6) var(--tu-space-3) 0;
+    border: calc(var(--tu-device-bezel) - var(--tu-border-width)) solid var(--tu-navy-900);
+    border-bottom: 0;
+    border-radius: var(--tu-radius-xl) var(--tu-radius-xl) 0 0;
+    background: var(--tu-bg);
+  }
+
+  .peek__hello {
+    font-size: 0.625rem;
+    color: var(--tu-text-muted);
+  }
+
+  .peek__team {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-1);
+    padding: var(--tu-space-3);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-team-color);
+    color: var(--tu-team-on);
+  }
+
+  .peek__label {
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .peek__name {
+    font-family: var(--tu-font-display);
+    font-size: 1.1875rem;
+    font-weight: 700;
+  }
+
+  /* Mobile : le téléphone entier, posé sur le fond de page, comme dans la maquette. */
+  @media (max-width: 60rem) {
+    .peek {
+      background: none;
+    }
+
+    .peek__phone {
+      height: auto;
+      padding-bottom: var(--tu-space-4);
+      border-bottom: calc(var(--tu-device-bezel) - var(--tu-border-width)) solid var(--tu-navy-900);
+      border-radius: var(--tu-radius-xl);
+    }
+  }
+
+  .peek__cue {
+    padding: var(--tu-space-2);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-sm);
+    background: var(--tu-surface);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-xs);
+    font-weight: 600;
+    text-align: center;
+  }
+</style>

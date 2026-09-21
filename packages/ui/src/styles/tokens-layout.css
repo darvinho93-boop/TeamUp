@@ -56,6 +56,7 @@
   --tu-screen-type-xl: 2.5rem; /* chrono */
   --tu-screen-type-lg: 1.625rem; /* question, sujet */
   --tu-screen-type-md: 1.125rem;
+  --tu-screen-type-live: 4.5rem; /* chrono du Mime, Comment ça marche */
   --tu-screen-type-sm: var(--tu-size-base);
 
   /* Rayon et cadre du téléphone d'illustration. */
@@ -117,6 +118,7 @@
     --tu-screen-type-xl: 1.625rem;
     --tu-screen-type-lg: 1.0625rem;
     --tu-screen-type-md: 0.875rem;
+    --tu-screen-type-live: var(--tu-size-4xl);
     --tu-screen-type-sm: var(--tu-size-xs);
 
     --tu-type-display: 2.25rem;

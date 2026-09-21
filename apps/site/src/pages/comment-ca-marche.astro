@@ -4,11 +4,11 @@ import PageIntro from '../components/layout/PageIntro.astro';
 import Section from '../components/layout/Section.astro';
 import StepList from '../components/layout/StepList.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
-import IconList from '../components/layout/IconList.astro';
+import Equipment from '../components/layout/Equipment.astro';
+import Icon from '../components/Icon.astro';
 import ScreenMimeLive from '../components/visuels/ScreenMimeLive.astro';
-import PhoneWaiting from '../components/visuels/PhoneWaiting.astro';
+import PhonePeek from '../components/visuels/PhonePeek.astro';
 import RegiePanel from '../components/visuels/RegiePanel.astro';
-import { fourni, surPlace } from '../data/equipement';
 
 const avant = [
   {
@@ -55,6 +55,7 @@ const durees = [
   description="De la demande de devis au podium : vous décrivez l'événement, on prépare tout avec vous, un animateur fait jouer la salle. Rien à installer."
 >
   <PageIntro
+    wide
     eyebrow="Comment ça marche"
     title="De la demande de devis au podium."
     lead="Vous nous décrivez l'événement, on prépare tout avec vous, et le jour venu un animateur Team Up! fait jouer la salle. Vous n'avez rien à installer."
@@ -67,7 +68,7 @@ const durees = [
   <Section eyebrow="Pendant la soirée" title="Un écran, des téléphones, un animateur.">
     <div class="surfaces">
       <article class="surface">
-        <ScreenMimeLive />
+        <ScreenMimeLive class="surface__visual" />
         <h3 class="surface__title">L'écran de la salle</h3>
         <p class="surface__body">
           Projeté en grand : règles, chronos, scores et révélations. C'est lui que tout le monde
@@ -76,7 +77,7 @@ const durees = [
       </article>
 
       <article class="surface">
-        <PhoneWaiting name="Karim" team="Équipe 2" teamClass="tu-team--2" />
+        <PhonePeek class="surface__visual" />
         <h3 class="surface__title">Le téléphone des invités</h3>
         <p class="surface__body">
           On rejoint la partie en scannant un QR code. Ensuite, il reste presque toujours en poche.
@@ -84,7 +85,7 @@ const durees = [
       </article>
 
       <article class="surface">
-        <RegiePanel />
+        <RegiePanel class="surface__visual" />
         <h3 class="surface__title">L'animateur et sa régie</h3>
         <p class="surface__body">
           Il tient la salle au micro et pilote chaque étape depuis une tablette.
@@ -93,12 +94,13 @@ const durees = [
     </div>
   </Section>
 
-  <Section eyebrow="Le déroulé" title="Du QR code au podium.">
+  <Section eyebrow="Le déroulé" title="Du QR code au podium." tone="dark">
     <ol class="flow">
       {deroule.map((step, index) => (
         <li class="flow__step">
-          <span class="flow__number" aria-hidden="true">
-            {index + 1}
+          <span class="flow__head" aria-hidden="true">
+            {index > 0 && <Icon name="arrow" size="sm" class="flow__arrow" />}
+            <span class="flow__number">{index + 1}</span>
           </span>
           <span class="flow__label">{step}</span>
         </li>
@@ -114,8 +116,9 @@ const durees = [
     eyebrow="Combien de temps ?"
     title="Tout dépend du nombre d'équipes."
     lead="Deux jeux se jouent équipe par équipe : chaque équipe en plus ajoute du temps. Une équipe compte environ [TAILLE D'ÉQUIPE] personnes."
+    layout="aside"
   >
-    <div class="durees">
+    <div class="tu-panel durees">
       <table class="durees__table">
         <thead>
           <tr>
@@ -128,10 +131,15 @@ const durees = [
         <tbody>
           {durees.map((row) => (
             <tr>
-              <th scope="row">{row.teams}</th>
-              <td data-label="Durée de jeu">{row.jeu}</td>
-              <td data-label="Créneau">{row.creneau}</td>
-              <td data-label="Programme">{row.programme}</td>
+              <th scope="row" class="durees__teams">
+                {row.teams}
+              </th>
+              <td class="durees__jeu">
+                <span class="durees__prefix">jeu </span>
+                {row.jeu}
+              </td>
+              <td class="durees__creneau">{row.creneau}</td>
+              <td class="durees__programme">{row.programme}</td>
             </tr>
           ))}
         </tbody>
@@ -139,12 +147,11 @@ const durees = [
     </div>
   </Section>
 
-  <Section>
-    <div class="equipement">
-      <IconList title="Ce que nous apportons" items={fourni} />
-      <IconList title="Ce qu'il faut sur place" items={surPlace} />
+  <section class="equipment-section">
+    <div class="tu-container">
+      <Equipment />
     </div>
-  </Section>
+  </section>
 
   <CtaBanner title="Première étape : nous décrire votre événement." />
 </Base>
@@ -152,7 +159,7 @@ const durees = [
 <style>
   .surfaces {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--tu-space-8);
     align-items: start;
   }
@@ -160,12 +167,21 @@ const durees = [
   .surface {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-3);
+    gap: var(--tu-space-4);
+  }
+
+  .surface :global(.surface__visual) {
+    height: 16.25rem;
+    margin-bottom: var(--tu-space-1);
+  }
+
+  /* Posé à plat dans la grille : ni ombre, ni grand rayon. */
+  .surface :global(.surface__visual .screen) {
+    box-shadow: none;
   }
 
   .surface__title {
-    font-size: var(--tu-size-lg);
-    margin-top: var(--tu-space-2);
+    font-size: 1.375rem;
   }
 
   .surface__body {
@@ -174,49 +190,50 @@ const durees = [
 
   .flow {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--tu-space-3);
+    gap: var(--tu-space-5);
   }
 
   .flow__step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
+  .flow__head {
     display: flex;
     align-items: center;
     gap: var(--tu-space-3);
-    flex: 1 1 12rem;
-    padding: var(--tu-space-4);
-    border-radius: var(--tu-radius-md);
-    background: var(--tu-surface);
-    border: var(--tu-border-width) solid var(--tu-border);
+  }
+
+  /* La flèche se place dans la gouttière, avant le chiffre, comme dans la maquette. */
+  .flow__head :global(.flow__arrow) {
+    margin-left: calc(-1 * (var(--tu-space-4) + var(--tu-space-3)));
+    color: var(--tu-text-muted);
   }
 
   .flow__number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: none;
-    width: var(--tu-space-6);
-    height: var(--tu-space-6);
-    border-radius: var(--tu-radius-pill);
-    background: var(--tu-primary);
-    color: var(--tu-on-primary);
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
+    font-size: 2.5rem;
     font-weight: 700;
+    line-height: 1;
+    color: var(--tu-primary);
   }
 
   .flow__label {
     font-family: var(--tu-font-display);
+    font-size: 1.125rem;
     font-weight: 600;
-    font-size: var(--tu-size-sm);
+    line-height: 1.3;
   }
 
   .flow__note {
+    max-width: 47.5rem;
     color: var(--tu-text-muted);
-    max-width: 62ch;
   }
 
   .durees {
-    overflow-x: auto;
+    overflow: hidden;
   }
 
   .durees__table {
@@ -227,69 +244,157 @@ const durees = [
 
   .durees__table th,
   .durees__table td {
-    padding: var(--tu-space-4);
-    border-bottom: var(--tu-border-width) solid var(--tu-border);
+    padding: 1.125rem var(--tu-space-5);
     text-align: start;
+    font-size: var(--tu-type-body-lg);
+  }
+
+  .durees__table thead tr {
+    background: var(--tu-surface-muted);
   }
 
   .durees__table thead th {
-    font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
-    text-transform: uppercase;
+    padding-block: var(--tu-space-4);
+    font-size: var(--tu-type-caption);
+    font-weight: 600;
     letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--tu-text-muted);
   }
 
-  .durees__table tbody th {
+  .durees__table tbody tr {
+    border-top: var(--tu-border-width) solid var(--tu-border);
+  }
+
+  .durees__teams {
     font-family: var(--tu-font-display);
+    font-size: var(--tu-size-lg);
+    font-weight: 700;
+  }
+
+  .durees__prefix {
+    display: none;
+  }
+
+  .durees__creneau {
     font-weight: 600;
   }
 
-  .equipement {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--tu-space-4);
+  .durees__table .durees__programme {
+    font-size: var(--tu-size-base);
+    color: var(--tu-text-muted);
   }
 
-  /* Sous 60 rem le tableau se lit en cartes : chaque cellule porte son intitulé. */
+  .equipment-section {
+    padding-bottom: var(--tu-section-space);
+  }
+
   @media (max-width: 60rem) {
-    .durees__table,
-    .durees__table tbody,
-    .durees__table tr,
-    .durees__table td,
-    .durees__table tbody th {
-      display: block;
+    .surfaces {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-8);
     }
 
+    .surface {
+      gap: var(--tu-space-3);
+    }
+
+    .surface :global(.surface__visual) {
+      height: auto;
+      min-height: 12.5rem;
+    }
+
+    .surface :global(.surface__visual.peek-figure) {
+      min-height: 0;
+    }
+
+    .surface__title {
+      font-size: var(--tu-size-lg);
+    }
+
+    .flow {
+      flex-direction: column;
+      gap: var(--tu-space-4);
+    }
+
+    .flow__step {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--tu-space-4);
+    }
+
+    .flow__head :global(.flow__arrow) {
+      display: none;
+    }
+
+    .flow__number {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--tu-space-8);
+      height: var(--tu-space-8);
+      border-radius: var(--tu-radius-pill);
+      background: var(--tu-surface);
+      font-size: var(--tu-size-sm);
+    }
+
+    .flow__label {
+      font-family: var(--tu-font-body);
+      font-size: var(--tu-size-base);
+      font-weight: 500;
+    }
+
+    /* Sous 60 rem, chaque ligne devient une carte : équipes et programme à gauche,
+             créneau et durée de jeu à droite. */
     .durees__table thead {
       display: none;
     }
 
-    .durees__table tr {
-      margin-bottom: var(--tu-space-3);
-      border: var(--tu-border-width) solid var(--tu-border);
-      border-radius: var(--tu-radius-md);
-      background: var(--tu-surface);
-      overflow: hidden;
+    .durees__table,
+    .durees__table tbody {
+      display: block;
     }
 
-    .durees__table tbody th {
-      background: var(--tu-surface-muted);
-      border-bottom: var(--tu-border-width) solid var(--tu-border);
+    .durees__table tbody tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'teams creneau'
+        'programme jeu';
+      column-gap: var(--tu-space-4);
+      padding: var(--tu-space-4) 1.125rem;
     }
 
+    .durees__table th,
     .durees__table td {
-      display: flex;
-      justify-content: space-between;
-      gap: var(--tu-space-4);
-      border-bottom: none;
-      padding-block: var(--tu-space-2);
+      padding: 0;
     }
 
-    .durees__table td::before {
-      content: attr(data-label);
+    .durees__teams {
+      grid-area: teams;
+      font-size: 1.125rem;
+    }
+
+    .durees__creneau {
+      grid-area: creneau;
+      text-align: end;
+    }
+
+    .durees__table .durees__jeu {
+      grid-area: jeu;
+      font-size: var(--tu-type-caption);
       color: var(--tu-text-muted);
-      font-size: var(--tu-size-sm);
+      text-align: end;
+    }
+
+    .durees__prefix {
+      display: inline;
+    }
+
+    .durees__table .durees__programme {
+      grid-area: programme;
+      font-size: var(--tu-type-caption);
     }
   }
 </style>

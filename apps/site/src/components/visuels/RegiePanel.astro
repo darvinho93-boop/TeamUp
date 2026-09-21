@@ -15,7 +15,9 @@ const steps = ['Afficher', 'Masquer', 'Lancer', 'Indice', 'Valider', 'Échec'];
     <div class="regie__body">
       <div class="regie__steps">
         {steps.map((step) => (
-          <span class="regie__step">{step}</span>
+          <span class:list={['regie__step', step === 'Lancer' && 'regie__step--active']}>
+            {step}
+          </span>
         ))}
       </div>
       <div class="regie__timer">
@@ -32,18 +34,22 @@ const steps = ['Afficher', 'Masquer', 'Lancer', 'Indice', 'Valider', 'Échec'];
 
 <style>
   .regie-figure {
+    display: flex;
+    flex-direction: column;
     margin: 0;
     min-width: 0;
   }
 
   .regie {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    border-radius: var(--tu-radius-lg);
-    background: var(--tu-bg);
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-5);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-screen-radius);
+    background: var(--tu-surface);
     color: var(--tu-text);
-    box-shadow: var(--tu-shadow-lift);
-    overflow: hidden;
   }
 
   .regie__bar {
@@ -51,25 +57,15 @@ const steps = ['Afficher', 'Masquer', 'Lancer', 'Indice', 'Valider', 'Échec'];
     align-items: center;
     justify-content: space-between;
     gap: var(--tu-space-4);
-    padding: var(--tu-space-3) var(--tu-space-4);
-    background: var(--tu-surface);
-    border-bottom: var(--tu-border-width) solid var(--tu-border);
     font-size: var(--tu-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: var(--tu-text-muted);
   }
 
-  .regie__team {
-    color: var(--tu-primary);
-    font-weight: 600;
-  }
-
   .regie__body {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
-    padding: var(--tu-space-6);
+    gap: var(--tu-space-3);
   }
 
   .regie__steps {
@@ -83,12 +79,19 @@ const steps = ['Afficher', 'Masquer', 'Lancer', 'Indice', 'Valider', 'Échec'];
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: var(--tu-tap-min);
+    min-height: 2.75rem;
+    border: var(--tu-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-md);
     background: var(--tu-surface);
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-type-caption);
     font-weight: 600;
+  }
+
+  .regie__step--active {
+    border-color: transparent;
+    background: var(--tu-primary);
+    color: var(--tu-on-primary);
   }
 
   .regie__timer {
@@ -96,16 +99,17 @@ const steps = ['Afficher', 'Masquer', 'Lancer', 'Indice', 'Valider', 'Échec'];
     align-items: baseline;
     justify-content: space-between;
     gap: var(--tu-space-3);
+    margin-top: auto;
   }
 
   .regie__label {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-size-xs);
     color: var(--tu-text-muted);
   }
 
   .regie__value {
     font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-2xl);
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--tu-primary);
   }

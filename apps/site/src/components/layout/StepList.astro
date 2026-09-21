@@ -146,28 +146,27 @@ const Heading = headingLevel;
       gap: var(--tu-space-3);
     }
 
+    /* En mobile, les cartes numérotées redeviennent une liste, comme dans la maquette. */
     .steps--cards .steps__item {
-      flex-direction: row;
-      padding: var(--tu-space-5);
+      padding: 0;
+      border: none;
+      background: none;
     }
 
-    .steps--cards .steps__number,
-    .steps--plain .steps__number {
-      flex: none;
-      width: var(--tu-space-9);
-      height: var(--tu-space-9);
-    }
-
+    .steps--cards,
     .steps--plain {
       gap: var(--tu-space-5);
     }
 
+    .steps--cards .steps__item,
     .steps--plain .steps__item {
       flex-direction: row;
       gap: var(--tu-space-3);
     }
 
+    .steps--cards .steps__number,
     .steps--plain .steps__number {
+      flex: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -181,10 +180,12 @@ const Heading = headingLevel;
       font-weight: 700;
     }
 
+    .steps--cards .steps__body,
     .steps--plain .steps__body {
       gap: var(--tu-space-1);
     }
 
+    .steps--cards .steps__text,
     .steps--plain .steps__text {
       font-size: var(--tu-btn-sm-font);
     }
@@ -193,6 +194,7 @@ const Heading = headingLevel;
       font-size: var(--tu-size-base);
     }
 
+    .steps--cards .steps__title,
     .steps--plain .steps__title {
       font-size: var(--tu-type-body-lg);
     }

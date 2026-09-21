@@ -13,8 +13,7 @@ const scores = [
 ---
 
 <ScreenFrame
-  label="Écran de la salle · Mime"
-  meta="Équipe 2"
+  label="Mime · Équipe 2"
   caption="Illustration : pendant un passage de Mime, l'écran affiche le chrono et les scores des quatre équipes."
   class={className}
 >
@@ -22,8 +21,8 @@ const scores = [
   <div class="live__scores">
     {scores.map((score) => (
       <span class={`live__score ${score.teamClass}`}>
-        <span class="live__dot" />
-        {score.label} · {score.value}
+        {score.label}
+        <span class="live__value"> · {score.value}</span>
       </span>
     ))}
   </div>
@@ -31,37 +30,42 @@ const scores = [
 
 <style>
   .live__timer {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-4xl);
+    font-size: var(--tu-screen-type-live);
     font-weight: 700;
-    line-height: var(--tu-leading-tight);
-    text-align: center;
+    line-height: 1;
     color: var(--tu-primary);
   }
 
   .live__scores {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--tu-space-2);
     justify-content: center;
+    gap: var(--tu-space-2);
   }
 
   .live__score {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--tu-space-2);
-    padding: var(--tu-space-2) var(--tu-space-3);
+    padding: var(--tu-space-1) var(--tu-space-3);
     border-radius: var(--tu-radius-pill);
-    background: var(--tu-surface);
-    font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-sm);
+    background: var(--tu-team-color);
+    color: var(--tu-team-on);
+    font-size: 0.6875rem;
     font-weight: 600;
   }
 
-  .live__dot {
-    width: var(--tu-space-2);
-    height: var(--tu-space-2);
-    border-radius: var(--tu-radius-pill);
-    background: var(--tu-team-color);
+  /* L'équipe navy se confondrait avec le fond marine : sa pastille passe au bleu vif. */
+  .live__score.tu-team--1 {
+    --tu-team-color: var(--tu-navy-500);
+    --tu-team-on: var(--tu-text);
+  }
+
+  @media (max-width: 60rem) {
+    .live__value {
+      display: none;
+    }
   }
 </style>
