@@ -1,8 +1,12 @@
 ---
 import ScreenFrame from './ScreenFrame.astro';
 
-type Props = { class?: string };
-const { class: className } = Astro.props;
+type Props = {
+  /** Accueil : « Quiz · question 2 / 4 ». Les jeux : « Écran de la salle · Quiz ». */
+  label?: string;
+  class?: string;
+};
+const { label = 'Quiz · question 2 / 4', class: className } = Astro.props;
 
 const answers = [
   { key: 'A', label: '6' },
@@ -13,7 +17,7 @@ const answers = [
 ---
 
 <ScreenFrame
-  label="Quiz · question 2 / 4"
+  label={label}
   caption="Illustration : l'écran de la salle affiche une question de quiz et ses quatre réponses, disposées comme les quatre zones tracées au sol."
   class={className}
 >

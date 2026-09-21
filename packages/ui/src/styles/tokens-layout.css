@@ -56,6 +56,7 @@
   --tu-screen-type-xl: 2.5rem; /* chrono */
   --tu-screen-type-lg: 1.625rem; /* question, sujet */
   --tu-screen-type-md: 1.125rem;
+  --tu-screen-type-sm: var(--tu-size-base);
 
   /* Rayon et cadre du téléphone d'illustration. */
   --tu-radius-xl: 2rem;
@@ -69,6 +70,7 @@
   --tu-visual-phone-zoom: 1; /* 0,76 en mobile : 180 px sur 236 dans les maquettes */
   --tu-visual-stage-height: 35rem;
   --tu-door-visual-height: 16.25rem;
+  --tu-game-visual-height: 26.25rem;
   --tu-ranking-bar: 2.125rem;
   --tu-join-qr: 10.5rem; /* QR 150 px + 12 px de marge blanche */
   --tu-join-code-lg: var(--tu-size-4xl);
@@ -115,6 +117,7 @@
     --tu-screen-type-xl: 1.625rem;
     --tu-screen-type-lg: 1.0625rem;
     --tu-screen-type-md: 0.875rem;
+    --tu-screen-type-sm: var(--tu-size-xs);
 
     --tu-type-display: 2.25rem;
     --tu-type-page: 2.125rem;
@@ -134,6 +137,7 @@
     --tu-visual-phone-zoom: 0.76;
     --tu-visual-stage-height: 28.75rem;
     --tu-door-visual-height: 12.5rem;
+    --tu-game-visual-height: 14.375rem;
     --tu-ranking-bar: var(--tu-space-6);
     --tu-join-qr: 8rem;
     --tu-join-code-lg: var(--tu-size-2xl);

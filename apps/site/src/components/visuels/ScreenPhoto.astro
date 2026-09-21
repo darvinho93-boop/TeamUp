@@ -25,7 +25,7 @@ const shots = [
   <div class="photo__grid">
     {shots.map((shot) => (
       <div class:list={['photo__shot', shot.winner && 'photo__shot--winner']}>
-        <Icon name="image" size="md" class="photo__icon" />
+        <Icon name="camera" size="md" class="photo__icon" />
         <span class="photo__team">{shot.team}</span>
         {shot.winner && <span class="photo__badge">Gagnante</span>}
       </div>

@@ -9,10 +9,19 @@ type Props = {
 
 const { variant = 'jeu', class: className } = Astro.props;
 
+/** En mobile, seul le multiplicateur reste, comme dans la maquette. */
 const tiers =
   variant === 'consigne'
-    ? ['Palier 1 · 60 s · ×3', 'Palier 2 · 35 s · ×2', 'Palier 3 · 35 s · ×1']
-    : ['Palier 1 · ×3', 'Palier 2 · ×2', 'Palier 3 · ×1'];
+    ? [
+        { prefix: 'Palier 1 · 60 s · ', factor: '×3' },
+        { prefix: 'Palier 2 · 35 s · ', factor: '×2' },
+        { prefix: 'Palier 3 · 35 s · ', factor: '×1' },
+      ]
+    : [
+        { prefix: 'Palier 1 · ', factor: '×3' },
+        { prefix: 'Palier 2 · ', factor: '×2' },
+        { prefix: 'Palier 3 · ', factor: '×1' },
+      ];
 ---
 
 <ScreenFrame
@@ -39,7 +48,10 @@ const tiers =
   )}
   <div class="pc__tiers">
     {tiers.map((tier) => (
-      <span class="pc__tier">{tier}</span>
+      <span class="pc__tier">
+        <span class="pc__tier-prefix">{tier.prefix}</span>
+        {tier.factor}
+      </span>
     ))}
   </div>
 </ScreenFrame>
@@ -57,7 +69,7 @@ const tiers =
   }
 
   .pc__hint {
-    font-size: var(--tu-size-base);
+    font-size: var(--tu-screen-type-sm);
     color: var(--tu-text-muted);
   }
 
@@ -103,5 +115,11 @@ const tiers =
     background: var(--tu-primary);
     color: var(--tu-on-primary);
     font-weight: 600;
+  }
+
+  @media (max-width: 60rem) {
+    .pc__tier-prefix {
+      display: none;
+    }
   }
 </style>

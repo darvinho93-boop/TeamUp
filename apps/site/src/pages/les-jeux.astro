@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageIntro from '../components/layout/PageIntro.astro';
-import Section from '../components/layout/Section.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
 import GameDetail from '../components/jeux/GameDetail.astro';
 import ScreenPointsCommuns from '../components/visuels/ScreenPointsCommuns.astro';
@@ -17,6 +16,7 @@ import { duels, games } from '../data/jeux';
   description="Points communs, Quiz, Surenchère, Mime, Photo challenge : cinq jeux qui se jouent debout, dans la salle, et s'expliquent en une phrase."
 >
   <PageIntro
+    wide
     eyebrow="Les jeux"
     title="Cinq jeux pensés pour la salle, pas pour l'écran."
     lead="Chaque jeu s'explique en une phrase et se joue debout. Le téléphone ne sert qu'à porter un secret ou à envoyer une photo."
@@ -66,7 +66,7 @@ import { duels, games } from '../data/jeux';
       { label: 'Téléphone', value: 'Seulement si la salle est trop petite' },
     ]}
   >
-    <ScreenQuiz />
+    <ScreenQuiz label="Écran de la salle · Quiz" />
   </GameDetail>
 
   <GameDetail
@@ -128,21 +128,24 @@ import { duels, games } from '../data/jeux';
     <ScreenPhoto />
   </GameDetail>
 
-  <Section
-    eyebrow="En option"
-    title="Les duels en un contre un"
-    lead="Pour relancer la salle sur les créneaux de 60 minutes."
-  >
-    <div class="duels">
-      {duels.map((duel) => (
-        <article class="duel">
-          <h3 class="duel__title">{duel.title}</h3>
-          <p class="duel__body">{duel.body}</p>
-          <p class="duel__duration">{duel.duration}</p>
-        </article>
-      ))}
+  <section class="duels-section">
+    <div class="tu-container">
+      <div class="tu-panel duels">
+        <div class="duels__intro">
+          <p class="tu-eyebrow tu-eyebrow--navy">En option</p>
+          <h2 class="duels__title">Les duels en un contre un</h2>
+          <p class="duels__lead">Pour relancer la salle sur les créneaux de 60 minutes.</p>
+        </div>
+        {duels.map((duel) => (
+          <article class="duel">
+            <h3 class="duel__title">{duel.title}</h3>
+            <p class="duel__body">{duel.body}</p>
+            <p class="duel__duration">{duel.duration}</p>
+          </article>
+        ))}
+      </div>
     </div>
-  </Section>
+  </section>
 
   <CtaBanner title="On compose votre programme ensemble." />
 </Base>
@@ -151,19 +154,19 @@ import { duels, games } from '../data/jeux';
   .toc {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--tu-space-2);
+    gap: var(--tu-space-3);
   }
 
   .toc__link {
     display: inline-flex;
     align-items: center;
-    padding: var(--tu-space-2) var(--tu-space-4);
+    min-height: var(--tu-space-12);
+    padding-inline: var(--tu-space-5);
+    border: var(--tu-btn-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-pill);
-    border: var(--tu-border-width) solid var(--tu-border);
     background: var(--tu-surface);
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-btn-sm-font);
     font-weight: 600;
     text-decoration: none;
   }
@@ -172,33 +175,74 @@ import { duels, games } from '../data/jeux';
     border-color: var(--tu-primary);
   }
 
-  .duels {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--tu-space-4);
+  .duels-section {
+    padding-bottom: var(--tu-section-space);
   }
 
+  .duels {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--tu-space-12);
+    align-items: start;
+    padding: var(--tu-space-14) var(--tu-space-16);
+  }
+
+  .duels__intro,
   .duel {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-2);
-    padding: var(--tu-space-6);
-    border-radius: var(--tu-radius-lg);
-    background: var(--tu-surface);
-    border: var(--tu-border-width) solid var(--tu-border);
+    gap: var(--tu-space-3);
   }
 
-  .duel__title {
-    font-size: var(--tu-size-lg);
+  .duels__title {
+    font-size: var(--tu-size-2xl);
   }
 
+  .duels__lead,
   .duel__body {
     color: var(--tu-text-muted);
   }
 
+  .duel__title {
+    font-size: 1.3125rem;
+  }
+
   .duel__duration {
-    font-family: var(--tu-font-numeric);
     font-size: var(--tu-size-sm);
     font-weight: 600;
+  }
+
+  @media (max-width: 60rem) {
+    .toc__link {
+      padding-inline: var(--tu-space-4);
+    }
+
+    .duels {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding: var(--tu-space-6) 1.375rem;
+    }
+
+    .duels__intro {
+      padding-bottom: var(--tu-space-5);
+    }
+
+    .duels__title {
+      font-size: var(--tu-size-xl);
+    }
+
+    .duel {
+      gap: var(--tu-space-2);
+      padding-block: var(--tu-space-5);
+      border-top: var(--tu-border-width) solid var(--tu-border);
+    }
+
+    .duel:last-child {
+      padding-bottom: 0;
+    }
+
+    .duel__title {
+      font-size: var(--tu-size-lg);
+    }
   }
 </style>

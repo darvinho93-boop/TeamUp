@@ -5,13 +5,15 @@ type Props = {
   lead?: string;
   /** Taille du titre : l'accueil, les pages intérieures, les formulaires, les pages légales. */
   size?: 'display' | 'page' | 'page-sm' | 'page-xs';
+  /** Titre et chapeau sur une seule colonne large, sans visuel (Les jeux, Comment ça marche). */
+  wide?: boolean;
 };
 
-const { eyebrow, title, lead, size = 'page' } = Astro.props;
+const { eyebrow, title, lead, size = 'page', wide = false } = Astro.props;
 const hasVisual = Astro.slots.has('visual');
 ---
 
-<section class:list={['intro', hasVisual && 'intro--split']}>
+<section class:list={['intro', hasVisual && 'intro--split', wide && 'intro--wide']}>
   <div class="tu-container intro__inner">
     <div class="intro__text">
       {eyebrow && <p class="tu-eyebrow">{eyebrow}</p>}
@@ -77,6 +79,14 @@ const hasVisual = Astro.slots.has('visual');
 
   .intro__lead {
     max-width: 38rem;
+  }
+
+  .intro--wide .intro__title {
+    max-width: 56.25rem;
+  }
+
+  .intro--wide .intro__lead {
+    max-width: 47.5rem;
   }
 
   .intro__actions {

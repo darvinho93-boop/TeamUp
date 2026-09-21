@@ -48,41 +48,50 @@ const { id, number, title, lead, steps, facts, reversed = false } = Astro.props;
 
 <style>
   .game {
-    padding-block: var(--tu-space-12);
+    padding-bottom: var(--tu-section-space);
     scroll-margin-top: var(--tu-header-height);
   }
 
   .game__inner {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: center;
-    gap: var(--tu-space-12);
+    gap: var(--tu-space-20);
   }
 
   .game--reversed .game__visual {
     order: -1;
   }
 
+  .game__visual {
+    display: flex;
+    flex-direction: column;
+    min-height: var(--tu-game-visual-height);
+  }
+
+  .game__visual > :global(*) {
+    flex: 1;
+  }
+
   .game__text {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
+    gap: var(--tu-space-6);
   }
 
   .game__number {
-    font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-sm);
+    font-family: var(--tu-font-display);
     font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--tu-text-muted);
+    color: var(--tu-success-text);
   }
 
   .game__title {
-    font-size: var(--tu-size-2xl);
+    font-size: 2.5rem;
+    line-height: 1.1;
   }
 
   .game__lead {
-    font-size: var(--tu-size-lg);
+    font-size: 1.1875rem;
     color: var(--tu-text-muted);
   }
 
@@ -90,6 +99,8 @@ const { id, number, title, lead, steps, facts, reversed = false } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-3);
+    font-size: var(--tu-type-body-lg);
+    line-height: 1.5;
   }
 
   .game__step {
@@ -98,39 +109,42 @@ const { id, number, title, lead, steps, facts, reversed = false } = Astro.props;
     align-items: flex-start;
   }
 
+  .game__step > span:last-child {
+    padding-top: var(--tu-space-1);
+  }
+
   .game__step-number {
     flex: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--tu-space-6);
-    height: var(--tu-space-6);
+    width: var(--tu-space-8);
+    height: var(--tu-space-8);
     border-radius: var(--tu-radius-pill);
-    background: var(--tu-navy-50);
-    color: var(--tu-primary);
+    background: var(--tu-sage-50);
+    color: var(--tu-success-text);
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-btn-sm-font);
     font-weight: 700;
   }
 
   .game__facts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: var(--tu-space-3);
-    margin-top: var(--tu-space-2);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--tu-space-6);
+    padding-top: var(--tu-space-5);
+    border-top: var(--tu-border-width) solid var(--tu-border);
   }
 
   .game__fact {
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-1);
-    padding: var(--tu-space-3) var(--tu-space-4);
-    border-radius: var(--tu-radius-md);
-    background: var(--tu-surface-muted);
   }
 
   .game__fact-label {
     font-size: var(--tu-size-xs);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--tu-text-muted);
@@ -138,13 +152,14 @@ const { id, number, title, lead, steps, facts, reversed = false } = Astro.props;
 
   .game__fact-value {
     margin: 0;
+    font-size: var(--tu-btn-sm-font);
     font-weight: 600;
   }
 
   @media (max-width: 60rem) {
     .game__inner {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-8);
+      gap: var(--tu-space-6);
     }
 
     /* Sur mobile, le visuel passe toujours en premier : il explique le jeu. */
@@ -153,12 +168,45 @@ const { id, number, title, lead, steps, facts, reversed = false } = Astro.props;
       order: -1;
     }
 
+    .game__text {
+      gap: var(--tu-space-4);
+    }
+
     .game__title {
-      font-size: var(--tu-size-xl);
+      font-size: 1.75rem;
     }
 
     .game__lead {
       font-size: var(--tu-size-base);
+    }
+
+    .game__steps {
+      font-size: var(--tu-btn-sm-font);
+    }
+
+    /* Les repères passent en lignes : libellé à gauche, valeur à droite. */
+    .game__facts {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-1);
+      padding-top: var(--tu-space-4);
+    }
+
+    .game__fact {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: var(--tu-space-4);
+    }
+
+    .game__fact-label {
+      font-size: var(--tu-size-sm);
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .game__fact-value {
+      font-size: var(--tu-size-sm);
+      text-align: end;
     }
   }
 </style>
