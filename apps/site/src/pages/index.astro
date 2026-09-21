@@ -7,6 +7,7 @@ import StepList from '../components/layout/StepList.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
 import GameCard from '../components/jeux/GameCard.astro';
 import Icon from '../components/Icon.astro';
+import Stage from '../components/visuels/Stage.astro';
 import ScreenQuiz from '../components/visuels/ScreenQuiz.astro';
 import ScreenPodium from '../components/visuels/ScreenPodium.astro';
 import ScreenJoin from '../components/visuels/ScreenJoin.astro';
@@ -34,24 +35,26 @@ const steps = [
   description="Animation de soirée en salle : un animateur Team Up! fait jouer vos invités en équipes mélangées. Anniversaires, mariages, séminaires, team building."
 >
   <PageIntro
+    size="display"
     eyebrow="Animation de soirée · particuliers et entreprises"
     title="Vos invités arrivent en groupes. Ils repartent en équipe."
     lead="Un animateur Team Up! fait jouer toute la salle : cinq jeux, un grand écran, des équipes qui mélangent familles, amis ou collègues."
   >
     <Fragment slot="actions">
-      <Button href="/devis" variant="accent" size="lg">
+      <Button href="/devis" variant="accent" size="cta">
         Demander un devis
       </Button>
-      <Button href="/les-jeux" variant="ghost" size="lg">
+      <Button href="/les-jeux" variant="outline" size="cta">
         Voir les jeux
       </Button>
     </Fragment>
     <p slot="footnote" class="intro-note">
       Anniversaires · mariages · fêtes de famille · séminaires · team building
     </p>
-    <Fragment slot="visual">
-      <ScreenQuiz />
+    <Stage slot="visual">
+      <ScreenQuiz slot="screen" />
       <PhoneWaiting
+        slot="phone"
         name="Léa"
         team="Équipe 3"
         teamClass="tu-team--3"
@@ -59,48 +62,52 @@ const steps = [
         score="240 pts"
         next="Prochain jeu : Mime"
       />
-    </Fragment>
+    </Stage>
   </PageIntro>
 
-  <Section tone="muted">
-    <div class="doors">
-      <div class="door">
-        <ScreenPodium />
+  <section class="doors-section">
+    <div class="tu-container doors">
+      <article class="tu-panel door">
+        <ScreenPodium flat class="door__visual" />
         <div class="door__text">
-          <p class="door__eyebrow">Particuliers</p>
-          <h2 class="door__title">
+          <p class="tu-eyebrow tu-eyebrow--sage">Particuliers</p>
+          <h2 class="tu-subtitle">
             Les deux familles ne se connaissent pas ? Elles vont jouer ensemble.
           </h2>
-          <p class="door__body">
+          <p class="tu-body-lg">
             Anniversaire, mariage, anniversaire de mariage, fête de famille. On mélange les tablées,
             même quand tout le monde ne parle pas la même langue.
           </p>
-          <a class="door__link" href="/particuliers">
+          <a class="tu-arrow-link" href="/particuliers">
             Découvrir l'offre particuliers
             <Icon name="arrow" size="sm" />
           </a>
         </div>
-      </div>
+      </article>
 
-      <div class="door door--reversed">
-        <ScreenJoin connected="38 joueurs connectés" />
+      <article class="tu-panel door">
+        <ScreenJoin flat connected="38 joueurs connectés" class="door__visual" />
         <div class="door__text">
-          <p class="door__eyebrow">Entreprises</p>
-          <h2 class="door__title">Des services qui ne se croisent jamais, dans la même équipe.</h2>
-          <p class="door__body">
+          <p class="tu-eyebrow tu-eyebrow--navy">Entreprises</p>
+          <h2 class="tu-subtitle">Des services qui ne se croisent jamais, dans la même équipe.</h2>
+          <p class="tu-body-lg">
             Team building, séminaire, intégration. Un temps fort de 40 à 60 minutes, animé de bout
             en bout, sans rien à installer pour vos équipes.
           </p>
-          <a class="door__link" href="/entreprises">
+          <a class="tu-arrow-link" href="/entreprises">
             Découvrir l'offre entreprises
             <Icon name="arrow" size="sm" />
           </a>
         </div>
-      </div>
+      </article>
     </div>
-  </Section>
+  </section>
 
   <Section eyebrow="Les jeux" title="Cinq jeux. Toute la salle debout.">
+    <a slot="action" class="tu-arrow-link" href="/les-jeux">
+      Voir le détail des jeux
+      <Icon name="arrow" size="sm" />
+    </a>
     <div class="games">
       {games.map((game) => (
         <GameCard
@@ -112,23 +119,23 @@ const steps = [
         />
       ))}
     </div>
-    <a class="door__link" href="/les-jeux">
-      Voir le détail des jeux
-      <Icon name="arrow" size="sm" />
-    </a>
   </Section>
 
-  <Section eyebrow="Comment ça marche" title="Vous recevez. On s'occupe du reste." tone="muted">
-    <StepList steps={steps} />
+  <Section eyebrow="Comment ça marche" title="Vous recevez. On s'occupe du reste." tone="dark">
+    <StepList steps={steps} variant="numerals" />
   </Section>
 
-  <Section eyebrow="Multilingue" title="Une soirée, plusieurs langues.">
-    <div class="langs">
-      <p class="langs__body">
-        Chaque invité choisit sa langue sur son téléphone. Les jeux sont pensés pour passer la
-        barrière de la langue : on mime, on se lève, on montre.
-      </p>
-      <ul class="langs__list">
+  <section class="langs-section">
+    <div class="tu-container langs">
+      <div class="langs__text">
+        <p class="tu-eyebrow">Multilingue</p>
+        <h2 class="tu-title">Une soirée, plusieurs langues.</h2>
+        <p class="langs__body">
+          Chaque invité choisit sa langue sur son téléphone. Les jeux sont pensés pour passer la
+          barrière de la langue : on mime, on se lève, on montre.
+        </p>
+      </div>
+      <ul class="tu-panel langs__list">
         <li class="langs__line" lang="fr">
           On joue. On se rencontre. On crée du lien.
         </li>
@@ -140,15 +147,15 @@ const steps = [
         </li>
       </ul>
     </div>
-  </Section>
+  </section>
 
-  <Section title="Ils ont joué." tone="muted">
+  <Section title="Ils ont joué.">
     <div class="quotes">
-      <figure class="quote">
+      <figure class="tu-panel quote">
         <blockquote class="quote__text">« [CITATION CLIENT PARTICULIER] »</blockquote>
         <figcaption class="quote__author">[Prénom], [occasion], [ville]</figcaption>
       </figure>
-      <figure class="quote">
+      <figure class="tu-panel quote">
         <blockquote class="quote__text">« [CITATION CLIENT ENTREPRISE] »</blockquote>
         <figcaption class="quote__author">[Prénom], [fonction], [entreprise]</figcaption>
       </figure>
@@ -164,147 +171,167 @@ const steps = [
     color: var(--tu-text-muted);
   }
 
+  /* Les deux portes d'entrée : particuliers et entreprises, côte à côte. */
+  .doors-section {
+    padding-bottom: var(--tu-section-space);
+  }
+
   .doors {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tu-space-16);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-8);
   }
 
   .door {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
-    gap: var(--tu-space-12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
-  .door--reversed > :global(:first-child) {
-    order: 2;
+  .door :global(.door__visual) {
+    height: var(--tu-door-visual-height);
+  }
+
+  .door :global(.door__visual .screen) {
+    padding-inline: var(--tu-space-10);
   }
 
   .door__text {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-3);
-  }
-
-  .door__eyebrow {
-    font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--tu-text-muted);
-  }
-
-  .door__title {
-    font-size: var(--tu-size-2xl);
-  }
-
-  .door__body {
-    color: var(--tu-text-muted);
-  }
-
-  .door__link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--tu-space-2);
-    align-self: flex-start;
-    min-height: var(--tu-tap-min);
-    font-family: var(--tu-font-display);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .door__link:hover {
-    text-decoration: underline;
+    gap: var(--tu-space-4);
+    padding: var(--tu-space-9);
   }
 
   .games {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-    gap: var(--tu-space-4);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--tu-space-5);
+  }
+
+  .langs-section {
+    padding-bottom: var(--tu-section-space);
   }
 
   .langs {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--tu-space-8);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-16);
     align-items: center;
   }
 
+  .langs__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-5);
+  }
+
   .langs__body {
-    font-size: var(--tu-size-lg);
+    font-size: 1.125rem;
     color: var(--tu-text-muted);
   }
 
   .langs__list {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-3);
+    gap: var(--tu-space-5);
+    padding: var(--tu-space-10);
   }
 
   .langs__line {
-    padding: var(--tu-space-4) var(--tu-space-6);
-    border-radius: var(--tu-radius-md);
-    background: var(--tu-surface);
-    border: var(--tu-border-width) solid var(--tu-border);
     font-family: var(--tu-font-display);
+    font-size: 1.625rem;
     font-weight: 600;
+    line-height: 1.35;
   }
 
   .langs__line:lang(ta) {
     font-family: var(--tu-font-tamil);
+    font-size: var(--tu-size-xl);
+    line-height: 1.6;
   }
 
   .quotes {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-    gap: var(--tu-space-6);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-8);
   }
 
   .quote {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
+    gap: var(--tu-space-5);
     margin: 0;
-    padding: var(--tu-space-8);
-    border-radius: var(--tu-radius-lg);
-    background: var(--tu-surface);
-    border: var(--tu-border-width) solid var(--tu-border);
+    padding: var(--tu-space-10);
   }
 
   .quote__text {
     margin: 0;
-    font-family: var(--tu-font-display);
-    font-size: var(--tu-size-lg);
+    font-size: 1.375rem;
+    line-height: 1.5;
   }
 
   .quote__author {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-btn-sm-font);
     color: var(--tu-text-muted);
   }
 
+  @media (max-width: 75rem) {
+    .games {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
   @media (max-width: 60rem) {
-    .doors {
-      gap: var(--tu-space-12);
-    }
-
-    .door,
-    .langs {
+    .doors,
+    .langs,
+    .quotes {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-6);
+      gap: var(--tu-space-5);
     }
 
-    .door--reversed > :global(:first-child) {
-      order: 0;
+    .door :global(.door__visual .screen) {
+      padding-inline: var(--tu-space-5);
     }
 
-    .door__title {
-      font-size: var(--tu-size-xl);
+    .door__text {
+      gap: var(--tu-space-3);
+      padding: var(--tu-space-6) 1.375rem var(--tu-space-7);
+    }
+
+    .games {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-3);
     }
 
     .langs__body {
       font-size: var(--tu-size-base);
+    }
+
+    .langs__list {
+      gap: var(--tu-space-4);
+      padding: 1.625rem 1.375rem;
+    }
+
+    .langs__line {
+      font-size: 1.1875rem;
+    }
+
+    .langs__line:lang(ta) {
+      font-size: 1.125rem;
+    }
+
+    .quote {
+      gap: var(--tu-space-3);
+      padding: 1.625rem 1.375rem;
+    }
+
+    .quote__text {
+      font-size: 1.125rem;
+    }
+
+    .quote__author {
+      font-size: var(--tu-size-sm);
     }
   }
 </style>
