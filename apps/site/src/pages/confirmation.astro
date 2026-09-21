@@ -20,10 +20,10 @@ import Icon from '../components/Icon.astro';
       d'être envoyé à l'adresse indiquée.
     </p>
     <div class="merci__actions">
-      <Button href="/" variant="primary" size="lg">
+      <Button href="/" variant="outline" size="cta">
         Retour à l'accueil
       </Button>
-      <Button href="/les-jeux" variant="ghost" size="lg">
+      <Button href="/les-jeux" variant="primary" size="cta">
         Découvrir les jeux
       </Button>
     </div>
@@ -35,9 +35,8 @@ import Icon from '../components/Icon.astro';
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--tu-space-4);
-    max-width: 44rem;
-    padding-block: var(--tu-space-16);
+    gap: var(--tu-space-7);
+    padding-block: 7.5rem 8.75rem;
     text-align: center;
   }
 
@@ -45,19 +44,27 @@ import Icon from '../components/Icon.astro';
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--tu-space-16);
-    height: var(--tu-space-16);
+    width: 6rem;
+    height: 6rem;
     border-radius: var(--tu-radius-pill);
     background: var(--tu-sage-50);
     color: var(--tu-success-text);
   }
 
+  .merci__mark :global(.icon) {
+    width: var(--tu-space-12);
+    height: var(--tu-space-12);
+  }
+
   .merci__title {
-    font-size: var(--tu-size-3xl);
+    max-width: 47.5rem;
+    font-size: var(--tu-type-page-sm);
+    line-height: 1.1;
   }
 
   .merci__body {
-    font-size: var(--tu-size-lg);
+    max-width: 38.75rem;
+    font-size: 1.1875rem;
     color: var(--tu-text-muted);
   }
 
@@ -65,21 +72,37 @@ import Icon from '../components/Icon.astro';
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: var(--tu-space-3);
-    margin-top: var(--tu-space-4);
+    gap: var(--tu-space-4);
+    margin-top: var(--tu-space-3);
   }
 
+  /* Mobile : aligné à gauche, boutons pleine largeur, comme la maquette. */
   @media (max-width: 60rem) {
-    .merci__title {
-      font-size: var(--tu-size-2xl);
+    .merci {
+      align-items: stretch;
+      gap: var(--tu-space-5);
+      padding-block: var(--tu-space-16) var(--tu-space-18);
+      text-align: start;
+    }
+
+    .merci__mark {
+      width: var(--tu-space-20);
+      height: var(--tu-space-20);
+    }
+
+    .merci__mark :global(.icon) {
+      width: var(--tu-space-10);
+      height: var(--tu-space-10);
     }
 
     .merci__body {
-      font-size: var(--tu-size-base);
+      font-size: var(--tu-type-body-lg);
     }
 
-    .merci__actions > :global(.tu-btn) {
-      flex: 1 1 12rem;
+    .merci__actions {
+      flex-direction: column;
+      gap: var(--tu-space-3);
+      margin-top: 0;
     }
   }
 </style>

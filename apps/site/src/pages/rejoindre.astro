@@ -20,7 +20,7 @@ const slots = [1, 2, 3, 4, 5, 6];
 >
   <div class="tu-container rejoindre">
     <div class="rejoindre__form-side">
-      <p class="rejoindre__eyebrow">Rejoindre une partie</p>
+      <p class="tu-eyebrow">Rejoindre une partie</p>
       <h1 class="rejoindre__title">Entrez le code de la salle.</h1>
       <p class="rejoindre__lead">
         Six caractères, affichés sur le grand écran. Pas de compte, pas d'application.
@@ -52,7 +52,7 @@ const slots = [1, 2, 3, 4, 5, 6];
           Ce code doit faire six caractères.
         </p>
 
-        <Button type="submit" variant="accent" size="lg" block>
+        <Button type="submit" variant="accent" size="cta" class="rejoindre__submit">
           Rejoindre
         </Button>
       </form>
@@ -64,7 +64,11 @@ const slots = [1, 2, 3, 4, 5, 6];
     </div>
 
     <div class="rejoindre__visual">
-      <ScreenJoin invitation="Rejoignez la partie avec le code" />
+      <ScreenJoin
+        invitation="Rejoignez la partie avec le code"
+        layout="code"
+        class="rejoindre__screen"
+      />
       <p class="rejoindre__where">Où trouver le code : sur le grand écran, en début de soirée.</p>
     </div>
   </div>
@@ -118,39 +122,33 @@ const slots = [1, 2, 3, 4, 5, 6];
 <style>
   .rejoindre {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--tu-space-12);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-20);
     align-items: center;
-    padding-block: var(--tu-space-16);
+    padding-block: 6rem var(--tu-section-space);
   }
 
   .rejoindre__form-side {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
-  }
-
-  .rejoindre__eyebrow {
-    font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--tu-text-muted);
+    gap: var(--tu-space-7);
   }
 
   .rejoindre__title {
-    font-size: var(--tu-size-3xl);
+    font-size: var(--tu-type-page-sm);
+    line-height: 1.1;
   }
 
   .rejoindre__lead {
+    font-size: 1.1875rem;
     color: var(--tu-text-muted);
   }
 
   .rejoindre__form {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
+    align-items: flex-start;
+    gap: var(--tu-space-7);
   }
 
   /* Un fieldset vaut min-content par défaut : sans ceci, il s'élargit aux six champs. */
@@ -163,23 +161,24 @@ const slots = [1, 2, 3, 4, 5, 6];
 
   .rejoindre__slots {
     display: flex;
-    gap: var(--tu-space-2);
+    gap: var(--tu-space-3);
   }
 
   .rejoindre__slot {
-    flex: 1 1 0;
-    min-width: 0;
-    min-height: calc(var(--tu-tap-min) * 1.2);
-    border: var(--tu-border-width) solid var(--tu-border);
+    width: var(--tu-join-slot-width);
+    height: var(--tu-join-slot-height);
+    border: var(--tu-btn-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-md);
     background: var(--tu-surface);
     font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-2xl);
+    font-size: var(--tu-join-slot-font);
     font-weight: 700;
     text-align: center;
     text-transform: uppercase;
   }
 
+  /* Une case remplie prend le contour navy, comme dans la maquette. */
+  .rejoindre__slot:valid,
   .rejoindre__slot:focus-visible {
     border-color: var(--tu-primary);
   }
@@ -190,31 +189,65 @@ const slots = [1, 2, 3, 4, 5, 6];
     color: var(--tu-danger-text);
   }
 
+  .rejoindre__form :global(.rejoindre__submit) {
+    min-height: var(--tu-space-16);
+    padding-inline: var(--tu-space-10);
+    font-size: 1.125rem;
+  }
+
   .rejoindre__tip,
   .rejoindre__where {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-btn-sm-font);
     color: var(--tu-text-muted);
+  }
+
+  .rejoindre__where {
+    text-align: center;
   }
 
   .rejoindre__visual {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-3);
+    gap: var(--tu-space-4);
+  }
+
+  .rejoindre__visual :global(.rejoindre__screen .screen) {
+    min-height: 21.25rem;
+    box-shadow: none;
   }
 
   @media (max-width: 60rem) {
     .rejoindre {
       grid-template-columns: minmax(0, 1fr);
       gap: var(--tu-space-8);
-      padding-block: var(--tu-space-8);
+      padding-block: var(--tu-space-10) var(--tu-section-space);
     }
 
-    .rejoindre__title {
-      font-size: var(--tu-size-2xl);
+    .rejoindre__form-side,
+    .rejoindre__form {
+      gap: var(--tu-space-5);
     }
 
-    .rejoindre__slot {
-      font-size: var(--tu-size-xl);
+    .rejoindre__form {
+      align-items: stretch;
+    }
+
+    .rejoindre__lead {
+      font-size: var(--tu-type-body-lg);
+    }
+
+    .rejoindre__slots {
+      justify-content: space-between;
+      gap: var(--tu-space-2);
+    }
+
+    .rejoindre__form :global(.rejoindre__submit) {
+      min-height: var(--tu-btn-cta-height);
+      font-size: var(--tu-type-body-lg);
+    }
+
+    .rejoindre__visual :global(.rejoindre__screen .screen) {
+      min-height: 11.25rem;
     }
   }
 </style>

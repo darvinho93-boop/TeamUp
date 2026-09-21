@@ -74,6 +74,9 @@
   --tu-game-visual-height: 26.25rem;
   --tu-ranking-bar: 2.125rem;
   --tu-join-qr: 10.5rem; /* QR 150 px + 12 px de marge blanche */
+  --tu-join-slot-width: 4.5rem;
+  --tu-join-slot-height: 5.5rem;
+  --tu-join-slot-font: 2.25rem;
   --tu-join-code-lg: var(--tu-size-4xl);
 
   /* Variantes destinées au TEXTE. Les couleurs sémantiques de la charte sont
@@ -142,6 +145,9 @@
     --tu-game-visual-height: 14.375rem;
     --tu-ranking-bar: var(--tu-space-6);
     --tu-join-qr: 8rem;
+    --tu-join-slot-width: var(--tu-space-12);
+    --tu-join-slot-height: var(--tu-space-16);
+    --tu-join-slot-font: var(--tu-size-2xl);
     --tu-join-code-lg: var(--tu-size-2xl);
   }
 }
