@@ -6,9 +6,8 @@ type Props = HTMLAttributes<'section'> & {
   eyebrow?: string;
   title?: string;
   lead?: string;
-  /** Fond alterné, pour séparer deux sections voisines sans trait. */
-  tone?: 'default' | 'muted';
-  align?: 'start' | 'center';
+  /** `dark` : bloc marine arrondi, comme « Comment ça marche » sur l'accueil. */
+  tone?: 'default' | 'dark';
   headingLevel?: 'h2' | 'h3';
 };
 
@@ -17,7 +16,6 @@ const {
   title,
   lead,
   tone = 'default',
-  align = 'start',
   headingLevel = 'h2',
   class: className,
   ...rest
@@ -25,33 +23,60 @@ const {
 
 const Heading = headingLevel;
 const hasHeader = Boolean(eyebrow ?? title ?? lead);
+const hasAction = Astro.slots.has('action');
+const dark = tone === 'dark';
 ---
 
-<section class:list={['section', `section--${tone}`, className]} {...rest}>
-  <div class="tu-container section__inner">
-    {hasHeader && (
-      <header class:list={['section__header', `section__header--${align}`]}>
-        {eyebrow && <p class="section__eyebrow">{eyebrow}</p>}
-        {title && <Heading class="section__title">{title}</Heading>}
-        {lead && <p class="section__lead">{lead}</p>}
-      </header>
-    )}
-    <slot />
+<section class:list={['section', className]} {...rest}>
+  <div class="tu-container">
+    <div
+      class:list={['section__inner', dark && 'tu-panel tu-panel--dark section__inner--dark']}
+      data-theme={dark ? 'stage' : undefined}
+    >
+      {hasHeader && (
+        <div class="section__head">
+          <header class="section__header">
+            {eyebrow && <p class="tu-eyebrow">{eyebrow}</p>}
+            {title && <Heading class="tu-title">{title}</Heading>}
+            {lead && <p class="tu-body-lg section__lead">{lead}</p>}
+          </header>
+          {hasAction && (
+            <div class="section__action">
+              <slot name="action" />
+            </div>
+          )}
+        </div>
+      )}
+      <slot />
+      {hasAction && (
+        <div class="section__action section__action--below">
+          <slot name="action" />
+        </div>
+      )}
+    </div>
   </div>
 </section>
 
 <style>
   .section {
-    padding-block: var(--tu-space-16);
-  }
-
-  .section--muted {
-    background: var(--tu-surface-muted);
+    padding-bottom: var(--tu-section-space);
   }
 
   .section__inner {
     display: flex;
     flex-direction: column;
+    gap: var(--tu-space-12);
+  }
+
+  .section__inner--dark {
+    gap: var(--tu-space-14);
+    padding: var(--tu-space-20);
+  }
+
+  .section__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
     gap: var(--tu-space-8);
   }
 
@@ -59,44 +84,42 @@ const hasHeader = Boolean(eyebrow ?? title ?? lead);
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-3);
-    max-width: 44rem;
-  }
-
-  .section__header--center {
-    align-items: center;
-    text-align: center;
-    margin-inline: auto;
-  }
-
-  .section__eyebrow {
-    font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--tu-text-muted);
-  }
-
-  .section__title {
-    font-size: var(--tu-size-2xl);
+    max-width: 60rem;
   }
 
   .section__lead {
-    font-size: var(--tu-size-lg);
-    color: var(--tu-text-muted);
+    margin-top: var(--tu-space-2);
+  }
+
+  .section__action {
+    flex: none;
+  }
+
+  .section__action--below {
+    display: none;
   }
 
   @media (max-width: 60rem) {
-    .section {
-      padding-block: var(--tu-space-12);
+    .section__inner {
+      gap: var(--tu-space-6);
     }
 
-    .section__title {
-      font-size: var(--tu-size-xl);
+    .section__inner--dark {
+      gap: var(--tu-space-8);
+      padding: var(--tu-space-9) var(--tu-space-6);
     }
 
-    .section__lead {
-      font-size: var(--tu-size-base);
+    .section__header {
+      gap: var(--tu-space-2);
+    }
+
+    /* En mobile, le lien de section passe sous le contenu, comme dans les maquettes. */
+    .section__head .section__action {
+      display: none;
+    }
+
+    .section__action--below {
+      display: block;
     }
   }
 </style>

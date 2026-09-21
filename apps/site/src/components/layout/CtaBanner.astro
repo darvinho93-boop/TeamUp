@@ -16,66 +16,67 @@ const {
 ---
 
 <section class="cta">
-  <div class="tu-container cta__inner">
-    <div class="cta__text">
-      <h2 class="cta__title">{title}</h2>
-      <p class="cta__note">{note}</p>
+  <div class="tu-container">
+    <div class="cta__inner">
+      <div class="cta__text">
+        <h2 class="cta__title">{title}</h2>
+        <p class="tu-body-lg cta__note">{note}</p>
+      </div>
+      <Button href="/devis" variant="accent" size="cta">
+        {label}
+      </Button>
     </div>
-    <Button href="/devis" variant="accent" size="lg">
-      {label}
-    </Button>
   </div>
 </section>
 
 <style>
   .cta {
-    padding-block: var(--tu-space-16);
+    padding-bottom: var(--tu-section-space);
   }
 
   .cta__inner {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--tu-space-8);
-    padding: var(--tu-space-12);
+    gap: var(--tu-space-12);
+    padding: var(--tu-space-18) var(--tu-space-20);
     border-radius: var(--tu-radius-lg);
-    background: var(--tu-surface);
-    border: var(--tu-border-width) solid var(--tu-border);
-    box-shadow: var(--tu-shadow-md);
+    background: var(--tu-sage-50);
   }
 
   .cta__text {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-2);
+    gap: var(--tu-space-3);
   }
 
   .cta__title {
-    font-size: var(--tu-size-2xl);
-    max-width: 22ch;
+    font-size: 2.5rem;
+    line-height: 1.1;
   }
 
-  .cta__note {
-    color: var(--tu-text-muted);
+  .cta__inner > :global(.tu-btn) {
+    flex: none;
+    min-height: var(--tu-space-16);
+    padding-inline: var(--tu-space-9);
+    font-size: 1.125rem;
   }
 
   @media (max-width: 60rem) {
-    .cta {
-      padding-block: var(--tu-space-12);
-    }
-
     .cta__inner {
-      padding: var(--tu-space-6);
-      gap: var(--tu-space-6);
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--tu-space-5);
+      padding: var(--tu-space-9) var(--tu-space-6);
     }
 
     .cta__title {
-      font-size: var(--tu-size-xl);
+      font-size: 1.75rem;
     }
 
     .cta__inner > :global(.tu-btn) {
-      width: 100%;
+      min-height: var(--tu-tap-min);
+      font-size: var(--tu-type-body-lg);
     }
   }
 </style>

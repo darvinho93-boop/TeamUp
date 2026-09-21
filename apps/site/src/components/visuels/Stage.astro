@@ -1,0 +1,55 @@
+---
+/**
+ * Mise en scène des hauts de page : l'écran de la salle en arrière-plan, le téléphone
+ * d'un invité qui le chevauche en bas à droite. Même composition en mobile, réduite.
+ */
+type Props = { class?: string };
+const { class: className } = Astro.props;
+---
+
+<div class:list={['stage', className]}>
+  <div class="stage__screen">
+    <slot name="screen" />
+  </div>
+  <div class="stage__phone">
+    <slot name="phone" />
+  </div>
+</div>
+
+<style>
+  .stage {
+    position: relative;
+    min-height: var(--tu-visual-stage-height);
+  }
+
+  .stage__screen {
+    position: absolute;
+    top: var(--tu-space-4);
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(var(--tu-visual-screen-width), 90%);
+    min-height: var(--tu-visual-screen-height);
+  }
+
+  .stage__screen > :global(*) {
+    flex: 1;
+  }
+
+  .stage__phone {
+    position: absolute;
+    right: var(--tu-space-2);
+    bottom: 0;
+  }
+
+  @media (max-width: 60rem) {
+    .stage__screen {
+      top: 0;
+      width: min(var(--tu-visual-screen-width), 85%);
+    }
+
+    .stage__phone {
+      right: 0;
+    }
+  }
+</style>

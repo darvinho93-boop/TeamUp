@@ -1,20 +1,21 @@
 ---
 import ScreenFrame from './ScreenFrame.astro';
 
-type Props = { class?: string };
-const { class: className } = Astro.props;
+type Props = { flat?: boolean; meta?: string; class?: string };
+const { flat = false, meta, class: className } = Astro.props;
 
 /** Ordre d'affichage : 2e, 1re, 3e — comme sur un vrai podium. */
 const places = [
-  { rank: 2, team: 'Équipe 3', score: '980', height: '72%', teamClass: 'tu-team--3' },
+  { rank: 2, team: 'Équipe 3', score: '980', height: '69%', teamClass: 'tu-team--3' },
   { rank: 1, team: 'Équipe 2', score: '1 240', height: '100%', teamClass: 'tu-team--2' },
-  { rank: 3, team: 'Équipe 4', score: '860', height: '56%', teamClass: 'tu-team--4' },
+  { rank: 3, team: 'Équipe 4', score: '860', height: '47%', teamClass: 'tu-team--4' },
 ];
 ---
 
 <ScreenFrame
   label="Écran de la salle · Podium"
-  meta="Fin de soirée"
+  meta={meta}
+  flat={flat}
   caption="Illustration : le podium de fin de soirée, l'équipe 2 en tête avec 1 240 points devant les équipes 3 et 4."
   class={className}
 >
@@ -34,40 +35,51 @@ const places = [
 
 <style>
   .podium {
+    flex: 1;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 8.125rem));
+    justify-content: center;
     align-items: end;
-    gap: var(--tu-space-3);
-    min-height: 12rem;
+    gap: var(--tu-space-4);
+    min-height: 10rem;
   }
 
   .podium__column {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-end;
     gap: var(--tu-space-2);
     height: 100%;
-    justify-content: flex-end;
   }
 
   .podium__team {
-    font-size: var(--tu-size-xs);
-    color: var(--tu-text-muted);
+    font-size: var(--tu-type-caption);
+    font-weight: 600;
     text-align: center;
   }
 
   .podium__block {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding-top: var(--tu-space-2);
     border-radius: var(--tu-radius-md) var(--tu-radius-md) 0 0;
     background: var(--tu-team-color);
-    min-height: var(--tu-space-8);
+    min-height: var(--tu-space-12);
   }
 
   .podium__rank {
     font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-2xl);
+    font-size: var(--tu-screen-type-lg);
     font-weight: 700;
     color: var(--tu-team-on);
+  }
+
+  @media (max-width: 60rem) {
+    .podium {
+      gap: var(--tu-space-3);
+      min-height: 8rem;
+    }
   }
 </style>

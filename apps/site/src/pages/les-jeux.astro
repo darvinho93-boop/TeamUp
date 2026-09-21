@@ -20,7 +20,6 @@ import { duels, games } from '../data/jeux';
     eyebrow="Les jeux"
     title="Cinq jeux pensés pour la salle, pas pour l'écran."
     lead="Chaque jeu s'explique en une phrase et se joue debout. Le téléphone ne sert qu'à porter un secret ou à envoyer une photo."
-    centered
   >
     <nav slot="footnote" class="toc" aria-label="Aller à un jeu">
       {games.map((game) => (
@@ -133,7 +132,6 @@ import { duels, games } from '../data/jeux';
     eyebrow="En option"
     title="Les duels en un contre un"
     lead="Pour relancer la salle sur les créneaux de 60 minutes."
-    tone="muted"
   >
     <div class="duels">
       {duels.map((duel) => (

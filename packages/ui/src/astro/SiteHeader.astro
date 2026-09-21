@@ -32,7 +32,10 @@ const isCurrent = (href: string) => currentPath === href;
         alt=""
         loading="eager"
       />
-      <span>Team Up!</span>
+      <span class="tu-wordmark" aria-hidden="true">
+        Team <span class="tu-wordmark__up">Up</span>
+        <span class="tu-wordmark__bang">!</span>
+      </span>
     </a>
 
     <nav class="tu-site-header__nav" aria-label="Navigation principale">
@@ -48,10 +51,10 @@ const isCurrent = (href: string) => currentPath === href;
     </nav>
 
     <div class="tu-site-header__actions">
-      <Button href="/rejoindre" variant="ghost">
+      <Button href="/rejoindre" variant="ghost" size="sm">
         Rejoindre une partie
       </Button>
-      <Button href="/devis" variant="accent">
+      <Button href="/devis" variant="accent" size="sm">
         Demander un devis
       </Button>
     </div>

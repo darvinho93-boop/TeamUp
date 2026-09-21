@@ -52,27 +52,28 @@ const {
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-1);
-    padding: var(--tu-space-4);
-    border-radius: var(--tu-radius-md);
+    padding: var(--tu-space-5) var(--tu-space-4);
+    border-radius: var(--tu-radius-lg);
     background: var(--tu-team-color);
     color: var(--tu-team-on);
   }
 
   .wait__label {
     font-size: var(--tu-size-xs);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    opacity: 0.8;
   }
 
   .wait__name {
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-xl);
+    font-size: var(--tu-size-2xl);
     font-weight: 700;
+    line-height: 1.1;
   }
 
   .wait__hint {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-type-caption);
   }
 
   .wait__score {
@@ -80,14 +81,20 @@ const {
     align-items: baseline;
     justify-content: space-between;
     gap: var(--tu-space-3);
-    padding: var(--tu-space-3) var(--tu-space-4);
-    border-radius: var(--tu-radius-md);
-    background: var(--tu-surface-muted);
+    padding-inline: var(--tu-space-1);
+  }
+
+  .wait__score .wait__label {
+    font-size: var(--tu-type-caption);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--tu-text-muted);
   }
 
   .wait__points {
     font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-lg);
+    font-size: var(--tu-size-xl);
     font-weight: 700;
   }
 
@@ -95,10 +102,12 @@ const {
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-1);
-    text-align: center;
+    margin-top: auto;
     padding: var(--tu-space-4);
-    border: var(--tu-border-width) dashed var(--tu-border);
+    border: var(--tu-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+    text-align: center;
   }
 
   .wait__watch {
@@ -107,7 +116,7 @@ const {
   }
 
   .wait__next {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-size-xs);
     color: var(--tu-text-muted);
   }
 </style>

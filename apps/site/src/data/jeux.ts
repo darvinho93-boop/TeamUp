@@ -5,7 +5,8 @@
 export type GameSummary = {
   id: string;
   icon: 'users' | 'cross' | 'hand' | 'mime' | 'camera';
-  tone: 'navy' | 'sage' | 'amber';
+  /** Teinte du pictogramme, reprise des maquettes : un fond distinct par jeu. */
+  tone: 'navy' | 'sage' | 'amber' | 'mint' | 'stone';
   title: string;
   body: string;
   duration: string;
@@ -39,7 +40,7 @@ export const games: GameSummary[] = [
   {
     id: 'mime',
     icon: 'mime',
-    tone: 'navy',
+    tone: 'mint',
     title: 'Mime',
     body: "Le mot traverse l'équipe en alternant mime et chuchotement. Il arrive rarement intact.",
     duration: '2 min 30 par équipe',
@@ -47,7 +48,7 @@ export const games: GameSummary[] = [
   {
     id: 'photo',
     icon: 'camera',
-    tone: 'navy',
+    tone: 'stone',
     title: 'Photo challenge',
     body: 'Toute la soirée, chaque équipe met en scène des thèmes. Diffusion en clôture.',
     duration: '≈ 5 min de diffusion',

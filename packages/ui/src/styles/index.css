@@ -18,6 +18,7 @@
 @import './reset.css';
 
 @import './components/layout.css';
+@import './components/site-type.css';
 @import './components/button.css';
 @import './components/field.css';
 @import './components/card.css';

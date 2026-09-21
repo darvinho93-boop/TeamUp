@@ -5,7 +5,7 @@
   gap: var(--tu-space-2);
   min-height: var(--tu-tap-min);
   padding-inline: var(--tu-space-6);
-  border: var(--tu-border-width) solid transparent;
+  border: var(--tu-btn-border-width) solid transparent;
   border-radius: var(--tu-radius-pill);
   background: transparent;
   font-family: var(--tu-font-display);
@@ -56,8 +56,31 @@
   background: var(--tu-surface-muted);
 }
 
+.tu-btn--outline {
+  border-color: var(--tu-primary);
+  color: var(--tu-text);
+}
+
+.tu-btn--outline:hover:not(:disabled) {
+  background: var(--tu-navy-50);
+}
+
 .tu-btn--block {
   width: 100%;
+}
+
+/* Vitrine, en-tête desktop : plus compact, absent en mobile (barre d'action à la place). */
+.tu-btn--sm {
+  min-height: var(--tu-space-12);
+  padding-inline: var(--tu-space-6);
+  font-size: var(--tu-btn-sm-font);
+}
+
+/* Vitrine : appels à l'action des hauts de page et des bandeaux de devis. */
+.tu-btn--cta {
+  min-height: var(--tu-btn-cta-height);
+  padding-inline: var(--tu-space-8);
+  font-size: var(--tu-type-body-lg);
 }
 
 /* Écran joueur : une action par écran, prise en main debout. */

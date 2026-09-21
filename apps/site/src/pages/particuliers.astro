@@ -92,7 +92,7 @@ const faq: FaqItem[] = [
     </Fragment>
   </PageIntro>
 
-  <Section eyebrow="Les occasions" title="Dès que plusieurs cercles se retrouvent." tone="muted">
+  <Section eyebrow="Les occasions" title="Dès que plusieurs cercles se retrouvent.">
     <div class="occasions">
       {occasions.map((occasion) => (
         <article class="occasion">
@@ -105,17 +105,12 @@ const faq: FaqItem[] = [
 
   <Section eyebrow="Pourquoi ça marche" title="Le mélange ne se fait pas tout seul. On l'organise.">
     <div class="why">
-      <StepList steps={raisons} layout="stack" />
+      <StepList steps={raisons} variant="plain" />
       <PhonePhoto />
     </div>
   </Section>
 
-  <Section
-    id="programme"
-    eyebrow="Exemple de soirée"
-    title="40 minutes, 4 équipes, 5 jeux."
-    tone="muted"
-  >
+  <Section id="programme" eyebrow="Exemple de soirée" title="40 minutes, 4 équipes, 5 jeux.">
     <ol class="programme">
       {programme.map((item) => (
         <li class="programme__item">
@@ -140,7 +135,7 @@ const faq: FaqItem[] = [
     </div>
   </Section>
 
-  <Section eyebrow="Questions fréquentes" title="Avant de vous lancer." tone="muted">
+  <Section eyebrow="Questions fréquentes" title="Avant de vous lancer.">
     <Faq items={faq} />
   </Section>
 

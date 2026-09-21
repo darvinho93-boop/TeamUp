@@ -1,6 +1,5 @@
 .tu-site-footer {
-  margin-top: var(--tu-space-16);
-  padding-block: var(--tu-space-12);
+  padding-block: var(--tu-space-14);
   border-top: var(--tu-border-width) solid var(--tu-border);
   background: var(--tu-surface-muted);
 }
@@ -22,45 +21,35 @@
   display: inline-flex;
   align-items: center;
   gap: var(--tu-space-3);
-  font-family: var(--tu-font-display);
-  font-weight: 700;
-  font-size: var(--tu-size-lg);
+  --tu-wordmark-size: var(--tu-size-xl);
 }
 
 .tu-site-footer__logo {
-  height: var(--tu-space-8);
+  height: var(--tu-space-10);
   width: auto;
 }
 
 .tu-site-footer__contact {
+  font-size: var(--tu-size-sm);
   color: var(--tu-text-muted);
 }
 
 .tu-site-footer__nav {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tu-space-12);
+  gap: var(--tu-space-16);
 }
 
 .tu-site-footer__column {
   display: flex;
   flex-direction: column;
-  gap: var(--tu-space-2);
-}
-
-.tu-site-footer__title {
-  font-family: var(--tu-font-display);
-  font-size: var(--tu-size-sm);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--tu-text-muted);
 }
 
 .tu-site-footer__link {
   display: inline-flex;
   align-items: center;
   min-height: var(--tu-space-8);
+  font-size: var(--tu-btn-sm-font);
   text-decoration: none;
 }
 
@@ -71,5 +60,37 @@
 /* Lien discret vers l'espace animateur : présent, jamais mis en avant. */
 .tu-site-footer__link--muted {
   color: var(--tu-text-muted);
-  font-size: var(--tu-size-sm);
+}
+
+/* Mobile : les deux colonnes s'entrelacent en une grille de deux, barre d'action comprise. */
+@media (max-width: 60rem) {
+  .tu-site-footer {
+    padding-block: var(--tu-space-10);
+  }
+
+  .tu-site-footer__inner {
+    flex-direction: column;
+    gap: var(--tu-space-7);
+  }
+
+  .tu-site-footer__wordmark {
+    --tu-wordmark-size: var(--tu-size-lg);
+  }
+
+  .tu-site-footer__logo {
+    height: var(--tu-space-9);
+  }
+
+  .tu-site-footer__nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, auto);
+    grid-auto-flow: column;
+    column-gap: var(--tu-space-6);
+    row-gap: var(--tu-space-3);
+  }
+
+  .tu-site-footer__column {
+    display: contents;
+  }
 }

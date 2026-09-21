@@ -35,7 +35,11 @@ const legal = [
           densities={[1, 2]}
           alt=""
         />
-        Team Up!
+        <span class="tu-visually-hidden">Team Up!</span>
+        <span class="tu-wordmark" aria-hidden="true">
+          Team <span class="tu-wordmark__up">Up</span>
+          <span class="tu-wordmark__bang">!</span>
+        </span>
       </span>
       <!-- Contenus à fournir : laissés en placeholder, rien n'est inventé. -->
       <p class="tu-site-footer__contact">[EMAIL] · [TÉLÉPHONE]</p>
@@ -43,7 +47,6 @@ const legal = [
 
     <nav class="tu-site-footer__nav" aria-label="Pied de page">
       <div class="tu-site-footer__column">
-        <p class="tu-site-footer__title">Le jeu</p>
         {pages.map((item) => (
           <a class="tu-site-footer__link" href={item.href}>
             {item.label}
@@ -51,7 +54,6 @@ const legal = [
         ))}
       </div>
       <div class="tu-site-footer__column">
-        <p class="tu-site-footer__title">Informations</p>
         {legal.map((item) => (
           <a class="tu-site-footer__link" href={item.href}>
             {item.label}

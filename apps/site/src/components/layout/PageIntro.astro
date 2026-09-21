@@ -3,20 +3,20 @@ type Props = {
   eyebrow?: string;
   title: string;
   lead?: string;
-  /** Une intro centrée sans visuel (Les jeux, Comment ça marche). */
-  centered?: boolean;
+  /** Taille du titre : l'accueil, les pages intérieures, les formulaires, les pages légales. */
+  size?: 'display' | 'page' | 'page-sm' | 'page-xs';
 };
 
-const { eyebrow, title, lead, centered = false } = Astro.props;
+const { eyebrow, title, lead, size = 'page' } = Astro.props;
 const hasVisual = Astro.slots.has('visual');
 ---
 
-<section class:list={['intro', centered && 'intro--centered', hasVisual && 'intro--split']}>
+<section class:list={['intro', hasVisual && 'intro--split']}>
   <div class="tu-container intro__inner">
     <div class="intro__text">
-      {eyebrow && <p class="intro__eyebrow">{eyebrow}</p>}
-      <h1 class="intro__title">{title}</h1>
-      {lead && <p class="intro__lead">{lead}</p>}
+      {eyebrow && <p class="tu-eyebrow">{eyebrow}</p>}
+      <h1 class:list={['intro__title', `intro__title--${size}`]}>{title}</h1>
+      {lead && <p class="tu-lead intro__lead">{lead}</p>}
       {Astro.slots.has('actions') && (
         <div class="intro__actions">
           <slot name="actions" />
@@ -34,12 +34,12 @@ const hasVisual = Astro.slots.has('visual');
 
 <style>
   .intro {
-    padding-block: var(--tu-space-16) var(--tu-space-12);
+    padding-block: var(--tu-intro-space-top) var(--tu-section-space);
   }
 
   .intro__inner {
     display: grid;
-    gap: var(--tu-space-12);
+    gap: var(--tu-space-16);
     align-items: center;
   }
 
@@ -47,78 +47,70 @@ const hasVisual = Astro.slots.has('visual');
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
-  .intro--centered .intro__text {
-    max-width: 48rem;
-    margin-inline: auto;
-    text-align: center;
-    align-items: center;
-  }
-
   .intro__text {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
-  }
-
-  .intro__eyebrow {
-    font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--tu-text-muted);
+    gap: var(--tu-space-6);
   }
 
   .intro__title {
-    font-size: var(--tu-size-3xl);
-    max-width: 18ch;
+    line-height: 1.08;
   }
 
-  .intro--centered .intro__title {
-    max-width: 24ch;
+  .intro__title--display {
+    font-size: var(--tu-type-display);
+  }
+
+  .intro__title--page {
+    font-size: var(--tu-type-page);
+    max-width: 22ch;
+  }
+
+  .intro__title--page-sm {
+    font-size: var(--tu-type-page-sm);
+    max-width: 22ch;
+  }
+
+  .intro__title--page-xs {
+    font-size: var(--tu-type-page-xs);
   }
 
   .intro__lead {
-    font-size: var(--tu-size-lg);
-    color: var(--tu-text-muted);
-    max-width: 52ch;
+    max-width: 38rem;
   }
 
   .intro__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--tu-space-3);
-    margin-top: var(--tu-space-2);
+    gap: var(--tu-space-4);
   }
 
   .intro__visual {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tu-space-4);
     min-width: 0;
   }
 
   @media (max-width: 60rem) {
-    .intro {
-      padding-block: var(--tu-space-8);
-    }
-
     .intro--split .intro__inner {
       grid-template-columns: minmax(0, 1fr);
       gap: var(--tu-space-8);
     }
 
+    .intro__text {
+      gap: var(--tu-space-5);
+    }
+
     .intro__title {
-      font-size: var(--tu-size-2xl);
+      line-height: 1.1;
       max-width: none;
     }
 
-    .intro__lead {
-      font-size: var(--tu-size-base);
+    .intro__actions {
+      flex-direction: column;
+      gap: var(--tu-space-3);
     }
 
     .intro__actions > :global(.tu-btn) {
-      flex: 1 1 12rem;
+      width: 100%;
     }
   }
 </style>

@@ -4,11 +4,70 @@
    À remonter dans design/brand/tokens.css si la charte les adopte. */
 
 :root {
-  --tu-container-max: 75rem; /* 1200px */
-  --tu-container-gutter: var(--tu-space-6);
+  /* Gabarit des maquettes desktop : 1 440 px de large, 80 px de marge, 1 280 px de contenu. */
+  --tu-container-max: 80rem;
+  --tu-container-gutter: var(--tu-space-20);
   --tu-header-height: 6rem;
+  --tu-wordmark-size: 1.75rem;
+  --tu-logo-mobile: 2.375rem;
   --tu-border-width: 1px;
   --tu-focus-width: 3px;
+
+  /* Boutons des maquettes : contour de 2 px, CTA de 60 px, bouton d'en-tête en 15 px. */
+  --tu-btn-border-width: 2px;
+  --tu-btn-cta-height: 3.75rem;
+  --tu-btn-sm-font: 0.9375rem;
+
+  /* Pas intermédiaires que les maquettes emploient et que la charte (base 4 px) n'a pas nommés. */
+  --tu-space-5: 1.25rem;
+  --tu-space-7: 1.75rem;
+  --tu-space-9: 2.25rem;
+  --tu-space-10: 2.5rem;
+  --tu-space-14: 3.5rem;
+  --tu-space-18: 4.5rem;
+  --tu-space-20: 5rem;
+  --tu-space-28: 7rem;
+
+  /* Rythme vertical : l'espace sous chaque section, et le haut de page. */
+  --tu-section-space: var(--tu-space-28);
+  --tu-intro-space-top: var(--tu-space-20);
+
+  /* Rôles typographiques de la vitrine. Desktop ici, mobile plus bas. */
+  --tu-type-display: var(--tu-size-4xl); /* titre de l'accueil */
+  --tu-type-page: 3.75rem; /* titre des pages intérieures */
+  --tu-type-page-sm: 3.25rem; /* pages de formulaire */
+  --tu-type-page-xs: 3rem; /* pages légales */
+  --tu-type-title: var(--tu-size-3xl); /* titre de section */
+  --tu-type-subtitle: var(--tu-size-2xl); /* titre de carte large */
+  --tu-type-card: var(--tu-size-lg); /* titre de petite carte */
+  --tu-type-numeral: 3.5rem; /* grands chiffres d'étapes */
+  --tu-type-lead: var(--tu-size-lg);
+  --tu-type-body-lg: 1.0625rem; /* 17 px : texte courant des maquettes */
+  --tu-type-eyebrow: var(--tu-size-sm);
+  --tu-type-caption: 0.8125rem; /* 13 px : libellés d'écran */
+
+  /* Écran de salle d'illustration : bloc marine des maquettes. */
+  --tu-screen-pad: var(--tu-space-7);
+  --tu-screen-gap: var(--tu-space-5);
+  --tu-screen-radius: var(--tu-radius-lg);
+  --tu-screen-type-xl: 2.5rem; /* chrono */
+  --tu-screen-type-lg: 1.625rem; /* question, sujet */
+  --tu-screen-type-md: 1.125rem;
+
+  /* Rayon et cadre du téléphone d'illustration. */
+  --tu-radius-xl: 2rem;
+  --tu-radius-device: 2.5rem;
+  --tu-device-bezel: var(--tu-space-2);
+
+  /* Largeurs de gabarit des illustrations (maquette accueil : écran 540, téléphone 236). */
+  --tu-visual-screen-width: 33.75rem;
+  --tu-visual-screen-height: 22.5rem;
+  --tu-visual-phone-width: 14.75rem;
+  --tu-visual-phone-zoom: 1; /* 0,76 en mobile : 180 px sur 236 dans les maquettes */
+  --tu-visual-stage-height: 35rem;
+  --tu-door-visual-height: 16.25rem;
+  --tu-join-qr: 10.5rem; /* QR 150 px + 12 px de marge blanche */
+  --tu-join-code-lg: var(--tu-size-4xl);
 
   /* Variantes destinées au TEXTE. Les couleurs sémantiques de la charte sont
      calibrées pour servir de fond ; sur le crème elles tombent sous le seuil AA
@@ -17,11 +76,55 @@
   --tu-danger-text: #b8291e; /* 5,82:1 sur --tu-bg */
   --tu-success-text: #2c6e5b; /* 5,63:1 */
   --tu-warning-text: #8a6200; /* 5,13:1 */
+
+  /* Blanc indépendant du thème (QR code, dont le fond reste blanc sur l'écran marine). */
+  --tu-paper: #ffffff;
+
+  /* Fond du pictogramme Surenchère, repris de la maquette (ambre très clair). */
+  --tu-amber-50: #fdf3d9;
+}
+
+@media (max-width: 75rem) {
+  :root {
+    --tu-container-gutter: var(--tu-space-10);
+  }
 }
 
 @media (max-width: 60rem) {
   :root {
-    --tu-container-gutter: var(--tu-space-4);
-    --tu-header-height: auto;
+    /* Maquettes mobiles : 390 px de large, 20 px de marge. */
+    --tu-container-gutter: var(--tu-space-5);
+    --tu-header-height: 4.5rem;
+    --tu-wordmark-size: 1.4375rem;
+    --tu-btn-cta-height: var(--tu-tap-min);
+    --tu-section-space: var(--tu-space-16);
+    --tu-intro-space-top: var(--tu-space-9);
+    --tu-screen-pad: 1.125rem;
+    --tu-screen-gap: var(--tu-space-3);
+    --tu-screen-radius: var(--tu-space-5);
+    --tu-screen-type-xl: 1.625rem;
+    --tu-screen-type-lg: 1.0625rem;
+    --tu-screen-type-md: 0.875rem;
+
+    --tu-type-display: 2.25rem;
+    --tu-type-page: 2.125rem;
+    --tu-type-page-sm: 2.125rem;
+    --tu-type-page-xs: 2.125rem;
+    --tu-type-title: 1.875rem; /* 30 px */
+    --tu-type-subtitle: var(--tu-size-xl);
+    --tu-type-card: 1.125rem;
+    --tu-type-numeral: 2.5rem;
+    --tu-type-lead: 1.0625rem;
+    --tu-type-body-lg: var(--tu-size-base);
+    --tu-type-eyebrow: var(--tu-size-xs);
+    --tu-type-caption: 0.6875rem;
+
+    --tu-visual-screen-width: 19.375rem;
+    --tu-visual-screen-height: 14.75rem;
+    --tu-visual-phone-zoom: 0.76;
+    --tu-visual-stage-height: 28.75rem;
+    --tu-door-visual-height: 12.5rem;
+    --tu-join-qr: 8rem;
+    --tu-join-code-lg: var(--tu-size-2xl);
   }
 }

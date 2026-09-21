@@ -6,19 +6,23 @@
  */
 type Props = {
   label: string;
+  /** Mention à droite du libellé. Le slot `meta` la remplace (chrono, pastille…). */
   meta?: string | undefined;
   caption: string;
+  /** Le bloc marine sans ombre, posé à plat dans une carte (portes de l'accueil). */
+  flat?: boolean;
   class?: string | undefined;
 };
 
-const { label, meta, caption, class: className } = Astro.props;
+const { label, meta, caption, flat = false, class: className } = Astro.props;
+const hasMetaSlot = Astro.slots.has('meta');
 ---
 
 <figure class:list={['screen-figure', className]}>
-  <div class="screen" data-theme="stage" aria-hidden="true">
+  <div class:list={['screen', flat && 'screen--flat']} data-theme="stage" aria-hidden="true">
     <div class="screen__bar">
       <span class="screen__label">{label}</span>
-      {meta && <span class="screen__meta">{meta}</span>}
+      {hasMetaSlot ? <slot name="meta" /> : meta && <span class="screen__meta">{meta}</span>}
     </div>
     <div class="screen__body">
       <slot />
@@ -29,18 +33,27 @@ const { label, meta, caption, class: className } = Astro.props;
 
 <style>
   .screen-figure {
+    display: flex;
+    flex-direction: column;
     margin: 0;
     min-width: 0;
   }
 
   .screen {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    border-radius: var(--tu-radius-lg);
+    gap: var(--tu-screen-gap);
+    padding: var(--tu-screen-pad);
+    border-radius: var(--tu-screen-radius);
     background: var(--tu-bg);
     color: var(--tu-text);
     box-shadow: var(--tu-shadow-lift);
-    overflow: hidden;
+  }
+
+  .screen--flat {
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .screen__bar {
@@ -48,10 +61,7 @@ const { label, meta, caption, class: className } = Astro.props;
     align-items: center;
     justify-content: space-between;
     gap: var(--tu-space-4);
-    padding: var(--tu-space-3) var(--tu-space-4);
-    background: var(--tu-surface);
-    border-bottom: var(--tu-border-width) solid var(--tu-border);
-    font-size: var(--tu-size-xs);
+    font-size: var(--tu-type-caption);
     color: var(--tu-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -63,9 +73,9 @@ const { label, meta, caption, class: className } = Astro.props;
   }
 
   .screen__body {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
-    padding: var(--tu-space-6);
+    gap: var(--tu-screen-gap);
   }
 </style>

@@ -6,21 +6,28 @@ export type Step = {
 
 type Props = {
   steps: Step[];
-  /** `row` : quatre étapes de front en desktop. `stack` : toujours empilées. */
-  layout?: 'row' | 'stack';
+  /**
+   * `numerals` : grands chiffres sauge, en colonnes (bloc marine de l'accueil).
+   * `cards` : une carte blanche numérotée par étape (Comment ça marche).
+   * `plain` : titres et textes empilés, sans numéro (Particuliers, Entreprises).
+   */
+  variant?: 'numerals' | 'cards' | 'plain';
   headingLevel?: 'h3' | 'h4';
 };
 
-const { steps, layout = 'row', headingLevel = 'h3' } = Astro.props;
+const { steps, variant = 'numerals', headingLevel = 'h3' } = Astro.props;
 const Heading = headingLevel;
+const numbered = variant !== 'plain';
 ---
 
-<ol class:list={['steps', `steps--${layout}`]}>
+<ol class:list={['steps', `steps--${variant}`]} style={`--steps-count:${steps.length}`}>
   {steps.map((step, index) => (
-    <li class="steps__item">
-      <span class="steps__number" aria-hidden="true">
-        {index + 1}
-      </span>
+    <li class:list={['steps__item', variant === 'cards' && 'tu-panel']}>
+      {numbered && (
+        <span class="steps__number" aria-hidden="true">
+          {index + 1}
+        </span>
+      )}
       <div class="steps__body">
         <Heading class="steps__title">{step.title}</Heading>
         {step.body && <p class="steps__text">{step.body}</p>}
@@ -32,31 +39,14 @@ const Heading = headingLevel;
 <style>
   .steps {
     display: grid;
-    gap: var(--tu-space-6);
-  }
-
-  .steps--row {
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    grid-template-columns: repeat(var(--steps-count), minmax(0, 1fr));
+    gap: var(--tu-space-10);
   }
 
   .steps__item {
     display: flex;
+    flex-direction: column;
     gap: var(--tu-space-4);
-    align-items: flex-start;
-  }
-
-  .steps__number {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--tu-space-8);
-    height: var(--tu-space-8);
-    border-radius: var(--tu-radius-pill);
-    background: var(--tu-navy-50);
-    color: var(--tu-primary);
-    font-family: var(--tu-font-display);
-    font-weight: 700;
   }
 
   .steps__body {
@@ -67,18 +57,103 @@ const Heading = headingLevel;
 
   .steps__title {
     font-size: var(--tu-size-lg);
+    font-weight: 600;
   }
 
   .steps__text {
     color: var(--tu-text-muted);
+    line-height: var(--tu-leading-normal);
+  }
+
+  /* Grands chiffres */
+  .steps--numerals .steps__number {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-type-numeral);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--tu-primary);
+  }
+
+  .steps--numerals .steps__title {
+    font-size: 1.375rem;
+  }
+
+  /* Cartes numérotées */
+  .steps--cards {
+    gap: var(--tu-space-5);
+  }
+
+  .steps--cards .steps__item {
+    padding: var(--tu-space-7);
+  }
+
+  .steps--cards .steps__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tu-space-10);
+    height: var(--tu-space-10);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-sage-50);
+    color: var(--tu-success-text);
+    font-family: var(--tu-font-display);
+    font-weight: 700;
+  }
+
+  .steps--cards .steps__text {
+    font-size: var(--tu-btn-sm-font);
+  }
+
+  /* Sans numéro, empilé */
+  .steps--plain {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--tu-space-7);
+  }
+
+  .steps--plain .steps__title {
+    font-size: var(--tu-size-lg);
   }
 
   @media (max-width: 60rem) {
-    .steps--row {
+    .steps {
       grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-7);
     }
 
-    .steps__title {
+    .steps--numerals .steps__item {
+      flex-direction: row;
+    }
+
+    .steps--numerals .steps__number {
+      flex: none;
+      width: var(--tu-space-8);
+    }
+
+    .steps--numerals .steps__title {
+      font-size: 1.1875rem;
+    }
+
+    .steps--numerals .steps__text {
+      font-size: var(--tu-btn-sm-font);
+    }
+
+    .steps--cards {
+      gap: var(--tu-space-3);
+    }
+
+    .steps--cards .steps__item {
+      flex-direction: row;
+      padding: var(--tu-space-5);
+    }
+
+    .steps--cards .steps__number {
+      flex: none;
+      width: var(--tu-space-9);
+      height: var(--tu-space-9);
+    }
+
+    .steps__title,
+    .steps--plain .steps__title {
       font-size: var(--tu-size-base);
     }
   }

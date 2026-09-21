@@ -1,6 +1,6 @@
 .tu-container {
   width: 100%;
-  max-width: var(--tu-container-max);
+  max-width: calc(var(--tu-container-max) + 2 * var(--tu-container-gutter));
   margin-inline: auto;
   padding-inline: var(--tu-container-gutter);
 }

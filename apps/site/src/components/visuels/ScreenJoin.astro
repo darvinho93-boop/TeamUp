@@ -6,24 +6,32 @@ type Props = {
   /** Le compteur n'apparaît pas sur la page « Rejoindre ». */
   connected?: string;
   invitation?: string;
+  meta?: string;
+  /** `qr` : QR code à gauche (accueil). `code` : le code seul, centré (Rejoindre). */
+  layout?: 'qr' | 'code';
+  flat?: boolean;
   class?: string;
 };
 
 const {
   connected,
   invitation = 'Scannez pour rejoindre la partie',
+  meta,
+  layout = 'qr',
+  flat = false,
   class: className,
 } = Astro.props;
 ---
 
 <ScreenFrame
   label="Écran de la salle · Accueil"
-  meta="En attente"
+  meta={meta}
+  flat={flat}
   caption="Illustration : l'écran de la salle affiche un QR code et le code de salle K7 P2 M9 pour rejoindre la partie."
   class={className}
 >
-  <div class="join">
-    <QrDecor />
+  <div class:list={['join', `join--${layout}`]}>
+    {layout === 'qr' && <QrDecor class="join__qr" />}
     <div class="join__text">
       <span class="join__invite">{invitation}</span>
       <span class="join__code">K7 P2 M9</span>
@@ -34,10 +42,23 @@ const {
 
 <style>
   .join {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: var(--tu-space-6);
-    flex-wrap: wrap;
+    gap: var(--tu-space-9);
+  }
+
+  .join--code {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .join :global(.join__qr) {
+    flex: none;
+    width: var(--tu-join-qr);
+    padding: var(--tu-space-3);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-paper);
   }
 
   .join__text {
@@ -48,19 +69,39 @@ const {
   }
 
   .join__invite {
-    color: var(--tu-text-muted);
+    font-size: var(--tu-size-base);
   }
 
   .join__code {
     font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-3xl);
+    font-size: var(--tu-screen-type-xl);
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+  }
+
+  .join--code .join__code {
+    font-size: var(--tu-join-code-lg);
     color: var(--tu-primary);
   }
 
   .join__count {
-    font-size: var(--tu-size-sm);
-    color: var(--tu-text-muted);
+    font-size: var(--tu-btn-sm-font);
+    font-weight: 600;
+    color: var(--tu-primary);
+  }
+
+  @media (max-width: 60rem) {
+    .join {
+      gap: var(--tu-space-4);
+    }
+
+    .join__invite {
+      font-size: var(--tu-type-caption);
+    }
+
+    .join__count {
+      font-size: var(--tu-size-xs);
+    }
   }
 </style>

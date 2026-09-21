@@ -4,8 +4,9 @@ import { cx } from '../classNames';
 
 type Props = (HTMLAttributes<'button'> | HTMLAttributes<'a'>) & {
   /** `accent` = corail : réservé à l'action. */
-  variant?: 'primary' | 'accent' | 'ghost';
-  size?: 'md' | 'lg';
+  variant?: 'primary' | 'accent' | 'ghost' | 'outline';
+  /** `sm` et `cta` servent la vitrine ; `lg` l'écran joueur. */
+  size?: 'sm' | 'md' | 'lg' | 'cta';
   block?: boolean;
   href?: string;
 };
@@ -22,7 +23,7 @@ const {
 const classes = cx(
   'tu-btn',
   `tu-btn--${variant}`,
-  size === 'lg' && 'tu-btn--lg',
+  size !== 'md' && `tu-btn--${size}`,
   block && 'tu-btn--block',
   typeof className === 'string' ? className : undefined,
 );

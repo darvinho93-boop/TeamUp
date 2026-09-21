@@ -93,12 +93,7 @@ const faq: FaqItem[] = [
     </Fragment>
   </PageIntro>
 
-  <Section
-    id="formats"
-    eyebrow="Les formats"
-    title="Un temps fort qui s'insère dans votre agenda."
-    tone="muted"
-  >
+  <Section id="formats" eyebrow="Les formats" title="Un temps fort qui s'insère dans votre agenda.">
     <div class="formats">
       {formats.map((format) => (
         <article class="format">
@@ -124,11 +119,11 @@ const faq: FaqItem[] = [
   <Section eyebrow="Ce que vos équipes y gagnent" title="Des silos qui se mélangent, pour de vrai.">
     <div class="benefices">
       <ScreenPointsCommuns />
-      <StepList steps={benefices} layout="stack" />
+      <StepList steps={benefices} variant="plain" />
     </div>
   </Section>
 
-  <Section tone="muted">
+  <Section>
     <div class="equipement">
       <IconList title="Ce que nous apportons" items={fourni} />
       <IconList title="Ce qu'il faut sur place" items={surPlace} />
@@ -147,7 +142,7 @@ const faq: FaqItem[] = [
     </figure>
   </Section>
 
-  <Section eyebrow="Questions fréquentes" title="Côté organisation." tone="muted">
+  <Section eyebrow="Questions fréquentes" title="Côté organisation.">
     <Faq items={faq} />
   </Section>
 

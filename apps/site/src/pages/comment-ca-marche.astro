@@ -58,11 +58,10 @@ const durees = [
     eyebrow="Comment ça marche"
     title="De la demande de devis au podium."
     lead="Vous nous décrivez l'événement, on prépare tout avec vous, et le jour venu un animateur Team Up! fait jouer la salle. Vous n'avez rien à installer."
-    centered
   />
 
-  <Section eyebrow="Avant la soirée" title="Quatre étapes, un seul interlocuteur." tone="muted">
-    <StepList steps={avant} />
+  <Section eyebrow="Avant la soirée" title="Quatre étapes, un seul interlocuteur.">
+    <StepList steps={avant} variant="cards" />
   </Section>
 
   <Section eyebrow="Pendant la soirée" title="Un écran, des téléphones, un animateur.">
@@ -94,7 +93,7 @@ const durees = [
     </div>
   </Section>
 
-  <Section eyebrow="Le déroulé" title="Du QR code au podium." tone="muted">
+  <Section eyebrow="Le déroulé" title="Du QR code au podium.">
     <ol class="flow">
       {deroule.map((step, index) => (
         <li class="flow__step">
@@ -140,7 +139,7 @@ const durees = [
     </div>
   </Section>
 
-  <Section tone="muted">
+  <Section>
     <div class="equipement">
       <IconList title="Ce que nous apportons" items={fourni} />
       <IconList title="Ce qu'il faut sur place" items={surPlace} />

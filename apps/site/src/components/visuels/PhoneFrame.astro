@@ -2,6 +2,9 @@
 /**
  * Le cadre « téléphone d'un invité ». Même principe que ScreenFrame : illustration
  * masquée aux lecteurs d'écran, légende explicite.
+ *
+ * Dessiné à la taille des maquettes desktop ; en mobile, il est réduit d'un bloc
+ * (--tu-visual-phone-zoom), comme les maquettes mobiles le font.
  */
 type Props = {
   /** Barre du haut : prénom, rôle… tel qu'il apparaît dans l'app. */
@@ -18,7 +21,7 @@ const { label, meta, caption, class: className } = Astro.props;
   <div class="phone" aria-hidden="true">
     <div class="phone__bar">
       <span>{label}</span>
-      {meta && <span class="phone__meta">{meta}</span>}
+      {meta && <span>{meta}</span>}
     </div>
     <div class="phone__body">
       <slot />
@@ -31,16 +34,20 @@ const { label, meta, caption, class: className } = Astro.props;
   .phone-figure {
     margin: 0;
     min-width: 0;
+    zoom: var(--tu-visual-phone-zoom);
   }
 
   .phone {
     display: flex;
     flex-direction: column;
-    max-width: 20rem;
-    border: var(--tu-border-width) solid var(--tu-border);
-    border-radius: var(--tu-radius-lg);
-    background: var(--tu-surface);
-    box-shadow: var(--tu-shadow-md);
+    gap: var(--tu-space-4);
+    width: var(--tu-visual-phone-width);
+    aspect-ratio: 236 / 468;
+    padding: var(--tu-space-9) var(--tu-space-4) var(--tu-space-5);
+    border: var(--tu-device-bezel) solid var(--tu-navy-900);
+    border-radius: var(--tu-radius-device);
+    background: var(--tu-bg);
+    box-shadow: var(--tu-shadow-lift);
     overflow: hidden;
   }
 
@@ -49,22 +56,14 @@ const { label, meta, caption, class: className } = Astro.props;
     align-items: center;
     justify-content: space-between;
     gap: var(--tu-space-3);
-    padding: var(--tu-space-3) var(--tu-space-4);
-    background: var(--tu-surface-muted);
-    border-bottom: var(--tu-border-width) solid var(--tu-border);
-    font-size: var(--tu-size-sm);
-    font-weight: 600;
-  }
-
-  .phone__meta {
+    font-size: var(--tu-size-xs);
     color: var(--tu-text-muted);
-    font-weight: 500;
   }
 
   .phone__body {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-4);
-    padding: var(--tu-space-6);
   }
 </style>

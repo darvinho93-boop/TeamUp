@@ -1,0 +1,98 @@
+/* Typographie et surfaces de la vitrine, telles que les maquettes les répètent de page en page.
+   Les tailles viennent des rôles --tu-type-*, qui basculent d'elles-mêmes en mobile. */
+
+/* Surtitre en capitales. Sauge par défaut ; les pages Entreprises passent en bleu
+   via data-accent="entreprises" sur <main>, comme dans leurs maquettes. */
+.tu-eyebrow {
+  font-size: var(--tu-type-eyebrow);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tu-eyebrow-color, var(--tu-success-text));
+}
+
+[data-accent='entreprises'] {
+  --tu-eyebrow-color: var(--tu-navy-500);
+}
+
+.tu-eyebrow--navy {
+  --tu-eyebrow-color: var(--tu-navy-500);
+}
+
+.tu-eyebrow--sage {
+  --tu-eyebrow-color: var(--tu-success-text);
+}
+
+.tu-title {
+  font-size: var(--tu-type-title);
+  line-height: 1.1;
+}
+
+.tu-subtitle {
+  font-size: var(--tu-type-subtitle);
+  line-height: var(--tu-leading-tight);
+}
+
+.tu-lead {
+  font-size: var(--tu-type-lead);
+  line-height: var(--tu-leading-normal);
+  color: var(--tu-text-muted);
+}
+
+.tu-body-lg {
+  font-size: var(--tu-type-body-lg);
+  line-height: var(--tu-leading-normal);
+  color: var(--tu-text-muted);
+}
+
+/* Lien « Découvrir… → » : Poppins, souligné, flèche collée. */
+.tu-arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  align-self: flex-start;
+  min-height: var(--tu-space-12);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-type-body-lg);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.tu-arrow-link:hover {
+  color: var(--tu-navy-500);
+}
+
+/* Carte blanche des maquettes : bord fin, grand rayon, pas d'ombre. */
+.tu-panel {
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+}
+
+/* Bloc marine plein. À poser avec data-theme="stage" : fond, texte et texte atténué
+   viennent alors du thème de l'écran commun, comme dans les maquettes. */
+.tu-panel--dark {
+  border: none;
+  background: var(--tu-bg);
+  color: var(--tu-text);
+  --tu-eyebrow-color: var(--tu-sage-500);
+}
+
+/* Logotype : « Team » navy, « Up » sauge, « ! » corail, comme le logo horizontal du kit.
+   Texte de marque, donc hors exigence de contraste (WCAG 1.4.3, logotypes). */
+.tu-wordmark {
+  font-family: var(--tu-font-display);
+  font-weight: 700;
+  font-size: var(--tu-wordmark-size);
+  letter-spacing: var(--tu-tracking-display);
+  color: var(--tu-navy-700);
+  white-space: nowrap;
+}
+
+.tu-wordmark__up {
+  color: var(--tu-sage-500);
+}
+
+.tu-wordmark__bang {
+  color: var(--tu-coral-500);
+}

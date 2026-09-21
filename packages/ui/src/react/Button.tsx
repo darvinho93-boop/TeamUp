@@ -2,8 +2,9 @@ import type { ButtonHTMLAttributes } from 'react';
 import { cx } from '../classNames';
 
 /** `accent` = corail : réservé à l'action (« c'est à toi », envoyer, demander un devis). */
-export type ButtonVariant = 'primary' | 'accent' | 'ghost';
-export type ButtonSize = 'md' | 'lg';
+export type ButtonVariant = 'primary' | 'accent' | 'ghost' | 'outline';
+/** `sm` et `cta` servent la vitrine ; `lg` l'écran joueur. */
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'cta';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -25,7 +26,7 @@ export function Button({
       className={cx(
         'tu-btn',
         `tu-btn--${variant}`,
-        size === 'lg' && 'tu-btn--lg',
+        size !== 'md' && `tu-btn--${size}`,
         block && 'tu-btn--block',
         className,
       )}

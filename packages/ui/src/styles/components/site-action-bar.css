@@ -23,11 +23,13 @@
 
   .tu-site-action-bar .tu-btn {
     flex: 1;
-    padding-inline: var(--tu-space-3);
+    min-height: var(--tu-tap-min);
+    padding-inline: var(--tu-space-2);
   }
 
-  /* Rien ne doit finir caché sous la barre. */
-  body:has(.tu-site-action-bar) {
-    padding-bottom: calc(var(--tu-tap-min) + var(--tu-space-8));
+  /* Rien ne doit finir caché sous la barre : le pied de page s'allonge d'autant,
+     son fond continue donc jusqu'en bas, comme dans les maquettes. */
+  body:has(.tu-site-action-bar) .tu-site-footer {
+    padding-bottom: calc(var(--tu-tap-min) + var(--tu-space-8) + var(--tu-space-10));
   }
 }

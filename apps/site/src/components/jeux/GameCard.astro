@@ -9,7 +9,7 @@ type Props = {
   body: string;
   duration: string;
   /** Teinte du pictogramme, pour distinguer les cinq jeux d'un coup d'œil. */
-  tone?: 'navy' | 'sage' | 'amber';
+  tone?: 'navy' | 'sage' | 'amber' | 'mint' | 'stone';
 };
 
 const { icon, title, body, duration, tone = 'navy' } = Astro.props;
@@ -30,48 +30,92 @@ const { icon, title, body, duration, tone = 'navy' } = Astro.props;
     flex-direction: column;
     gap: var(--tu-space-3);
     height: 100%;
-    padding: var(--tu-space-6);
+    padding: var(--tu-space-7);
     border: var(--tu-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-lg);
     background: var(--tu-surface);
-    box-shadow: var(--tu-shadow-sm);
   }
 
   .game-card__icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--tu-space-12);
-    height: var(--tu-space-12);
+    width: var(--tu-space-14);
+    height: var(--tu-space-14);
+    margin-bottom: var(--tu-space-1);
     border-radius: var(--tu-radius-md);
-    background: var(--tu-surface-muted);
-  }
-
-  .game-card__icon--navy {
     color: var(--tu-primary);
   }
 
+  .game-card__icon :global(.icon) {
+    width: var(--tu-space-7);
+    height: var(--tu-space-7);
+  }
+
+  .game-card__icon--navy {
+    background: var(--tu-navy-50);
+  }
+
   .game-card__icon--sage {
+    background: var(--tu-sage-50);
     color: var(--tu-success-text);
   }
 
   .game-card__icon--amber {
+    background: var(--tu-amber-50);
     color: var(--tu-warning-text);
   }
 
+  .game-card__icon--mint {
+    background: var(--tu-sage-200);
+  }
+
+  .game-card__icon--stone {
+    background: var(--tu-stone-200);
+  }
+
   .game-card__title {
-    font-size: var(--tu-size-lg);
+    font-size: var(--tu-type-card);
   }
 
   .game-card__body {
     flex: 1;
+    font-size: var(--tu-btn-sm-font);
+    line-height: 1.5;
     color: var(--tu-text-muted);
   }
 
   .game-card__duration {
-    font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-type-caption);
     font-weight: 600;
-    color: var(--tu-text);
+  }
+
+  /* Mobile : pictogramme à gauche, texte à droite, comme la maquette. */
+  @media (max-width: 60rem) {
+    .game-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: var(--tu-space-4);
+      row-gap: var(--tu-space-1);
+      padding: 1.125rem;
+      border-radius: var(--tu-space-5);
+    }
+
+    .game-card__icon {
+      grid-row: span 3;
+      width: var(--tu-space-12);
+      height: var(--tu-space-12);
+      margin-bottom: 0;
+      border-radius: var(--tu-radius-md);
+    }
+
+    .game-card__icon :global(.icon) {
+      width: var(--tu-space-6);
+      height: var(--tu-space-6);
+    }
+
+    .game-card__duration {
+      margin-top: var(--tu-space-1);
+    }
   }
 </style>

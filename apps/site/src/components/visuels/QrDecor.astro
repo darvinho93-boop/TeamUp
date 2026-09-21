@@ -162,24 +162,18 @@ const { class: className } = Astro.props;
 </svg>
 
 <style>
+  /* Blanc fixe quel que soit le thème : un QR se lit en sombre sur clair. */
   .qr {
-    width: var(--tu-space-16);
-    height: var(--tu-space-16);
-    border-radius: var(--tu-radius-sm);
+    width: var(--tu-join-qr);
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .qr__paper {
-    fill: var(--tu-text-invert);
+    fill: var(--tu-paper);
   }
 
   .qr__module {
     fill: var(--tu-navy-900);
-  }
-
-  @media (min-width: 60rem) {
-    .qr {
-      width: calc(var(--tu-space-16) * 1.6);
-      height: calc(var(--tu-space-16) * 1.6);
-    }
   }
 </style>
