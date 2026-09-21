@@ -46,7 +46,7 @@ const suites = [
 >
   <div class="tu-container devis">
     <header class="devis__intro">
-      <p class="devis__eyebrow">Demande de devis</p>
+      <p class="tu-eyebrow">Demande de devis</p>
       <h1 class="devis__title">Parlez-nous de votre événement.</h1>
       <p class="devis__lead">
         Deux minutes pour remplir, gratuit et sans engagement. Les champs marqués d'une étoile sont
@@ -55,7 +55,7 @@ const suites = [
     </header>
 
     <div class="devis__grid">
-      <form class="devis__form" data-tu-form="devis">
+      <form class="tu-panel devis__form" data-tu-form="devis">
         <fieldset class="tu-field devis__choice">
           <legend class="tu-field__label">
             Vous êtes{' '}
@@ -199,13 +199,13 @@ const suites = [
           </span>
         </label>
 
-        <Button type="submit" variant="accent" size="lg" block>
+        <Button type="submit" variant="accent" size="cta" block>
           Envoyer ma demande
         </Button>
       </form>
 
       <aside class="devis__aside">
-        <div class="devis__card">
+        <div class="tu-panel tu-panel--dark devis__card devis__card--next" data-theme="stage">
           <h2 class="devis__card-title">Et ensuite ?</h2>
           <ol class="devis__next">
             {suites.map((suite, index) => (
@@ -220,9 +220,10 @@ const suites = [
               </li>
             ))}
           </ol>
+          <p class="devis__contact devis__contact--inline">Vous préférez en parler ? [TÉLÉPHONE]</p>
         </div>
 
-        <div class="devis__card devis__card--muted">
+        <div class="tu-panel devis__card devis__card--contact">
           <span class="devis__card-title">Vous préférez en parler ?</span>
           <p class="devis__contact">[TÉLÉPHONE] · [EMAIL]</p>
         </div>
@@ -236,60 +237,53 @@ const suites = [
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-12);
-    padding-block: var(--tu-space-12);
+    padding-block: var(--tu-space-20) var(--tu-section-space);
   }
 
   .devis__intro {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-3);
-    max-width: 44rem;
-  }
-
-  .devis__eyebrow {
-    font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--tu-text-muted);
+    gap: var(--tu-space-4);
+    max-width: 51.25rem;
   }
 
   .devis__title {
-    font-size: var(--tu-size-3xl);
+    font-size: var(--tu-type-page-sm);
+    line-height: 1.1;
   }
 
   .devis__lead {
-    font-size: var(--tu-size-lg);
+    font-size: 1.1875rem;
     color: var(--tu-text-muted);
   }
 
   .devis__grid {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    gap: var(--tu-space-12);
+    gap: var(--tu-space-10);
     align-items: start;
   }
 
   .devis__form {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-6);
+    gap: var(--tu-space-8);
+    padding: var(--tu-space-12);
   }
 
   .devis__legend {
-    font-size: var(--tu-size-lg);
+    font-size: 1.375rem;
   }
 
   .devis__hint {
     color: var(--tu-text-muted);
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-btn-sm-font);
   }
 
   .devis__row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    gap: var(--tu-space-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-5);
   }
 
   .devis__choice {
@@ -298,11 +292,21 @@ const suites = [
     padding: 0;
   }
 
-  .devis__radios,
+  .devis__choice > :global(legend) {
+    margin-bottom: var(--tu-space-3);
+    padding: 0;
+  }
+
+  .devis__radios {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-3);
+  }
+
   .devis__checks {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--tu-space-3);
+    gap: var(--tu-space-2);
   }
 
   .devis__radio,
@@ -310,18 +314,44 @@ const suites = [
     display: inline-flex;
     align-items: center;
     gap: var(--tu-space-3);
-    min-height: var(--tu-tap-min);
-    padding-inline: var(--tu-space-4);
-    border: var(--tu-border-width) solid var(--tu-border);
-    border-radius: var(--tu-radius-pill);
+    border: var(--tu-btn-border-width) solid var(--tu-border);
     background: var(--tu-surface);
     cursor: pointer;
   }
 
-  .devis__radio:has(input:checked),
-  .devis__check:has(input:checked) {
+  .devis__radio {
+    min-height: var(--tu-space-16);
+    padding-inline: var(--tu-space-5);
+    border-radius: var(--tu-radius-md);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-type-body-lg);
+    font-weight: 600;
+  }
+
+  .devis__check {
+    gap: var(--tu-space-2);
+    min-height: var(--tu-space-12);
+    padding-inline: var(--tu-space-4);
+    border-radius: var(--tu-radius-pill);
+    font-size: var(--tu-btn-sm-font);
+    font-weight: 500;
+  }
+
+  .devis__radio input,
+  .devis__check input {
+    width: var(--tu-space-5);
+    height: var(--tu-space-5);
+    margin: 0;
+    accent-color: var(--tu-primary);
+  }
+
+  .devis__radio:has(input:checked) {
     border-color: var(--tu-primary);
     background: var(--tu-navy-50);
+  }
+
+  .devis__check:has(input:checked) {
+    border-color: var(--tu-primary);
   }
 
   .devis__check:lang(ta) {
@@ -332,9 +362,8 @@ const suites = [
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-6);
-    padding: var(--tu-space-6);
-    border-radius: var(--tu-radius-lg);
-    background: var(--tu-surface-muted);
+    padding-top: var(--tu-space-8);
+    border-top: var(--tu-border-width) solid var(--tu-border);
   }
 
   .devis__optional-head {
@@ -347,16 +376,28 @@ const suites = [
     display: flex;
     align-items: flex-start;
     gap: var(--tu-space-3);
-    padding: var(--tu-space-4);
-    border-radius: var(--tu-radius-md);
-    border: var(--tu-border-width) solid var(--tu-border);
+    font-size: var(--tu-size-sm);
+    line-height: 1.5;
+    color: var(--tu-text-muted);
     cursor: pointer;
+  }
+
+  .devis__consent input {
+    flex: none;
+    width: var(--tu-space-5);
+    height: var(--tu-space-5);
+    margin: var(--tu-border-width) 0 0;
+    accent-color: var(--tu-primary);
+  }
+
+  .devis__consent a {
+    color: var(--tu-text);
   }
 
   .devis__aside {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
+    gap: var(--tu-space-6);
     position: sticky;
     top: calc(var(--tu-header-height) + var(--tu-space-4));
   }
@@ -364,82 +405,147 @@ const suites = [
   .devis__card {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
-    padding: var(--tu-space-6);
-    border-radius: var(--tu-radius-lg);
-    background: var(--tu-surface);
-    border: var(--tu-border-width) solid var(--tu-border);
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-8);
   }
 
-  .devis__card--muted {
-    background: var(--tu-surface-muted);
-    gap: var(--tu-space-2);
+  .devis__card--next {
+    gap: var(--tu-space-6);
+    padding: var(--tu-space-9);
   }
 
   .devis__card-title {
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-lg);
+    font-size: var(--tu-size-xl);
+    font-weight: 700;
+  }
+
+  .devis__card--contact .devis__card-title {
+    font-size: var(--tu-type-body-lg);
     font-weight: 600;
   }
 
   .devis__next {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
+    gap: var(--tu-space-6);
   }
 
   .devis__next-item {
     display: flex;
-    gap: var(--tu-space-3);
+    gap: var(--tu-space-4);
     align-items: flex-start;
   }
 
   .devis__next-number {
     flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--tu-space-6);
-    height: var(--tu-space-6);
-    border-radius: var(--tu-radius-pill);
-    background: var(--tu-navy-50);
-    color: var(--tu-primary);
+    width: var(--tu-space-5);
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-sm);
+    font-size: 1.75rem;
     font-weight: 700;
+    line-height: 1;
+    color: var(--tu-primary);
   }
 
   .devis__next-text {
     display: flex;
     flex-direction: column;
+    gap: var(--tu-space-1);
   }
 
   .devis__next-title {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-type-body-lg);
     font-weight: 600;
   }
 
   .devis__next-body,
   .devis__contact {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-btn-sm-font);
+    line-height: 1.5;
     color: var(--tu-text-muted);
   }
 
+  .devis__contact--inline {
+    display: none;
+  }
+
   @media (max-width: 60rem) {
+    .devis {
+      gap: var(--tu-space-5);
+      padding-top: var(--tu-intro-space-top);
+    }
+
+    .devis__intro {
+      gap: var(--tu-space-3);
+    }
+
+    .devis__lead {
+      font-size: var(--tu-size-base);
+    }
+
     .devis__grid {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-8);
+      gap: var(--tu-space-10);
+    }
+
+    /* Mobile : le formulaire se pose à même la page, sans carte. */
+    .devis__form {
+      gap: var(--tu-space-6);
+      padding: 0;
+      border: none;
+      background: none;
+    }
+
+    .devis__legend {
+      font-size: var(--tu-size-lg);
+    }
+
+    .devis__row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .devis__radio {
+      min-height: var(--tu-tap-min);
+      padding-inline: var(--tu-space-4);
+      font-size: var(--tu-size-base);
     }
 
     .devis__aside {
       position: static;
     }
 
-    .devis__title {
-      font-size: var(--tu-size-2xl);
+    .devis__card--next {
+      gap: var(--tu-space-5);
+      padding: var(--tu-space-6) 1.375rem;
     }
 
-    .devis__lead {
-      font-size: var(--tu-size-base);
+    .devis__card-title {
+      font-size: 1.375rem;
+    }
+
+    .devis__next {
+      gap: var(--tu-space-4);
+    }
+
+    /* Le numéro passe en pastille, le contact rejoint la carte marine. */
+    .devis__next-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--tu-space-8);
+      height: var(--tu-space-8);
+      border-radius: var(--tu-radius-pill);
+      background: var(--tu-surface);
+      font-size: var(--tu-size-sm);
+    }
+
+    .devis__contact--inline {
+      display: block;
+    }
+
+    .devis__card--contact {
+      display: none;
     }
   }
 </style>

@@ -17,7 +17,7 @@
   width: 100%;
   min-height: var(--tu-tap-min);
   padding-inline: var(--tu-space-4);
-  border: var(--tu-border-width) solid var(--tu-border);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
   border-radius: var(--tu-radius-md);
   background: var(--tu-surface);
   color: var(--tu-text);
