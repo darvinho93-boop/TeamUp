@@ -39,6 +39,7 @@ const slots = [1, 2, 3, 4, 5, 6];
                 autocapitalize="characters"
                 spellcheck="false"
                 maxlength="1"
+                size="1"
                 aria-label={`Caractère ${slot}`}
                 data-tu-slot
                 required
@@ -152,7 +153,9 @@ const slots = [1, 2, 3, 4, 5, 6];
     gap: var(--tu-space-4);
   }
 
+  /* Un fieldset vaut min-content par défaut : sans ceci, il s'élargit aux six champs. */
   .rejoindre__fieldset {
+    min-inline-size: 0;
     border: none;
     margin: 0;
     padding: 0;
