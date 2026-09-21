@@ -7,22 +7,26 @@
  * (--tu-visual-phone-zoom), comme les maquettes mobiles le font.
  */
 type Props = {
-  /** Barre du haut : prénom, rôle… tel qu'il apparaît dans l'app. */
-  label: string;
+  /** Barre du haut : prénom, rôle… tel qu'il apparaît dans l'app. Absente si vide. */
+  label?: string | undefined;
   meta?: string | undefined;
   caption: string;
+  /** Gabarits des maquettes : sm 220 × 420, md 236 × 468, lg 280 × 560, wide 280 × 480. */
+  size?: 'sm' | 'md' | 'lg' | 'wide';
   class?: string | undefined;
 };
 
-const { label, meta, caption, class: className } = Astro.props;
+const { label, meta, caption, size = 'md', class: className } = Astro.props;
 ---
 
 <figure class:list={['phone-figure', className]}>
-  <div class="phone" aria-hidden="true">
-    <div class="phone__bar">
-      <span>{label}</span>
-      {meta && <span>{meta}</span>}
-    </div>
+  <div class:list={['phone', `phone--${size}`]} aria-hidden="true">
+    {label && (
+      <div class="phone__bar">
+        <span>{label}</span>
+        {meta && <span>{meta}</span>}
+      </div>
+    )}
     <div class="phone__body">
       <slot />
     </div>
@@ -42,13 +46,32 @@ const { label, meta, caption, class: className } = Astro.props;
     flex-direction: column;
     gap: var(--tu-space-4);
     width: var(--tu-visual-phone-width);
-    aspect-ratio: 236 / 468;
+    min-height: 29.25rem;
     padding: var(--tu-space-9) var(--tu-space-4) var(--tu-space-5);
     border: var(--tu-device-bezel) solid var(--tu-navy-900);
     border-radius: var(--tu-radius-device);
     background: var(--tu-bg);
     box-shadow: var(--tu-shadow-lift);
     overflow: hidden;
+  }
+
+  .phone--sm {
+    width: 13.75rem;
+    min-height: 26.25rem;
+  }
+
+  .phone--lg,
+  .phone--wide {
+    width: 17.5rem;
+    min-height: 35rem;
+    padding: var(--tu-space-10) 1.125rem 1.375rem;
+    border-width: calc(var(--tu-device-bezel) + var(--tu-border-width));
+    border-radius: 2.75rem;
+  }
+
+  .phone--wide {
+    min-height: 30rem;
+    padding-top: var(--tu-space-10);
   }
 
   .phone__bar {

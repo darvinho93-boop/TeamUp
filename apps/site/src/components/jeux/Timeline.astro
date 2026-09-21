@@ -1,0 +1,145 @@
+---
+/**
+ * Déroulé d'une soirée type : une barre dont chaque segment est proportionnel à la durée,
+ * légendée dessous en desktop, en liste à pastilles en mobile. À poser dans un bloc marine.
+ * Les segments sont décoratifs ; la liste porte l'information pour tout le monde.
+ */
+export type TimelineItem = {
+  label: string;
+  duration: string;
+  /** Poids du segment, en secondes. */
+  seconds: number;
+  tone: 'navy' | 'sage' | 'amber' | 'mint' | 'stone' | 'muted';
+};
+
+type Props = { items: TimelineItem[] };
+const { items } = Astro.props;
+---
+
+<div class="timeline">
+  <div class="timeline__bar" aria-hidden="true">
+    {items.map((item) => (
+      <span
+        class:list={['timeline__segment', `timeline__segment--${item.tone}`]}
+        style={`flex-grow:${item.seconds}`}
+      />
+    ))}
+  </div>
+  <ol class="timeline__legend">
+    {items.map((item) => (
+      <li class="timeline__item" style={`flex-grow:${item.seconds}`}>
+        <span
+          class:list={['timeline__swatch', `timeline__segment--${item.tone}`]}
+          aria-hidden="true"
+        />
+        <span class="timeline__label">{item.label}</span>
+        <span class="timeline__duration">{item.duration}</span>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+  }
+
+  .timeline__bar,
+  .timeline__legend {
+    display: flex;
+    gap: var(--tu-space-1);
+  }
+
+  .timeline__bar {
+    height: var(--tu-space-18);
+  }
+
+  .timeline__segment {
+    flex-basis: 0;
+  }
+
+  .timeline__segment:first-child {
+    border-radius: var(--tu-radius-sm) 0 0 var(--tu-radius-sm);
+  }
+
+  .timeline__segment:last-child {
+    border-radius: 0 var(--tu-radius-sm) var(--tu-radius-sm) 0;
+  }
+
+  .timeline__segment--navy {
+    background: var(--tu-navy-500);
+  }
+
+  .timeline__segment--sage {
+    background: var(--tu-sage-500);
+  }
+
+  .timeline__segment--amber {
+    background: var(--tu-team-4);
+  }
+
+  .timeline__segment--mint {
+    background: var(--tu-sage-200);
+  }
+
+  .timeline__segment--stone {
+    background: var(--tu-stone-500);
+  }
+
+  .timeline__segment--muted {
+    background: var(--tu-border);
+  }
+
+  .timeline__item {
+    flex-basis: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--tu-size-sm);
+    line-height: 1.4;
+  }
+
+  .timeline__swatch {
+    display: none;
+  }
+
+  .timeline__label {
+    font-weight: 600;
+  }
+
+  .timeline__duration {
+    color: var(--tu-text-muted);
+  }
+
+  @media (max-width: 60rem) {
+    .timeline__bar {
+      height: var(--tu-space-10);
+    }
+
+    .timeline__legend {
+      flex-direction: column;
+      gap: var(--tu-space-2);
+    }
+
+    .timeline__item {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--tu-space-3);
+      font-size: var(--tu-btn-sm-font);
+    }
+
+    .timeline__swatch {
+      display: block;
+      flex: none;
+      width: var(--tu-space-3);
+      height: var(--tu-space-3);
+      border-radius: var(--tu-border-width);
+    }
+
+    .timeline__label {
+      flex: 1;
+    }
+  }
+</style>

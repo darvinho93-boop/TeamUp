@@ -15,10 +15,10 @@ const { items } = Astro.props;
 ---
 
 <div class="faq">
-  {items.map((item) => (
-    <details class="faq__item">
+  {items.map((item, index) => (
+    <details class="faq__item" open={index === 0}>
       <summary class="faq__question">
-        <span>{item.question}</span>
+        <h3 class="faq__title">{item.question}</h3>
         <Icon name="chevron" size="sm" class="faq__chevron" />
       </summary>
       <div class="faq__answer">
@@ -30,18 +30,16 @@ const { items } = Astro.props;
 
 <style>
   /* <details> : ouverture au clavier et lecture d'écran gérées par le navigateur,
-     donc aucun script et aucun piège de focus à écrire. */
+     donc aucun script et aucun piège de focus à écrire. La première question est
+     ouverte, comme dans les maquettes. */
   .faq {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-3);
-    max-width: 52rem;
+    border-bottom: var(--tu-border-width) solid var(--tu-border);
   }
 
   .faq__item {
-    border: var(--tu-border-width) solid var(--tu-border);
-    border-radius: var(--tu-radius-md);
-    background: var(--tu-surface);
+    border-top: var(--tu-border-width) solid var(--tu-border);
   }
 
   .faq__question {
@@ -50,9 +48,7 @@ const { items } = Astro.props;
     justify-content: space-between;
     gap: var(--tu-space-4);
     min-height: var(--tu-tap-min);
-    padding: var(--tu-space-3) var(--tu-space-6);
-    font-family: var(--tu-font-display);
-    font-weight: 600;
+    padding-block: var(--tu-space-5);
     cursor: pointer;
     list-style: none;
   }
@@ -61,17 +57,40 @@ const { items } = Astro.props;
     display: none;
   }
 
-  .faq__chevron {
+  .faq__title {
+    font-size: var(--tu-size-lg);
+    font-weight: 600;
+    letter-spacing: normal;
+  }
+
+  .faq__question :global(.faq__chevron) {
     transition: transform var(--tu-dur-base) var(--tu-ease);
   }
 
-  .faq__item[open] .faq__chevron {
+  .faq__item[open] :global(.faq__chevron) {
     transform: rotate(180deg);
   }
 
   .faq__answer {
-    padding: 0 var(--tu-space-6) var(--tu-space-6);
+    padding-bottom: var(--tu-space-6);
+    font-size: var(--tu-type-body-lg);
     color: var(--tu-text-muted);
     max-width: 62ch;
+  }
+
+  @media (max-width: 60rem) {
+    .faq__question {
+      padding-block: var(--tu-space-4);
+    }
+
+    .faq__title {
+      font-size: var(--tu-size-base);
+    }
+
+    .faq__answer {
+      margin-top: calc(-1 * var(--tu-space-2));
+      padding-bottom: var(--tu-space-4);
+      font-size: var(--tu-btn-sm-font);
+    }
   }
 </style>

@@ -9,7 +9,7 @@ type Props = {
   /**
    * `numerals` : grands chiffres sauge, en colonnes (bloc marine de l'accueil).
    * `cards` : une carte blanche numérotée par étape (Comment ça marche).
-   * `plain` : titres et textes empilés, sans numéro (Particuliers, Entreprises).
+   * `plain` : titres et textes empilés, numérotés en mobile seulement (Particuliers).
    */
   variant?: 'numerals' | 'cards' | 'plain';
   headingLevel?: 'h3' | 'h4';
@@ -17,17 +17,14 @@ type Props = {
 
 const { steps, variant = 'numerals', headingLevel = 'h3' } = Astro.props;
 const Heading = headingLevel;
-const numbered = variant !== 'plain';
 ---
 
 <ol class:list={['steps', `steps--${variant}`]} style={`--steps-count:${steps.length}`}>
   {steps.map((step, index) => (
     <li class:list={['steps__item', variant === 'cards' && 'tu-panel']}>
-      {numbered && (
-        <span class="steps__number" aria-hidden="true">
-          {index + 1}
-        </span>
-      )}
+      <span class="steps__number" aria-hidden="true">
+        {index + 1}
+      </span>
       <div class="steps__body">
         <Heading class="steps__title">{step.title}</Heading>
         {step.body && <p class="steps__text">{step.body}</p>}
@@ -110,8 +107,16 @@ const numbered = variant !== 'plain';
     gap: var(--tu-space-7);
   }
 
+  .steps--plain .steps__number {
+    display: none;
+  }
+
   .steps--plain .steps__title {
-    font-size: var(--tu-size-lg);
+    font-size: 1.3125rem;
+  }
+
+  .steps--plain .steps__text {
+    font-size: var(--tu-type-body-lg);
   }
 
   @media (max-width: 60rem) {
@@ -146,15 +151,50 @@ const numbered = variant !== 'plain';
       padding: var(--tu-space-5);
     }
 
-    .steps--cards .steps__number {
+    .steps--cards .steps__number,
+    .steps--plain .steps__number {
       flex: none;
       width: var(--tu-space-9);
       height: var(--tu-space-9);
     }
 
-    .steps__title,
-    .steps--plain .steps__title {
+    .steps--plain {
+      gap: var(--tu-space-5);
+    }
+
+    .steps--plain .steps__item {
+      flex-direction: row;
+      gap: var(--tu-space-3);
+    }
+
+    .steps--plain .steps__number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--tu-space-8);
+      height: var(--tu-space-8);
+      border-radius: var(--tu-radius-pill);
+      background: var(--tu-sage-50);
+      color: var(--tu-success-text);
+      font-family: var(--tu-font-display);
+      font-size: var(--tu-size-sm);
+      font-weight: 700;
+    }
+
+    .steps--plain .steps__body {
+      gap: var(--tu-space-1);
+    }
+
+    .steps--plain .steps__text {
+      font-size: var(--tu-btn-sm-font);
+    }
+
+    .steps__title {
       font-size: var(--tu-size-base);
+    }
+
+    .steps--plain .steps__title {
+      font-size: var(--tu-type-body-lg);
     }
   }
 </style>

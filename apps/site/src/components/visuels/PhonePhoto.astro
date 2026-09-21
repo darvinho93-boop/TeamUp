@@ -16,13 +16,18 @@ const themes = [
   label="Photo challenge · Équipe 2"
   meta="Capitaine"
   caption="Illustration : le capitaine d'équipe voit les trois thèmes photo de la soirée et l'état de ses envois."
+  size="lg"
   class={className}
 >
   <p class="shots__title">Vos thèmes de la soirée</p>
   <ul class="shots__list">
     {themes.map((theme) => (
       <li class="shots__item">
-        <Icon name={theme.done ? 'check' : 'camera'} size="sm" class="shots__icon" />
+        <Icon
+          name={theme.done ? 'check' : 'camera'}
+          size="sm"
+          class={theme.done ? 'shots__icon shots__icon--done' : 'shots__icon'}
+        />
         <span class="shots__text">
           <span class="shots__name">{theme.title}</span>
           <span class:list={['shots__state', theme.done && 'shots__state--done']}>
@@ -38,7 +43,9 @@ const themes = [
 <style>
   .shots__title {
     font-family: var(--tu-font-display);
-    font-weight: 600;
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.2;
   }
 
   .shots__list {
@@ -51,20 +58,30 @@ const themes = [
     display: flex;
     align-items: flex-start;
     gap: var(--tu-space-3);
+    padding: var(--tu-space-3);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
   }
 
   .shots__icon {
-    margin-top: 0.2em;
     color: var(--tu-text-muted);
+  }
+
+  .shots__icon--done {
+    color: var(--tu-success-text);
   }
 
   .shots__text {
     display: flex;
     flex-direction: column;
+    gap: var(--tu-space-1);
   }
 
   .shots__name {
     font-size: var(--tu-size-sm);
+    font-weight: 600;
+    line-height: 1.3;
   }
 
   .shots__state {
@@ -81,6 +98,7 @@ const themes = [
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: auto;
     min-height: var(--tu-tap-min);
     border-radius: var(--tu-radius-pill);
     background: var(--tu-accent);

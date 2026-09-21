@@ -8,6 +8,8 @@ type Props = HTMLAttributes<'section'> & {
   lead?: string;
   /** `dark` : bloc marine arrondi, comme « Comment ça marche » sur l'accueil. */
   tone?: 'default' | 'dark';
+  /** `aside` : en-tête dans un tiers à gauche, contenu dans les deux tiers à droite (FAQ). */
+  layout?: 'stack' | 'aside';
   headingLevel?: 'h2' | 'h3';
 };
 
@@ -16,6 +18,7 @@ const {
   title,
   lead,
   tone = 'default',
+  layout = 'stack',
   headingLevel = 'h2',
   class: className,
   ...rest
@@ -30,7 +33,11 @@ const dark = tone === 'dark';
 <section class:list={['section', className]} {...rest}>
   <div class="tu-container">
     <div
-      class:list={['section__inner', dark && 'tu-panel tu-panel--dark section__inner--dark']}
+      class:list={[
+        'section__inner',
+        layout === 'aside' && 'section__inner--aside',
+        dark && 'tu-panel tu-panel--dark section__inner--dark',
+      ]}
       data-theme={dark ? 'stage' : undefined}
     >
       {hasHeader && (
@@ -68,6 +75,13 @@ const dark = tone === 'dark';
     gap: var(--tu-space-12);
   }
 
+  .section__inner--aside {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--tu-space-20);
+    align-items: start;
+  }
+
   .section__inner--dark {
     gap: var(--tu-space-14);
     padding: var(--tu-space-20);
@@ -102,6 +116,11 @@ const dark = tone === 'dark';
   @media (max-width: 60rem) {
     .section__inner {
       gap: var(--tu-space-6);
+    }
+
+    .section__inner--aside {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-4);
     }
 
     .section__inner--dark {

@@ -13,10 +13,11 @@ const languages = [
 ---
 
 <PhoneFrame
-  label="Choisis ta langue"
+  size="wide"
   caption="Illustration : en rejoignant la partie, chaque invité choisit sa langue entre le français, le tamoul et l'anglais."
   class={className}
 >
+  <p class="lang__title">Choisis ta langue</p>
   <ul class="lang__list">
     {languages.map((language) => (
       <li
@@ -31,6 +32,14 @@ const languages = [
 </PhoneFrame>
 
 <style>
+  .lang__title {
+    margin-bottom: var(--tu-space-2);
+    font-family: var(--tu-font-display);
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
   .lang__list {
     display: flex;
     flex-direction: column;
@@ -40,18 +49,18 @@ const languages = [
   .lang__item {
     display: flex;
     align-items: center;
-    min-height: var(--tu-tap-min);
-    padding-inline: var(--tu-space-4);
-    border: var(--tu-border-width) solid var(--tu-border);
+    min-height: var(--tu-btn-cta-height);
+    padding-inline: 1.125rem;
+    border: var(--tu-btn-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-md);
     background: var(--tu-surface);
     font-family: var(--tu-font-display);
+    font-size: var(--tu-type-body-lg);
     font-weight: 600;
   }
 
   .lang__item--selected {
     border-color: var(--tu-primary);
-    background: var(--tu-navy-50);
   }
 
   .lang__item:lang(ta) {
@@ -62,6 +71,7 @@ const languages = [
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: auto;
     min-height: var(--tu-tap-min);
     border-radius: var(--tu-radius-pill);
     background: var(--tu-primary);

@@ -36,14 +36,13 @@ const teams = [
 >
   <div class="teams">
     {teams.map((team) => (
-      <div class={`teams__row ${team.teamClass}`}>
-        <span class="teams__name">{team.name}</span>
-        <span class="teams__players">
-          {team.players.map((player) => (
-            <span class="teams__player">{player}</span>
-          ))}
-          <span class="teams__more">+ 4</span>
-        </span>
+      <div class="teams__card">
+        <span class={`teams__name ${team.teamClass}`}>{team.name}</span>
+        {team.players.map((player, index) => (
+          <span class:list={['teams__player', index >= 3 && 'teams__player--extra']}>{player}</span>
+        ))}
+        <span class="teams__more teams__more--desktop">+ 4</span>
+        <span class="teams__more teams__more--mobile">+ 6</span>
       </div>
     ))}
   </div>
@@ -51,42 +50,73 @@ const teams = [
 
 <style>
   .teams {
-    display: flex;
-    flex-direction: column;
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--tu-space-3);
   }
 
-  .teams__row {
+  .teams__card {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--tu-space-3);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--tu-space-2);
     padding: var(--tu-space-3);
+    border: var(--tu-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-md);
     background: var(--tu-surface);
-    border-inline-start: var(--tu-space-1) solid var(--tu-team-color);
+    font-size: var(--tu-size-sm);
+    line-height: 1.3;
   }
 
   .teams__name {
-    font-family: var(--tu-font-display);
+    padding: var(--tu-space-1) var(--tu-space-3);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-team-color);
+    color: var(--tu-team-on);
+    font-size: var(--tu-size-xs);
     font-weight: 600;
-    font-size: var(--tu-size-sm);
-    min-width: 6rem;
   }
 
-  .teams__players {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--tu-space-2);
-    font-size: var(--tu-size-sm);
-    color: var(--tu-text-muted);
-  }
-
-  .teams__player::after {
-    content: ' ·';
+  /* L'équipe navy se confondrait avec le fond marine : sa pastille passe au bleu vif. */
+  .teams__name.tu-team--1 {
+    --tu-team-color: var(--tu-navy-500);
+    --tu-team-on: var(--tu-text);
   }
 
   .teams__more {
-    font-weight: 600;
+    color: var(--tu-text-muted);
+  }
+
+  .teams__more--mobile {
+    display: none;
+  }
+
+  /* Mobile : deux colonnes, trois prénoms par équipe, comme la maquette. */
+  @media (max-width: 60rem) {
+    .teams {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--tu-space-2);
+    }
+
+    .teams__card {
+      padding: var(--tu-space-3);
+    }
+
+    .teams__player--extra {
+      display: none;
+    }
+
+    .teams__name {
+      align-self: stretch;
+    }
+
+    .teams__more--desktop {
+      display: none;
+    }
+
+    .teams__more--mobile {
+      display: inline;
+    }
   }
 </style>

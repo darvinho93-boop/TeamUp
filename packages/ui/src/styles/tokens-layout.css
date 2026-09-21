@@ -110,7 +110,7 @@
     --tu-type-page: 2.125rem;
     --tu-type-page-sm: 2.125rem;
     --tu-type-page-xs: 2.125rem;
-    --tu-type-title: 1.875rem; /* 30 px */
+    --tu-type-title: 1.75rem; /* 28 px, 30 sur l'accueil seul */
     --tu-type-subtitle: var(--tu-size-xl);
     --tu-type-card: 1.125rem;
     --tu-type-numeral: 2.5rem;

@@ -11,6 +11,9 @@ import ScreenTeams from '../components/visuels/ScreenTeams.astro';
 import PhoneSecret from '../components/visuels/PhoneSecret.astro';
 import PhonePhoto from '../components/visuels/PhonePhoto.astro';
 import PhoneLang from '../components/visuels/PhoneLang.astro';
+import Stage from '../components/visuels/Stage.astro';
+import Timeline from '../components/jeux/Timeline.astro';
+import type { TimelineItem } from '../components/jeux/Timeline.astro';
 
 const occasions = [
   {
@@ -46,13 +49,13 @@ const raisons = [
   },
 ];
 
-const programme = [
-  { label: 'Points communs', duration: '8 min 40' },
-  { label: 'Quiz', duration: '2 min' },
-  { label: 'Surenchère', duration: '6 min' },
-  { label: 'Mime', duration: '10 min' },
-  { label: 'Diffusion photo', duration: '5 min' },
-  { label: 'Transitions', duration: '≈ 4 min' },
+const programme: TimelineItem[] = [
+  { label: 'Points communs', duration: '8 min 40', seconds: 520, tone: 'navy' },
+  { label: 'Quiz', duration: '2 min', seconds: 120, tone: 'sage' },
+  { label: 'Surenchère', duration: '6 min', seconds: 360, tone: 'amber' },
+  { label: 'Mime', duration: '10 min', seconds: 600, tone: 'mint' },
+  { label: 'Diffusion photo', duration: '5 min', seconds: 300, tone: 'stone' },
+  { label: 'Transitions', duration: '≈ 4 min', seconds: 220, tone: 'muted' },
 ];
 
 /* Seule la première réponse est rédigée dans la maquette. Les autres sont à fournir. */
@@ -79,23 +82,23 @@ const faq: FaqItem[] = [
     lead="Anniversaire, mariage, fête de famille : on transforme des tablées qui s'observent en équipes qui jouent ensemble. Vous, vous profitez de vos invités."
   >
     <Fragment slot="actions">
-      <Button href="/devis" variant="accent" size="lg">
+      <Button href="/devis" variant="accent" size="cta">
         Demander un devis
       </Button>
-      <Button href="#programme" variant="ghost" size="lg">
+      <Button href="#programme" variant="outline" size="cta">
         Voir un exemple de soirée
       </Button>
     </Fragment>
-    <Fragment slot="visual">
-      <ScreenTeams />
-      <PhoneSecret />
-    </Fragment>
+    <Stage slot="visual" class="hero-stage">
+      <ScreenTeams slot="screen" />
+      <PhoneSecret slot="phone" class="desktop-only" />
+    </Stage>
   </PageIntro>
 
   <Section eyebrow="Les occasions" title="Dès que plusieurs cercles se retrouvent.">
     <div class="occasions">
       {occasions.map((occasion) => (
-        <article class="occasion">
+        <article class="tu-panel occasion">
           <h3 class="occasion__title">{occasion.title}</h3>
           <p class="occasion__body">{occasion.body}</p>
         </article>
@@ -103,39 +106,51 @@ const faq: FaqItem[] = [
     </div>
   </Section>
 
-  <Section eyebrow="Pourquoi ça marche" title="Le mélange ne se fait pas tout seul. On l'organise.">
-    <div class="why">
-      <StepList steps={raisons} variant="plain" />
-      <PhonePhoto />
+  <section class="why-section">
+    <div class="tu-container why">
+      <div class="why__visual desktop-only">
+        <PhonePhoto />
+      </div>
+      <div class="why__text">
+        <div class="why__header">
+          <p class="tu-eyebrow">Pourquoi ça marche</p>
+          <h2 class="tu-title">Le mélange ne se fait pas tout seul. On l'organise.</h2>
+        </div>
+        <StepList steps={raisons} variant="plain" />
+      </div>
     </div>
-  </Section>
+  </section>
 
-  <Section id="programme" eyebrow="Exemple de soirée" title="40 minutes, 4 équipes, 5 jeux.">
-    <ol class="programme">
-      {programme.map((item) => (
-        <li class="programme__item">
-          <span class="programme__label">{item.label}</span>
-          <span class="programme__duration">{item.duration}</span>
-        </li>
-      ))}
-    </ol>
+  <Section
+    id="programme"
+    eyebrow="Exemple de soirée"
+    title="40 minutes, 4 équipes, 5 jeux."
+    tone="dark"
+  >
+    <Timeline items={programme} />
     <p class="programme__note">
       Les photos se prennent tout au long de la soirée, entre les jeux. Le programme s'adapte au
       nombre d'invités : au-delà de cinq équipes, on prévoit un créneau de 60 minutes.
     </p>
   </Section>
 
-  <Section eyebrow="Multilingue" title="Chacun joue dans sa langue.">
-    <div class="multi">
-      <p class="multi__body">
-        Les familles ne parlent pas toutes la même langue ? Chaque invité choisit la sienne en
-        rejoignant la partie. Les jeux reposent sur le geste et le mouvement, pas sur les mots.
-      </p>
-      <PhoneLang />
+  <section class="multi-section">
+    <div class="tu-container multi">
+      <div class="multi__text">
+        <p class="tu-eyebrow">Multilingue</p>
+        <h2 class="tu-title">Chacun joue dans sa langue.</h2>
+        <p class="multi__body">
+          Les familles ne parlent pas toutes la même langue ? Chaque invité choisit la sienne en
+          rejoignant la partie. Les jeux reposent sur le geste et le mouvement, pas sur les mots.
+        </p>
+      </div>
+      <div class="multi__visual">
+        <PhoneLang />
+      </div>
     </div>
-  </Section>
+  </section>
 
-  <Section eyebrow="Questions fréquentes" title="Avant de vous lancer.">
+  <Section eyebrow="Questions fréquentes" title="Avant de vous lancer." layout="aside">
     <Faq items={faq} />
   </Section>
 
@@ -145,77 +160,116 @@ const faq: FaqItem[] = [
 <style>
   .occasions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-    gap: var(--tu-space-4);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--tu-space-5);
   }
 
   .occasion {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-2);
-    padding: var(--tu-space-6);
-    border-radius: var(--tu-radius-lg);
-    background: var(--tu-surface);
-    border: var(--tu-border-width) solid var(--tu-border);
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-8);
   }
 
   .occasion__title {
-    font-size: var(--tu-size-lg);
+    font-size: 1.375rem;
   }
 
   .occasion__body {
     color: var(--tu-text-muted);
   }
 
+  .why-section,
+  .multi-section {
+    padding-bottom: var(--tu-section-space);
+  }
+
   .why,
   .multi {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--tu-space-12);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-20);
     align-items: center;
   }
 
-  .multi__body {
-    font-size: var(--tu-size-lg);
-    color: var(--tu-text-muted);
+  .why__visual,
+  .multi__visual {
+    display: flex;
+    justify-content: center;
   }
 
-  .programme {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  .why__text,
+  .multi__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-9);
+  }
+
+  .why__header {
+    display: flex;
+    flex-direction: column;
     gap: var(--tu-space-3);
   }
 
-  .programme__item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tu-space-1);
-    padding: var(--tu-space-4);
-    border-radius: var(--tu-radius-md);
-    background: var(--tu-surface);
-    border: var(--tu-border-width) solid var(--tu-border);
+  .multi__text {
+    gap: var(--tu-space-5);
   }
 
-  .programme__label {
-    font-family: var(--tu-font-display);
-    font-weight: 600;
-  }
-
-  .programme__duration {
-    font-family: var(--tu-font-numeric);
+  .multi__body {
+    font-size: 1.125rem;
     color: var(--tu-text-muted);
   }
 
   .programme__note {
+    max-width: 47.5rem;
     color: var(--tu-text-muted);
-    max-width: 62ch;
+  }
+
+  @media (max-width: 75rem) {
+    .occasions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 60rem) {
+    /* Mobile : l'écran des équipes seul, sans téléphone ; pas de téléphone non plus
+         à côté de « Pourquoi ça marche ». */
+    .desktop-only,
+    :global(.stage.hero-stage .desktop-only) {
+      display: none;
+    }
+
+    :global(.stage.hero-stage) {
+      min-height: 0;
+    }
+
+    :global(.stage.hero-stage .stage__screen) {
+      position: static;
+      width: 100%;
+    }
+
+    .occasions {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-3);
+    }
+
+    .occasion {
+      gap: var(--tu-space-2);
+      padding: var(--tu-space-6) 1.375rem;
+    }
+
+    .occasion__title {
+      font-size: var(--tu-size-lg);
+    }
+
     .why,
     .multi {
       grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-8);
+      gap: var(--tu-space-6);
+    }
+
+    .why__text {
+      gap: var(--tu-space-5);
     }
 
     .multi__body {
