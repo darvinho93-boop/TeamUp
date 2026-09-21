@@ -16,10 +16,12 @@ const max = Math.max(...rows.map((row) => row.score));
 
 <ScreenFrame
   label="Écran de la salle · Classement"
-  meta="après 3 jeux"
   caption="Illustration : le classement projeté après trois jeux, de 785 à 400 points."
   class={className}
 >
+  <span slot="meta" class="ranking__meta">
+    après 3 jeux
+  </span>
   <div class="ranking">
     {rows.map((row) => (
       <div class={`ranking__row ${row.teamClass}`}>
@@ -34,27 +36,34 @@ const max = Math.max(...rows.map((row) => row.score));
 </ScreenFrame>
 
 <style>
+  .ranking__meta {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
   .ranking {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-3);
+    justify-content: center;
+    gap: var(--tu-space-4);
   }
 
   .ranking__row {
     display: grid;
-    grid-template-columns: 5.5rem minmax(0, 1fr) 3rem;
+    grid-template-columns: 5.5rem minmax(0, 1fr) 3.75rem;
     align-items: center;
-    gap: var(--tu-space-3);
+    gap: var(--tu-space-4);
   }
 
   .ranking__name {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-btn-sm-font);
     font-weight: 600;
   }
 
   .ranking__track {
-    height: var(--tu-space-4);
-    border-radius: var(--tu-radius-pill);
+    height: var(--tu-ranking-bar);
+    border-radius: var(--tu-radius-sm);
     background: var(--tu-surface);
     overflow: hidden;
   }
@@ -62,13 +71,34 @@ const max = Math.max(...rows.map((row) => row.score));
   .ranking__bar {
     display: block;
     height: 100%;
-    border-radius: var(--tu-radius-pill);
+    border-radius: var(--tu-radius-sm);
     background: var(--tu-team-color);
+  }
+
+  /* L'équipe navy se confondrait avec le fond marine : sa barre passe au bleu vif. */
+  .ranking__row.tu-team--1 {
+    --tu-team-color: var(--tu-navy-500);
   }
 
   .ranking__score {
     font-family: var(--tu-font-numeric);
+    font-size: var(--tu-screen-type-md);
     font-weight: 700;
     text-align: end;
+  }
+
+  @media (max-width: 60rem) {
+    .ranking {
+      gap: var(--tu-space-3);
+    }
+
+    .ranking__row {
+      grid-template-columns: 4.5rem minmax(0, 1fr) var(--tu-space-10);
+      gap: var(--tu-space-3);
+    }
+
+    .ranking__name {
+      font-size: var(--tu-type-caption);
+    }
   }
 </style>

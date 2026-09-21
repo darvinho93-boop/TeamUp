@@ -1,0 +1,28 @@
+---
+import IconList from './IconList.astro';
+import { fourni, surPlace } from '../../data/equipement';
+
+/** Ce que Team Up! apporte, ce qu'il faut sur place : une seule carte, deux colonnes. */
+---
+
+<div class="tu-panel equipment">
+  <IconList title="Ce que nous apportons" items={fourni} />
+  <IconList title="Ce qu'il faut sur place" items={surPlace} />
+</div>
+
+<style>
+  .equipment {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--tu-space-16);
+    padding: var(--tu-space-16) var(--tu-space-18);
+  }
+
+  @media (max-width: 60rem) {
+    .equipment {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-7);
+      padding: var(--tu-space-7) 1.375rem;
+    }
+  }
+</style>

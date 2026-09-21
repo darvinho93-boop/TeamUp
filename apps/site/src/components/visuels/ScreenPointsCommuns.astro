@@ -18,6 +18,7 @@ const tiers =
 <ScreenFrame
   label="Écran de la salle · Points communs"
   meta={variant === 'consigne' ? 'Équipe 1 : yeux fermés' : 'Équipe 2 joue'}
+  metaPill={variant === 'consigne' ? 'navy' : 'coral'}
   caption={
     variant === 'consigne'
       ? "Illustration : l'écran montre le point commun à la salle pendant que l'équipe qui joue garde les yeux fermés."
@@ -46,52 +47,61 @@ const tiers =
 <style>
   .pc__reveal,
   .pc__play {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-2);
-    padding: var(--tu-space-6);
-    border-radius: var(--tu-radius-md);
-    background: var(--tu-surface);
+    align-items: center;
+    justify-content: center;
+    gap: var(--tu-space-4);
     text-align: center;
   }
 
   .pc__hint {
-    font-size: var(--tu-size-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: var(--tu-size-base);
     color: var(--tu-text-muted);
   }
 
   .pc__secret {
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-2xl);
+    font-size: var(--tu-screen-type-title);
     font-weight: 700;
+    line-height: var(--tu-leading-tight);
   }
 
   .pc__timer {
     font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-4xl);
+    font-size: var(--tu-screen-type-giant);
     font-weight: 700;
-    line-height: var(--tu-leading-tight);
+    line-height: 1;
     color: var(--tu-primary);
   }
 
   .pc__call {
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-lg);
+    font-size: var(--tu-screen-type-lg);
+    font-weight: 600;
   }
 
   .pc__tiers {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: var(--tu-space-2);
   }
 
   .pc__tier {
-    padding: var(--tu-space-2) var(--tu-space-3);
+    padding: var(--tu-space-1) var(--tu-space-3);
+    border: var(--tu-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-pill);
-    background: var(--tu-surface-muted);
+    background: var(--tu-surface);
     font-size: var(--tu-size-xs);
     color: var(--tu-text-muted);
+  }
+
+  .pc__tier:first-child {
+    border-color: transparent;
+    background: var(--tu-primary);
+    color: var(--tu-on-primary);
+    font-weight: 600;
   }
 </style>

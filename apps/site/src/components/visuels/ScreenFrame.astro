@@ -8,13 +8,15 @@ type Props = {
   label: string;
   /** Mention à droite du libellé. Le slot `meta` la remplace (chrono, pastille…). */
   meta?: string | undefined;
+  /** La mention devient une pastille de couleur (équipe qui joue, adjugé…). */
+  metaPill?: 'sage' | 'coral' | 'amber' | 'navy' | undefined;
   caption: string;
   /** Le bloc marine sans ombre, posé à plat dans une carte (portes de l'accueil). */
   flat?: boolean;
   class?: string | undefined;
 };
 
-const { label, meta, caption, flat = false, class: className } = Astro.props;
+const { label, meta, metaPill, caption, flat = false, class: className } = Astro.props;
 const hasMetaSlot = Astro.slots.has('meta');
 ---
 
@@ -22,7 +24,15 @@ const hasMetaSlot = Astro.slots.has('meta');
   <div class:list={['screen', flat && 'screen--flat']} data-theme="stage" aria-hidden="true">
     <div class="screen__bar">
       <span class="screen__label">{label}</span>
-      {hasMetaSlot ? <slot name="meta" /> : meta && <span class="screen__meta">{meta}</span>}
+      {hasMetaSlot ? (
+        <slot name="meta" />
+      ) : (
+        meta && (
+          <span class:list={['screen__meta', metaPill && `screen__pill screen__pill--${metaPill}`]}>
+            {meta}
+          </span>
+        )
+      )}
     </div>
     <div class="screen__body">
       <slot />
@@ -70,6 +80,33 @@ const hasMetaSlot = Astro.slots.has('meta');
   .screen__meta {
     color: var(--tu-primary);
     font-weight: 600;
+  }
+
+  .screen__pill {
+    flex: none;
+    padding: var(--tu-space-1) var(--tu-space-3);
+    border-radius: var(--tu-radius-pill);
+    font-size: var(--tu-size-xs);
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--tu-navy-900);
+  }
+
+  .screen__pill--sage {
+    background: var(--tu-sage-500);
+  }
+
+  .screen__pill--coral {
+    background: var(--tu-team-2);
+  }
+
+  .screen__pill--amber {
+    background: var(--tu-team-4);
+  }
+
+  .screen__pill--navy {
+    background: var(--tu-navy-500);
+    color: var(--tu-text);
   }
 
   .screen__body {

@@ -6,23 +6,31 @@ const { class: className } = Astro.props;
 ---
 
 <PhoneFrame
-  label="Rejoindre la partie"
+  size="sm"
   caption="Illustration : pour rejoindre, un invité saisit le code de salle et son prénom. Aucun compte, aucune application."
   class={className}
 >
+  <p class="join__title">Rejoindre la partie</p>
   <div class="join__field">
     <span class="join__label">Code de salle</span>
     <span class="join__value join__value--code">K7P2M9</span>
   </div>
   <div class="join__field">
     <span class="join__label">Ton prénom</span>
-    <span class="join__value">Nadia</span>
+    <span class="join__value join__value--active">Nadia</span>
   </div>
   <span class="join__button">Rejoindre</span>
   <span class="join__note">Aucune application, aucun compte</span>
 </PhoneFrame>
 
 <style>
+  .join__title {
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-size-lg);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
   .join__field {
     display: flex;
     flex-direction: column;
@@ -30,23 +38,28 @@ const { class: className } = Astro.props;
   }
 
   .join__label {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-size-xs);
     font-weight: 600;
+    color: var(--tu-text-muted);
   }
 
   .join__value {
     display: flex;
     align-items: center;
-    min-height: var(--tu-tap-min);
+    min-height: 3.25rem;
     padding-inline: var(--tu-space-4);
-    border: var(--tu-border-width) solid var(--tu-border);
+    border: var(--tu-btn-border-width) solid var(--tu-border);
     border-radius: var(--tu-radius-md);
     background: var(--tu-surface);
   }
 
+  .join__value--active {
+    border-color: var(--tu-primary);
+  }
+
   .join__value--code {
     font-family: var(--tu-font-numeric);
-    font-size: var(--tu-size-lg);
+    font-size: 1.125rem;
     font-weight: 700;
     letter-spacing: 0.12em;
   }
@@ -55,6 +68,7 @@ const { class: className } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: auto;
     min-height: var(--tu-tap-min);
     border-radius: var(--tu-radius-pill);
     background: var(--tu-accent);
@@ -64,7 +78,7 @@ const { class: className } = Astro.props;
   }
 
   .join__note {
-    font-size: var(--tu-size-xs);
+    font-size: 0.6875rem;
     color: var(--tu-text-muted);
     text-align: center;
   }

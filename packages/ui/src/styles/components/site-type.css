@@ -13,6 +13,7 @@
 
 [data-accent='entreprises'] {
   --tu-eyebrow-color: var(--tu-navy-500);
+  --tu-cta-bg: var(--tu-navy-50);
 }
 
 .tu-eyebrow--navy {

@@ -17,7 +17,7 @@ const { title, items } = Astro.props;
 ---
 
 <div class="icon-list">
-  <h3 class="icon-list__title">{title}</h3>
+  <h2 class="icon-list__title">{title}</h2>
   <ul class="icon-list__items">
     {items.map((item) => (
       <li class="icon-list__item">
@@ -32,21 +32,19 @@ const { title, items } = Astro.props;
   .icon-list {
     display: flex;
     flex-direction: column;
-    gap: var(--tu-space-4);
-    padding: var(--tu-space-8);
-    border: var(--tu-border-width) solid var(--tu-border);
-    border-radius: var(--tu-radius-lg);
-    background: var(--tu-surface);
+    gap: var(--tu-space-5);
   }
 
   .icon-list__title {
-    font-size: var(--tu-size-lg);
+    font-size: 1.875rem;
   }
 
   .icon-list__items {
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-3);
+    font-size: var(--tu-type-body-lg);
+    line-height: 1.5;
   }
 
   .icon-list__item {
@@ -55,14 +53,18 @@ const { title, items } = Astro.props;
     gap: var(--tu-space-3);
   }
 
-  .icon-list__icon {
+  .icon-list__item :global(.icon-list__icon) {
     margin-top: 0.2em;
     color: var(--tu-success-text);
   }
 
   @media (max-width: 60rem) {
     .icon-list {
-      padding: var(--tu-space-6);
+      gap: var(--tu-space-4);
+    }
+
+    .icon-list__title {
+      font-size: 1.375rem;
     }
   }
 </style>

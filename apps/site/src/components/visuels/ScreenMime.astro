@@ -8,6 +8,7 @@ const { class: className } = Astro.props;
 <ScreenFrame
   label="Écran de la salle · Mime"
   meta="Équipe 4"
+  metaPill="amber"
   caption="Illustration : l'écran révèle le mot « Parapluie » sur fond vert, l'équipe 4 l'a trouvé et marque 100 points."
   class={className}
 >
@@ -20,14 +21,16 @@ const { class: className } = Astro.props;
 
 <style>
   .mime {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--tu-space-2);
-    padding: var(--tu-space-8) var(--tu-space-6);
-    border-radius: var(--tu-radius-md);
-    /* Le vert vif du thème stage, pas sa déclinaison sombre : 8,16:1 contre 3,85:1,
-             et une révélation qui se voit du fond de la salle. */
+    justify-content: center;
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-6);
+    border-radius: 1.125rem;
+    /* Le vert vif du thème stage, pas sa déclinaison sombre de la maquette : 8,16:1
+           contre 3,85:1, et une révélation qui se voit du fond de la salle. */
     background: var(--tu-primary);
     color: var(--tu-on-primary);
     text-align: center;
@@ -37,18 +40,16 @@ const { class: className } = Astro.props;
     font-family: var(--tu-font-display);
     font-size: var(--tu-size-lg);
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
   }
 
   .mime__word {
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-3xl);
+    font-size: var(--tu-screen-type-xxl);
     font-weight: 700;
-    line-height: var(--tu-leading-tight);
+    line-height: 1;
   }
 
   .mime__score {
-    font-size: var(--tu-size-sm);
+    font-size: var(--tu-size-base);
   }
 </style>

@@ -15,10 +15,12 @@ const shots = [
 
 <ScreenFrame
   label="Écran de la salle · Diffusion photo"
-  meta="Thème 2 / 3"
   caption="Illustration : la diffusion de fin de soirée montre les quatre photos du thème « La pyramide humaine », celle de l'équipe 2 est désignée gagnante."
   class={className}
 >
+  <span slot="meta" class="photo__meta">
+    Thème 2 / 3
+  </span>
   <span class="photo__theme">La pyramide humaine</span>
   <div class="photo__grid">
     {shots.map((shot) => (
@@ -32,48 +34,72 @@ const shots = [
 </ScreenFrame>
 
 <style>
+  .photo__meta {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
   .photo__theme {
     font-family: var(--tu-font-display);
-    font-size: var(--tu-size-xl);
-    font-weight: 600;
+    font-size: var(--tu-screen-type-lg);
+    font-weight: 700;
   }
 
   .photo__grid {
+    flex: 1;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--tu-space-3);
   }
 
   .photo__shot {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: var(--tu-space-2);
-    padding: var(--tu-space-6) var(--tu-space-3);
-    border-radius: var(--tu-radius-md);
+    padding: var(--tu-space-6) var(--tu-space-2);
     border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-md);
     background: var(--tu-surface);
   }
 
+  /* La gagnante est désignée en sauge, comme dans la maquette : le corail reste aux actions. */
   .photo__shot--winner {
-    border-color: var(--tu-accent);
+    border: var(--tu-space-1) solid var(--tu-primary);
   }
 
-  .photo__icon {
+  .photo__shot :global(.photo__icon) {
     color: var(--tu-text-muted);
   }
 
   .photo__team {
-    font-size: var(--tu-size-xs);
+    font-size: var(--tu-type-caption);
     color: var(--tu-text-muted);
+    text-align: center;
   }
 
   .photo__badge {
-    padding: var(--tu-space-1) var(--tu-space-3);
+    position: absolute;
+    top: var(--tu-space-2);
+    right: var(--tu-space-2);
+    padding: var(--tu-space-1) var(--tu-space-2);
     border-radius: var(--tu-radius-pill);
-    background: var(--tu-accent);
-    color: var(--tu-on-accent);
-    font-size: var(--tu-size-xs);
-    font-weight: 600;
+    background: var(--tu-primary);
+    color: var(--tu-on-primary);
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 60rem) {
+    .photo__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--tu-space-2);
+    }
+
+    .photo__shot {
+      padding: var(--tu-space-4) var(--tu-space-2);
+    }
   }
 </style>

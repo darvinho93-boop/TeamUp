@@ -50,6 +50,9 @@
   --tu-screen-pad: var(--tu-space-7);
   --tu-screen-gap: var(--tu-space-5);
   --tu-screen-radius: var(--tu-radius-lg);
+  --tu-screen-type-giant: var(--tu-size-5xl); /* chrono géant */
+  --tu-screen-type-xxl: var(--tu-size-4xl); /* mot révélé, annonce */
+  --tu-screen-type-title: var(--tu-size-3xl); /* point commun */
   --tu-screen-type-xl: 2.5rem; /* chrono */
   --tu-screen-type-lg: 1.625rem; /* question, sujet */
   --tu-screen-type-md: 1.125rem;
@@ -66,6 +69,7 @@
   --tu-visual-phone-zoom: 1; /* 0,76 en mobile : 180 px sur 236 dans les maquettes */
   --tu-visual-stage-height: 35rem;
   --tu-door-visual-height: 16.25rem;
+  --tu-ranking-bar: 2.125rem;
   --tu-join-qr: 10.5rem; /* QR 150 px + 12 px de marge blanche */
   --tu-join-code-lg: var(--tu-size-4xl);
 
@@ -76,6 +80,9 @@
   --tu-danger-text: #b8291e; /* 5,82:1 sur --tu-bg */
   --tu-success-text: #2c6e5b; /* 5,63:1 */
   --tu-warning-text: #8a6200; /* 5,13:1 */
+
+  /* Filet pointillé des emplacements de logo client (maquette Entreprises). */
+  --tu-border-strong: #d8cfc0;
 
   /* Blanc indépendant du thème (QR code, dont le fond reste blanc sur l'écran marine). */
   --tu-paper: #ffffff;
@@ -102,6 +109,9 @@
     --tu-screen-pad: 1.125rem;
     --tu-screen-gap: var(--tu-space-3);
     --tu-screen-radius: var(--tu-space-5);
+    --tu-screen-type-giant: var(--tu-size-3xl);
+    --tu-screen-type-xxl: var(--tu-size-2xl);
+    --tu-screen-type-title: var(--tu-size-xl);
     --tu-screen-type-xl: 1.625rem;
     --tu-screen-type-lg: 1.0625rem;
     --tu-screen-type-md: 0.875rem;
@@ -124,6 +134,7 @@
     --tu-visual-phone-zoom: 0.76;
     --tu-visual-stage-height: 28.75rem;
     --tu-door-visual-height: 12.5rem;
+    --tu-ranking-bar: var(--tu-space-6);
     --tu-join-qr: 8rem;
     --tu-join-code-lg: var(--tu-size-2xl);
   }
