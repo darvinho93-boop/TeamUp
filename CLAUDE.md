@@ -91,7 +91,7 @@ Node 22.20 (`.nvmrc`) et pnpm 10.17. Toutes les commandes se lancent depuis la r
 | `pnpm dev:host`                     | Idem, exposé sur le réseau local (test sur téléphone)        |
 | `pnpm lint`                         | Garde-fou tokens (`scripts/check-tokens.mjs`) puis ESLint    |
 | `pnpm typecheck`                    | `tsc` sur les paquets, `astro check` sur la vitrine          |
-| `pnpm test`                         | Vitest (`packages/game`)                                     |
+| `pnpm test`                         | Vitest (`packages/game` et `apps/site`)                      |
 | `pnpm build`                        | Build des deux apps                                          |
 | `pnpm format` / `pnpm format:check` | Prettier                                                     |
 | **`pnpm verify`**                   | lint + typecheck + test + build — ce que lance la CI         |
@@ -100,6 +100,18 @@ Pages de contrôle des composants, dans les deux thèmes :
 `http://localhost:4321/kit-ui` (Astro) et `http://localhost:3000/kit-ui` (React).
 
 Migrations Supabase : à compléter au lot 3.
+
+## Variables d'environnement
+
+`apps/site/.env` (modèle dans `.env.example`), déclarées dans `astro.config.mjs` (`astro:env`) :
+
+| Variable             | Rôle                                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------------------- |
+| `RESEND_API_KEY`     | Clé Resend. **Absente : mode à sec**, les e-mails de devis s'écrivent dans la console au lieu de partir. |
+| `DEVIS_DESTINATAIRE` | Adresse qui reçoit les demandes de devis.                                                                |
+| `DEVIS_EXPEDITEUR`   | Expéditeur sur un domaine vérifié chez Resend, ex. `Team Up! <devis@teamup.fr>`.                         |
+
+À reporter dans les variables du projet Vercel de la vitrine avant la mise en ligne.
 
 ## Conventions posées au lot 0
 
