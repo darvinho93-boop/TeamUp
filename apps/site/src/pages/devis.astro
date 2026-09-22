@@ -1,36 +1,64 @@
 ---
+/* eslint-disable astro/jsx-a11y/no-autofocus --
+   Le seul autofocus de la page est le récapitulatif d'erreurs, qui n'apparaît qu'après un envoi
+   refusé : lui donner le focus est ce qu'attend le RGAA, et ça marche sans JavaScript. */
+import { actions } from 'astro:actions';
 import Base from '../layouts/Base.astro';
 import TextField from '@teamup/ui/astro/TextField.astro';
 import Button from '@teamup/ui/astro/Button.astro';
+import { CHAMP_OUVERTURE, CHAMP_PIEGE } from '../lib/devis/antispam';
+import {
+  CRENEAUX,
+  EQUIPEMENTS,
+  LANGUES,
+  OCCASIONS,
+  TYPES,
+  TYPE_LABELS,
+  typeDepuis,
+} from '../lib/devis/options';
+import { saisieVide, type Champ, type Erreurs } from '../lib/devis/schema';
 
-/*
- * Le formulaire est complet et accessible, mais pas encore branché : validation
- * serveur, honeypot, e-mails Resend et redirection vers /confirmation sont le lot 2.
- */
+// Rendue à la demande : c'est elle qui reçoit l'envoi du formulaire (POST natif, sans JS).
+export const prerender = false;
 
-const occasions = [
-  'Anniversaire',
-  'Mariage',
-  'Anniversaire de mariage',
-  'Fête de famille',
-  'Autre',
-];
+const resultat = Astro.getActionResult(actions.devis);
+if (resultat?.data?.statut === 'envoyee') {
+  return Astro.redirect('/confirmation', 303);
+}
 
-const creneaux = ['Je ne sais pas encore', '40 minutes', '60 minutes', 'Plus de 60 minutes'];
+const donnees = resultat?.data;
+const saisie =
+  donnees && 'saisie' in donnees ? donnees.saisie : saisieVide(Astro.url.searchParams.get('type'));
+const erreurs: Erreurs = donnees?.statut === 'invalide' ? donnees.erreurs : {};
+const echec = donnees?.statut === 'echec' || Boolean(resultat?.error);
+const type = typeDepuis(saisie.type);
 
-const langues = [
-  { id: 'fr', label: 'Français', lang: 'fr', checked: true },
-  { id: 'ta', label: 'தமிழ்', lang: 'ta', checked: false },
-  { id: 'en', label: 'English', lang: 'en', checked: false },
-  { id: 'autre', label: 'Autre', lang: 'fr', checked: false },
-];
+/** Même convention que TextField : l'erreur du champ `nom` porte l'id `tu-field-nom-error`. */
+const idErreur = (champ: Champ) => `tu-field-${champ}-error`;
+const invalide = (champ: Champ) => (erreurs[champ] ? 'true' : undefined);
+const decrit = (champ: Champ) => (erreurs[champ] ? idErreur(champ) : undefined);
 
-const equipements = [
-  { id: 'video', label: 'Vidéoprojecteur ou écran' },
-  { id: 'sono', label: 'Sono et micro' },
-  { id: 'wifi', label: 'Wi-Fi' },
-  { id: 'nsp', label: 'Je ne sais pas' },
-];
+/** Récapitulatif dans l'ordre du formulaire, chaque ligne mène au champ fautif. */
+const cibles: Record<Champ, string> = {
+  type: 'type-particulier',
+  occasion: 'occasion',
+  date: 'tu-field-date',
+  lieu: 'tu-field-lieu',
+  invites: 'tu-field-invites',
+  nom: 'tu-field-nom',
+  tel: 'tu-field-tel',
+  email: 'tu-field-email',
+  societe: 'tu-field-societe',
+  creneau: 'creneau',
+  groupes: 'tu-field-groupes',
+  langues: 'langue-fr',
+  equipement: 'equipement-video',
+  message: 'message',
+  consentement: 'consentement',
+};
+const recapitulatif = (Object.keys(cibles) as Champ[])
+  .filter((champ) => erreurs[champ])
+  .map((champ) => ({ cible: cibles[champ], message: erreurs[champ] }));
 
 const suites = [
   { title: 'On vous rappelle', body: 'Sous [DÉLAI], pour un appel de cadrage.' },
@@ -40,7 +68,7 @@ const suites = [
 ---
 
 <Base
-  title="Demander un devis — Team Up!"
+  title={`${recapitulatif.length > 0 || echec ? 'Erreur : ' : ''}Demander un devis — Team Up!`}
   description="Deux minutes pour décrire votre événement. Devis gratuit et sans engagement, réponse sous [DÉLAI]."
   actionBar={false}
 >
@@ -55,8 +83,43 @@ const suites = [
     </header>
 
     <div class="devis__grid">
-      <form class="tu-panel devis__form" data-tu-form="devis">
-        <fieldset class="tu-field devis__choice">
+      <form
+        class="tu-panel devis__form"
+        method="post"
+        action={actions.devis}
+        novalidate
+        data-tu-form="devis"
+      >
+        {(recapitulatif.length > 0 || echec) && (
+          <div class="devis__alert" role="alert" tabindex="-1" autofocus data-tu-devis-alerte>
+            {echec ? (
+              <p class="devis__alert-title">
+                Votre demande n'a pas pu partir. Réessayez dans un instant, ou appelez-nous au
+                [TÉLÉPHONE].
+              </p>
+            ) : (
+              <>
+                <p class="devis__alert-title">
+                  {recapitulatif.length === 1
+                    ? 'Un champ est à corriger :'
+                    : `${recapitulatif.length} champs sont à corriger :`}
+                </p>
+                <ul class="devis__alert-list">
+                  {recapitulatif.map(({ cible, message }) => (
+                    <li>
+                      <a href={`#${cible}`}>{message}</a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        )}
+
+        <fieldset
+          class:list={['tu-field devis__choice', erreurs.type && 'tu-field--invalid']}
+          aria-describedby={decrit('type')}
+        >
           <legend class="tu-field__label">
             Vous êtes{' '}
             <span class="tu-field__required" aria-hidden="true">
@@ -64,54 +127,109 @@ const suites = [
             </span>
           </legend>
           <div class="devis__radios">
-            <label class="devis__radio">
-              <input type="radio" name="type" value="particulier" checked />
-              Un particulier
-            </label>
-            <label class="devis__radio">
-              <input type="radio" name="type" value="entreprise" />
-              Une entreprise
-            </label>
+            {TYPES.map((option) => (
+              <label class="devis__radio">
+                <input
+                  type="radio"
+                  id={`type-${option}`}
+                  name="type"
+                  value={option}
+                  checked={option === type}
+                  required
+                  data-tu-devis-type
+                />
+                {TYPE_LABELS[option]}
+              </label>
+            ))}
           </div>
+          {erreurs.type && (
+            <p class="tu-field__error" id={idErreur('type')}>
+              {erreurs.type}
+            </p>
+          )}
         </fieldset>
 
         <h2 class="devis__legend">Votre événement</h2>
         <div class="devis__row">
-          <div class="tu-field">
+          <div class:list={['tu-field', erreurs.occasion && 'tu-field--invalid']}>
             <label class="tu-field__label" for="occasion">
               Occasion{' '}
               <span class="tu-field__required" aria-hidden="true">
                 *
               </span>
             </label>
-            <select class="tu-field__control" id="occasion" name="occasion" required>
-              {occasions.map((occasion) => (
-                <option value={occasion}>{occasion}</option>
+            <select
+              class="tu-field__control"
+              id="occasion"
+              name="occasion"
+              required
+              aria-invalid={invalide('occasion')}
+              aria-describedby={decrit('occasion')}
+              data-tu-devis-occasion
+            >
+              {OCCASIONS[type].map((occasion) => (
+                <option value={occasion} selected={occasion === saisie.occasion}>
+                  {occasion}
+                </option>
               ))}
             </select>
+            {erreurs.occasion && (
+              <p class="tu-field__error" id={idErreur('occasion')}>
+                {erreurs.occasion}
+              </p>
+            )}
           </div>
 
-          <TextField label="Date" name="date" type="date" required />
+          <TextField
+            label="Date"
+            name="date"
+            type="date"
+            required
+            value={saisie.date}
+            error={erreurs.date}
+          />
           <TextField
             label="Ville ou lieu"
             name="lieu"
             placeholder="Strasbourg, salle des fêtes…"
             required
+            maxlength={120}
+            value={saisie.lieu}
+            error={erreurs.lieu}
           />
           <TextField
             label="Nombre d'invités"
             name="invites"
             type="number"
-            min="1"
+            inputmode="numeric"
+            min="2"
             placeholder="Ex. 80"
             required
+            value={saisie.invites}
+            error={erreurs.invites}
           />
         </div>
 
         <h2 class="devis__legend">Vos coordonnées</h2>
         <div class="devis__row">
-          <TextField label="Nom et prénom" name="nom" autocomplete="name" required />
-          <TextField label="Téléphone" name="tel" type="tel" autocomplete="tel" required />
+          <TextField
+            label="Nom et prénom"
+            name="nom"
+            autocomplete="name"
+            required
+            maxlength={100}
+            value={saisie.nom}
+            error={erreurs.nom}
+          />
+          <TextField
+            label="Téléphone"
+            name="tel"
+            type="tel"
+            autocomplete="tel"
+            required
+            value={saisie.tel}
+            error={erreurs.tel}
+          />
         </div>
         <TextField
           label="E-mail"
@@ -120,7 +238,19 @@ const suites = [
           autocomplete="email"
           placeholder="vous@exemple.fr"
           required
+          value={saisie.email}
+          error={erreurs.email}
         />
+        <div hidden={type !== 'entreprise'} data-tu-devis-societe>
+          <TextField
+            label="Société"
+            name="societe"
+            autocomplete="organization"
+            maxlength={120}
+            value={saisie.societe}
+            error={erreurs.societe}
+          />
+        </div>
 
         <div class="devis__optional">
           <div class="devis__optional-head">
@@ -131,53 +261,92 @@ const suites = [
           </div>
 
           <div class="devis__row">
-            <div class="tu-field">
+            <div class:list={['tu-field', erreurs.creneau && 'tu-field--invalid']}>
               <label class="tu-field__label" for="creneau">
                 Durée du créneau disponible
               </label>
-              <select class="tu-field__control" id="creneau" name="creneau">
-                {creneaux.map((creneau) => (
-                  <option value={creneau}>{creneau}</option>
+              <select
+                class="tu-field__control"
+                id="creneau"
+                name="creneau"
+                aria-invalid={invalide('creneau')}
+                aria-describedby={decrit('creneau')}
+              >
+                {CRENEAUX.map((creneau) => (
+                  <option value={creneau} selected={creneau === saisie.creneau}>
+                    {creneau}
+                  </option>
                 ))}
               </select>
+              {erreurs.creneau && (
+                <p class="tu-field__error" id={idErreur('creneau')}>
+                  {erreurs.creneau}
+                </p>
+              )}
             </div>
             <TextField
               label="Nombre de groupes à mélanger"
               name="groupes"
               placeholder="Ex. 2 familles et des amis"
+              maxlength={200}
+              value={saisie.groupes}
+              error={erreurs.groupes}
             />
           </div>
 
-          <fieldset class="tu-field devis__choice">
+          <fieldset
+            class:list={['tu-field devis__choice', erreurs.langues && 'tu-field--invalid']}
+            aria-describedby={decrit('langues')}
+          >
             <legend class="tu-field__label">Langues parlées par les invités</legend>
             <div class="devis__checks">
-              {langues.map((langue) => (
+              {LANGUES.map((langue) => (
                 <label class="devis__check" lang={langue.lang}>
                   <input
                     type="checkbox"
+                    id={`langue-${langue.id}`}
                     name="langues"
                     value={langue.id}
-                    checked={langue.checked}
+                    checked={saisie.langues.includes(langue.id)}
                   />
                   {langue.label}
                 </label>
               ))}
             </div>
+            {erreurs.langues && (
+              <p class="tu-field__error" id={idErreur('langues')}>
+                {erreurs.langues}
+              </p>
+            )}
           </fieldset>
 
-          <fieldset class="tu-field devis__choice">
+          <fieldset
+            class:list={['tu-field devis__choice', erreurs.equipement && 'tu-field--invalid']}
+            aria-describedby={decrit('equipement')}
+          >
             <legend class="tu-field__label">Équipement déjà présent dans la salle</legend>
             <div class="devis__checks">
-              {equipements.map((equipement) => (
+              {EQUIPEMENTS.map((equipement) => (
                 <label class="devis__check">
-                  <input type="checkbox" name="equipement" value={equipement.id} />
+                  <input
+                    type="checkbox"
+                    id={`equipement-${equipement.id}`}
+                    name="equipement"
+                    value={equipement.id}
+                    checked={saisie.equipement.includes(equipement.id)}
+                  />
                   {equipement.label}
                 </label>
               ))}
             </div>
+            {erreurs.equipement && (
+              <p class="tu-field__error" id={idErreur('equipement')}>
+                {erreurs.equipement}
+              </p>
+            )}
           </fieldset>
 
-          <div class="tu-field">
+          <div class:list={['tu-field', erreurs.message && 'tu-field--invalid']}>
             <label class="tu-field__label" for="message">
               Votre message
             </label>
@@ -186,18 +355,49 @@ const suites = [
               id="message"
               name="message"
               rows="4"
+              maxlength="2000"
               placeholder="Ce qui compte pour vous, les héros de la fête, le déroulé prévu…"
+              aria-invalid={invalide('message')}
+              aria-describedby={decrit('message')}
+              set:text={saisie.message}
             ></textarea>
+            {erreurs.message && (
+              <p class="tu-field__error" id={idErreur('message')}>
+                {erreurs.message}
+              </p>
+            )}
           </div>
         </div>
 
-        <label class="devis__consent">
-          <input type="checkbox" name="consentement" required />
-          <span>
-            J'accepte que Team Up! utilise ces informations pour me recontacter au sujet de ma
-            demande. <a href="/confidentialite">Politique de confidentialité</a>
-          </span>
-        </label>
+        <div class:list={['devis__consent-field', erreurs.consentement && 'tu-field--invalid']}>
+          <label class="devis__consent">
+            <input
+              type="checkbox"
+              id="consentement"
+              name="consentement"
+              required
+              checked={saisie.consentement}
+              aria-invalid={invalide('consentement')}
+              aria-describedby={decrit('consentement')}
+            />
+            <span>
+              J'accepte que Team Up! utilise ces informations pour me recontacter au sujet de ma
+              demande. <a href="/confidentialite">Politique de confidentialité</a>
+            </span>
+          </label>
+          {erreurs.consentement && (
+            <p class="tu-field__error" id={idErreur('consentement')}>
+              {erreurs.consentement}
+            </p>
+          )}
+        </div>
+
+        <!-- Piège à robots : invisible et hors du parcours clavier et des lecteurs d'écran. -->
+        <div class="tu-visually-hidden" aria-hidden="true">
+          <label for={CHAMP_PIEGE}>Ne remplissez pas ce champ</label>
+          <input type="text" id={CHAMP_PIEGE} name={CHAMP_PIEGE} tabindex="-1" autocomplete="off" />
+        </div>
+        <input type="hidden" name={CHAMP_OUVERTURE} value={Date.now()} />
 
         <Button type="submit" variant="accent" size="cta" block>
           Envoyer ma demande
@@ -231,6 +431,26 @@ const suites = [
     </div>
   </div>
 </Base>
+
+<script>
+  import { OCCASIONS, typeDepuis } from '../lib/devis/options';
+
+  // Après un envoi refusé, le récapitulatif des erreurs prend le focus (RGAA 11.10).
+  document.querySelector<HTMLElement>('[data-tu-devis-alerte]')?.focus();
+
+  // Changer de type met à jour les occasions et affiche la société pour les entreprises.
+  const occasion = document.querySelector<HTMLSelectElement>('[data-tu-devis-occasion]');
+  const societe = document.querySelector<HTMLElement>('[data-tu-devis-societe]');
+
+  document.querySelectorAll<HTMLInputElement>('[data-tu-devis-type]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      if (!radio.checked) return;
+      const type = typeDepuis(radio.value);
+      occasion?.replaceChildren(...OCCASIONS[type].map((libelle) => new Option(libelle, libelle)));
+      if (societe) societe.hidden = type !== 'entreprise';
+    });
+  });
+</script>
 
 <style>
   .devis {
@@ -370,6 +590,44 @@ const suites = [
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-2);
+  }
+
+  .devis__consent-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-2);
+  }
+
+  .devis__choice.tu-field--invalid .devis__radio,
+  .devis__choice.tu-field--invalid .devis__check {
+    border-color: var(--tu-danger);
+  }
+
+  .devis__alert {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-5) var(--tu-space-6);
+    border: var(--tu-btn-border-width) solid var(--tu-danger);
+    border-radius: var(--tu-radius-md);
+    background: var(--tu-surface);
+  }
+
+  .devis__alert-title {
+    font-weight: 600;
+    color: var(--tu-danger-text);
+  }
+
+  .devis__alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-1);
+    padding-left: var(--tu-space-5);
+    list-style: disc;
+  }
+
+  .devis__alert-list a {
+    color: var(--tu-text);
   }
 
   .devis__consent {

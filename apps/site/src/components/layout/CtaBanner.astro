@@ -6,12 +6,15 @@ type Props = {
   /** Le délai de réponse est un contenu à fournir : il reste en placeholder. */
   note?: string;
   label?: string;
+  /** Cible du bouton : les pages Particuliers et Entreprises pré-remplissent le type. */
+  href?: string;
 };
 
 const {
   title,
   note = 'Devis gratuit, réponse sous [DÉLAI].',
   label = 'Demander un devis',
+  href = '/devis',
 } = Astro.props;
 ---
 
@@ -22,7 +25,7 @@ const {
         <h2 class="cta__title">{title}</h2>
         <p class="tu-body-lg cta__note">{note}</p>
       </div>
-      <Button href="/devis" variant="accent" size="cta">
+      <Button href={href} variant="accent" size="cta">
         {label}
       </Button>
     </div>

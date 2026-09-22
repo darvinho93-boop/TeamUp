@@ -82,7 +82,7 @@ const faq: FaqItem[] = [
     lead="Anniversaire, mariage, fête de famille : on transforme des tablées qui s'observent en équipes qui jouent ensemble. Vous, vous profitez de vos invités."
   >
     <Fragment slot="actions">
-      <Button href="/devis" variant="accent" size="cta">
+      <Button href="/devis?type=particulier" variant="accent" size="cta">
         Demander un devis
       </Button>
       <Button href="#programme" variant="outline" size="cta">
@@ -154,7 +154,7 @@ const faq: FaqItem[] = [
     <Faq items={faq} />
   </Section>
 
-  <CtaBanner title="Racontez-nous votre fête." />
+  <CtaBanner title="Racontez-nous votre fête." href="/devis?type=particulier" />
 </Base>
 
 <style>

@@ -14,6 +14,7 @@ export default tseslint.config(
       '**/.next/**',
       '**/.astro/**',
       '**/.turbo/**',
+      '**/.vercel/**',
       // Référence visuelle uniquement : styles en ligne, jamais reconstruits tels quels.
       'design/maquettes/**',
     ],

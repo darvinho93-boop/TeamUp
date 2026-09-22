@@ -68,7 +68,7 @@ const faq: FaqItem[] = [
     lead="Team building, séminaire, intégration : un temps fort de 40 à 60 minutes, animé par Team Up!, où les services jouent ensemble au lieu de rester entre eux."
   >
     <Fragment slot="actions">
-      <Button href="/devis" variant="accent" size="cta">
+      <Button href="/devis?type=entreprise" variant="accent" size="cta">
         Demander un devis
       </Button>
       <Button href="#formats" variant="outline" size="cta">
@@ -152,7 +152,7 @@ const faq: FaqItem[] = [
     <Faq items={faq} />
   </Section>
 
-  <CtaBanner title="Parlons de votre prochain séminaire." />
+  <CtaBanner title="Parlons de votre prochain séminaire." href="/devis?type=entreprise" />
 </Base>
 
 <style>

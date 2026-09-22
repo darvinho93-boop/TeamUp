@@ -6,6 +6,7 @@
   "description": "Site vitrine teamup.fr — statique, en français.",
   "scripts": {
     "dev": "astro dev",
+    "prepare": "astro sync",
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "astro check",

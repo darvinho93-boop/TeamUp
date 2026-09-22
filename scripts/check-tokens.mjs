@@ -16,7 +16,15 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
 const SCANNED = ['apps', join('packages', 'ui', 'src')];
 const EXTENSIONS = new Set(['.css', '.astro', '.tsx', '.ts']);
-const IGNORED_DIRS = new Set(['node_modules', '.next', '.astro', '.turbo', 'dist', 'out']);
+const IGNORED_DIRS = new Set([
+  'node_modules',
+  '.next',
+  '.astro',
+  '.turbo',
+  '.vercel',
+  'dist',
+  'out',
+]);
 
 /** Les seuls fichiers autorisés à porter des valeurs littérales. */
 const TOKEN_FILES = [

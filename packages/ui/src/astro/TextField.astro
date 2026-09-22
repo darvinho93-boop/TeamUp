@@ -5,9 +5,9 @@ import { cx } from '../classNames';
 type Props = HTMLAttributes<'input'> & {
   label: string;
   name: string;
-  hint?: string;
+  hint?: string | undefined;
   /** Message d'erreur en toutes lettres : la couleur seule ne porte jamais l'information. */
-  error?: string;
+  error?: string | undefined;
 };
 
 const { label, name, hint, error, class: className, required, id, ...rest } = Astro.props;
