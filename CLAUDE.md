@@ -111,3 +111,11 @@ Migrations Supabase : à compléter au lot 3.
 - Polices auto-hébergées (`@fontsource`) : aucune requête vers Google.
 - Les paquets du workspace sont consommés en TypeScript source, sans étape de build.
 - TypeScript reste en 5.9 tant que `typescript-eslint` n'accepte pas la 7.
+
+## Conventions posées au lot 1
+
+- Logotype (`.tu-wordmark`) : « Up » sauge et « ! » corail conservés sur fond clair, malgré un
+  contraste de 1,98:1. Exemption WCAG 1.4.3 (logotypes), décision assumée : axe et Lighthouse
+  le signalent, c'est la seule alerte attendue. Exclure `.tu-wordmark` des contrôles de contraste.
+- Le plugin Astro de Prettier réindente les commentaires CSS multilignes à chaque passage :
+  dans les `<style>` des `.astro`, commentaires sur une seule ligne.
