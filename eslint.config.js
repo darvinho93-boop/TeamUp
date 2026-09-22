@@ -17,6 +17,8 @@ export default tseslint.config(
       '**/.vercel/**',
       // Référence visuelle uniquement : styles en ligne, jamais reconstruits tels quels.
       'design/maquettes/**',
+      // Généré par `pnpm db:types` depuis le schéma Supabase.
+      'apps/app/src/types/base.ts',
     ],
   },
 

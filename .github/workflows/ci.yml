@@ -27,7 +27,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # La base locale : sans elle, les tests de RLS s'ignorent au lieu de garder la promesse.
-      - run: pnpm db:start -x studio,imgproxy,vector,logflare
+      - run: pnpm db:start
 
       - run: pnpm verify
 

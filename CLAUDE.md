@@ -109,6 +109,10 @@ Supabase tourne en local dans Docker : **Docker Desktop doit être démarré**.
 | `pnpm db:reset` | Rejoue toutes les migrations puis `supabase/seed.sql` (base jetable) |
 | `pnpm db:types` | Régénère `apps/app/src/types/base.ts` depuis le schéma local         |
 
+`db:start` écarte Studio, l'analytics, l'imgproxy, le realtime et les autres services dont
+rien n'a encore besoin : la pile complète demande environ 8 Go d'images et 4 Go de RAM.
+Le realtime sera à réintégrer au lot 6.
+
 Les migrations vivent dans `supabase/migrations/`, une par bloc fonctionnel, jamais modifiées
 après coup : on en ajoute une. Sans base joignable, les tests qui en dépendent s'annoncent
 ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.

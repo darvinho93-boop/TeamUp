@@ -11,23 +11,26 @@
 -- Comptes (mot de passe : motdepasse)
 -- ---------------------------------------------------------------------------
 
+-- Les colonnes de jetons doivent être vides plutôt que nulles : GoTrue les lit comme des
+-- chaînes et refuse la connexion sur un NULL (« converting NULL to string is unsupported »).
 insert into auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
-  created_at, updated_at, raw_app_meta_data, raw_user_meta_data
+  created_at, updated_at, raw_app_meta_data, raw_user_meta_data,
+  confirmation_token, recovery_token, email_change_token_new, email_change
 )
 values
   ('00000000-0000-0000-0000-000000000000', '11111111-1111-4111-8111-111111111111',
    'authenticated', 'authenticated', 'admin@teamup.test',
    extensions.crypt('motdepasse', extensions.gen_salt('bf')), now(), now(), now(),
-   '{"provider":"email","providers":["email"]}', '{}'),
+   '{"provider":"email","providers":["email"]}', '{}', '', '', '', ''),
   ('00000000-0000-0000-0000-000000000000', '22222222-2222-4222-8222-222222222222',
    'authenticated', 'authenticated', 'anna@teamup.test',
    extensions.crypt('motdepasse', extensions.gen_salt('bf')), now(), now(), now(),
-   '{"provider":"email","providers":["email"]}', '{}'),
+   '{"provider":"email","providers":["email"]}', '{}', '', '', '', ''),
   ('00000000-0000-0000-0000-000000000000', '33333333-3333-4333-8333-333333333333',
    'authenticated', 'authenticated', 'brahim@teamup.test',
    extensions.crypt('motdepasse', extensions.gen_salt('bf')), now(), now(), now(),
-   '{"provider":"email","providers":["email"]}', '{}');
+   '{"provider":"email","providers":["email"]}', '{}', '', '', '', '');
 
 insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
 select

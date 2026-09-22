@@ -216,8 +216,9 @@ web3 = 30
 # secret = ""
 
 [auth.email]
-# Aucune inscription libre : les comptes animateurs sont créés par un admin.
-enable_signup = false
+# Le fournisseur e-mail reste actif : c'est lui qui connecte les animateurs.
+# L'inscription libre est déjà fermée par [auth] enable_signup = false.
+enable_signup = true
 # If enabled, a user will be required to confirm any email change on both the old, and new email
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true

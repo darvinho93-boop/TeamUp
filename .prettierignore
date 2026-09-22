@@ -6,3 +6,6 @@ dist/
 # Documents de référence et kit de marque : livrés tels quels, jamais reformatés.
 docs/
 design/
+
+# Types du schéma, régénérés par `pnpm db:types` : on ne les retouche pas à la main.
+apps/app/src/types/base.ts
