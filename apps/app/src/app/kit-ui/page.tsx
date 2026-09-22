@@ -8,6 +8,10 @@ const teams = [
   { index: 2, name: 'Corail' },
   { index: 3, name: 'Sauge' },
   { index: 4, name: 'Ambre' },
+  { index: 5, name: 'Prune' },
+  { index: 6, name: 'Turquoise' },
+  { index: 7, name: 'Olive' },
+  { index: 8, name: 'Framboise' },
 ];
 
 function Demo() {

@@ -3,7 +3,7 @@ import { cx } from '../classNames';
 import { teamModifier } from '../teams';
 
 export interface TeamDotProps extends HTMLAttributes<HTMLSpanElement> {
-  /** Index de 1 à 4. Au-delà, on lève : les couleurs 5 à 8 ne sont pas tranchées. */
+  /** Numéro d'équipe, de 1 à 8 : il porte la couleur. Au-delà, on lève. */
   index: number;
   name: string;
   variant?: 'dot' | 'badge';

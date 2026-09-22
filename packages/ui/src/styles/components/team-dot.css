@@ -55,3 +55,23 @@
   --tu-team-color: var(--tu-team-4);
   --tu-team-on: var(--tu-navy-900);
 }
+
+.tu-team--5 {
+  --tu-team-color: var(--tu-team-5);
+  --tu-team-on: var(--tu-text-invert);
+}
+
+.tu-team--6 {
+  --tu-team-color: var(--tu-team-6);
+  --tu-team-on: var(--tu-text-invert);
+}
+
+.tu-team--7 {
+  --tu-team-color: var(--tu-team-7);
+  --tu-team-on: var(--tu-navy-900);
+}
+
+.tu-team--8 {
+  --tu-team-color: var(--tu-team-8);
+  --tu-team-on: var(--tu-text-invert);
+}

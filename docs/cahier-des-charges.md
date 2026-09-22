@@ -186,6 +186,6 @@ La vitrine et l'app partagent le kit de marque existant (`tokens.css`). Aucune c
 - [ ] Espace client : le client doit-il pouvoir remplir lui-même ses infos d'avant soirée (listes d'invités, thèmes photo), ou l'animateur s'en charge-t-il ?
 - [ ] Vitrine en anglais dès le lancement ?
 - [ ] Tarifs affichés (« à partir de ») ou uniquement sur devis ?
-- [ ] Couleurs d'équipe 5 à 8.
+- [x] Couleurs d'équipe 5 à 8 : prune, turquoise, olive, framboise (lot 3, dans `tokens.css`).
 - [ ] Durée de conservation des photos et possibilité pour le client de les télécharger.
 - [ ] Points ouverts de la spec v3 : repêchage du quiz, clôture des envois photo, longueur de la file de mime, composition des équipes.

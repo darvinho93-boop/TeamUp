@@ -75,7 +75,6 @@ Ne les tranche pas seul :
 - Repêchage du quiz (3-4 questions sans repêchage, ou 6 avec).
 - Clôture des envois photo : manuelle par la régie, ou automatique au lancement de la diffusion.
 - Longueur maximale de la file de mime (6 ou 8 maillons).
-- Couleurs d'équipe 5 à 8.
 - Durée de conservation des photos.
 - Espace client (hors périmètre v1 par défaut).
 

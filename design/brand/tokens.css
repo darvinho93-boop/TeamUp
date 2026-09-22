@@ -53,6 +53,12 @@
   --tu-team-2: var(--tu-coral-500);
   --tu-team-3: var(--tu-sage-500);
   --tu-team-4: #E0A100;   /* ambre : le stone est trop clair pour porter une identité */
+  /* 5 à 8 : quatre familles absentes du kit, pour rester distinguables en salle sombre.
+     Teinte choisie loin des quatre premières (violet, turquoise, olive, framboise). */
+  --tu-team-5: #6B3F8C;   /* prune     — texte blanc, 7,74:1 */
+  --tu-team-6: #11697A;   /* turquoise — texte blanc, 6,31:1 */
+  --tu-team-7: #7FA045;   /* olive     — texte navy 900, 5,78:1 */
+  --tu-team-8: #B5305F;   /* framboise — texte blanc, 5,91:1 */
 
   /* ---- Typographie ---- */
   --tu-font-display: "Poppins", "Segoe UI", system-ui, sans-serif;

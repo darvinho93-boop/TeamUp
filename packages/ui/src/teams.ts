@@ -1,19 +1,18 @@
 /**
- * Couleurs d'équipe.
+ * Couleurs d'équipe : huit, comme la spec v3 va jusqu'à huit équipes.
  *
- * La charte n'en définit que quatre (navy, corail, sauge, ambre). Les couleurs 5 à 8
- * sont une décision ouverte : tant qu'elle n'est pas prise, on refuse bruyamment
- * plutôt que de réutiliser une couleur et de rendre deux équipes indiscernables en salle.
+ * 1 à 4 viennent de la charte (navy, corail, sauge, ambre) ; 5 à 8 ont été ajoutées au lot 3
+ * dans quatre familles absentes du kit (prune, turquoise, olive, framboise), pour rester
+ * distinguables à dix mètres en salle sombre. Les valeurs sont dans `tokens.css`.
  */
-export const TEAM_COLOR_COUNT = 4;
+export const TEAM_COLOR_COUNT = 8;
 
-export type TeamIndex = 1 | 2 | 3 | 4;
+export type TeamIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 export function teamModifier(index: number): string {
   if (!Number.isInteger(index) || index < 1 || index > TEAM_COLOR_COUNT) {
     throw new RangeError(
-      `Couleur d'équipe ${index} inconnue : la charte n'en définit que ${TEAM_COLOR_COUNT}. ` +
-        `Les couleurs 5 à 8 restent à trancher (docs/cahier-des-charges.md §8).`,
+      `Couleur d'équipe ${index} inconnue : le kit en définit ${TEAM_COLOR_COUNT}.`,
     );
   }
   return `tu-team--${index}`;
