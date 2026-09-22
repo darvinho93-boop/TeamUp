@@ -9,17 +9,22 @@
     "build": "astro build",
     "preview": "astro preview",
     "typecheck": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "dev:host": "astro dev --host"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/vercel": "^11.0.10",
     "@teamup/brand": "workspace:*",
     "@teamup/ui": "workspace:*",
-    "astro": "^7.3.3"
+    "astro": "^7.3.3",
+    "resend": "^6.28.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "sharp": "^0.35.4",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^5.0.1"
   }
 }
