@@ -99,7 +99,20 @@ Node 22.20 (`.nvmrc`) et pnpm 10.17. Toutes les commandes se lancent depuis la r
 Pages de contrôle des composants, dans les deux thèmes :
 `http://localhost:4321/kit-ui` (Astro) et `http://localhost:3000/kit-ui` (React).
 
-Migrations Supabase : à compléter au lot 3.
+### Base de données (lot 3)
+
+Supabase tourne en local dans Docker : **Docker Desktop doit être démarré**.
+
+| Commande        | Effet                                                                |
+| --------------- | -------------------------------------------------------------------- |
+| `pnpm db:start` | Démarre la base locale (Studio sur `:54323`, API sur `:54321`)       |
+| `pnpm db:stop`  | Arrête la base                                                       |
+| `pnpm db:reset` | Rejoue toutes les migrations puis `supabase/seed.sql` (base jetable) |
+| `pnpm db:types` | Régénère `apps/app/src/types/base.ts` depuis le schéma local         |
+
+Les migrations vivent dans `supabase/migrations/`, une par bloc fonctionnel, jamais modifiées
+après coup : on en ajoute une. Sans base joignable, les tests qui en dépendent s'annoncent
+ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 
 ## Variables d'environnement
 

@@ -20,6 +20,10 @@ coverage/
 .env.*
 !.env.example
 
+# Supabase (CLI local)
+supabase/.temp/
+supabase/.branches/
+
 # Système
 .DS_Store
 Thumbs.db
