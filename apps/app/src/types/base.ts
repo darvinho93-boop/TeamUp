@@ -608,6 +608,8 @@ export type Database = {
       est_admin: { Args: never; Returns: boolean }
       est_animateur: { Args: never; Returns: boolean }
       etat_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
+      evenement_public: { Args: { p_code: string }; Returns: Json }
+      pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       rejoindre_evenement: {
         Args: {
           p_code: string

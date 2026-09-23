@@ -24,7 +24,7 @@ avecBase('un visiteur sans compte', () => {
 
   it('ne peut appeler aucune fonction joueur, même avec un jeton valide', async () => {
     const anon = clientAnon();
-    for (const fonction of ['etat_joueur', 'secret_du_joueur']) {
+    for (const fonction of ['etat_joueur', 'secret_du_joueur', 'pouls_joueur']) {
       const { erreur } = await appeler(anon, fonction, { p_jeton_hash: hacher('demo-joueur-1') });
       expect(erreur, `${fonction} devrait être refusée`).toBeTruthy();
     }
