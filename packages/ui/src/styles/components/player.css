@@ -1,0 +1,212 @@
+/* Écran joueur (téléphone, thème clair). Une action par écran, lisible en deux secondes,
+   l'action en bas pour le pouce. Cahier des charges § 5.1 et § 6. */
+
+/* Tamoul : Noto Sans Tamil obligatoire, pour le texte comme pour les titres. */
+:lang(ta) {
+  font-family: var(--tu-font-tamil);
+}
+
+:lang(ta) :is(h1, h2, h3, .tu-btn, .tu-team) {
+  font-family: var(--tu-font-tamil);
+  letter-spacing: normal;
+}
+
+.tu-player {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-6);
+  width: 100%;
+  max-width: var(--tu-player-max);
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: var(--tu-space-6) var(--tu-space-4) var(--tu-space-8);
+}
+
+.tu-player__head {
+  --tu-wordmark-size: var(--tu-size-lg);
+}
+
+.tu-player__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+}
+
+.tu-player__title {
+  font-size: var(--tu-size-2xl);
+}
+
+.tu-player__lead {
+  margin: 0;
+  font-size: var(--tu-size-lg);
+  color: var(--tu-text-muted);
+}
+
+.tu-player__error {
+  margin: 0;
+  font-weight: 600;
+  color: var(--tu-danger-text);
+}
+
+/* L'action principale, en bas de l'écran, à portée de pouce. */
+.tu-player__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  margin-top: auto;
+}
+
+/* Liste de grands choix (langues). */
+.tu-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Code de salle : six cases. */
+.tu-code-input {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--tu-space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.tu-code-input__slot {
+  width: 100%;
+  min-height: calc(var(--tu-tap-min) * 1.25);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+  color: var(--tu-text);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-2xl);
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tu-code-input__slot:focus-visible {
+  border-color: var(--tu-primary);
+}
+
+/* Mon équipe : la couleur en plein écran, pour se retrouver dans la salle. */
+.tu-team-screen {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: var(--tu-space-8) var(--tu-space-4);
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+  text-align: center;
+}
+
+.tu-team-screen__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--tu-space-4);
+}
+
+.tu-team-screen__eyebrow {
+  margin: 0;
+  font-size: var(--tu-size-lg);
+  font-weight: 600;
+}
+
+.tu-team-screen__name {
+  font-size: var(--tu-size-3xl);
+  overflow-wrap: anywhere;
+}
+
+.tu-team-screen__hint {
+  margin: 0;
+  font-size: var(--tu-size-lg);
+}
+
+/* Sur la couleur d'équipe, le bouton reste une surface blanche lisible quelle que soit l'équipe. */
+.tu-team-screen .tu-btn {
+  width: 100%;
+  max-width: var(--tu-player-max);
+  margin-inline: auto;
+  background: var(--tu-surface);
+  color: var(--tu-text);
+}
+
+/* Écran d'attente. */
+.tu-wait-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-4);
+  width: 100%;
+  min-height: var(--tu-tap-min);
+  padding: var(--tu-space-4);
+  border: 0;
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.tu-wait-team__name {
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.tu-wait-team__points {
+  flex: none;
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-xl);
+  font-weight: 600;
+}
+
+.tu-wait-game {
+  margin: 0;
+  font-size: var(--tu-size-lg);
+}
+
+.tu-wait-look {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+  text-align: center;
+}
+
+/* Hors ligne : bandeau en haut, jamais bloquant. */
+.tu-banner {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: 0;
+  padding: var(--tu-space-3) var(--tu-space-4);
+  background: var(--tu-warning);
+  color: var(--tu-navy-900);
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-team-screen__main,
+  .tu-banner {
+    animation: tu-apparition var(--tu-dur-reveal) var(--tu-ease);
+  }
+}
+
+@keyframes tu-apparition {
+  from {
+    opacity: 0;
+    transform: translateY(var(--tu-space-2));
+  }
+}

@@ -6,6 +6,7 @@ export { TeamDot } from './TeamDot';
 export type { TeamDotProps } from './TeamDot';
 export { TextField } from './TextField';
 export type { TextFieldProps } from './TextField';
+export { Wordmark } from './Wordmark';
 export { cx } from '../classNames';
 export { TEAM_COLOR_COUNT, teamModifier } from '../teams';
 export type { TeamIndex } from '../teams';
