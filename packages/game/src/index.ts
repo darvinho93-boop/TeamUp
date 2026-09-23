@@ -11,3 +11,4 @@ export * from './surenchere';
 export * from './mime';
 export * from './photo';
 export * from './programme';
+export * from './pilotage';
