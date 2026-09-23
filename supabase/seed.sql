@@ -223,6 +223,15 @@ insert into public.manches (id, evenement_id, jeu, ordre, options, statut) value
   ('ba000005-0000-4000-8000-000000000005', 'eeee0001-0000-4000-8000-000000000001', 'photo2', 5,
    '{"themes": 2}', 'a_venir');
 
+-- La surenchère à venir : ses trois thèmes, pour piloter une manche de démo (lot 6).
+insert into public.passages (manche_id, evenement_id, ordre, contenu_id) values
+  ('ba000003-0000-4000-8000-000000000003', 'eeee0001-0000-4000-8000-000000000001', 1,
+   'aaaa0003-0000-4000-8000-000000000003'),
+  ('ba000003-0000-4000-8000-000000000003', 'eeee0001-0000-4000-8000-000000000001', 2,
+   'aaaa0201-0000-4000-8000-000000000201'),
+  ('ba000003-0000-4000-8000-000000000003', 'eeee0001-0000-4000-8000-000000000001', 3,
+   'aaaa0202-0000-4000-8000-000000000202');
+
 -- Le passage de mime en cours : seul Ravi (joueur n° 1, jeton « demo-joueur-1 ») voit le mot.
 insert into public.passages (
   id, manche_id, evenement_id, equipe_id, ordre, contenu_id, joueur_designe_id, statut, commence_le

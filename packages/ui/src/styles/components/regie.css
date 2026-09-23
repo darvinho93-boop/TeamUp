@@ -224,9 +224,11 @@
   gap: var(--tu-space-2);
 }
 
+/* Le prénom sur sa ligne, les commandes (équipe, capitaine) dessous : la colonne est étroite. */
 .tu-regie-player__name {
-  flex: 1;
+  flex: 1 1 100%;
   min-width: 0;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 
