@@ -112,7 +112,7 @@ avecBase('le pilotage', () => {
     const { data: pilotage } = await anna
       .from('pilotage')
       .select('scene')
-      .eq('evenement_id', data!['id'])
+      .eq('evenement_id', data!['id'] as string)
       .single();
     expect(pilotage).toEqual({ scene: 'accueil' });
     await supprimerEvenements([data!['id'] as string]);
