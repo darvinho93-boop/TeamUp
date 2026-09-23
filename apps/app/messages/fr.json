@@ -124,5 +124,35 @@
       "chronoChamp": "Chrono (secondes)",
       "ajouter": "Ajouter {jeu}"
     }
+  },
+  "ecran": {
+    "rejoindre": "Rejoignez la partie",
+    "adresse": "Scannez le QR code, ou tapez le code sur {adresse}",
+    "joueurs": "{n, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}}",
+    "equipes": "Les équipes",
+    "programme": "Au programme",
+    "regles": {
+      "list2": "Une équipe, dos à l'écran, devine ce qui rassemble les invités debout.",
+      "qcm2": "Une question, quatre réponses. Mauvaise réponse : éliminé !",
+      "enchere2": "Un champion par équipe. Qui en dira le plus ? Tenez votre pari !",
+      "mime2": "Le mot traverse l'équipe, en mime puis à l'oreille.",
+      "photo2": "Les photos de la soirée, thème par thème.",
+      "grab": "La musique part : attrapez l'objet qui va avec !",
+      "cup": "Tête, épaule… gobelet ! Le plus rapide gagne."
+    },
+    "yeuxFermes": "{equipe} : dos à l'écran, yeux fermés !",
+    "pointCommun": "Le point commun",
+    "ouvrezLesYeux": "{equipe}, ouvrez les yeux !",
+    "palier": "Palier {n}",
+    "trouve": "Trouvé !",
+    "rate": "Raté",
+    "points": "{points, plural, =0 {0 point} one {+# point} other {+# points}}",
+    "themes": "Les thèmes",
+    "sujet": "Le sujet",
+    "tenu": "Pari tenu !",
+    "perdu": "Pari perdu",
+    "scores": "Classement",
+    "podium": "Podium",
+    "merci": "Merci à tous, et bravo !"
   }
 }

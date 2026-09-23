@@ -124,5 +124,35 @@
       "chronoChamp": "Timer (seconds)",
       "ajouter": "Add {jeu}"
     }
+  },
+  "ecran": {
+    "rejoindre": "Join the game",
+    "adresse": "Scan the QR code, or type the code at {adresse}",
+    "joueurs": "{n, plural, =0 {No players} one {# player} other {# players}}",
+    "equipes": "The teams",
+    "programme": "Tonight's games",
+    "regles": {
+      "list2": "One team, back to the screen, guesses what the standing guests have in common.",
+      "qcm2": "One question, four answers. Wrong answer: you're out!",
+      "enchere2": "One champion per team. Who can say the most? Keep your bet!",
+      "mime2": "The word travels down the team, mimed then whispered.",
+      "photo2": "The evening's photos, theme by theme.",
+      "grab": "The music starts: grab the matching object!",
+      "cup": "Head, shoulders… cup! Fastest hand wins."
+    },
+    "yeuxFermes": "{equipe}: back to the screen, eyes closed!",
+    "pointCommun": "What they have in common",
+    "ouvrezLesYeux": "{equipe}, open your eyes!",
+    "palier": "Stage {n}",
+    "trouve": "Found it!",
+    "rate": "Missed",
+    "points": "{points, plural, =0 {0 points} one {+# point} other {+# points}}",
+    "themes": "The themes",
+    "sujet": "The topic",
+    "tenu": "Bet kept!",
+    "perdu": "Bet lost",
+    "scores": "Standings",
+    "podium": "Podium",
+    "merci": "Thank you all, and well done!"
   }
 }
