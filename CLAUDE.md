@@ -94,6 +94,7 @@ Node 22.20 (`.nvmrc`) et pnpm 10.17. Toutes les commandes se lancent depuis la r
 | `pnpm build`                        | Build des deux apps                                          |
 | `pnpm format` / `pnpm format:check` | Prettier                                                     |
 | **`pnpm verify`**                   | lint + typecheck + test + build — ce que lance la CI         |
+| `pnpm test:e2e`                     | Playwright (Chromium) sur l'app, contre la base locale       |
 
 Pages de contrôle des composants, dans les deux thèmes :
 `http://localhost:4321/kit-ui` (Astro) et `http://localhost:3000/kit-ui` (React).
@@ -129,6 +130,13 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 
 À reporter dans les variables du projet Vercel de la vitrine avant la mise en ligne.
 
+`apps/app/.env.local` (modèle dans `apps/app/.env.example`), lues côté serveur uniquement :
+
+| Variable                    | Rôle                                                                                      |
+| --------------------------- | ----------------------------------------------------------------------------------------- |
+| `SUPABASE_URL`              | API Supabase. En local : `http://127.0.0.1:54321`.                                        |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clé du rôle de service (`SERVICE_ROLE_KEY` de `pnpm db:start`). Jamais en `NEXT_PUBLIC_`. |
+
 ## Conventions posées au lot 0
 
 - `design/brand` est le paquet `@teamup/brand` : `tokens.css` reste la source unique de vérité,
@@ -147,3 +155,17 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
   le signalent, c'est la seule alerte attendue. Exclure `.tu-wordmark` des contrôles de contraste.
 - Le plugin Astro de Prettier réindente les commentaires CSS multilignes à chaque passage :
   dans les `<style>` des `.astro`, commentaires sur une seule ligne.
+
+## Conventions posées au lot 5
+
+- Les joueurs passent uniquement par les routes `apps/app/src/app/api/partie/[code]/…`, qui
+  appellent les fonctions joueur avec le rôle de service (`src/serveur/`, `server-only`).
+  Session : cookie httpOnly `tu_j_<CODE>`, la base n'en voit que le SHA-256.
+- Équipe attribuée à l'arrivée (la moins remplie), sous verrou par événement. La régie
+  pourra déplacer un joueur au lot 6.
+- L'écran d'attente relit l'état toutes les 4 s (`useEtatJoueur`). Le temps réel poussé,
+  au lot 6, remplacera ce hook sans toucher aux écrans.
+- Langue du joueur : cookie `tu_langue`, `next-intl` sans préfixe d'URL. Messages dans
+  `apps/app/messages/`, le français fait référence (types et test des clés).
+  **Le tamoul est un premier jet, à faire relire par un locuteur natif.**
+- `apps/app/AGENTS.md` et `CLAUDE.md` sont écrits par `next dev` 16 : on les garde versionnés.
