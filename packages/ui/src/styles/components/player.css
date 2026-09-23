@@ -1,13 +1,14 @@
 /* Écran joueur (téléphone, thème clair). Une action par écran, lisible en deux secondes,
    l'action en bas pour le pouce. Cahier des charges § 5.1 et § 6. */
 
-/* Tamoul : Noto Sans Tamil obligatoire, pour le texte comme pour les titres. */
+/* Tamoul : Noto Sans Tamil obligatoire, pour le texte comme pour les titres ; le latin garde
+   Inter et Poppins. */
 :lang(ta) {
-  font-family: var(--tu-font-tamil);
+  font-family: var(--tu-font-body-ta);
 }
 
-:lang(ta) :is(h1, h2, h3, .tu-btn, .tu-team) {
-  font-family: var(--tu-font-tamil);
+:lang(ta) :is(h1, h2, h3, .tu-btn, .tu-team, .tu-wait-team__name, .tu-wait-look) {
+  font-family: var(--tu-font-display-ta);
   letter-spacing: normal;
 }
 
@@ -26,14 +27,21 @@
   --tu-wordmark-size: var(--tu-size-lg);
 }
 
+/* Occupe la hauteur restante : l'action principale tombe en bas de l'écran. */
 .tu-player__body {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: var(--tu-space-4);
 }
 
 .tu-player__title {
   font-size: var(--tu-size-2xl);
+}
+
+/* Titre en plusieurs langues (choix de la langue) : une ligne chacune. */
+.tu-player__title-line {
+  display: block;
 }
 
 .tu-player__lead {
@@ -130,7 +138,8 @@
 }
 
 /* Sur la couleur d'équipe, le bouton reste une surface blanche lisible quelle que soit l'équipe. */
-.tu-team-screen .tu-btn {
+.tu-team-screen .tu-btn,
+.tu-team-screen .tu-btn:hover:not(:disabled) {
   width: 100%;
   max-width: var(--tu-player-max);
   margin-inline: auto;
@@ -178,7 +187,8 @@
 .tu-wait-look {
   margin: 0;
   font-family: var(--tu-font-display);
-  font-size: var(--tu-size-3xl);
+  font-size: var(--tu-size-2xl);
+  overflow-wrap: anywhere;
   font-weight: 700;
   line-height: var(--tu-leading-tight);
   text-align: center;

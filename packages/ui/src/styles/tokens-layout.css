@@ -16,6 +16,11 @@
   /* Écran joueur : colonne unique, même sur une tablette posée à plat. */
   --tu-player-max: 30rem;
 
+  /* Tamoul : la police latine d'abord (prénoms, noms d'équipe), Noto Sans Tamil pour le reste.
+     Ni Inter ni Poppins n'ont de glyphes tamouls, le navigateur passe donc à Noto. */
+  --tu-font-body-ta: 'Inter', var(--tu-font-tamil);
+  --tu-font-display-ta: 'Poppins', var(--tu-font-tamil);
+
   /* Boutons des maquettes : contour de 2 px, CTA de 60 px, bouton d'en-tête en 15 px. */
   --tu-btn-border-width: 2px;
   --tu-btn-cta-height: 3.75rem;
