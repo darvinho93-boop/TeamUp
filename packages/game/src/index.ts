@@ -4,3 +4,4 @@
 
 export * from './catalogue';
 export * from './chrono';
+export * from './points-communs';
