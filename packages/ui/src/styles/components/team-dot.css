@@ -75,3 +75,14 @@
   --tu-team-color: var(--tu-team-8);
   --tu-team-on: var(--tu-text-invert);
 }
+
+/* Thème stage (écran commun, régie) : le navy de l'équipe 1 se fondrait dans le fond navy.
+   On l'éclaircit d'un cran dans la même famille, et chaque pastille reçoit un liseré clair. */
+[data-theme='stage'] .tu-team--1 {
+  --tu-team-color: var(--tu-navy-500);
+  --tu-team-on: var(--tu-text);
+}
+
+[data-theme='stage'] .tu-team__dot {
+  outline: var(--tu-btn-border-width) solid var(--tu-text-muted);
+}

@@ -89,3 +89,8 @@
   padding-inline: var(--tu-space-8);
   font-size: var(--tu-size-lg);
 }
+
+/* Thème stage : le primaire est sauge, son survol s'éclaircit au lieu de virer au navy du fond. */
+[data-theme='stage'] .tu-btn--primary:hover:not(:disabled) {
+  background: var(--tu-sage-200);
+}

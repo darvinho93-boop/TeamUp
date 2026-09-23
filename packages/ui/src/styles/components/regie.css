@@ -1,0 +1,314 @@
+/* Régie (animateur, tablette ou portable, thème stage). Utilisable d'une main en salle sombre :
+   grosses touches, rien sous la cible tactile. Cahier des charges § 5.3 et § 6. */
+
+.tu-regie {
+  min-height: 100dvh;
+  background: var(--tu-bg);
+  color: var(--tu-text);
+}
+
+.tu-regie__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-3) var(--tu-space-6);
+  padding: var(--tu-space-3) var(--tu-space-6);
+  border-bottom: var(--tu-border-width) solid var(--tu-border);
+  background: var(--tu-surface);
+  --tu-wordmark-size: var(--tu-size-lg);
+}
+
+.tu-regie__head .tu-wordmark {
+  color: var(--tu-text);
+}
+
+.tu-regie__head a {
+  text-decoration: none;
+}
+
+.tu-regie__event {
+  display: flex;
+  align-items: baseline;
+  gap: var(--tu-space-3);
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+}
+
+.tu-regie__code {
+  font-family: var(--tu-font-numeric);
+  color: var(--tu-primary);
+  letter-spacing: var(--tu-tracking-code);
+}
+
+.tu-regie__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tu-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie__nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tu-tap-min);
+  padding-inline: var(--tu-space-4);
+  border-radius: var(--tu-radius-pill);
+  color: var(--tu-text-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.tu-regie__nav-link[aria-current='page'] {
+  background: var(--tu-surface-muted);
+  color: var(--tu-text);
+}
+
+.tu-regie__tools {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-3);
+}
+
+.tu-regie__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-8);
+  width: 100%;
+  max-width: var(--tu-container-max);
+  margin-inline: auto;
+  padding: var(--tu-space-8) var(--tu-space-6);
+}
+
+/* Connexion : une colonne étroite. */
+.tu-regie__main--narrow {
+  max-width: var(--tu-player-max);
+}
+
+.tu-regie__title {
+  font-size: var(--tu-size-2xl);
+}
+
+.tu-regie__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+}
+
+.tu-regie__section-title {
+  font-size: var(--tu-size-xl);
+}
+
+.tu-regie__muted {
+  margin: 0;
+  color: var(--tu-text-muted);
+}
+
+.tu-regie__alert {
+  margin: 0;
+  padding: var(--tu-space-3) var(--tu-space-4);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-warning);
+  color: var(--tu-navy-900);
+  font-weight: 600;
+}
+
+.tu-regie__form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--tu-regie-field-min), 1fr));
+  gap: var(--tu-space-4);
+  align-items: end;
+}
+
+/* Sur le fond sombre, les champs gardent leur surface et leur texte de thème. */
+.tu-regie .tu-field__control,
+.tu-regie select {
+  min-height: var(--tu-tap-min);
+  padding-inline: var(--tu-space-4);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface-muted);
+  color: var(--tu-text);
+  font: inherit;
+}
+
+.tu-regie__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.tu-regie__choices label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  min-height: var(--tu-tap-min);
+}
+
+/* Listes : événements, manches, joueurs. */
+.tu-regie-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-3) var(--tu-space-4);
+  padding: var(--tu-space-4);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
+.tu-regie-item__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-1);
+  min-width: 0;
+}
+
+.tu-regie-item__title {
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+}
+
+.tu-regie-item__meta {
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+}
+
+.tu-regie-item__grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.tu-regie-item__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tu-space-2);
+}
+
+/* Colonnes d'équipes (salle). */
+.tu-regie-teams {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tu-regie-team-min), 1fr));
+  gap: var(--tu-space-4);
+}
+
+.tu-regie-team {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  padding: var(--tu-space-4);
+  border-top: var(--tu-space-2) solid var(--tu-team-color);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
+.tu-regie-player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tu-space-2);
+}
+
+.tu-regie-player__name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.tu-regie-player__state {
+  font-size: var(--tu-size-sm);
+  color: var(--tu-text-muted);
+}
+
+.tu-regie-player__state--on {
+  color: var(--tu-primary);
+}
+
+/* Pilotage : l'aperçu de l'écran à gauche, les touches à droite. */
+.tu-regie-pilot {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--tu-space-6);
+  align-items: start;
+}
+
+@media (max-width: 60rem) {
+  .tu-regie-pilot {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.tu-regie-preview {
+  overflow: hidden;
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  aspect-ratio: 16 / 9;
+  container-type: inline-size;
+}
+
+.tu-regie-keys {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tu-space-3);
+}
+
+.tu-regie-keys .tu-btn {
+  min-height: calc(var(--tu-tap-min) * 1.5);
+  font-size: var(--tu-size-lg);
+}
+
+.tu-regie-keys__wide {
+  grid-column: 1 / -1;
+}
+
+.tu-regie-secret {
+  margin: 0;
+  padding: var(--tu-space-4);
+  border: var(--tu-border-width) dashed var(--tu-border);
+  border-radius: var(--tu-radius-md);
+}
+
+.tu-regie-timer {
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Tableau (scores, journal). */
+.tu-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tu-table :is(th, td) {
+  padding: var(--tu-space-3);
+  border-bottom: var(--tu-border-width) solid var(--tu-border);
+  text-align: start;
+}
+
+.tu-table th {
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+  font-weight: 600;
+}
+
+.tu-table__num {
+  font-family: var(--tu-font-numeric);
+  text-align: end;
+}

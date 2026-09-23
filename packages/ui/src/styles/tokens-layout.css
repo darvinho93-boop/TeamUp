@@ -16,6 +16,12 @@
   /* Écran joueur : colonne unique, même sur une tablette posée à plat. */
   --tu-player-max: 30rem;
 
+  /* Régie : largeur minimale d'un champ de formulaire et d'une colonne d'équipe. */
+  --tu-regie-field-min: 14rem;
+  --tu-regie-team-min: 16rem;
+  /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
+  --tu-tracking-code: 0.08em;
+
   /* Tamoul : la police latine d'abord (prénoms, noms d'équipe), Noto Sans Tamil pour le reste.
      Ni Inter ni Poppins n'ont de glyphes tamouls, le navigateur passe donc à Noto. */
   --tu-font-body-ta: 'Inter', var(--tu-font-tamil);
