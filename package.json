@@ -23,7 +23,8 @@
     "db:types": "supabase gen types typescript --local --schema public > apps/app/src/types/base.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "test:e2e": "pnpm --filter @teamup/app test:e2e"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

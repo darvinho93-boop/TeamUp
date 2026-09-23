@@ -27,7 +27,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // La langue du joueur est choisie dans l'app et mémorisée ; le français reste le défaut.
   const langue = await getLocale();
   return (
-    <html lang={langue}>
+    <html lang={langue} data-scroll-behavior="smooth">
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

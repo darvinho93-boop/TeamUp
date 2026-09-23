@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 
 // Le schéma n'est pas encore typé (`pnpm db:types` viendra avec les premiers écrans) :
@@ -103,6 +103,51 @@ export async function appeler<T>(
 /** Le jeton du joueur n'existe qu'en clair côté cookie : la base n'en voit que le SHA-256. */
 export function hacher(jeton: string): string {
   return createHash('sha256').update(jeton).digest('hex');
+}
+
+const ALPHABET_CODE = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const ANNA = '22222222-2222-4222-8222-222222222222';
+
+/**
+ * Un événement jetable, en cours, animé par Anna : les tests qui font entrer des joueurs
+ * ne salissent pas la démo. `supprimerEvenements` l'efface avec ses équipes et joueurs.
+ */
+export async function creerEvenementJetable(
+  options: { equipes?: number; langues?: string[]; expire?: boolean } = {},
+): Promise<{ id: string; code: string }> {
+  const service = clientService();
+  const code = Array.from(randomBytes(6), (o) => ALPHABET_CODE[o % ALPHABET_CODE.length]).join('');
+  const { data, error } = await service
+    .from('evenements')
+    .insert({
+      code,
+      animateur_id: ANNA,
+      client_nom: 'Test automatisé',
+      date_evenement: new Date().toISOString().slice(0, 10),
+      creneau_minutes: 40,
+      langues: options.langues ?? ['fr', 'en'],
+      statut: 'en_cours',
+      code_expire_le: options.expire ? new Date(Date.now() - 60_000).toISOString() : null,
+    })
+    .select('id')
+    .single();
+  if (error) throw new Error(error.message);
+  const id = (data as { id: string }).id;
+
+  const equipes = Array.from({ length: options.equipes ?? 0 }, (_, i) => ({
+    evenement_id: id,
+    numero: i + 1,
+    nom: `Équipe ${i + 1}`,
+  }));
+  if (equipes.length) {
+    const { error: e } = await service.from('equipes').insert(equipes);
+    if (e) throw new Error(e.message);
+  }
+  return { id, code };
+}
+
+export async function supprimerEvenements(ids: string[]): Promise<void> {
+  if (ids.length) await clientService().from('evenements').delete().in('id', ids);
 }
 
 /** Tables de l'app : aucune n'est lisible sans compte. */

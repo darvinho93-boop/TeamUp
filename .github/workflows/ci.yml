@@ -31,5 +31,13 @@ jobs:
 
       - run: pnpm verify
 
+      # Parcours joueur dans Chromium : arrivée, coupure réseau, 150 joueurs simulés.
+      - run: pnpm --filter @teamup/app exec playwright install --with-deps chromium
+
+      # Le serveur de l'app lit ses clés dans l'environnement : celles de la base locale.
+      - run: |
+          eval "$(pnpm exec supabase status -o env | grep -E '^(API_URL|SERVICE_ROLE_KEY)=')"
+          SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" pnpm test:e2e
+
       - if: always()
         run: pnpm db:stop --no-backup

@@ -1,51 +1,22 @@
-import { randomBytes } from 'node:crypto';
 import { afterAll, describe, expect, it } from 'vitest';
-import { appeler, baseDisponible, clientAnon, clientService, hacher } from './base';
+import {
+  appeler,
+  baseDisponible,
+  clientAnon,
+  clientService,
+  creerEvenementJetable,
+  hacher,
+  supprimerEvenements,
+} from './base';
 
 const avecBase = describe.skipIf(!baseDisponible);
 
-const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const ANNA = '22222222-2222-4222-8222-222222222222';
 const crees: string[] = [];
 
-function codeAleatoire(): string {
-  return Array.from(randomBytes(6), (o) => ALPHABET[o % ALPHABET.length]).join('');
-}
-
-/** Un événement jetable, supprimé en fin de fichier (les équipes et joueurs suivent en cascade). */
-async function creerEvenement(
-  options: { equipes?: number; langues?: string[]; expire?: boolean } = {},
-) {
-  const service = clientService();
-  const code = codeAleatoire();
-  const { data, error } = await service
-    .from('evenements')
-    .insert({
-      code,
-      animateur_id: ANNA,
-      client_nom: 'Test arrivée',
-      date_evenement: new Date().toISOString().slice(0, 10),
-      creneau_minutes: 40,
-      langues: options.langues ?? ['fr', 'en'],
-      statut: 'en_cours',
-      code_expire_le: options.expire ? new Date(Date.now() - 60_000).toISOString() : null,
-    })
-    .select('id')
-    .single();
-  if (error) throw new Error(error.message);
-  const id = (data as { id: string }).id;
-  crees.push(id);
-
-  const equipes = Array.from({ length: options.equipes ?? 0 }, (_, i) => ({
-    evenement_id: id,
-    numero: i + 1,
-    nom: `Équipe ${i + 1}`,
-  }));
-  if (equipes.length) {
-    const { error: e } = await service.from('equipes').insert(equipes);
-    if (e) throw new Error(e.message);
-  }
-  return { id, code };
+async function creerEvenement(options: Parameters<typeof creerEvenementJetable>[0] = {}) {
+  const evenement = await creerEvenementJetable(options);
+  crees.push(evenement.id);
+  return evenement;
 }
 
 interface Arrivee {
@@ -62,9 +33,7 @@ function rejoindre(code: string, n: number | string, langue = 'fr') {
   });
 }
 
-afterAll(async () => {
-  if (crees.length) await clientService().from('evenements').delete().in('id', crees);
-});
+afterAll(() => supprimerEvenements(crees));
 
 avecBase("l'arrivée d'un joueur", () => {
   it("attribue tour à tour l'équipe la moins remplie", async () => {
