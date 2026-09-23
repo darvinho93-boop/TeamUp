@@ -165,7 +165,10 @@ function PointsCommuns({ etat, decalageMs }: Props) {
   const palier = etatPaliers(ecoule).palier;
   const indices = langues.flatMap((langue) => {
     const liste = passage.secret?.[langue]?.['indices'];
-    return Array.isArray(liste) ? [{ langue, liste: liste as string[] }] : [];
+    // La régie reçoit tous les indices : l'aperçu n'en montre pas plus que l'écran.
+    return Array.isArray(liste)
+      ? [{ langue, liste: (liste as string[]).slice(0, etat.pilotage.indices) }]
+      : [];
   });
 
   return (
@@ -216,7 +219,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
               </li>
             ))}
           </ol>
-          {indices.length > 0 && (
+          {etat.pilotage.indices > 0 && indices.length > 0 && (
             <div className="tu-stage-indices" data-testid="indices">
               {indices[0]!.liste.map((_, i) => (
                 <Multilingue

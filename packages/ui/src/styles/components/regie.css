@@ -312,3 +312,12 @@
   font-family: var(--tu-font-numeric);
   text-align: end;
 }
+
+.tu-regie-item--courant {
+  border-color: var(--tu-primary);
+}
+
+.tu-regie__lien {
+  color: var(--tu-primary);
+  font-weight: 600;
+}

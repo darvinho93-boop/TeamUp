@@ -13,6 +13,8 @@ export interface EvenementRegie {
   statut: 'preparation' | 'repetition' | 'en_cours' | 'termine';
 }
 
+const COLONNES = 'id, code, client_nom, type_client, creneau_minutes, langues, statut';
+
 /**
  * L'événement d'une page de la régie, lu sous la session de l'animateur : un code qui n'est pas
  * le sien (RLS) donne une page introuvable, pas une erreur qui confirmerait son existence.
@@ -23,9 +25,9 @@ export async function evenementDeLaRegie(brut: string) {
   if (!code) notFound();
   const { data: evenement } = await supabase
     .from('evenements')
-    .select('id, code, client_nom, type_client, creneau_minutes, langues, statut')
+    .select(COLONNES)
     .eq('code', code)
     .maybeSingle();
   if (!evenement) notFound();
-  return { supabase, animateur, evenement: evenement };
+  return { supabase, animateur, evenement };
 }

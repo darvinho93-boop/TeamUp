@@ -24,11 +24,11 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Jeton vérifié localement (clés de signature asymétriques) : pas d'aller-retour vers le
+  // serveur d'authentification à chaque requête, ce qui compte pour la latence de la régie.
+  const { data } = await supabase.auth.getClaims();
 
-  if (!user && request.nextUrl.pathname !== '/regie/connexion') {
+  if (!data?.claims.sub && request.nextUrl.pathname !== '/regie/connexion') {
     const connexion = request.nextUrl.clone();
     connexion.pathname = '/regie/connexion';
     connexion.search = `?suite=${encodeURIComponent(request.nextUrl.pathname)}`;

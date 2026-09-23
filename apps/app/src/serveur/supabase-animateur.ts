@@ -32,6 +32,12 @@ export async function supabaseAnimateur(): Promise<ClientAnimateur> {
   );
 }
 
+/** Identifiant de l'animateur connecté, d'après son jeton vérifié localement ; `null` sans session. */
+export async function identifiant(supabase: ClientAnimateur): Promise<string | null> {
+  const { data } = await supabase.auth.getClaims();
+  return data?.claims.sub ?? null;
+}
+
 export interface Animateur {
   id: string;
   nom: string;
@@ -44,14 +50,12 @@ export async function exigerAnimateur(): Promise<{
   animateur: Animateur;
 }> {
   const supabase = await supabaseAnimateur();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/regie/connexion');
+  const id = await identifiant(supabase);
+  if (!id) redirect('/regie/connexion');
   const { data: animateur } = await supabase
     .from('animateurs')
     .select('id, nom, role')
-    .eq('id', user.id)
+    .eq('id', id)
     .eq('actif', true)
     .maybeSingle();
   if (!animateur) redirect('/regie/connexion?compte=inactif');
