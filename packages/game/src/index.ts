@@ -10,3 +10,4 @@ export * from './quiz';
 export * from './surenchere';
 export * from './mime';
 export * from './photo';
+export * from './programme';
