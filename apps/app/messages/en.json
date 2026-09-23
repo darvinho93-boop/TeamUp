@@ -1,0 +1,54 @@
+{
+  "commun": {
+    "marque": "Team Up!"
+  },
+  "rejoindre": {
+    "titre": "Join the game",
+    "aide": "Type the code shown on the big screen.",
+    "legende": "Room code, six characters",
+    "caractere": "Character {n}",
+    "bouton": "Join",
+    "codeIncomplet": "The code has six characters.",
+    "codeInconnu": "This code doesn't open any game. Check it on the big screen."
+  },
+  "langue": {
+    "titre": "Your language"
+  },
+  "prenom": {
+    "titre": "Your first name",
+    "champ": "First name",
+    "aide": "Your team will see it. First name only.",
+    "bouton": "Let's go",
+    "vide": "Type your first name.",
+    "complet": "The game is full.",
+    "codeInconnu": "This game is no longer open.",
+    "serveur": "That didn't work. Try again."
+  },
+  "equipe": {
+    "surtitre": "Your team",
+    "aide": "Find the players wearing this colour in the room.",
+    "bouton": "Got it",
+    "sansEquipe": "The host will put you in a team shortly."
+  },
+  "attente": {
+    "salut": "Hi {prenom}!",
+    "points": "{points, plural, one {# point} other {# points}}",
+    "enCours": "Now playing: {jeu}",
+    "prochain": "Next game: {jeu}",
+    "regarde": "Watch the screen",
+    "voirEquipe": "See my team",
+    "termine": "The game is over. Thanks for playing!"
+  },
+  "horsLigne": {
+    "bandeau": "Connection lost. Retrying…"
+  },
+  "jeux": {
+    "list2": "Common ground",
+    "qcm2": "Quiz",
+    "enchere2": "Bidding war",
+    "mime2": "Mime",
+    "photo2": "Photo challenge",
+    "grab": "Grab the object",
+    "cup": "Head, shoulders, cup"
+  }
+}

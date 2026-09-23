@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale } from 'next-intl/server';
 import tokens from '@teamup/brand/tokens.json';
 import favicon32 from '@teamup/brand/icons/favicon32.png';
 import appleTouchIcon from '@teamup/brand/icons/appletouchicon.png';
@@ -21,11 +23,14 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   // La langue du joueur est choisie dans l'app et mémorisée ; le français reste le défaut.
+  const langue = await getLocale();
   return (
-    <html lang="fr">
-      <body>{children}</body>
+    <html lang={langue}>
+      <body>
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+      </body>
     </html>
   );
 }

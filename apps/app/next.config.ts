@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   // Les paquets du workspace sont consommés en TypeScript source, sans étape de build.
@@ -6,4 +7,4 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
 };
 
-export default nextConfig;
+export default createNextIntlPlugin('./src/i18n/request.ts')(nextConfig);

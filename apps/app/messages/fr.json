@@ -1,0 +1,54 @@
+{
+  "commun": {
+    "marque": "Team Up!"
+  },
+  "rejoindre": {
+    "titre": "Rejoins la partie",
+    "aide": "Tape le code affiché sur le grand écran.",
+    "legende": "Code de salle, six caractères",
+    "caractere": "Caractère {n}",
+    "bouton": "Rejoindre",
+    "codeIncomplet": "Le code fait six caractères.",
+    "codeInconnu": "Ce code n'ouvre aucune partie. Vérifie-le sur le grand écran."
+  },
+  "langue": {
+    "titre": "Ta langue"
+  },
+  "prenom": {
+    "titre": "Ton prénom",
+    "champ": "Prénom",
+    "aide": "Ton équipe le verra. Le prénom suffit.",
+    "bouton": "C'est parti",
+    "vide": "Écris ton prénom.",
+    "complet": "La partie est complète.",
+    "codeInconnu": "Cette partie n'est plus ouverte.",
+    "serveur": "Ça n'a pas marché. Réessaie."
+  },
+  "equipe": {
+    "surtitre": "Ton équipe",
+    "aide": "Retrouve les joueurs de cette couleur dans la salle.",
+    "bouton": "Compris",
+    "sansEquipe": "L'animateur va bientôt te placer dans une équipe."
+  },
+  "attente": {
+    "salut": "Salut {prenom} !",
+    "points": "{points, plural, =0 {0 point} one {# point} other {# points}}",
+    "enCours": "En ce moment : {jeu}",
+    "prochain": "Prochain jeu : {jeu}",
+    "regarde": "Regarde l'écran",
+    "voirEquipe": "Voir mon équipe",
+    "termine": "La partie est terminée. Merci d'avoir joué !"
+  },
+  "horsLigne": {
+    "bandeau": "Connexion perdue. On réessaie…"
+  },
+  "jeux": {
+    "list2": "Points communs",
+    "qcm2": "Quiz",
+    "enchere2": "Surenchère",
+    "mime2": "Mime",
+    "photo2": "Photo challenge",
+    "grab": "Attrape l'objet",
+    "cup": "Tête, épaule, gobelet"
+  }
+}
