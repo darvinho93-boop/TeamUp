@@ -11,9 +11,6 @@
     "codeIncomplet": "The code has six characters.",
     "codeInconnu": "This code doesn't open any game. Check it on the big screen."
   },
-  "langue": {
-    "titre": "Your language"
-  },
   "prenom": {
     "titre": "Your first name",
     "champ": "First name",

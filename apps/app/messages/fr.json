@@ -11,9 +11,6 @@
     "codeIncomplet": "Le code fait six caractères.",
     "codeInconnu": "Ce code n'ouvre aucune partie. Vérifie-le sur le grand écran."
   },
-  "langue": {
-    "titre": "Ta langue"
-  },
   "prenom": {
     "titre": "Ton prénom",
     "champ": "Prénom",

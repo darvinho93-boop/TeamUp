@@ -8,6 +8,9 @@ import type { GameCode } from '@teamup/game';
 export const LANGUES = ['fr', 'en', 'ta'] as const;
 export type Langue = (typeof LANGUES)[number];
 
+/** Langue choisie par le joueur : un cookie lisible par le navigateur, qui la pose lui-même. */
+export const COOKIE_LANGUE = 'tu_langue';
+
 export function estLangue(valeur: unknown): valeur is Langue {
   return (LANGUES as readonly unknown[]).includes(valeur);
 }

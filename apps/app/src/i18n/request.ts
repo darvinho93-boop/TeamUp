@@ -1,9 +1,11 @@
 import { cookies } from 'next/headers';
 import { getRequestConfig } from 'next-intl/server';
-import { estLangue, type Langue } from '@/lib/partie';
+import { COOKIE_LANGUE, estLangue, type Langue } from '@/lib/partie';
+import en from '../../messages/en.json';
+import fr from '../../messages/fr.json';
+import ta from '../../messages/ta.json';
 
-/** Langue choisie par le joueur, mémorisée dans un cookie lisible par le navigateur. */
-export const COOKIE_LANGUE = 'tu_langue';
+const MESSAGES = { fr, en, ta } satisfies Record<Langue, typeof fr>;
 
 /**
  * Pas de préfixe de langue dans l'URL : le code de salle doit rester court (`/K7P2M9`).
@@ -12,8 +14,5 @@ export const COOKIE_LANGUE = 'tu_langue';
 export default getRequestConfig(async () => {
   const choisie = (await cookies()).get(COOKIE_LANGUE)?.value;
   const locale: Langue = estLangue(choisie) ? choisie : 'fr';
-  return {
-    locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
-  };
+  return { locale, messages: MESSAGES[locale] };
 });
