@@ -94,7 +94,7 @@ Node 22.20 (`.nvmrc`) et pnpm 10.17. Toutes les commandes se lancent depuis la r
 | `pnpm build`                        | Build des deux apps                                          |
 | `pnpm format` / `pnpm format:check` | Prettier                                                     |
 | **`pnpm verify`**                   | lint + typecheck + test + build — ce que lance la CI         |
-| `pnpm test:e2e`                     | Playwright (Chromium) sur l'app, contre la base locale       |
+| `pnpm test:e2e`                     | Playwright sur un build de production de l'app (`:3100`)     |
 
 Pages de contrôle des composants, dans les deux thèmes :
 `http://localhost:4321/kit-ui` (Astro) et `http://localhost:3000/kit-ui` (React).
@@ -105,14 +105,16 @@ Supabase tourne en local dans Docker : **Docker Desktop doit être démarré**.
 
 | Commande        | Effet                                                                |
 | --------------- | -------------------------------------------------------------------- |
-| `pnpm db:start` | Démarre la base locale (Studio sur `:54323`, API sur `:54321`)       |
+| `pnpm db:start` | Démarre la base locale (API et Realtime sur `:54321`)                |
 | `pnpm db:stop`  | Arrête la base                                                       |
 | `pnpm db:reset` | Rejoue toutes les migrations puis `supabase/seed.sql` (base jetable) |
 | `pnpm db:types` | Régénère `apps/app/src/types/base.ts` depuis le schéma local         |
 
-`db:start` écarte Studio, l'analytics, l'imgproxy, le realtime et les autres services dont
-rien n'a encore besoin : la pile complète demande environ 8 Go d'images et 4 Go de RAM.
-Le realtime sera à réintégrer au lot 6.
+`db:start` écarte Studio, l'analytics, l'imgproxy et les autres services dont rien n'a besoin :
+la pile complète demande environ 8 Go d'images et 4 Go de RAM. Le Realtime y est (lot 6).
+
+Comptes de démo (mot de passe `motdepasse`) : `anna@teamup.test` anime la soirée `FETE24`,
+`brahim@teamup.test` la soirée `BUREAU`, `admin@teamup.test` est administrateur.
 
 Les migrations vivent dans `supabase/migrations/`, une par bloc fonctionnel, jamais modifiées
 après coup : on en ajoute une. Sans base joignable, les tests qui en dépendent s'annoncent
@@ -132,10 +134,13 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 
 `apps/app/.env.local` (modèle dans `apps/app/.env.example`), lues côté serveur uniquement :
 
-| Variable                    | Rôle                                                                                      |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| `SUPABASE_URL`              | API Supabase. En local : `http://127.0.0.1:54321`.                                        |
-| `SUPABASE_SERVICE_ROLE_KEY` | Clé du rôle de service (`SERVICE_ROLE_KEY` de `pnpm db:start`). Jamais en `NEXT_PUBLIC_`. |
+| Variable                        | Rôle                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `SUPABASE_URL`                  | API Supabase. En local : `http://127.0.0.1:54321`.                                                     |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Clé du rôle de service (`SERVICE_ROLE_KEY` de `pnpm db:start`). Jamais en `NEXT_PUBLIC_`.              |
+| `NEXT_PUBLIC_SUPABASE_URL`      | La même URL, pour la régie et l'écran (connexion, temps réel).                                         |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (`ANON_KEY`) : publique par nature, elle n'ouvre aucun droit (lot 3).                         |
+| `NEXT_PUBLIC_APP_URL`           | Facultative. Adresse du QR code de l'écran (`https://app.teamup.fr`) ; à défaut, l'hôte de la requête. |
 
 ## Conventions posées au lot 0
 
@@ -169,3 +174,23 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
   `apps/app/messages/`, le français fait référence (types et test des clés).
   **Le tamoul est un premier jet, à faire relire par un locuteur natif.**
 - `apps/app/AGENTS.md` et `CLAUDE.md` sont écrits par `next dev` 16 : on les garde versionnés.
+
+## Conventions posées au lot 6
+
+- Régie et écran commun agissent sous la **session de l'animateur** (Supabase SSR, rafraîchie
+  par `src/proxy.ts`) : la RLS s'applique, le rôle de service n'y sert jamais. L'écran commun
+  est une seconde fenêtre de la régie ; sur un autre appareil, l'animateur s'y connecte.
+- Une ligne `pilotage` par événement dit ce que la salle voit. On ne l'écrit que par
+  `enregistrer_etape` (une transaction, version contrôlée, chrono posé par la base) ; on la
+  lit, avec tout le reste, par `etat_ecran`, qui ne sort un secret qu'à l'étape qui le montre
+  à la salle (la régie, `p_regie`, voit tout).
+- Une touche de régie : `calculerEtape` (`src/lib/pilotage.ts`, règles de `packages/game`),
+  écriture directe depuis le navigateur, puis un signal broadcast **sans données** sur
+  `salle:<id>` : l'écran relit aussitôt. `postgres_changes` ne sert qu'aux arrivées et aux
+  corrections de score ; ne pas y ajouter une table que le signal couvre déjà.
+- Latence régie → écran mesurée par `e2e/partie.spec.ts` sur build de production : médiane
+  sous 500 ms et 90e centile sous 1 s exigés.
+- Contenus à l'écran dans toutes les langues de la soirée (la première en grand), libellés de
+  l'écran dans la première. Régie en fr, en et ta (tamoul à relire).
+- Sur le thème stage, l'équipe 1 passe au navy 500 avec un liseré : le navy 700 disparaît
+  sur le fond navy 900.
