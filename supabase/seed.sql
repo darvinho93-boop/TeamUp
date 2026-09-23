@@ -94,6 +94,76 @@ insert into public.contenus_secrets (contenu_id, langue, valeur) values
   ('aaaa0004-0000-4000-8000-000000000004', 'en', '{"mot": "elephant"}'),
   ('aaaa0004-0000-4000-8000-000000000004', 'ta', '{"mot": "யானை"}');
 
+-- Assez de contenus pour jouer une partie complète de démo (lot 6) : un point commun par
+-- équipe de FETE24, et quatre thèmes de surenchère. Tamoul : premier jet, à faire relire.
+insert into public.contenus (id, jeu, etiquette, cree_par)
+select v.id::uuid, v.jeu::public.jeu, 'tout_public', '11111111-1111-4111-8111-111111111111'
+from (values
+  ('aaaa0101-0000-4000-8000-000000000101', 'list2'),
+  ('aaaa0102-0000-4000-8000-000000000102', 'list2'),
+  ('aaaa0103-0000-4000-8000-000000000103', 'list2'),
+  ('aaaa0104-0000-4000-8000-000000000104', 'list2'),
+  ('aaaa0105-0000-4000-8000-000000000105', 'list2'),
+  ('aaaa0201-0000-4000-8000-000000000201', 'enchere2'),
+  ('aaaa0202-0000-4000-8000-000000000202', 'enchere2'),
+  ('aaaa0203-0000-4000-8000-000000000203', 'enchere2')
+) as v (id, jeu);
+
+insert into public.contenus_traductions (contenu_id, langue, valeur)
+select c.id, l.langue::public.langue, case c.jeu
+  when 'list2' then jsonb_build_object('consigne', case l.langue
+    when 'fr' then 'Levez-vous si ça vous concerne.'
+    when 'en' then 'Stand up if this is about you.'
+    else 'உங்களுக்குப் பொருந்தினால் எழுந்திருங்கள்.' end)
+  else '{}'::jsonb end
+from public.contenus c
+cross join (values ('fr'), ('en'), ('ta')) as l (langue)
+where c.id::text like 'aaaa01%' or c.id::text like 'aaaa02%';
+
+-- Thèmes de surenchère : la partie publique.
+update public.contenus_traductions t set valeur = jsonb_build_object('theme', v.theme)
+from (values
+  ('aaaa0201-0000-4000-8000-000000000201', 'fr', 'La cuisine'),
+  ('aaaa0201-0000-4000-8000-000000000201', 'en', 'Cooking'),
+  ('aaaa0201-0000-4000-8000-000000000201', 'ta', 'சமையல்'),
+  ('aaaa0202-0000-4000-8000-000000000202', 'fr', 'Les voyages'),
+  ('aaaa0202-0000-4000-8000-000000000202', 'en', 'Travel'),
+  ('aaaa0202-0000-4000-8000-000000000202', 'ta', 'பயணங்கள்'),
+  ('aaaa0203-0000-4000-8000-000000000203', 'fr', 'Le cinéma'),
+  ('aaaa0203-0000-4000-8000-000000000203', 'en', 'Movies'),
+  ('aaaa0203-0000-4000-8000-000000000203', 'ta', 'திரைப்படங்கள்')
+) as v (id, langue, theme)
+where t.contenu_id = v.id::uuid and t.langue = v.langue::public.langue;
+
+insert into public.contenus_secrets (contenu_id, langue, valeur)
+select v.id::uuid, v.langue::public.langue, v.valeur::jsonb
+from (values
+  ('aaaa0101-0000-4000-8000-000000000101', 'fr', '{"reponse": "les personnes qui portent des lunettes", "indices": ["Regardez les visages", "Ça aide à voir"]}'),
+  ('aaaa0101-0000-4000-8000-000000000101', 'en', '{"reponse": "people wearing glasses", "indices": ["Look at their faces", "It helps them see"]}'),
+  ('aaaa0101-0000-4000-8000-000000000101', 'ta', '{"reponse": "கண்ணாடி அணிந்தவர்கள்", "indices": ["முகங்களைப் பாருங்கள்", "பார்க்க உதவும்"]}'),
+  ('aaaa0102-0000-4000-8000-000000000102', 'fr', '{"reponse": "les personnes nées en été", "indices": ["C''est une question de date", "Il faisait chaud"]}'),
+  ('aaaa0102-0000-4000-8000-000000000102', 'en', '{"reponse": "people born in summer", "indices": ["It is about a date", "It was hot"]}'),
+  ('aaaa0102-0000-4000-8000-000000000102', 'ta', '{"reponse": "கோடையில் பிறந்தவர்கள்", "indices": ["இது ஒரு தேதி பற்றியது", "வெயிலாக இருந்தது"]}'),
+  ('aaaa0103-0000-4000-8000-000000000103', 'fr', '{"reponse": "les personnes qui ont un animal", "indices": ["À la maison, ils ne sont pas seuls", "Il faut le nourrir"]}'),
+  ('aaaa0103-0000-4000-8000-000000000103', 'en', '{"reponse": "people who have a pet", "indices": ["They are not alone at home", "It needs feeding"]}'),
+  ('aaaa0103-0000-4000-8000-000000000103', 'ta', '{"reponse": "செல்லப் பிராணி வைத்திருப்பவர்கள்", "indices": ["வீட்டில் அவர்கள் தனியாக இல்லை", "அதற்கு உணவு தர வேண்டும்"]}'),
+  ('aaaa0104-0000-4000-8000-000000000104', 'fr', '{"reponse": "les personnes qui parlent trois langues", "indices": ["Écoutez-les bien", "Plus que deux"]}'),
+  ('aaaa0104-0000-4000-8000-000000000104', 'en', '{"reponse": "people who speak three languages", "indices": ["Listen to them", "More than two"]}'),
+  ('aaaa0104-0000-4000-8000-000000000104', 'ta', '{"reponse": "மூன்று மொழிகள் பேசுபவர்கள்", "indices": ["அவர்களைக் கவனியுங்கள்", "இரண்டுக்கு மேல்"]}'),
+  ('aaaa0105-0000-4000-8000-000000000105', 'fr', '{"reponse": "les personnes venues en train", "indices": ["Pensez au trajet", "Il y a des rails"]}'),
+  ('aaaa0105-0000-4000-8000-000000000105', 'en', '{"reponse": "people who came by train", "indices": ["Think about the journey", "There are rails"]}'),
+  ('aaaa0105-0000-4000-8000-000000000105', 'ta', '{"reponse": "ரயிலில் வந்தவர்கள்", "indices": ["பயணத்தை நினைத்துப் பாருங்கள்", "தண்டவாளங்கள் உள்ளன"]}'),
+  ('aaaa0201-0000-4000-8000-000000000201', 'fr', '{"sujet": "citer des épices"}'),
+  ('aaaa0201-0000-4000-8000-000000000201', 'en', '{"sujet": "name spices"}'),
+  ('aaaa0201-0000-4000-8000-000000000201', 'ta', '{"sujet": "மசாலாப் பொருட்களைச் சொல்லுங்கள்"}'),
+  ('aaaa0202-0000-4000-8000-000000000202', 'fr', '{"sujet": "citer des capitales"}'),
+  ('aaaa0202-0000-4000-8000-000000000202', 'en', '{"sujet": "name capital cities"}'),
+  ('aaaa0202-0000-4000-8000-000000000202', 'ta', '{"sujet": "தலைநகரங்களைச் சொல்லுங்கள்"}'),
+  ('aaaa0203-0000-4000-8000-000000000203', 'fr', '{"sujet": "citer des films de Noël"}'),
+  ('aaaa0203-0000-4000-8000-000000000203', 'en', '{"sujet": "name Christmas movies"}'),
+  ('aaaa0203-0000-4000-8000-000000000203', 'ta', '{"sujet": "கிறிஸ்துமஸ் திரைப்படங்களைச் சொல்லுங்கள்"}')
+) as v (id, langue, valeur);
+
 -- ---------------------------------------------------------------------------
 -- Soirée FETE24 — six équipes, en cours
 -- ---------------------------------------------------------------------------

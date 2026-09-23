@@ -181,7 +181,7 @@ export type Database = {
         Insert: {
           animateur_id: string
           client_nom: string
-          code: string
+          code?: string
           code_expire_le?: string | null
           commence_le?: string | null
           cree_le?: string
@@ -513,6 +513,64 @@ export type Database = {
           },
         ]
       }
+      pilotage: {
+        Row: {
+          chrono_depart: string | null
+          chrono_duree_s: number | null
+          etape: string | null
+          evenement_id: string
+          indices: number
+          maj_le: string
+          manche_id: string | null
+          passage_id: string | null
+          scene: Database["public"]["Enums"]["scene"]
+        }
+        Insert: {
+          chrono_depart?: string | null
+          chrono_duree_s?: number | null
+          etape?: string | null
+          evenement_id: string
+          indices?: number
+          maj_le?: string
+          manche_id?: string | null
+          passage_id?: string | null
+          scene?: Database["public"]["Enums"]["scene"]
+        }
+        Update: {
+          chrono_depart?: string | null
+          chrono_duree_s?: number | null
+          etape?: string | null
+          evenement_id?: string
+          indices?: number
+          maj_le?: string
+          manche_id?: string | null
+          passage_id?: string | null
+          scene?: Database["public"]["Enums"]["scene"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilotage_evenement_id_fkey"
+            columns: ["evenement_id"]
+            isOneToOne: true
+            referencedRelation: "evenements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pilotage_manche_id_evenement_id_fkey"
+            columns: ["manche_id", "evenement_id"]
+            isOneToOne: false
+            referencedRelation: "manches"
+            referencedColumns: ["id", "evenement_id"]
+          },
+          {
+            foreignKeyName: "pilotage_passage_id_evenement_id_fkey"
+            columns: ["passage_id", "evenement_id"]
+            isOneToOne: false
+            referencedRelation: "passages"
+            referencedColumns: ["id", "evenement_id"]
+          },
+        ]
+      }
       scores: {
         Row: {
           cree_le: string
@@ -605,10 +663,37 @@ export type Database = {
     }
     Functions: {
       anime: { Args: { p_evenement: string }; Returns: boolean }
+      contenu_public: {
+        Args: {
+          p_contenu: string
+          p_langues: Database["public"]["Enums"]["langue"][]
+        }
+        Returns: Json
+      }
+      contenu_secret: {
+        Args: {
+          p_contenu: string
+          p_langues: Database["public"]["Enums"]["langue"][]
+        }
+        Returns: Json
+      }
+      enregistrer_etape: {
+        Args: {
+          p_evenement: string
+          p_manche?: Json
+          p_passage?: Json
+          p_pilotage: Json
+          p_scores?: Json
+          p_version: string
+        }
+        Returns: string
+      }
       est_admin: { Args: never; Returns: boolean }
       est_animateur: { Args: never; Returns: boolean }
+      etat_ecran: { Args: { p_code: string; p_regie?: boolean }; Returns: Json }
       etat_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       evenement_public: { Args: { p_code: string }; Returns: Json }
+      nouveau_code: { Args: never; Returns: string }
       pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       rejoindre_evenement: {
         Args: {
@@ -620,12 +705,30 @@ export type Database = {
         Returns: Json
       }
       secret_du_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
+      secret_visible: {
+        Args: {
+          p_jeu: Database["public"]["Enums"]["jeu"]
+          p_langues: Database["public"]["Enums"]["langue"][]
+          p_passage: Database["public"]["Tables"]["passages"]["Row"]
+          p_pilotage: Database["public"]["Tables"]["pilotage"]["Row"]
+          p_regie: boolean
+        }
+        Returns: Json
+      }
     }
     Enums: {
       etiquette: "b2c" | "b2b" | "tout_public"
       jeu: "list2" | "qcm2" | "enchere2" | "mime2" | "photo2" | "grab" | "cup"
       langue: "fr" | "en" | "ta"
       role_animateur: "animateur" | "admin"
+      scene:
+        | "accueil"
+        | "equipes"
+        | "programme"
+        | "intro"
+        | "jeu"
+        | "scores"
+        | "podium"
       statut_evenement: "preparation" | "repetition" | "en_cours" | "termine"
       statut_manche: "a_venir" | "en_cours" | "terminee" | "annulee"
       statut_passage: "a_venir" | "en_cours" | "termine"
@@ -761,6 +864,15 @@ export const Constants = {
       jeu: ["list2", "qcm2", "enchere2", "mime2", "photo2", "grab", "cup"],
       langue: ["fr", "en", "ta"],
       role_animateur: ["animateur", "admin"],
+      scene: [
+        "accueil",
+        "equipes",
+        "programme",
+        "intro",
+        "jeu",
+        "scores",
+        "podium",
+      ],
       statut_evenement: ["preparation", "repetition", "en_cours", "termine"],
       statut_manche: ["a_venir", "en_cours", "terminee", "annulee"],
       statut_passage: ["a_venir", "en_cours", "termine"],

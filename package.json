@@ -16,7 +16,7 @@
     "lint": "node scripts/check-tokens.mjs && eslint .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "db:start": "supabase start -x studio,imgproxy,mailpit,logflare,vector,edge-runtime,supavisor,realtime,postgres-meta",
+    "db:start": "supabase start -x studio,imgproxy,mailpit,logflare,vector,edge-runtime,supavisor,postgres-meta",
     "db:start:complet": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
