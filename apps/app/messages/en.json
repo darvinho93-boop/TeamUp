@@ -47,5 +47,82 @@
     "photo2": "Photo challenge",
     "grab": "Grab the object",
     "cup": "Head, shoulders, cup"
+  },
+  "regie": {
+    "accueil": "My events",
+    "deconnexion": "Sign out",
+    "langue": "Control room language",
+    "nav": {
+      "libelle": "Event sections",
+      "preparation": "Preparation",
+      "salle": "Room",
+      "pilotage": "Control",
+      "scores": "Scores"
+    },
+    "connexion": {
+      "titre": "Control room sign-in",
+      "email": "Email",
+      "motDePasse": "Password",
+      "bouton": "Sign in",
+      "incomplet": "Enter your email and password.",
+      "refus": "Wrong email or password.",
+      "inactif": "This account is disabled. Contact a Team Up! administrator."
+    },
+    "evenements": {
+      "titre": "My events",
+      "bonjour": "Hello {nom}",
+      "aVenir": "Upcoming",
+      "passes": "Past",
+      "nouveau": "New event",
+      "aucun": "No events.",
+      "ouvrir": "Open",
+      "creneau": "{minutes} min",
+      "statut": {
+        "preparation": "in preparation",
+        "repetition": "in rehearsal",
+        "en_cours": "live",
+        "termine": "finished"
+      },
+      "client": "Client",
+      "type": "Type",
+      "particulier": "Private",
+      "entreprise": "Company",
+      "date": "Date",
+      "creneauChamp": "Time slot (minutes)",
+      "equipes": "Number of teams",
+      "langues": "Languages of the evening",
+      "creer": "Create and prepare",
+      "invalide": "Check the fields: client, date, time slot (10 to 240 min), 2 to 8 teams, at least one language.",
+      "echec": "The event could not be created. Try again.",
+      "equipeParDefaut": "Team {numero}"
+    },
+    "preparation": {
+      "titre": "Preparation",
+      "equipes": "Teams",
+      "nomEquipe": "Name of team {numero}",
+      "retirer": "Remove",
+      "enregistrerNoms": "Save names",
+      "ajouterEquipe": "Add a team",
+      "programme": "Programme",
+      "duree": "Estimated length: {total} min ({chronos} of play + {transitions} of transitions), for a {creneau} min slot.",
+      "depassement": "The programme runs {minutes} min over the slot: remove a turn, a theme or a game.",
+      "programmeVide": "No games in the programme yet.",
+      "statut": {
+        "a_venir": "upcoming",
+        "en_cours": "live",
+        "terminee": "finished",
+        "annulee": "cancelled"
+      },
+      "chrono": "{secondes} s timer",
+      "theme": "Theme {numero}",
+      "contenu": "Content",
+      "aucunContenu": "— choose —",
+      "monter": "Move up",
+      "descendre": "Move down",
+      "tours": "Turns per team",
+      "themes": "Themes",
+      "chronoChamp": "Timer (seconds)",
+      "ajouter": "Add {jeu}"
+    }
   }
 }

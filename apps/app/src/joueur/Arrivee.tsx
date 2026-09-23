@@ -4,7 +4,8 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button, TextField } from '@teamup/ui/react';
-import { COOKIE_LANGUE, type EtatJoueur, type Langue } from '@/lib/partie';
+import { memoriserLangue, NOMS_LANGUES } from '@/lib/langue-navigateur';
+import type { EtatJoueur, Langue } from '@/lib/partie';
 import { Cadre } from './Cadre';
 import { EcranJoueur } from './EcranJoueur';
 
@@ -12,18 +13,11 @@ import { EcranJoueur } from './EcranJoueur';
  * Chaque langue se présente dans sa propre langue : à cette étape, on ne sait pas encore
  * laquelle le joueur lit. Ce sont les seuls textes hors des fichiers de messages.
  */
-const LANGUES: Record<Langue, { nom: string; titre: string }> = {
-  fr: { nom: 'Français', titre: 'Ta langue' },
-  en: { nom: 'English', titre: 'Your language' },
-  ta: { nom: 'தமிழ்', titre: 'உங்கள் மொழி' },
+const TITRES: Record<Langue, string> = {
+  fr: 'Ta langue',
+  en: 'Your language',
+  ta: 'உங்கள் மொழி',
 };
-
-const UN_AN_S = 365 * 24 * 60 * 60;
-
-/** La langue suit le joueur d'une salle à l'autre : le serveur la lit pour choisir les textes. */
-function memoriserLangue(langue: Langue) {
-  document.cookie = `${COOKIE_LANGUE}=${langue}; path=/; max-age=${UN_AN_S}; samesite=lax`;
-}
 
 type Erreur = 'vide' | 'complet' | 'codeInconnu' | 'serveur';
 
@@ -88,7 +82,7 @@ export function Arrivee({
           <h1 className="tu-player__title">
             {langues.map((l) => (
               <span key={l} lang={l} className="tu-player__title-line">
-                {LANGUES[l].titre}
+                {TITRES[l]}
               </span>
             ))}
           </h1>
@@ -96,7 +90,7 @@ export function Arrivee({
             {langues.map((l) => (
               <li key={l}>
                 <Button variant="outline" size="lg" block lang={l} onClick={() => choisir(l)}>
-                  {LANGUES[l].nom}
+                  {NOMS_LANGUES[l]}
                 </Button>
               </li>
             ))}

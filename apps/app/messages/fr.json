@@ -47,5 +47,82 @@
     "photo2": "Photo challenge",
     "grab": "Attrape l'objet",
     "cup": "Tête, épaule, gobelet"
+  },
+  "regie": {
+    "accueil": "Mes événements",
+    "deconnexion": "Se déconnecter",
+    "langue": "Langue de la régie",
+    "nav": {
+      "libelle": "Sections de l'événement",
+      "preparation": "Préparation",
+      "salle": "Salle",
+      "pilotage": "Pilotage",
+      "scores": "Scores"
+    },
+    "connexion": {
+      "titre": "Connexion à la régie",
+      "email": "E-mail",
+      "motDePasse": "Mot de passe",
+      "bouton": "Se connecter",
+      "incomplet": "Renseigne ton e-mail et ton mot de passe.",
+      "refus": "E-mail ou mot de passe incorrect.",
+      "inactif": "Ce compte est désactivé. Contacte un administrateur Team Up!."
+    },
+    "evenements": {
+      "titre": "Mes événements",
+      "bonjour": "Bonjour {nom}",
+      "aVenir": "À venir",
+      "passes": "Passés",
+      "nouveau": "Nouvel événement",
+      "aucun": "Aucun événement.",
+      "ouvrir": "Ouvrir",
+      "creneau": "{minutes} min",
+      "statut": {
+        "preparation": "en préparation",
+        "repetition": "en répétition",
+        "en_cours": "en cours",
+        "termine": "terminé"
+      },
+      "client": "Client",
+      "type": "Type",
+      "particulier": "Particulier",
+      "entreprise": "Entreprise",
+      "date": "Date",
+      "creneauChamp": "Créneau (minutes)",
+      "equipes": "Nombre d'équipes",
+      "langues": "Langues de la soirée",
+      "creer": "Créer et préparer",
+      "invalide": "Vérifie les champs : client, date, créneau (10 à 240 min), 2 à 8 équipes, au moins une langue.",
+      "echec": "L'événement n'a pas pu être créé. Réessaie.",
+      "equipeParDefaut": "Équipe {numero}"
+    },
+    "preparation": {
+      "titre": "Préparation",
+      "equipes": "Équipes",
+      "nomEquipe": "Nom de l'équipe {numero}",
+      "retirer": "Retirer",
+      "enregistrerNoms": "Enregistrer les noms",
+      "ajouterEquipe": "Ajouter une équipe",
+      "programme": "Programme",
+      "duree": "Durée estimée : {total} min ({chronos} de jeu + {transitions} de transitions), pour un créneau de {creneau} min.",
+      "depassement": "Le programme dépasse le créneau de {minutes} min : retire un passage, un thème ou un jeu.",
+      "programmeVide": "Aucun jeu au programme pour l'instant.",
+      "statut": {
+        "a_venir": "à venir",
+        "en_cours": "en cours",
+        "terminee": "terminée",
+        "annulee": "annulée"
+      },
+      "chrono": "chrono de {secondes} s",
+      "theme": "Thème {numero}",
+      "contenu": "Contenu",
+      "aucunContenu": "— à choisir —",
+      "monter": "Monter",
+      "descendre": "Descendre",
+      "tours": "Passages par équipe",
+      "themes": "Thèmes",
+      "chronoChamp": "Chrono (secondes)",
+      "ajouter": "Ajouter {jeu}"
+    }
   }
 }

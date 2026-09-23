@@ -677,6 +677,10 @@ export type Database = {
         }
         Returns: Json
       }
+      echanger_manches: {
+        Args: { p_a: string; p_b: string }
+        Returns: undefined
+      }
       enregistrer_etape: {
         Args: {
           p_evenement: string

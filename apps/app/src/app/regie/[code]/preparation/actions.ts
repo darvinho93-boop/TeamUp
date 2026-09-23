@@ -1,0 +1,209 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { getTranslations } from 'next-intl/server';
+import { z } from 'zod';
+import { CHRONO_SURENCHERE_DEFAUT_S, type GameCode } from '@teamup/game';
+import { evenementDeLaRegie, type EvenementRegie } from '@/serveur/regie';
+import type { ClientAnimateur } from '@/serveur/supabase-animateur';
+
+/**
+ * Préparation d'une soirée : équipes et programme. Tout passe par la session de l'animateur,
+ * donc par la RLS : il ne prépare que ses propres événements.
+ */
+
+const MAX_EQUIPES = 8;
+const MIN_EQUIPES = 2;
+
+async function contexte(code: string) {
+  const ctx = await evenementDeLaRegie(code);
+  return { ...ctx, rafraichir: () => revalidatePath(`/regie/${ctx.evenement.code}`, 'layout') };
+}
+
+export async function renommerEquipes(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const { data: equipes } = await supabase
+    .from('equipes')
+    .select('id')
+    .eq('evenement_id', evenement.id);
+  for (const { id } of equipes ?? []) {
+    const brut = donnees.get(`nom-${id}`);
+    const nom = typeof brut === 'string' ? brut.trim() : '';
+    if (nom.length >= 1 && nom.length <= 60) {
+      await supabase.from('equipes').update({ nom }).eq('id', id);
+    }
+  }
+  rafraichir();
+}
+
+export async function ajouterEquipe(code: string) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const t = await getTranslations('regie.evenements');
+  const { data: equipes } = await supabase
+    .from('equipes')
+    .select('numero')
+    .eq('evenement_id', evenement.id);
+  const numeros = new Set((equipes ?? []).map((e) => e.numero));
+  if (numeros.size >= MAX_EQUIPES) return;
+  const numero = Array.from({ length: MAX_EQUIPES }, (_, i) => i + 1).find((n) => !numeros.has(n))!;
+  await supabase
+    .from('equipes')
+    .insert({ evenement_id: evenement.id, numero, nom: t('equipeParDefaut', { numero }) });
+  rafraichir();
+}
+
+/** Retire la dernière équipe, seulement si personne ne l'a encore rejointe. */
+export async function retirerEquipe(code: string, equipeId: string) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const { count: equipes } = await supabase
+    .from('equipes')
+    .select('*', { count: 'exact', head: true })
+    .eq('evenement_id', evenement.id);
+  const { count: joueurs } = await supabase
+    .from('joueurs')
+    .select('*', { count: 'exact', head: true })
+    .eq('equipe_id', equipeId);
+  if ((equipes ?? 0) <= MIN_EQUIPES || (joueurs ?? 0) > 0) return;
+  await supabase.from('equipes').delete().eq('id', equipeId).eq('evenement_id', evenement.id);
+  rafraichir();
+}
+
+/** Les contenus de la banque que cette soirée n'utilise pas encore, adaptés à son public. */
+async function contenusLibres(
+  supabase: ClientAnimateur,
+  evenement: EvenementRegie,
+  jeu: GameCode,
+): Promise<string[]> {
+  const etiquettes =
+    evenement.type_client === 'entreprise' ? ['tout_public', 'b2b'] : ['tout_public', 'b2c'];
+  const { data: banque } = await supabase
+    .from('contenus')
+    .select('id')
+    .eq('jeu', jeu)
+    .eq('actif', true)
+    .in('etiquette', etiquettes as ('tout_public' | 'b2b' | 'b2c')[])
+    .order('cree_le');
+  const { data: utilises } = await supabase
+    .from('passages')
+    .select('contenu_id')
+    .eq('evenement_id', evenement.id);
+  const pris = new Set((utilises ?? []).map((p) => p.contenu_id));
+  return (banque ?? []).map((c) => c.id).filter((id) => !pris.has(id));
+}
+
+async function nouvelleManche(
+  supabase: ClientAnimateur,
+  evenement: EvenementRegie,
+  jeu: GameCode,
+  options: Record<string, number>,
+) {
+  const { data: dernieres } = await supabase
+    .from('manches')
+    .select('ordre')
+    .eq('evenement_id', evenement.id)
+    .order('ordre', { ascending: false })
+    .limit(1);
+  const ordre = (dernieres?.[0]?.ordre ?? 0) + 1;
+  const { data: manche, error } = await supabase
+    .from('manches')
+    .insert({ evenement_id: evenement.id, jeu, ordre, options })
+    .select('id')
+    .single();
+  if (error) throw new Error(error.message);
+  return manche.id;
+}
+
+const Tours = z.coerce.number().int().min(1).max(3);
+
+/** Points communs : un passage par équipe et par tour, chacun avec un contenu de la banque. */
+export async function ajouterPointsCommuns(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const tours = Tours.catch(1).parse(donnees.get('tours'));
+  const { data: equipes } = await supabase
+    .from('equipes')
+    .select('id')
+    .eq('evenement_id', evenement.id)
+    .order('numero');
+  const mancheId = await nouvelleManche(supabase, evenement, 'list2', {
+    passages_par_equipe: tours,
+  });
+  const libres = await contenusLibres(supabase, evenement, 'list2');
+  const passages = Array.from({ length: tours }, () => equipes ?? [])
+    .flat()
+    .map((equipe, i) => ({
+      manche_id: mancheId,
+      evenement_id: evenement.id,
+      equipe_id: equipe.id,
+      ordre: i + 1,
+      contenu_id: libres[i] ?? null,
+    }));
+  if (passages.length) await supabase.from('passages').insert(passages);
+  rafraichir();
+}
+
+const Surenchere = z.object({
+  themes: z.coerce.number().int().min(1).max(6).catch(3),
+  chrono: z.coerce.number().int().min(10).max(300).catch(CHRONO_SURENCHERE_DEFAUT_S),
+});
+
+/** Surenchère : un passage par thème ; le chrono géant se règle ici (60 s par défaut). */
+export async function ajouterSurenchere(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const { themes, chrono } = Surenchere.parse({
+    themes: donnees.get('themes'),
+    chrono: donnees.get('chrono'),
+  });
+  const mancheId = await nouvelleManche(supabase, evenement, 'enchere2', {
+    themes,
+    chrono_s: chrono,
+  });
+  const libres = await contenusLibres(supabase, evenement, 'enchere2');
+  await supabase.from('passages').insert(
+    Array.from({ length: themes }, (_, i) => ({
+      manche_id: mancheId,
+      evenement_id: evenement.id,
+      equipe_id: null,
+      ordre: i + 1,
+      contenu_id: libres[i] ?? null,
+    })),
+  );
+  rafraichir();
+}
+
+export async function deplacerManche(code: string, mancheId: string, sens: -1 | 1) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const { data: manches } = await supabase
+    .from('manches')
+    .select('id, ordre')
+    .eq('evenement_id', evenement.id)
+    .order('ordre');
+  const liste = manches ?? [];
+  const i = liste.findIndex((m) => m.id === mancheId);
+  const voisine = liste[i + sens];
+  if (i < 0 || !voisine) return;
+  await supabase.rpc('echanger_manches', { p_a: mancheId, p_b: voisine.id });
+  rafraichir();
+}
+
+/** Retire une manche qui n'a pas commencé (ses passages partent avec elle). */
+export async function retirerManche(code: string, mancheId: string) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  await supabase
+    .from('manches')
+    .delete()
+    .eq('id', mancheId)
+    .eq('evenement_id', evenement.id)
+    .eq('statut', 'a_venir');
+  rafraichir();
+}
+
+export async function choisirContenu(code: string, passageId: string, contenuId: string) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  await supabase
+    .from('passages')
+    .update({ contenu_id: contenuId || null })
+    .eq('id', passageId)
+    .eq('evenement_id', evenement.id)
+    .eq('statut', 'a_venir');
+  rafraichir();
+}
