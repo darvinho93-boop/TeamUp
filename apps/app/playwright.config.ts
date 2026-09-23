@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 3000;
+// Port à part : les tests tournent sur un build de production, jamais sur le serveur de dev
+// (compilation à la volée, React en mode développement) qui fausserait les mesures de latence.
+const PORT = 3100;
 
 /**
  * Parcours critiques de l'app, dans un vrai navigateur, contre la base locale
@@ -19,9 +21,9 @@ export default defineConfig({
   },
   projects: [{ name: 'mobile', use: { ...devices['Pixel 7'] } }],
   webServer: {
-    command: `pnpm exec next dev -p ${PORT}`,
+    command: `pnpm exec next build && pnpm exec next start -p ${PORT}`,
     url: `http://localhost:${PORT}/api/partie/FETE24`,
     reuseExistingServer: !process.env['CI'],
-    timeout: 120_000,
+    timeout: 300_000,
   },
 });

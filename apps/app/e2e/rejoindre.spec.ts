@@ -43,5 +43,6 @@ test('du code tapé à la main jusqu’à l’attente, puis retour sans ressaisi
 
 test('un code inconnu renvoie à la saisie, avec un message', async ({ page }) => {
   await page.goto('/ZZZZZZ');
-  await expect(page.getByRole('alert')).toContainText("Ce code n'ouvre aucune partie");
+  // En production, Next ajoute son propre annonceur de route (role=alert) : on vise le texte.
+  await expect(page.getByText("Ce code n'ouvre aucune partie")).toBeVisible();
 });
