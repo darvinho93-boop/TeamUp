@@ -1,0 +1,428 @@
+/* Écran commun projeté (thème stage). Lisible depuis le fond de salle : chronos et scores en
+   6 rem, aucun texte sous 2 rem, aucune commande. Révélations en 600 ms, coupées sous
+   prefers-reduced-motion. Cahier des charges § 5.2 et § 6. */
+
+.tu-stage {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  padding: var(--tu-space-12) var(--tu-space-16);
+  background: var(--tu-bg);
+  color: var(--tu-text);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-2xl);
+  line-height: var(--tu-leading-tight);
+}
+
+/* Tamoul, à l'écran comme ailleurs : Noto Sans Tamil, le latin gardant Poppins. */
+.tu-stage:lang(ta),
+.tu-stage :lang(ta) {
+  font-family: var(--tu-font-display-ta);
+  letter-spacing: normal;
+}
+
+/* Aperçu dans la régie : la scène à sa taille d'écran 16:9, réduite à la largeur disponible. */
+.tu-stage--apercu {
+  width: var(--tu-stage-width);
+  height: var(--tu-stage-height);
+  transform: scale(var(--tu-stage-echelle, 0.4));
+  transform-origin: top left;
+}
+
+.tu-stage p,
+.tu-stage h1 {
+  margin: 0;
+}
+
+.tu-stage__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--tu-space-8);
+  min-height: 0;
+}
+
+.tu-stage-centre {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-6);
+  text-align: center;
+}
+
+.tu-stage__giant {
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tu-stage__xl {
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+}
+
+.tu-stage__l {
+  font-size: var(--tu-size-3xl);
+  font-weight: 600;
+}
+
+.tu-stage__m {
+  font-size: var(--tu-size-2xl);
+}
+
+.tu-stage__muted {
+  color: var(--tu-text-muted);
+}
+
+.tu-stage-badge--grand {
+  font-size: var(--tu-size-3xl);
+  padding: var(--tu-space-3) var(--tu-space-8);
+}
+
+/* Contenu multilingue : la première langue en grand, les autres dessous. */
+.tu-stage-multi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+}
+
+.tu-stage-multi__premier {
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+}
+
+.tu-stage-multi__autre {
+  font-size: var(--tu-size-2xl);
+  color: var(--tu-text-muted);
+}
+
+.tu-stage-multi--geant .tu-stage-multi__premier {
+  font-size: var(--tu-size-4xl);
+}
+
+.tu-stage-multi--titre .tu-stage-multi__premier {
+  color: var(--tu-primary);
+}
+
+/* Accueil : QR géant et code de salle. */
+.tu-stage-accueil {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-16);
+}
+
+.tu-stage-qr {
+  flex: none;
+  width: var(--tu-stage-qr);
+  padding: var(--tu-space-4);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-paper);
+}
+
+.tu-stage-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tu-stage-accueil__texte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+}
+
+.tu-stage-accueil__logo {
+  --tu-wordmark-size: var(--tu-size-3xl);
+  color: var(--tu-text);
+}
+
+.tu-stage-code {
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+  letter-spacing: var(--tu-tracking-code);
+  color: var(--tu-primary);
+  line-height: 1;
+}
+
+/* Équipes. */
+.tu-stage-teams {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--tu-stage-team-min), 1fr));
+  gap: var(--tu-space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-team {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+  padding: var(--tu-space-6);
+  border-top: var(--tu-space-3) solid var(--tu-team-color);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+}
+
+.tu-stage-team__nom {
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+}
+
+.tu-stage-team__prenoms {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--tu-text-muted);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Programme. */
+.tu-stage-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: jeu;
+}
+
+.tu-stage-list__item {
+  padding: var(--tu-space-4) var(--tu-space-8);
+  border-radius: var(--tu-radius-lg);
+  font-size: var(--tu-size-3xl);
+  font-weight: 600;
+  counter-increment: jeu;
+}
+
+.tu-stage-list__item::before {
+  content: counter(jeu) '. ';
+  color: var(--tu-text-muted);
+}
+
+.tu-stage-list__item--courant {
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-stage-list__item--courant::before {
+  color: inherit;
+}
+
+.tu-stage-list__item--fait {
+  color: var(--tu-text-muted);
+}
+
+/* Points communs : chrono, paliers, indices. */
+.tu-stage__head-line {
+  display: flex;
+  justify-content: center;
+}
+
+.tu-stage-jeu {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-8);
+  text-align: center;
+}
+
+.tu-stage-chrono {
+  font-variant-numeric: tabular-nums;
+  transition: color var(--tu-dur-base) var(--tu-ease);
+}
+
+.tu-stage-chrono--zero {
+  color: var(--tu-danger);
+}
+
+.tu-stage-paliers {
+  display: flex;
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-palier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--tu-space-3) var(--tu-space-8);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-lg);
+  color: var(--tu-text-muted);
+}
+
+.tu-stage-palier--actif {
+  border-color: var(--tu-primary);
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-stage-palier__mult {
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+}
+
+.tu-stage-indices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+}
+
+.tu-stage-gagne {
+  color: var(--tu-primary);
+}
+
+.tu-stage-perdu {
+  color: var(--tu-danger);
+}
+
+/* Surenchère : les thèmes. */
+.tu-stage-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--tu-stage-team-min), 1fr));
+  gap: var(--tu-space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-theme {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  padding: var(--tu-space-8);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+}
+
+.tu-stage-theme--joue {
+  background: var(--tu-surface-muted);
+}
+
+/* Classement. */
+.tu-stage-rank {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-rank__ligne {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 5fr) auto;
+  gap: var(--tu-space-6);
+  align-items: center;
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+}
+
+.tu-stage-rank__nom {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tu-stage-rank__barre {
+  height: var(--tu-space-12);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface);
+  overflow: hidden;
+}
+
+.tu-stage-rank__remplie {
+  display: block;
+  height: 100%;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-team-color);
+  transition: inline-size var(--tu-dur-reveal) var(--tu-ease);
+}
+
+.tu-stage-rank__points {
+  min-width: var(--tu-space-28);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-4xl);
+  text-align: end;
+}
+
+/* Podium : deuxième, premier, troisième. */
+.tu-stage-podium {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--tu-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-podium__marche {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-4);
+  width: var(--tu-stage-team-min);
+}
+
+.tu-stage-podium__points {
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+}
+
+.tu-stage-podium__socle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  padding-top: var(--tu-space-4);
+  border-radius: var(--tu-radius-lg) var(--tu-radius-lg) 0 0;
+  background: var(--tu-surface);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+}
+
+.tu-stage-podium__marche--1 .tu-stage-podium__socle {
+  height: var(--tu-stage-podium-1);
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-stage-podium__marche--2 .tu-stage-podium__socle {
+  height: var(--tu-stage-podium-2);
+}
+
+.tu-stage-podium__marche--3 .tu-stage-podium__socle {
+  height: var(--tu-stage-podium-3);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-reveal {
+    animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease);
+  }
+}
+
+@keyframes tu-revelation {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}

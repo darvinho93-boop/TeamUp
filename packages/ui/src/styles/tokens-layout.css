@@ -22,6 +22,15 @@
   /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
   --tu-tracking-code: 0.08em;
 
+  /* Écran commun : scène 16:9 de référence (1 920 × 1 080), QR, colonnes et podium. */
+  --tu-stage-width: 120rem;
+  --tu-stage-height: 67.5rem;
+  --tu-stage-qr: 32rem;
+  --tu-stage-team-min: 22rem;
+  --tu-stage-podium-1: 20rem;
+  --tu-stage-podium-2: 14rem;
+  --tu-stage-podium-3: 10rem;
+
   /* Tamoul : la police latine d'abord (prénoms, noms d'équipe), Noto Sans Tamil pour le reste.
      Ni Inter ni Poppins n'ont de glyphes tamouls, le navigateur passe donc à Noto. */
   --tu-font-body-ta: 'Inter', var(--tu-font-tamil);
