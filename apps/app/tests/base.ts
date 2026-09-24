@@ -164,5 +164,6 @@ export const TABLES = [
   'contenus_traductions',
   'contenus_secrets',
   'photos',
+  'reponses_quiz',
   'classement',
 ] as const;

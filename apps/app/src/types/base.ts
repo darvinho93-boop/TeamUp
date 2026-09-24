@@ -571,6 +571,45 @@ export type Database = {
           },
         ]
       }
+      reponses_quiz: {
+        Row: {
+          choix: number
+          evenement_id: string
+          joueur_id: string
+          passage_id: string
+          repondu_le: string
+        }
+        Insert: {
+          choix: number
+          evenement_id: string
+          joueur_id: string
+          passage_id: string
+          repondu_le?: string
+        }
+        Update: {
+          choix?: number
+          evenement_id?: string
+          joueur_id?: string
+          passage_id?: string
+          repondu_le?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reponses_quiz_joueur_id_fkey"
+            columns: ["joueur_id"]
+            isOneToOne: false
+            referencedRelation: "joueurs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reponses_quiz_passage_id_evenement_id_fkey"
+            columns: ["passage_id", "evenement_id"]
+            isOneToOne: false
+            referencedRelation: "passages"
+            referencedColumns: ["id", "evenement_id"]
+          },
+        ]
+      }
       scores: {
         Row: {
           cree_le: string
@@ -699,6 +738,18 @@ export type Database = {
       evenement_public: { Args: { p_code: string }; Returns: Json }
       nouveau_code: { Args: never; Returns: string }
       pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
+      quiz_du_joueur: {
+        Args: { p_joueur: Database["public"]["Tables"]["joueurs"]["Row"] }
+        Returns: Json
+      }
+      quiz_joueurs: {
+        Args: { p_manche: string }
+        Returns: {
+          elimine: boolean
+          equipe_id: string
+          joueur_id: string
+        }[]
+      }
       rejoindre_evenement: {
         Args: {
           p_code: string
@@ -706,6 +757,10 @@ export type Database = {
           p_langue: Database["public"]["Enums"]["langue"]
           p_prenom: string
         }
+        Returns: Json
+      }
+      repondre_quiz: {
+        Args: { p_choix: number; p_jeton_hash: string }
         Returns: Json
       }
       secret_du_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
@@ -719,6 +774,7 @@ export type Database = {
         }
         Returns: Json
       }
+      survivants_quiz: { Args: { p_manche: string }; Returns: Json }
     }
     Enums: {
       etiquette: "b2c" | "b2b" | "tout_public"
