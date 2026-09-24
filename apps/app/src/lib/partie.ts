@@ -50,6 +50,15 @@ export interface QuizJoueur {
   elimine: boolean;
 }
 
+/**
+ * Le photo challenge vu par un téléphone : les thèmes dans sa langue et l'heure d'envoi de la
+ * photo de son équipe pour chacun. Aucune image ne descend vers un téléphone.
+ */
+export interface PhotosJoueur {
+  closes: boolean;
+  themes: { theme_id: string; theme: string | null; envoyee_le: number | null }[];
+}
+
 export interface EtatJoueur {
   joueur: { id: string; prenom: string; langue: Langue; capitaine: boolean };
   evenement: {
@@ -64,6 +73,8 @@ export interface EtatJoueur {
   manche: { jeu: GameCode; ordre: number } | null;
   prochaine: { jeu: GameCode; ordre: number } | null;
   quiz: QuizJoueur | null;
+  /** `null` tant que la soirée n'a pas de manche photo. */
+  photos: PhotosJoueur | null;
 }
 
 /** Réponses d'erreur des routes de la partie : le client les traduit. */
@@ -71,3 +82,9 @@ export type ErreurPartie = 'code_inconnu' | 'complet' | 'langue' | 'prenom' | 's
 
 /** Refus d'une réponse au quiz, dans l'ordre où la base les vérifie. */
 export type RefusQuiz = 'session' | 'fermee' | 'spectateur' | 'elimine' | 'deja';
+
+/** Refus d'un envoi photo. Tous définitifs, sauf `serveur` : la file d'attente réessaiera. */
+export type RefusPhoto = 'session' | 'capitaine' | 'close' | 'theme' | 'fichier';
+
+/** Plafond d'une photo compressée, sous la limite du bucket (5 Mo) et du corps Vercel (4,5 Mo). */
+export const TAILLE_MAX_PHOTO = 4 * 1024 * 1024;
