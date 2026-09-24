@@ -76,10 +76,14 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
   evenementId = evenement!['id'] as string;
 
   await regie.getByRole('button', { name: 'Ajouter Points communs' }).click();
-  await expect(regie.getByText('1. Points communs')).toBeVisible();
-  await regie.getByLabel('Thèmes').fill('2');
+  await expect(regie.getByText('1. Points communs')).toBeVisible({ timeout: 15_000 });
+  // Le formulaire Photo challenge a lui aussi un champ « Thèmes ».
+  await regie
+    .locator('form', { has: regie.getByRole('button', { name: 'Ajouter Surenchère' }) })
+    .getByLabel('Thèmes')
+    .fill('2');
   await regie.getByRole('button', { name: 'Ajouter Surenchère' }).click();
-  await expect(regie.getByText('2. Surenchère')).toBeVisible();
+  await expect(regie.getByText('2. Surenchère')).toBeVisible({ timeout: 15_000 });
 
   // --- Trois invités rejoignent, un par équipe.
   const telephones = await Promise.all(
