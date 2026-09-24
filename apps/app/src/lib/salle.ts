@@ -23,6 +23,16 @@ export interface PassageSalle {
   secret: ParLangue | null;
   /** Quiz : réponses reçues des téléphones pour cette question. */
   reponses?: number | null;
+  /** Photo : les photos du thème (régie toujours, écran une fois la diffusion lancée). */
+  photos?: PhotoSalle[] | null;
+}
+
+export interface PhotoSalle {
+  equipe_id: string;
+  /** Chemin dans le bucket privé : l'image passe par une URL signée (session animateur). */
+  chemin: string;
+  envoyee_ms: number;
+  gagnante: boolean;
 }
 
 export interface MancheSalle {
@@ -54,6 +64,7 @@ export interface EtatSalle {
     statut: 'preparation' | 'repetition' | 'en_cours' | 'termine';
     client_nom: string;
     creneau_minutes: number;
+    photos_closes: boolean;
   };
   pilotage: {
     scene: Scene;

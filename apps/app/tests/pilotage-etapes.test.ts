@@ -8,6 +8,7 @@ const motifs = {
   rate: 'raté',
   quiz: (n: number) => `Quiz ${n}`,
   mime: (equipe: string) => `Mime ${equipe}`,
+  photo: (equipe: string) => `Photo ${equipe}`,
 };
 
 function passage(id: string, ordre: number, extra: Partial<PassageSalle> = {}): PassageSalle {
@@ -35,6 +36,7 @@ function etat(pilotage: Partial<EtatSalle['pilotage']>, programme?: MancheSalle[
       statut: 'preparation',
       client_nom: 'Test',
       creneau_minutes: 40,
+      photos_closes: false,
     },
     pilotage: {
       scene: 'accueil',
@@ -86,6 +88,22 @@ function etat(pilotage: Partial<EtatSalle['pilotage']>, programme?: MancheSalle[
         statut: 'a_venir',
         options: {},
         passages: [passage('m1', 1, { equipe_id: 'e1' }), passage('m2', 2, { equipe_id: 'e2' })],
+      },
+      {
+        id: 'ph',
+        jeu: 'photo2',
+        ordre: 5,
+        statut: 'a_venir',
+        options: { themes: 2 },
+        passages: [
+          passage('th1', 1, {
+            photos: [
+              { equipe_id: 'e1', chemin: 'a.jpg', envoyee_ms: 1, gagnante: false },
+              { equipe_id: 'e2', chemin: 'b.jpg', envoyee_ms: 2, gagnante: false },
+            ],
+          }),
+          passage('th2', 2, { photos: [] }),
+        ],
       },
     ],
   };
@@ -280,5 +298,44 @@ describe('une touche de la régie', () => {
       pilotage: { passage_id: 'm2', etape: 'pret' },
       passage: { id: 'm2', statut: 'en_cours' },
     });
+  });
+
+  it('Photo : la diffusion commence au premier thème, sans chrono', () => {
+    const intro = etat({ scene: 'intro', manche_id: 'ph' });
+    expect(etape(intro, { type: 'commencer' })).toMatchObject({
+      pilotage: { scene: 'jeu', passage_id: 'th1', etape: 'theme', chrono: 'arreter' },
+      passage: { id: 'th1', statut: 'en_cours' },
+      manche: { id: 'ph', statut: 'en_cours' },
+    });
+  });
+
+  it('Photo : la gagnante vaut +100 à son équipe, et seulement une équipe qui a envoyé', () => {
+    const theme = etat({ scene: 'jeu', manche_id: 'ph', passage_id: 'th1', etape: 'theme' });
+    const gagnante = etape(theme, { type: 'photo', action: { type: 'gagnante', equipe: 2 } });
+    expect(gagnante?.pilotage.etape).toBe('gagnante');
+    expect(gagnante?.passage).toEqual({
+      id: 'th1',
+      statut: 'termine',
+      resultat: { equipe_gagnante: 2 },
+      points: 100,
+    });
+    expect(gagnante?.scores).toEqual([
+      { equipe_id: 'e2', points: 100, motif: 'Photo Corail', manche_id: 'ph' },
+    ]);
+    expect(etape(theme, { type: 'photo', action: { type: 'gagnante', equipe: 3 } })).toBeNull();
+    const aucune = etape(theme, { type: 'photo', action: { type: 'aucune' } });
+    expect(aucune?.passage).toMatchObject({ resultat: { equipe_gagnante: null }, points: 0 });
+    expect(aucune?.scores).toEqual([]);
+  });
+
+  it('Photo : passe au thème suivant une fois la gagnante désignée', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'ph', passage_id: 'th1', etape: 'gagnante' });
+    e.programme[4]!.passages[0]!.statut = 'termine';
+    expect(etape(e, { type: 'suivant' })).toMatchObject({
+      pilotage: { passage_id: 'th2', etape: 'theme' },
+      passage: { id: 'th2', statut: 'en_cours' },
+    });
+    const theme = etat({ scene: 'jeu', manche_id: 'ph', passage_id: 'th1', etape: 'theme' });
+    expect(etape(theme, { type: 'suivant' })).toBeNull();
   });
 });

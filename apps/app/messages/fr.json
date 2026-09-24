@@ -94,6 +94,7 @@
       "preparation": "Préparation",
       "salle": "Salle",
       "pilotage": "Pilotage",
+      "photos": "Photos",
       "scores": "Scores"
     },
     "connexion": {
@@ -215,6 +216,7 @@
       "motifRate": "Surenchère — pari raté par une autre équipe",
       "motifQuiz": "{survivants, plural, =0 {Quiz – aucun survivant} one {Quiz – # survivant} other {Quiz – # survivants}}",
       "motifMime": "Mime – {equipe}",
+      "motifPhoto": "Photo : {equipe}",
       "quiz": {
         "titre": "Quiz",
         "commencerCroix": "Commencer le quiz en mode croix",
@@ -244,6 +246,16 @@
         "mot": "Le mot",
         "trouve": "Trouvé",
         "rate": "Raté"
+      },
+      "photo": {
+        "titre": "Photo challenge",
+        "theme": "Thème {n} sur {total}",
+        "envois": "{n, plural, =0 {Aucune photo sur ce thème} one {# photo sur ce thème} other {# photos sur ce thème}}",
+        "designer": "La gagnante, désignée par les héros de la fête",
+        "gagnante": "Gagnante : {equipe}",
+        "aucune": "Aucune gagnante",
+        "sansGagnante": "Pas de gagnante sur ce thème",
+        "suivant": "Thème suivant"
       }
     },
     "salle": {
@@ -273,6 +285,20 @@
       "journalVide": "Aucun point pour l'instant.",
       "quand": "Heure",
       "par": "Saisi par"
+    },
+    "photos": {
+      "titre": "Photos",
+      "aucuneManche": "Cette soirée n'a pas de photo challenge : ajoutez-le à la préparation.",
+      "ouverts": "Envois ouverts",
+      "closes": "Envois clos",
+      "envoyees": "{n} sur {total} photos reçues",
+      "clore": "Clore les envois",
+      "confirmerClore": "Confirmer : clore les envois",
+      "rouvrir": "Rouvrir les envois",
+      "theme": "Thème {n}",
+      "envoyeeA": "Reçue à {heure}",
+      "pasEnvoyee": "Pas de photo",
+      "gagnante": "gagnante"
     }
   },
   "ecran": {
@@ -312,6 +338,10 @@
     "mimeFile": "{equipe} : en file, tous tournés du même côté !",
     "mimeJ1": "Le premier de la file vient lire le mot à la régie.",
     "mimeChaine": "Mime, oreille, mime… jusqu’au dernier !",
-    "leMot": "Le mot"
+    "leMot": "Le mot",
+    "themePhoto": "Thème {n} sur {total}",
+    "aucunePhoto": "Aucune photo sur ce thème",
+    "photoDe": "Photo de l'équipe {equipe}",
+    "gagnante": "La gagnante !"
   }
 }

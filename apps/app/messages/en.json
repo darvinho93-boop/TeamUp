@@ -94,6 +94,7 @@
       "preparation": "Preparation",
       "salle": "Room",
       "pilotage": "Control",
+      "photos": "Photos",
       "scores": "Scores"
     },
     "connexion": {
@@ -215,6 +216,7 @@
       "motifRate": "Bidding war — bet missed by another team",
       "motifQuiz": "{survivants, plural, =0 {Quiz – no survivors} one {Quiz – # survivor} other {Quiz – # survivors}}",
       "motifMime": "Mime – {equipe}",
+      "motifPhoto": "Photo: {equipe}",
       "quiz": {
         "titre": "Quiz",
         "commencerCroix": "Start the quiz with the floor cross",
@@ -244,6 +246,16 @@
         "mot": "The word",
         "trouve": "Found",
         "rate": "Missed"
+      },
+      "photo": {
+        "titre": "Photo challenge",
+        "theme": "Theme {n} of {total}",
+        "envois": "{n, plural, =0 {No photos on this theme} one {# photo on this theme} other {# photos on this theme}}",
+        "designer": "The winner, chosen by the guests of honour",
+        "gagnante": "Winner: {equipe}",
+        "aucune": "No winner",
+        "sansGagnante": "No winner on this theme",
+        "suivant": "Next theme"
       }
     },
     "salle": {
@@ -273,6 +285,20 @@
       "journalVide": "No points yet.",
       "quand": "Time",
       "par": "Entered by"
+    },
+    "photos": {
+      "titre": "Photos",
+      "aucuneManche": "This event has no photo challenge: add it in preparation.",
+      "ouverts": "Submissions open",
+      "closes": "Submissions closed",
+      "envoyees": "{n} of {total} photos received",
+      "clore": "Close submissions",
+      "confirmerClore": "Confirm: close submissions",
+      "rouvrir": "Reopen submissions",
+      "theme": "Theme {n}",
+      "envoyeeA": "Received at {heure}",
+      "pasEnvoyee": "No photo",
+      "gagnante": "winner"
     }
   },
   "ecran": {
@@ -312,6 +338,10 @@
     "mimeFile": "{equipe}: line up, all facing the same way!",
     "mimeJ1": "The first in line comes to read the word at the control desk.",
     "mimeChaine": "Mime, whisper, mime… all the way to the last one!",
-    "leMot": "The word"
+    "leMot": "The word",
+    "themePhoto": "Theme {n} of {total}",
+    "aucunePhoto": "No photos on this theme",
+    "photoDe": "Photo from team {equipe}",
+    "gagnante": "The winner!"
   }
 }

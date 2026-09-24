@@ -505,3 +505,50 @@
     transition: none;
   }
 }
+
+/* Diffusion photo : toutes les photos du thème côte à côte ; au verdict, la gagnante seule,
+   en grand. */
+.tu-stage-photos {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--tu-stage-team-min)), 1fr));
+  gap: var(--tu-screen-gap);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-photo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-3);
+  min-height: 0;
+}
+
+.tu-stage-photo__image {
+  display: block;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border-radius: var(--tu-screen-radius);
+  object-fit: contain;
+}
+
+.tu-stage-photo__image--attente {
+  background: var(--tu-surface-muted);
+}
+
+.tu-stage-photo--gagnante {
+  grid-column: 1 / -1;
+}
+
+.tu-stage-photo--gagnante .tu-stage-photo__image {
+  outline: var(--tu-border-width) solid var(--tu-success);
+  outline-offset: var(--tu-space-2);
+}
+
+.tu-stage-photo--eteinte {
+  display: none;
+}

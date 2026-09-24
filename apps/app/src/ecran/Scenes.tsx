@@ -23,6 +23,7 @@ import {
 } from '@/lib/salle';
 import { Chrono, useMaintenant } from './Chrono';
 import { Multilingue } from './Multilingue';
+import { usePhotosSignees } from './usePhotosSignees';
 
 interface Props {
   etat: EtatSalle;
@@ -149,6 +150,7 @@ function Jeu(props: Props) {
   if (manche?.jeu === 'enchere2') return <Surenchere {...props} manche={manche} />;
   if (manche?.jeu === 'qcm2') return <Quiz {...props} manche={manche} />;
   if (manche?.jeu === 'mime2') return <Mime {...props} />;
+  if (manche?.jeu === 'photo2') return <Photo {...props} manche={manche} />;
   return null;
 }
 
@@ -548,6 +550,75 @@ function Mime({ etat, decalageMs }: Props) {
           />
           <p className="tu-stage__l">{t('mimeChaine')}</p>
         </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Diffusion photo (spec v3, jeu 05) : un thème à la fois, toutes les photos côte à côte. La
+ * gagnante, désignée à l'oral, passe au premier plan ; les autres s'effacent.
+ */
+function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
+  const t = useTranslations('ecran');
+  const passage = passageCourant(etat);
+  const urls = usePhotosSignees(
+    manche.passages.flatMap((p) => (p.photos ?? []).map((ph) => ph.chemin)),
+  );
+  if (!passage) return null;
+
+  const { etape } = etat.pilotage;
+  const photos = passage.photos ?? [];
+  const numeroGagnant = passage.resultat['equipe_gagnante'];
+  const verdict = etape === 'gagnante';
+
+  return (
+    <div className="tu-stage__body" data-scene="photo2" data-etape={etape ?? ''}>
+      <p className="tu-stage__m">
+        {t('themePhoto', { n: passage.ordre, total: manche.passages.length })}
+      </p>
+      <Multilingue
+        testId="theme-photo"
+        textes={texteParLangue(passage.public, 'theme', etat.evenement.langues)}
+      />
+      {photos.length === 0 ? (
+        <p className="tu-stage__l tu-stage-centre">{t('aucunePhoto')}</p>
+      ) : (
+        <ul className="tu-stage-photos">
+          {photos.map((ph) => {
+            const equipe = equipeDe(etat, ph.equipe_id);
+            const gagnante = verdict && equipe?.numero === numeroGagnant;
+            const url = urls[ph.chemin];
+            return (
+              <li
+                key={ph.chemin}
+                className={cx(
+                  'tu-stage-photo',
+                  gagnante && 'tu-stage-photo--gagnante tu-stage-reveal',
+                  verdict && !gagnante && 'tu-stage-photo--eteinte',
+                )}
+                data-testid={gagnante ? 'photo-gagnante' : 'photo'}
+              >
+                {url ? (
+                  // Image d'une URL signée, déjà préchargée : rien à optimiser côté Next.
+                  <img
+                    className="tu-stage-photo__image"
+                    src={url}
+                    alt={t('photoDe', { equipe: equipe?.nom ?? '' })}
+                  />
+                ) : (
+                  <span className="tu-stage-photo__image tu-stage-photo__image--attente" />
+                )}
+                {equipe && <Pastille equipe={equipe} grande={gagnante} />}
+                {gagnante && (
+                  <p className="tu-stage__xl" data-testid="verdict-photo">
+                    {t('gagnante')} · {t('points', { points: passage.points ?? 0 })}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );

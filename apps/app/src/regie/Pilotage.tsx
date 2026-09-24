@@ -15,6 +15,7 @@ import {
   passageSuivant,
   type ActionPointsCommuns,
   type EtapeMime,
+  type EtapePhoto,
   type EtapePointsCommuns,
   type EtapeQuiz,
   type EtapeSurenchere,
@@ -39,8 +40,8 @@ import { useEtatSalle } from '@/ecran/useEtatSalle';
 import { Apercu } from './Apercu';
 import { BoutonConfirme } from './BoutonConfirme';
 
-/** Jeux que la régie sait piloter (lots 6 et 7). */
-const PILOTABLES: readonly GameCode[] = ['list2', 'enchere2', 'qcm2', 'mime2'];
+/** Jeux que la régie sait piloter (lots 6 à 8). */
+const PILOTABLES: readonly GameCode[] = ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2'];
 const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
 const SCENES_LIBRES: Exclude<Scene, 'intro' | 'jeu'>[] = [
@@ -80,6 +81,7 @@ export function Pilotage({
       rate: t('motifRate'),
       quiz: (survivants) => t('motifQuiz', { survivants }),
       mime: (equipe) => t('motifMime', { equipe }),
+      photo: (equipe) => t('motifPhoto', { equipe }),
     });
     if (!ecriture) {
       setAlerte(t('erreur.impossible'));
@@ -205,6 +207,9 @@ export function Pilotage({
         )}
         {scene === 'jeu' && manche?.jeu === 'mime2' && (
           <PanneauMime etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+        )}
+        {scene === 'jeu' && manche?.jeu === 'photo2' && (
+          <PanneauPhoto etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
         {scene !== 'jeu' && scene !== 'intro' && (
           <p className="tu-regie__muted">{t('choisirJeu')}</p>
@@ -693,6 +698,86 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
             onClick={() => agir({ type: 'suivant' })}
           >
             {t('suivant', { equipe: equipeSuivante?.nom ?? '' })}
+          </Button>
+        )}
+        {fini && (
+          <Button
+            variant={suivant ? 'ghost' : 'accent'}
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'terminer' })}
+          >
+            {t('terminer')}
+          </Button>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function PanneauPhoto({ etat, manche, agir }: PanneauProps) {
+  const t = useTranslations('regie.pilotage');
+  const tp = useTranslations('regie.pilotage.photo');
+  const passage = passageCourant(etat);
+  if (!passage) return null;
+
+  const etape = etat.pilotage.etape as EtapePhoto;
+  const langue = etat.evenement.langues[0] ?? 'fr';
+  const theme = texteParLangue(passage.public, 'theme', [langue])[0]?.texte ?? '—';
+  const envoyeuses = (passage.photos ?? []).flatMap((ph) => {
+    const equipe = equipeDe(etat, ph.equipe_id);
+    return equipe ? [equipe] : [];
+  });
+  const gagnante = etat.equipes.find((e) => e.numero === passage.resultat['equipe_gagnante']);
+  const fini = etape === 'gagnante' || etape === 'aucune';
+  const suivant = passageSuivant(manche);
+
+  return (
+    <section className="tu-regie__section" aria-label={tp('titre')}>
+      <p className="tu-regie__muted">
+        {tp('theme', { n: passage.ordre, total: manche.passages.length })}
+      </p>
+      <p className="tu-regie-item__title">{theme}</p>
+      <p className="tu-regie__muted">{tp('envois', { n: envoyeuses.length })}</p>
+
+      {etape === 'theme' && (
+        <fieldset className="tu-regie__choices">
+          <legend className="tu-field__label">{tp('designer')}</legend>
+          {envoyeuses.map((e) => (
+            <BoutonConfirme
+              key={e.id}
+              variant="ghost"
+              confirmation={t('confirmer', { action: tp('gagnante', { equipe: e.nom }) })}
+              onConfirm={() =>
+                agir({ type: 'photo', action: { type: 'gagnante', equipe: e.numero } })
+              }
+            >
+              {e.nom}
+            </BoutonConfirme>
+          ))}
+          <BoutonConfirme
+            variant="ghost"
+            confirmation={t('confirmer', { action: tp('aucune') })}
+            onConfirm={() => agir({ type: 'photo', action: { type: 'aucune' } })}
+          >
+            {tp('aucune')}
+          </BoutonConfirme>
+        </fieldset>
+      )}
+
+      {fini && (
+        <p className="tu-regie-item__title" role="status">
+          {gagnante ? tp('gagnante', { equipe: gagnante.nom }) : tp('sansGagnante')}
+        </p>
+      )}
+
+      <div className="tu-regie-keys">
+        {fini && suivant && (
+          <Button
+            variant="accent"
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'suivant' })}
+          >
+            {tp('suivant')}
           </Button>
         )}
         {fini && (

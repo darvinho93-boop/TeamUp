@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-const SECTIONS = ['preparation', 'salle', 'pilotage', 'scores'] as const;
+const SECTIONS = ['preparation', 'salle', 'pilotage', 'photos', 'scores'] as const;
 
 export function NavEvenement({ code }: { code: string }) {
   const t = useTranslations('regie.nav');

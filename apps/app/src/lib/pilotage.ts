@@ -11,17 +11,20 @@
 
 import {
   appliquerMime,
+  appliquerPhoto,
   appliquerPointsCommuns,
   appliquerQuiz,
   appliquerSurenchere,
   CHRONO_SURENCHERE_DEFAUT_S,
   passageSuivant,
   type ActionMime,
+  type ActionPhoto,
   type ActionPointsCommuns,
   type ActionQuiz,
   type ActionSurenchere,
   type Chrono,
   type EtapeMime,
+  type EtapePhoto,
   type EtapePointsCommuns,
   type EtapeQuiz,
   type EtapeSurenchere,
@@ -44,6 +47,11 @@ export type Commande =
   | { type: 'quiz'; action: Exclude<ActionQuiz['type'], 'valider'> }
   | { type: 'survivants'; survivants: ScoresParEquipe }
   | { type: 'mime'; action: ActionMime }
+  | {
+      type: 'photo';
+      action:
+        Omit<Extract<ActionPhoto, { type: 'gagnante' }>, 'equipesAvecPhoto'> | { type: 'aucune' };
+    }
   | { type: 'suivant' }
   | { type: 'devoiler'; passageId: string }
   | { type: 'adjuger' }
@@ -80,6 +88,7 @@ export interface Motifs {
   rate: string;
   quiz: (survivants: number) => string;
   mime: (equipe: string) => string;
+  photo: (equipe: string) => string;
 }
 
 function chronoDe(chrono: Chrono): Pick<Ecriture['pilotage'], 'chrono' | 'chrono_duree_s'> {
@@ -156,6 +165,12 @@ export function calculerEtape(
           if (!premier) return null;
           ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'pret' };
           ecriture.passage = { id: premier.id, statut: 'en_cours' };
+        } else if (manche.jeu === 'photo2') {
+          // La diffusion : le premier thème à l'écran. La base clôt les envois à cet instant.
+          const premier = passageSuivant(manche);
+          if (!premier) return null;
+          ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'theme' };
+          ecriture.passage = { id: premier.id, statut: 'en_cours' };
         } else if (manche.jeu === 'qcm2') {
           // La question attend « Afficher » pour s'ouvrir : elle reste à venir jusque-là.
           const premiere = passageSuivant(manche);
@@ -209,13 +224,14 @@ export function calculerEtape(
       case 'suivant': {
         const fini =
           (manche?.jeu === 'list2' && (p.etape === 'trouve' || p.etape === 'echec')) ||
-          (manche?.jeu === 'mime2' && (p.etape === 'trouve' || p.etape === 'rate'));
+          (manche?.jeu === 'mime2' && (p.etape === 'trouve' || p.etape === 'rate')) ||
+          (manche?.jeu === 'photo2' && (p.etape === 'gagnante' || p.etape === 'aucune'));
         if (!manche || !fini) return null;
         const suivant = passageSuivant(manche);
         if (!suivant) return null;
         Object.assign(ecriture.pilotage, {
           passage_id: suivant.id,
-          etape: 'pret',
+          etape: manche.jeu === 'photo2' ? 'theme' : 'pret',
           indices: 0,
           chrono: 'arreter',
         });
@@ -296,6 +312,34 @@ export function calculerEtape(
               manche_id: manche.id,
             });
           }
+        }
+        return ecriture;
+      }
+
+      case 'photo': {
+        if (manche?.jeu !== 'photo2' || !passage) return null;
+        const avecPhoto = (passage.photos ?? []).flatMap((ph) => {
+          const equipe = etat.equipes.find((e) => e.id === ph.equipe_id);
+          return equipe ? [equipe.numero] : [];
+        });
+        const suite = appliquerPhoto(
+          p.etape as EtapePhoto,
+          commande.action.type === 'gagnante'
+            ? { ...commande.action, equipesAvecPhoto: avecPhoto }
+            : commande.action,
+        );
+        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        const points = Object.values(suite.points).reduce((a, b) => a + b, 0);
+        ecriture.passage = { id: passage.id, statut: 'termine', resultat: suite.resultat, points };
+        for (const [numero, gagnes] of Object.entries(suite.points)) {
+          const equipe = etat.equipes.find((e) => e.numero === Number(numero));
+          if (!equipe) continue;
+          ecriture.scores.push({
+            equipe_id: equipe.id,
+            points: gagnes,
+            motif: motifs.photo(equipe.nom),
+            manche_id: manche.id,
+          });
         }
         return ecriture;
       }

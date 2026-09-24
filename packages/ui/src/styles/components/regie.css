@@ -403,3 +403,32 @@
   font-size: var(--tu-size-2xl);
   color: var(--tu-text-muted);
 }
+
+/* Suivi des envois photo : une vignette par équipe et par thème. */
+.tu-regie-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tu-regie-team-min), 1fr));
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie-photo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+  min-width: 0;
+}
+
+.tu-regie-photo__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--tu-radius-sm);
+  object-fit: cover;
+}
+
+.tu-regie-photo__image--vide {
+  border: var(--tu-border-width) dashed var(--tu-border);
+}
