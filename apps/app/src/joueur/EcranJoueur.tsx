@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
 import type { EtatJoueur } from '@/lib/partie';
 import { Cadre } from './Cadre';
+import { Quiz } from './Quiz';
 import { useEtatJoueur } from './useEtatJoueur';
 
 type Vue = 'equipe' | 'attente';
@@ -20,7 +21,7 @@ export function EcranJoueur({
   vueInitiale?: Vue;
 }) {
   const t = useTranslations();
-  const { etat, horsLigne } = useEtatJoueur(code, etatInitial);
+  const { etat, horsLigne, decalageMs, remplacer, relire } = useEtatJoueur(code, etatInitial);
   const [vue, setVue] = useState<Vue>(vueInitiale);
 
   const bandeau = horsLigne ? (
@@ -47,7 +48,24 @@ export function EcranJoueur({
     );
   }
 
-  const { joueur, equipe, manche, prochaine, evenement } = etat;
+  const { joueur, equipe, manche, prochaine, evenement, quiz } = etat;
+
+  // Quiz en mode téléphone : le seul moment où le téléphone sert à jouer (spec v3).
+  if (quiz) {
+    return (
+      <Cadre bandeau={bandeau}>
+        <div className="tu-player__body">
+          <Quiz
+            code={code}
+            quiz={quiz}
+            decalageMs={decalageMs}
+            remplacer={remplacer}
+            relire={relire}
+          />
+        </div>
+      </Cadre>
+    );
+  }
 
   return (
     <Cadre bandeau={bandeau}>

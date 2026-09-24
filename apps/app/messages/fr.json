@@ -39,6 +39,19 @@
   "horsLigne": {
     "bandeau": "Connexion perdue. On réessaie…"
   },
+  "quiz": {
+    "numero": "Question {n} sur {total}",
+    "choix": "Réponse {lettre} : {texte}",
+    "envoyee": "Réponse envoyée. Regarde l'écran !",
+    "tropTard": "Trop tard, la question est fermée.",
+    "bonne": "Bonne réponse ! Tu restes en jeu.",
+    "elimine": "Éliminé ! Regarde la suite sur l'écran.",
+    "enJeu": "Tu es toujours en jeu.",
+    "prochaine": "Prépare-toi, la question suivante arrive.",
+    "fin": "Fin du quiz",
+    "survivant": "Tu as tenu jusqu'au bout. Bravo !",
+    "spectateur": "Le quiz a commencé avant ton arrivée : regarde l'écran, tu joueras au prochain jeu."
+  },
   "jeux": {
     "list2": "Points communs",
     "qcm2": "Quiz",

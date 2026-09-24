@@ -7,7 +7,18 @@
   font-family: var(--tu-font-body-ta);
 }
 
-:lang(ta) :is(h1, h2, h3, .tu-btn, .tu-team, .tu-wait-team__name, .tu-wait-look) {
+:lang(ta)
+  :is(
+    h1,
+    h2,
+    h3,
+    .tu-btn,
+    .tu-team,
+    .tu-wait-team__name,
+    .tu-wait-look,
+    .tu-quiz__statut,
+    .tu-quiz__titre
+  ) {
   font-family: var(--tu-font-display-ta);
   letter-spacing: normal;
 }
@@ -192,6 +203,166 @@
   font-weight: 700;
   line-height: var(--tu-leading-tight);
   text-align: center;
+}
+
+/* Quiz en mode téléphone : la question, quatre grands boutons. Les réponses ne sont pas des
+   actions de marque : surface neutre, jamais le corail. Vert et rouge seulement à la révélation. */
+.tu-quiz {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+}
+
+.tu-quiz__tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-4);
+  color: var(--tu-text-muted);
+  font-weight: 600;
+}
+
+.tu-quiz__chrono {
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-xl);
+  font-variant-numeric: tabular-nums;
+  color: var(--tu-text);
+}
+
+.tu-quiz__chrono--zero {
+  color: var(--tu-danger-text);
+}
+
+.tu-quiz__question {
+  font-size: var(--tu-size-2xl);
+  line-height: var(--tu-leading-tight);
+  overflow-wrap: anywhere;
+}
+
+.tu-quiz__choix {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  margin: 0;
+  margin-top: auto;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-quiz-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-4);
+  width: 100%;
+  min-height: calc(var(--tu-tap-min) * 1.25);
+  padding: var(--tu-space-3) var(--tu-space-4);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+  color: var(--tu-text);
+  font: inherit;
+  font-size: var(--tu-size-lg);
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+
+.tu-quiz-choice:disabled {
+  cursor: default;
+}
+
+.tu-quiz-choice:disabled:not(
+    .tu-quiz-choice--choisie,
+    .tu-quiz-choice--bonne,
+    .tu-quiz-choice--fausse
+  ) {
+  opacity: 0.6;
+}
+
+.tu-quiz-choice__lettre {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--tu-space-10);
+  height: var(--tu-space-10);
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-surface-muted);
+  font-family: var(--tu-font-numeric);
+  font-weight: 700;
+}
+
+.tu-quiz-choice__texte {
+  overflow-wrap: anywhere;
+}
+
+.tu-quiz-choice--choisie {
+  border-color: var(--tu-primary);
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-quiz-choice--choisie .tu-quiz-choice__lettre {
+  background: var(--tu-surface);
+  color: var(--tu-text);
+}
+
+/* Fonds clairs et texte foncé : le blanc sur le sauge ou le rouge ne tient pas l'AA. */
+.tu-quiz-choice--bonne {
+  border-color: var(--tu-success);
+  background: var(--tu-sage-50);
+  color: var(--tu-success-text);
+}
+
+.tu-quiz-choice--bonne .tu-quiz-choice__lettre {
+  background: var(--tu-success);
+  color: var(--tu-on-primary);
+}
+
+.tu-quiz-choice--fausse {
+  border-color: var(--tu-danger);
+  color: var(--tu-danger-text);
+  text-decoration: line-through;
+}
+
+.tu-quiz-choice--fausse .tu-quiz-choice__lettre {
+  background: var(--tu-danger);
+  color: var(--tu-on-primary);
+  text-decoration: none;
+}
+
+.tu-quiz__statut {
+  min-height: var(--tu-tap-min);
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+  text-align: center;
+}
+
+.tu-quiz__statut--in {
+  color: var(--tu-success-text);
+}
+
+.tu-quiz__statut--out {
+  color: var(--tu-danger-text);
+}
+
+.tu-quiz__fin {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--tu-space-4);
+  text-align: center;
+}
+
+.tu-quiz__titre {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-2xl);
+  font-weight: 700;
 }
 
 /* Hors ligne : bandeau en haut, jamais bloquant. */

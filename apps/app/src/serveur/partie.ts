@@ -1,5 +1,5 @@
 import 'server-only';
-import type { EtatJoueur, EvenementPublic, Langue } from '@/lib/partie';
+import type { EtatJoueur, EvenementPublic, Langue, RefusQuiz } from '@/lib/partie';
 import { hacher, jetonDe } from './session';
 import { supabaseService } from './supabase';
 
@@ -49,4 +49,38 @@ export async function rejoindre(
   if (/langue/.test(error.message)) return { ok: false, erreur: 'langue' };
   if (/inconnu|expiré/.test(error.message)) return { ok: false, erreur: 'code_inconnu' };
   throw new Error(error.message);
+}
+
+/**
+ * Réponse au quiz du joueur de ce cookie. La base décide seule de ce qui est recevable
+ * (question ouverte, joueur encore en jeu, première réponse) : on ne fait que traduire son refus.
+ */
+export async function repondreQuiz(
+  code: string,
+  choix: number,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusQuiz }> {
+  const jeton = await jetonDe(code);
+  const etat = jeton ? await etatPourJeton(code, jeton) : null;
+  if (!jeton || !etat) return { ok: false, refus: 'session' };
+
+  const { error } = await supabaseService().rpc('repondre_quiz', {
+    p_jeton_hash: hacher(jeton),
+    p_choix: choix,
+  });
+  if (error) {
+    const refus: RefusQuiz | null = /fermée/.test(error.message)
+      ? 'fermee'
+      : /spectateur/.test(error.message)
+        ? 'spectateur'
+        : /éliminé/.test(error.message)
+          ? 'elimine'
+          : /déjà/.test(error.message)
+            ? 'deja'
+            : /session/.test(error.message)
+              ? 'session'
+              : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
 }

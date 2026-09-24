@@ -39,6 +39,19 @@
   "horsLigne": {
     "bandeau": "Connection lost. Retrying…"
   },
+  "quiz": {
+    "numero": "Question {n} of {total}",
+    "choix": "Answer {lettre}: {texte}",
+    "envoyee": "Answer sent. Watch the screen!",
+    "tropTard": "Too late, the question is closed.",
+    "bonne": "Right answer! You're still in.",
+    "elimine": "You're out! Watch the rest on the screen.",
+    "enJeu": "You're still in the game.",
+    "prochaine": "Get ready, the next question is coming.",
+    "fin": "End of the quiz",
+    "survivant": "You made it to the end. Well done!",
+    "spectateur": "The quiz started before you arrived: watch the screen, you'll play the next game."
+  },
   "jeux": {
     "list2": "Common ground",
     "qcm2": "Quiz",
