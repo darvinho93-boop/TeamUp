@@ -122,9 +122,15 @@
   align-items: end;
 }
 
+.tu-regie__form > * {
+  min-width: 0;
+}
+
 /* Sur le fond sombre, les champs gardent leur surface et leur texte de thème. */
 .tu-regie .tu-field__control,
 .tu-regie select {
+  /* Une longue option (une question de quiz) ne doit pas élargir la page sur un téléphone. */
+  max-width: 100%;
   min-height: var(--tu-tap-min);
   padding-inline: var(--tu-space-4);
   border: var(--tu-btn-border-width) solid var(--tu-border);
