@@ -212,6 +212,36 @@ export async function ajouterSurenchere(code: string, donnees: FormData) {
   rafraichir();
 }
 
+const Photo = z.object({ themes: z.coerce.number().int().min(1).max(6).catch(2) });
+
+/**
+ * Photo challenge : un passage par thème. Les thèmes s'ouvrent aux capitaines dès qu'ils
+ * existent (spec v3 : annoncés au début, envois toute la soirée) ; une seule manche par soirée.
+ */
+export async function ajouterPhoto(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const { count } = await supabase
+    .from('manches')
+    .select('*', { count: 'exact', head: true })
+    .eq('evenement_id', evenement.id)
+    .eq('jeu', 'photo2')
+    .neq('statut', 'annulee');
+  if ((count ?? 0) > 0) return;
+  const { themes } = Photo.parse({ themes: donnees.get('themes') });
+  const mancheId = await nouvelleManche(supabase, evenement, 'photo2', { themes });
+  const libres = await contenusLibres(supabase, evenement, 'photo2');
+  await supabase.from('passages').insert(
+    Array.from({ length: themes }, (_, i) => ({
+      manche_id: mancheId,
+      evenement_id: evenement.id,
+      equipe_id: null,
+      ordre: i + 1,
+      contenu_id: libres[i] ?? null,
+    })),
+  );
+  rafraichir();
+}
+
 export async function deplacerManche(code: string, mancheId: string, sens: -1 | 1) {
   const { supabase, evenement, rafraichir } = await contexte(code);
   const { data: manches } = await supabase

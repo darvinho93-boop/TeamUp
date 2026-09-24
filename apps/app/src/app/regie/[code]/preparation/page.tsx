@@ -13,6 +13,7 @@ import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
 import {
   ajouterEquipe,
   ajouterMime,
+  ajouterPhoto,
   ajouterPointsCommuns,
   ajouterQuiz,
   ajouterSurenchere,
@@ -43,6 +44,7 @@ function libelle(jeu: string, publics: Traduite[], secrets: Traduite[], langue: 
   if (jeu === 'enchere2') return `${texte(p, 'theme')} — ${texte(s, 'sujet')}`;
   if (jeu === 'qcm2') return texte(p, 'question');
   if (jeu === 'mime2') return texte(s, 'mot');
+  if (jeu === 'photo2') return texte(p, 'theme');
   return '—';
 }
 
@@ -53,31 +55,37 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
   const code = evenement.code;
   const langue = evenement.langues[0] ?? 'fr';
 
-  const [{ data: equipes }, { data: manches }, { data: banque }, { data: joueurs }] =
-    await Promise.all([
-      supabase
-        .from('equipes')
-        .select('id, numero, nom')
-        .eq('evenement_id', evenement.id)
-        .order('numero'),
-      supabase
-        .from('manches')
-        .select(
-          'id, jeu, ordre, statut, options, passages(id, ordre, statut, equipe_id, contenu_id)',
-        )
-        .eq('evenement_id', evenement.id)
-        .order('ordre'),
-      supabase
-        .from('contenus')
-        .select('id, jeu, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)')
-        .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2'])
-        .eq('actif', true)
-        .order('cree_le'),
-      supabase.from('joueurs').select('equipe_id').eq('evenement_id', evenement.id),
-    ]);
+  const [
+    { data: equipes },
+    { data: manches },
+    { data: banque },
+    { data: joueurs },
+    { data: photos },
+  ] = await Promise.all([
+    supabase
+      .from('equipes')
+      .select('id, numero, nom')
+      .eq('evenement_id', evenement.id)
+      .order('numero'),
+    supabase
+      .from('manches')
+      .select('id, jeu, ordre, statut, options, passages(id, ordre, statut, equipe_id, contenu_id)')
+      .eq('evenement_id', evenement.id)
+      .order('ordre'),
+    supabase
+      .from('contenus')
+      .select('id, jeu, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)')
+      .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2'])
+      .eq('actif', true)
+      .order('cree_le'),
+    supabase.from('joueurs').select('equipe_id').eq('evenement_id', evenement.id),
+    supabase.from('photos').select('theme_id').eq('evenement_id', evenement.id),
+  ]);
 
   const nomEquipe = new Map((equipes ?? []).map((e) => [e.id, e]));
   const peuplees = new Set((joueurs ?? []).map((j) => j.equipe_id));
+  // Un thème qui a déjà reçu des photos ne change plus : elles resteraient sans thème.
+  const themesPhotographies = new Set((photos ?? []).map((p) => p.theme_id));
   const options = (jeu: string): OptionContenu[] =>
     (banque ?? [])
       .filter((c) => c.jeu === jeu)
@@ -179,7 +187,7 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
           <ol className="tu-regie-list">
             {programme.map((m, i) => {
               const modifiable = m.statut === 'a_venir';
-              const preparable = ['list2', 'enchere2', 'qcm2', 'mime2'].includes(m.jeu);
+              const preparable = ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2'].includes(m.jeu);
               // Un passage par équipe (Points communs, Mime), ou un par thème, par question.
               const parEquipe = m.jeu === 'list2' || m.jeu === 'mime2';
               return (
@@ -209,7 +217,11 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
                               passageId={p.id}
                               valeur={p.contenu_id}
                               options={options(m.jeu)}
-                              desactive={!modifiable || p.statut !== 'a_venir'}
+                              desactive={
+                                !modifiable ||
+                                p.statut !== 'a_venir' ||
+                                (p.contenu_id !== null && themesPhotographies.has(p.contenu_id))
+                              }
                               libelle={t('contenu')}
                               aucun={t('aucunContenu')}
                             />
@@ -325,6 +337,22 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
             </label>
             <Button type="submit">{t('ajouter', { jeu: tJeux('mime2') })}</Button>
           </form>
+          {!programme.some((m) => m.jeu === 'photo2' && m.statut !== 'annulee') && (
+            <form action={ajouterPhoto.bind(null, code)} className="tu-regie-item">
+              <label className="tu-field">
+                <span className="tu-field__label">{t('themes')}</span>
+                <input
+                  className="tu-field__control"
+                  name="themes"
+                  type="number"
+                  min={1}
+                  max={6}
+                  defaultValue={2}
+                />
+              </label>
+              <Button type="submit">{t('ajouter', { jeu: tJeux('photo2') })}</Button>
+            </form>
+          )}
         </div>
       </section>
     </>
