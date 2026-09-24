@@ -21,7 +21,7 @@ Un lot par session. Chaque lot se termine quand ses critères « Fini quand » s
 - **Lots 5 à 9 : les maquettes de l'app n'existent pas encore.** Seule la vitrine est maquettée.
   Soit on les dessine avant le lot 5, soit Claude Code s'appuie sur les sections 5 et 6 du
   cahier des charges et sur les visuels d'écrans présents dans les maquettes vitrine.
-- **Lot 7** : trancher le repêchage du quiz avant de commencer.
+- **Lot 7** : repêchage tranché le 2026-09-24 (aucun, 3 ou 4 questions). Lot clos, critère vérifié par `e2e/quiz.spec.ts`.
 - **Lot 8** : trancher le mode de clôture des envois photo.
 
 ## Prompt de démarrage type
