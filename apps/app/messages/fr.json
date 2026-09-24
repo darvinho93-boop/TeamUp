@@ -52,6 +52,30 @@
     "survivant": "Tu as tenu jusqu'au bout. Bravo !",
     "spectateur": "Le quiz a commencé avant ton arrivée : regarde l'écran, tu joueras au prochain jeu."
   },
+  "photos": {
+    "ouvrir": "Photos : {envoyees} sur {total}",
+    "titre": "Photo challenge",
+    "capitaine": "Tu es capitaine : une photo par thème, quand tu veux dans la soirée. Tu peux la remplacer jusqu'à la clôture.",
+    "equipier": "Votre capitaine envoie une photo par thème. Mettez-vous en scène ensemble !",
+    "closes": "Les envois sont clos. Rendez-vous sur l'écran pour la diffusion !",
+    "compte": "{envoyees, plural, =0 {Aucune photo envoyée} one {# photo envoyée} other {# photos envoyées}} sur {total}",
+    "numero": "Thème {n}",
+    "aFaire": "Pas encore de photo",
+    "envoi": "Envoi en cours…",
+    "attente": "En attente de réseau : elle partira toute seule",
+    "envoyee": "Envoyée à {heure}",
+    "prendre": "Prendre la photo",
+    "remplacer": "Remplacer la photo",
+    "retour": "Retour",
+    "refus": {
+      "session": "Non envoyée : ta session a expiré.",
+      "capitaine": "Non envoyée : tu n'es plus capitaine.",
+      "close": "Non envoyée : les envois sont clos.",
+      "theme": "Non envoyée : ce thème n'existe plus.",
+      "fichier": "Non envoyée : fichier refusé.",
+      "decodage": "Cette image ne peut pas être lue. Reprends la photo."
+    }
+  },
   "jeux": {
     "list2": "Points communs",
     "qcm2": "Quiz",

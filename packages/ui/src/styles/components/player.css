@@ -17,7 +17,8 @@
     .tu-wait-team__name,
     .tu-wait-look,
     .tu-quiz__statut,
-    .tu-quiz__titre
+    .tu-quiz__titre,
+    .tu-photo-theme__nom
   ) {
   font-family: var(--tu-font-display-ta);
   letter-spacing: normal;
@@ -390,4 +391,89 @@
     opacity: 0;
     transform: translateY(var(--tu-space-2));
   }
+}
+
+/* Photo challenge : la liste des thèmes, ouverte toute la soirée. Le bouton de prise de vue
+   est un <label> qui porte le champ fichier : même allure qu'un bouton, même cible tactile. */
+.tu-photos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+}
+
+.tu-photos__compte {
+  margin: 0;
+  font-family: var(--tu-font-numeric);
+  font-weight: 600;
+}
+
+.tu-photos__liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-photo-theme {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  padding: var(--tu-space-4);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
+.tu-photo-theme__tete {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--tu-space-3);
+}
+
+.tu-photo-theme__apercu {
+  flex: none;
+  width: var(--tu-space-18);
+  height: var(--tu-space-18);
+  border-radius: var(--tu-radius-sm);
+  object-fit: cover;
+}
+
+.tu-photo-theme__numero {
+  margin: 0;
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+}
+
+.tu-photo-theme__nom {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-lg);
+  line-height: var(--tu-leading-tight);
+  overflow-wrap: anywhere;
+}
+
+.tu-photo-theme__statut {
+  margin: var(--tu-space-1) 0 0;
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+}
+
+.tu-photo-theme__statut--ok {
+  color: var(--tu-success-text);
+}
+
+.tu-photo-theme__statut--attente {
+  color: var(--tu-warning-text);
+  font-weight: 600;
+}
+
+.tu-photo-theme__statut--refus {
+  color: var(--tu-danger-text);
+}
+
+.tu-photo-theme__prendre:focus-within {
+  outline: var(--tu-focus-width) solid var(--tu-focus);
+  outline-offset: var(--tu-focus-width);
 }

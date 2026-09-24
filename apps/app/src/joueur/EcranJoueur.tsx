@@ -5,10 +5,12 @@ import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
 import type { EtatJoueur } from '@/lib/partie';
 import { Cadre } from './Cadre';
+import { Photos } from './Photos';
 import { Quiz } from './Quiz';
 import { useEtatJoueur } from './useEtatJoueur';
+import { useFilePhotos } from './useFilePhotos';
 
-type Vue = 'equipe' | 'attente';
+type Vue = 'equipe' | 'attente' | 'photos';
 
 /** Le joueur a rejoint : « Mon équipe », puis l'attente, tenus à jour en continu. */
 export function EcranJoueur({
@@ -23,6 +25,8 @@ export function EcranJoueur({
   const t = useTranslations();
   const { etat, horsLigne, decalageMs, remplacer, relire } = useEtatJoueur(code, etatInitial);
   const [vue, setVue] = useState<Vue>(vueInitiale);
+  // La file vit ici, pas dans la vue Photos : elle se vide même quand le capitaine en sort.
+  const file = useFilePhotos(code, remplacer);
 
   const bandeau = horsLigne ? (
     <p className="tu-banner" role="status">
@@ -48,7 +52,7 @@ export function EcranJoueur({
     );
   }
 
-  const { joueur, equipe, manche, prochaine, evenement, quiz } = etat;
+  const { joueur, equipe, manche, prochaine, evenement, quiz, photos } = etat;
 
   // Quiz en mode téléphone : le seul moment où le téléphone sert à jouer (spec v3).
   if (quiz) {
@@ -61,6 +65,23 @@ export function EcranJoueur({
             decalageMs={decalageMs}
             remplacer={remplacer}
             relire={relire}
+          />
+        </div>
+      </Cadre>
+    );
+  }
+
+  if (vue === 'photos' && photos) {
+    return (
+      <Cadre bandeau={bandeau}>
+        <div className="tu-player__body">
+          <Photos
+            photos={photos}
+            capitaine={joueur.capitaine}
+            sorts={file.sorts}
+            apercus={file.apercus}
+            ajouter={file.ajouter}
+            retour={() => setVue('attente')}
           />
         </div>
       </Cadre>
@@ -101,6 +122,19 @@ export function EcranJoueur({
         {evenement.statut !== 'termine' && (
           <div className="tu-player__actions">
             <p className="tu-wait-look">{t('attente.regarde')}</p>
+            {photos && equipe && (
+              <Button
+                variant={joueur.capitaine && !photos.closes ? 'accent' : 'outline'}
+                size="lg"
+                block
+                onClick={() => setVue('photos')}
+              >
+                {t('photos.ouvrir', {
+                  envoyees: photos.themes.filter((th) => th.envoyee_le !== null).length,
+                  total: photos.themes.length,
+                })}
+              </Button>
+            )}
           </div>
         )}
       </div>

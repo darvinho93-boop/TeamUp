@@ -52,6 +52,30 @@
     "survivant": "You made it to the end. Well done!",
     "spectateur": "The quiz started before you arrived: watch the screen, you'll play the next game."
   },
+  "photos": {
+    "ouvrir": "Photos: {envoyees} of {total}",
+    "titre": "Photo challenge",
+    "capitaine": "You're the captain: one photo per theme, whenever you like tonight. You can replace it until submissions close.",
+    "equipier": "Your captain sends one photo per theme. Stage it together!",
+    "closes": "Submissions are closed. Watch the screen for the show!",
+    "compte": "{envoyees, plural, =0 {No photos sent} one {# photo sent} other {# photos sent}} out of {total}",
+    "numero": "Theme {n}",
+    "aFaire": "No photo yet",
+    "envoi": "Sending…",
+    "attente": "Waiting for network: it will send by itself",
+    "envoyee": "Sent at {heure}",
+    "prendre": "Take the photo",
+    "remplacer": "Replace the photo",
+    "retour": "Back",
+    "refus": {
+      "session": "Not sent: your session has expired.",
+      "capitaine": "Not sent: you're no longer captain.",
+      "close": "Not sent: submissions are closed.",
+      "theme": "Not sent: this theme no longer exists.",
+      "fichier": "Not sent: file rejected.",
+      "decodage": "This image can't be read. Take the photo again."
+    }
+  },
   "jeux": {
     "list2": "Common ground",
     "qcm2": "Quiz",
