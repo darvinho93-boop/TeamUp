@@ -12,6 +12,8 @@ import {
   type EtatSurenchere,
 } from './surenchere';
 import { mancheJouee, mancheSuivante, passageSuivant, type MancheDuProgramme } from './programme';
+import { actionsQuiz, appliquerQuiz, CHRONO_QUESTION_S, MODES_QUIZ, type EtatQuiz } from './quiz';
+import { actionsMime, appliquerMime, CHRONO_MIME_S } from './mime';
 
 const s = (secondes: number) => secondes * 1000;
 
@@ -135,5 +137,110 @@ describe('progression du programme', () => {
   it('prend le premier passage pas encore joué', () => {
     expect(passageSuivant(programme[0]!)?.id).toBe('b2');
     expect(mancheJouee(programme[0]!)).toBe(false);
+  });
+});
+
+describe('pilotage du Quiz', () => {
+  const q = (etape: EtatQuiz['etape'], resteDesQuestions = true): EtatQuiz => ({
+    etape,
+    resteDesQuestions,
+  });
+
+  it('enchaîne question, révélation et question suivante', () => {
+    expect(actionsQuiz(q('pret'))).toEqual(['afficher']);
+    const affichee = appliquerQuiz(q('pret'), { type: 'afficher' });
+    expect(affichee).toEqual({ etape: 'question', chrono: { demarrer: CHRONO_QUESTION_S } });
+    expect(CHRONO_QUESTION_S).toBe(30);
+    expect(appliquerQuiz(q('question'), { type: 'reveler' })).toEqual({
+      etape: 'reponse',
+      chrono: 'arreter',
+    });
+    expect(actionsQuiz(q('reponse'))).toEqual(['suivante']);
+    expect(appliquerQuiz(q('reponse'), { type: 'suivante' }).etape).toBe('pret');
+  });
+
+  it('passe aux survivants après la dernière question', () => {
+    expect(actionsQuiz(q('reponse', false))).toEqual(['fin']);
+    expect(appliquerQuiz(q('reponse', false), { type: 'fin' }).etape).toBe('survivants');
+    expect(() => appliquerQuiz(q('reponse', false), { type: 'suivante' })).toThrow(/impossible/);
+  });
+
+  it('une question annulée mène à la suivante, ou aux survivants si c’était la dernière', () => {
+    expect(appliquerQuiz(q('question'), { type: 'annuler' })).toEqual({
+      etape: 'pret',
+      chrono: 'arreter',
+    });
+    expect(appliquerQuiz(q('question', false), { type: 'annuler' }).etape).toBe('survivants');
+  });
+
+  it('ne compte les points qu’une fois, à la validation des survivants', () => {
+    for (const etape of ['pret', 'question', 'reponse'] as const) {
+      expect(() =>
+        appliquerQuiz(q(etape, false), { type: 'valider', survivants: { 1: 3 } }),
+      ).toThrow(/impossible/);
+    }
+    const t = appliquerQuiz(q('survivants'), { type: 'valider', survivants: { 1: 3, 2: 0 } });
+    expect(t.etape).toBe('resultat');
+    expect(t.points).toEqual({ 1: 300, 2: 0 });
+    expect(t.resultat).toEqual({ survivants: { 1: 3, 2: 0 } });
+    expect(actionsQuiz(q('resultat'))).toEqual([]);
+  });
+
+  // Critère de fin du lot 7, côté moteur : le mode ne participe pas au calcul.
+  it('les deux modes donnent le même score pour les mêmes survivants', () => {
+    const survivants = { 1: 4, 2: 0, 3: 7, 4: 1 };
+    const joue = () => {
+      let etat: EtatQuiz = q('pret');
+      for (let i = 0; i < 4; i++) {
+        etat = { ...etat, resteDesQuestions: i < 3 };
+        for (const type of ['afficher', 'reveler'] as const) {
+          etat = { ...etat, etape: appliquerQuiz(etat, { type }).etape };
+        }
+        const suite = etat.resteDesQuestions ? 'suivante' : 'fin';
+        etat = { ...etat, etape: appliquerQuiz(etat, { type: suite }).etape };
+      }
+      return appliquerQuiz(etat, { type: 'valider', survivants }).points;
+    };
+    const scores = MODES_QUIZ.map(joue);
+    expect(scores[0]).toEqual({ 1: 400, 2: 0, 3: 700, 4: 100 });
+    expect(scores[1]).toEqual(scores[0]);
+  });
+
+  it('refuse des survivants qui ne sont pas des entiers positifs', () => {
+    expect(() =>
+      appliquerQuiz(q('survivants'), { type: 'valider', survivants: { 1: -1 } }),
+    ).toThrow(RangeError);
+  });
+});
+
+describe('pilotage du Mime', () => {
+  it('montre le mot à la régie, lance la chaîne, puis tranche', () => {
+    expect(actionsMime('pret')).toEqual(['montrer']);
+    expect(appliquerMime('pret', 'montrer', 0)).toEqual({ etape: 'secret', chrono: 'garder' });
+    expect(appliquerMime('secret', 'lancer', 0)).toEqual({
+      etape: 'lance',
+      chrono: { demarrer: CHRONO_MIME_S },
+    });
+    expect(CHRONO_MIME_S).toBe(150);
+    expect(actionsMime('lance')).toEqual(['trouve', 'rate']);
+  });
+
+  it('trouvé vaut 100, raté 0, et arrête le chrono', () => {
+    const trouve = appliquerMime('lance', 'trouve', s(95.4));
+    expect(trouve).toEqual({
+      etape: 'trouve',
+      chrono: 'arreter',
+      points: 100,
+      resultat: { trouve: true, ecoule_ms: 95_400 },
+    });
+    const rate = appliquerMime('lance', 'rate', s(150));
+    expect(rate.points).toBe(0);
+    expect(rate.resultat?.trouve).toBe(false);
+    expect(actionsMime('trouve')).toEqual([]);
+  });
+
+  it('refuse de lancer avant d’avoir montré le mot', () => {
+    expect(() => appliquerMime('pret', 'lancer', 0)).toThrow(/impossible/);
+    expect(() => appliquerMime('secret', 'trouve', 0)).toThrow(/impossible/);
   });
 });
