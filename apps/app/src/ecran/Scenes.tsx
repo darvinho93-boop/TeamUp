@@ -3,10 +3,13 @@
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier, Wordmark } from '@teamup/ui/react';
 import {
+  CHRONO_MIME_S,
   CHRONO_POINTS_COMMUNS_S,
+  CHRONO_QUESTION_S,
   CHRONO_SURENCHERE_DEFAUT_S,
   etatPaliers,
   PALIERS,
+  POINTS_PAR_SURVIVANT,
 } from '@teamup/game';
 import {
   classement,
@@ -144,6 +147,8 @@ function Jeu(props: Props) {
   const manche = mancheCourante(props.etat);
   if (manche?.jeu === 'list2') return <PointsCommuns {...props} />;
   if (manche?.jeu === 'enchere2') return <Surenchere {...props} manche={manche} />;
+  if (manche?.jeu === 'qcm2') return <Quiz {...props} manche={manche} />;
+  if (manche?.jeu === 'mime2') return <Mime {...props} />;
   return null;
 }
 
@@ -379,6 +384,171 @@ function Podium({ etat }: { etat: EtatSalle }) {
         {marche(troisieme, 3)}
       </ol>
       <p className="tu-stage__l">{t('merci')}</p>
+    </div>
+  );
+}
+
+const LETTRES = ['A', 'B', 'C', 'D'] as const;
+
+/** Survivants validés en fin de manche, ou comptés en direct par la base en mode téléphone. */
+function survivantsDe(manche: MancheSalle): Record<string, number> | null {
+  const valides = manche.options['survivants'];
+  if (valides && typeof valides === 'object') return valides as Record<string, number>;
+  return manche.survivants ?? null;
+}
+
+function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
+  const t = useTranslations('ecran');
+  const { etape, chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
+  const langues = etat.evenement.langues;
+  const passage = passageCourant(etat);
+  const telephone = manche.options['mode'] === 'telephone';
+
+  if (etape === 'survivants' || etape === 'resultat') {
+    const survivants = survivantsDe(manche);
+    const valide = etape === 'resultat';
+    return (
+      <div className="tu-stage__body" data-scene="qcm2" data-etape={etape}>
+        <h1 className="tu-stage__xl">{t('finQuiz')}</h1>
+        {survivants && (telephone || valide) && (
+          <ul className="tu-stage-teams" data-testid="survivants">
+            {etat.equipes.map((e) => {
+              const n = survivants[String(e.numero)] ?? 0;
+              return (
+                <li key={e.id} className={cx('tu-stage-team', teamModifier(e.numero))}>
+                  <span className="tu-stage-team__nom">{e.nom}</span>
+                  <span className="tu-stage-team__nombre">{t('survivants', { n })}</span>
+                  {valide && (
+                    <span className="tu-stage-team__nombre">
+                      {t('points', { points: n * POINTS_PAR_SURVIVANT })}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    );
+  }
+
+  if (!passage) return null;
+  const numero = t('question', { n: passage.ordre, total: manche.passages.length });
+
+  if (etape === 'pret') {
+    return (
+      <div className="tu-stage__body tu-stage-centre" data-scene="qcm2" data-etape="pret">
+        <p className="tu-stage__giant">{numero}</p>
+      </div>
+    );
+  }
+
+  const revelee = etape === 'reponse';
+  const bonne = revelee ? passage.secret?.[langues[0] ?? 'fr']?.['bonne'] : undefined;
+  const propositions = (i: number) =>
+    langues.flatMap((langue) => {
+      const liste = passage.public[langue]?.['propositions'];
+      const texte: unknown = Array.isArray(liste) ? liste[i] : undefined;
+      return typeof texte === 'string' ? [{ langue, texte }] : [];
+    });
+
+  return (
+    <div className="tu-stage__body" data-scene="qcm2" data-etape={etape ?? ''}>
+      <div className="tu-stage-quiz__tete">
+        <p className="tu-stage__m tu-stage__muted">
+          {numero}
+          {etape === 'question' &&
+            (telephone ? ` · ${t('reponses', { n: passage.reponses ?? 0 })}` : ` · ${t('croix')}`)}
+        </p>
+        {etape === 'question' && (
+          <Chrono
+            departMs={depart}
+            dureeS={duree ?? CHRONO_QUESTION_S}
+            decalageMs={decalageMs}
+            className="tu-stage__xl"
+          />
+        )}
+      </div>
+      <Multilingue
+        testId="question"
+        className="tu-stage-multi--titre"
+        textes={texteParLangue(passage.public, 'question', langues)}
+      />
+      <ol className="tu-stage-quiz">
+        {LETTRES.map((lettre, i) => (
+          <li
+            key={lettre}
+            className={cx(
+              'tu-stage-quiz__zone',
+              revelee &&
+                (i === bonne ? 'tu-stage-quiz__zone--bonne' : 'tu-stage-quiz__zone--fausse'),
+            )}
+            data-testid={i === bonne ? 'bonne-reponse' : undefined}
+          >
+            <span className="tu-stage-quiz__lettre">{lettre}</span>
+            <Multilingue textes={propositions(i)} />
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function Mime({ etat, decalageMs }: Props) {
+  const t = useTranslations('ecran');
+  const passage = passageCourant(etat);
+  const equipe = equipeDe(etat, passage?.equipe_id ?? null);
+  const { etape, chrono_depart_ms: depart } = etat.pilotage;
+  if (!passage || !equipe) return null;
+
+  if (etape === 'trouve' || etape === 'rate') {
+    // Plein écran vert si le mot est trouvé, rouge sinon (spec v3, jeu 04).
+    return (
+      <div
+        className={cx(
+          'tu-stage__body tu-stage-centre tu-stage-reveal tu-stage-verdict',
+          etape === 'trouve' ? 'tu-stage-verdict--vert' : 'tu-stage-verdict--rouge',
+        )}
+        data-scene="mime2"
+        data-etape={etape}
+      >
+        <Pastille equipe={equipe} grande />
+        <p className="tu-stage__m">{t('leMot')}</p>
+        <Multilingue
+          testId="mot"
+          className="tu-stage-multi--geant"
+          textes={texteParLangue(passage.secret, 'mot', etat.evenement.langues)}
+        />
+        <p className="tu-stage__xl" data-testid="verdict">
+          {etape === 'trouve' ? t('trouve') : t('rate')} ·{' '}
+          {t('points', { points: passage.points ?? 0 })}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="tu-stage__body" data-scene="mime2" data-etape={etape ?? ''}>
+      <p className="tu-stage__head-line">
+        <Pastille equipe={equipe} grande />
+      </p>
+      {etape === 'pret' && (
+        <p className="tu-stage__xl tu-stage-centre">{t('mimeFile', { equipe: equipe.nom })}</p>
+      )}
+      {etape === 'secret' && (
+        <p className="tu-stage__xl tu-stage-centre tu-stage-reveal">{t('mimeJ1')}</p>
+      )}
+      {etape === 'lance' && (
+        <div className="tu-stage-jeu">
+          <Chrono
+            departMs={depart}
+            dureeS={CHRONO_MIME_S}
+            decalageMs={decalageMs}
+            className="tu-stage__giant"
+          />
+          <p className="tu-stage__l">{t('mimeChaine')}</p>
+        </div>
+      )}
     </div>
   );
 }

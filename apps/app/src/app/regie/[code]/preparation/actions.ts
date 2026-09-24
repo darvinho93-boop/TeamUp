@@ -3,7 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
-import { CHRONO_SURENCHERE_DEFAUT_S, type GameCode } from '@teamup/game';
+import {
+  CHRONO_SURENCHERE_DEFAUT_S,
+  QUESTIONS_QUIZ,
+  QUESTIONS_QUIZ_DEFAUT,
+  type GameCode,
+} from '@teamup/game';
 import { evenementDeLaRegie, type EvenementRegie } from '@/serveur/regie';
 import type { ClientAnimateur } from '@/serveur/supabase-animateur';
 
@@ -115,8 +120,8 @@ async function nouvelleManche(
 
 const Tours = z.coerce.number().int().min(1).max(3);
 
-/** Points communs : un passage par équipe et par tour, chacun avec un contenu de la banque. */
-export async function ajouterPointsCommuns(code: string, donnees: FormData) {
+/** Jeux séquentiels (Points communs, Mime) : un passage par équipe et par tour. */
+async function ajouterParEquipe(code: string, donnees: FormData, jeu: 'list2' | 'mime2') {
   const { supabase, evenement, rafraichir } = await contexte(code);
   const tours = Tours.catch(1).parse(donnees.get('tours'));
   const { data: equipes } = await supabase
@@ -124,10 +129,10 @@ export async function ajouterPointsCommuns(code: string, donnees: FormData) {
     .select('id')
     .eq('evenement_id', evenement.id)
     .order('numero');
-  const mancheId = await nouvelleManche(supabase, evenement, 'list2', {
+  const mancheId = await nouvelleManche(supabase, evenement, jeu, {
     passages_par_equipe: tours,
   });
-  const libres = await contenusLibres(supabase, evenement, 'list2');
+  const libres = await contenusLibres(supabase, evenement, jeu);
   const passages = Array.from({ length: tours }, () => equipes ?? [])
     .flat()
     .map((equipe, i) => ({
@@ -138,6 +143,43 @@ export async function ajouterPointsCommuns(code: string, donnees: FormData) {
       contenu_id: libres[i] ?? null,
     }));
   if (passages.length) await supabase.from('passages').insert(passages);
+  rafraichir();
+}
+
+/** Points communs : un passage par équipe et par tour, chacun avec un contenu de la banque. */
+export async function ajouterPointsCommuns(code: string, donnees: FormData) {
+  await ajouterParEquipe(code, donnees, 'list2');
+}
+
+/** Mime : un passage par équipe et par tour, chacun avec un mot de la banque. */
+export async function ajouterMime(code: string, donnees: FormData) {
+  await ajouterParEquipe(code, donnees, 'mime2');
+}
+
+const Questions = z.coerce
+  .number()
+  .int()
+  .refine((n) => (QUESTIONS_QUIZ as readonly number[]).includes(n))
+  .catch(QUESTIONS_QUIZ_DEFAUT);
+
+/**
+ * Quiz : une question par passage, trois ou quatre, sans repêchage (décision du 2026-09-24).
+ * Le mode (croix ou téléphone) ne se fixe pas ici : il se choisit au lancement de la manche.
+ */
+export async function ajouterQuiz(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const questions = Questions.parse(donnees.get('questions'));
+  const mancheId = await nouvelleManche(supabase, evenement, 'qcm2', { questions });
+  const libres = await contenusLibres(supabase, evenement, 'qcm2');
+  await supabase.from('passages').insert(
+    Array.from({ length: questions }, (_, i) => ({
+      manche_id: mancheId,
+      evenement_id: evenement.id,
+      equipe_id: null,
+      ordre: i + 1,
+      contenu_id: libres[i] ?? null,
+    })),
+  );
   rafraichir();
 }
 

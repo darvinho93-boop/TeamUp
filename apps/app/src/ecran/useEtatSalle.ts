@@ -22,6 +22,12 @@ const TABLES = [
   // de sûreté.
   { table: 'joueurs', event: 'INSERT' },
 ] as const;
+/**
+ * La régie compte en plus les réponses au quiz en mode téléphone (« 12 réponses reçues »).
+ * L'écran commun s'en passe : 150 réponses en rafale le feraient relire pour un simple compteur,
+ * que la touche « Révéler » met de toute façon à jour.
+ */
+const TABLES_REGIE = [...TABLES, { table: 'reponses_quiz', event: 'INSERT' }] as const;
 /** Les changements de la base arrivent en rafale (150 arrivées, une étape = plusieurs lignes) :
  * on les regroupe, le signal de la régie assurant déjà la réactivité. */
 const REGROUPEMENT_MS = 250;
@@ -90,7 +96,7 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
       canal = supabase.channel(`salle:${id}`, { config: { broadcast: { self: false } } });
       canalRef.current = canal;
       canal.on('broadcast', { event: SIGNAL }, () => void relire());
-      for (const { table, event } of TABLES) {
+      for (const { table, event } of regie ? TABLES_REGIE : TABLES) {
         canal.on(
           'postgres_changes',
           { event, schema: 'public', table, filter: `evenement_id=eq.${id}` },

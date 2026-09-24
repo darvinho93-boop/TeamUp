@@ -6,6 +6,8 @@ const motifs = {
   pointsCommuns: (equipe: string) => `PC ${equipe}`,
   tenu: 'tenu',
   rate: 'raté',
+  quiz: (n: number) => `Quiz ${n}`,
+  mime: (equipe: string) => `Mime ${equipe}`,
 };
 
 function passage(id: string, ordre: number, extra: Partial<PassageSalle> = {}): PassageSalle {
@@ -68,6 +70,22 @@ function etat(pilotage: Partial<EtatSalle['pilotage']>, programme?: MancheSalle[
         statut: 'a_venir',
         options: { chrono_s: 45 },
         passages: [passage('t1', 1), passage('t2', 2)],
+      },
+      {
+        id: 'qz',
+        jeu: 'qcm2',
+        ordre: 3,
+        statut: 'a_venir',
+        options: { questions: 2 },
+        passages: [passage('q1', 1), passage('q2', 2)],
+      },
+      {
+        id: 'mi',
+        jeu: 'mime2',
+        ordre: 4,
+        statut: 'a_venir',
+        options: {},
+        passages: [passage('m1', 1, { equipe_id: 'e1' }), passage('m2', 2, { equipe_id: 'e2' })],
       },
     ],
   };
@@ -161,5 +179,106 @@ describe('une touche de la régie', () => {
     });
     expect(ecriture?.manche).toEqual({ id: 'pc', statut: 'terminee' });
     expect(ecriture?.pilotage).toMatchObject({ scene: 'scores', manche_id: null, etape: null });
+  });
+
+  it('Quiz : le mode se fixe au lancement, la croix par défaut, la question attend « Afficher »', () => {
+    const intro = etat({ scene: 'intro', manche_id: 'qz' });
+    const croix = etape(intro, { type: 'commencer' });
+    expect(croix?.manche).toEqual({ id: 'qz', statut: 'en_cours', options: { mode: 'croix' } });
+    expect(croix?.pilotage).toMatchObject({ scene: 'jeu', passage_id: 'q1', etape: 'pret' });
+    expect(croix?.passage).toBeNull();
+    const tel = etape(intro, { type: 'commencer', mode: 'telephone' });
+    expect(tel?.manche?.options).toEqual({ mode: 'telephone' });
+  });
+
+  it('Quiz : afficher ouvre la question et lance 30 s ; révéler la termine', () => {
+    const pret = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'pret' });
+    expect(etape(pret, { type: 'quiz', action: 'afficher' })).toMatchObject({
+      pilotage: { etape: 'question', chrono: 'demarrer', chrono_duree_s: 30 },
+      passage: { id: 'q1', statut: 'en_cours' },
+    });
+    const question = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'question' });
+    expect(etape(question, { type: 'quiz', action: 'reveler' })).toMatchObject({
+      pilotage: { etape: 'reponse', chrono: 'arreter' },
+      passage: { id: 'q1', statut: 'termine' },
+    });
+  });
+
+  it('Quiz : question suivante, puis fin des questions après la dernière', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'reponse' });
+    e.programme[2]!.passages[0]!.statut = 'termine';
+    expect(etape(e, { type: 'quiz', action: 'suivante' })?.pilotage).toMatchObject({
+      passage_id: 'q2',
+      etape: 'pret',
+    });
+    expect(etape(e, { type: 'quiz', action: 'fin' })).toBeNull();
+
+    const derniere = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'reponse' });
+    for (const p of derniere.programme[2]!.passages) p.statut = 'termine';
+    expect(etape(derniere, { type: 'quiz', action: 'fin' })?.pilotage.etape).toBe('survivants');
+  });
+
+  it('Quiz : une question annulée ne compte pas et passe à la suivante', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'question' });
+    expect(etape(e, { type: 'quiz', action: 'annuler' })).toMatchObject({
+      pilotage: { etape: 'pret', passage_id: 'q2', chrono: 'arreter' },
+      passage: { id: 'q1', statut: 'termine', resultat: { annulee: true } },
+    });
+  });
+
+  // Critère du lot 7, côté régie : la même saisie de survivants écrit les mêmes points,
+  // que la manche se joue à la croix ou au téléphone.
+  it('Quiz : les deux modes écrivent les mêmes points pour les mêmes survivants', () => {
+    const survivants = { 1: 3, 2: 0, 3: 1 };
+    const ecritures = (['croix', 'telephone'] as const).map((mode) => {
+      const e = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'survivants' });
+      e.programme[2]!.options = { questions: 2, mode };
+      return etape(e, { type: 'survivants', survivants });
+    });
+    expect(ecritures[0]?.scores).toEqual([
+      { equipe_id: 'e1', points: 300, motif: 'Quiz 3', manche_id: 'qz' },
+      { equipe_id: 'e3', points: 100, motif: 'Quiz 1', manche_id: 'qz' },
+    ]);
+    expect(ecritures[1]?.scores).toEqual(ecritures[0]?.scores);
+    expect(ecritures[0]?.pilotage.etape).toBe('resultat');
+    expect(ecritures[0]?.manche).toEqual({
+      id: 'qz',
+      statut: 'en_cours',
+      options: { survivants },
+    });
+  });
+
+  it('Mime : montrer, lancer 2 min 30, puis trouvé vaut +100 à l’équipe du passage', () => {
+    const intro = etat({ scene: 'intro', manche_id: 'mi' });
+    expect(etape(intro, { type: 'commencer' })).toMatchObject({
+      pilotage: { passage_id: 'm1', etape: 'pret' },
+      passage: { id: 'm1', statut: 'en_cours' },
+      manche: { id: 'mi', statut: 'en_cours' },
+    });
+    const pret = etat({ scene: 'jeu', manche_id: 'mi', passage_id: 'm1', etape: 'pret' });
+    expect(etape(pret, { type: 'mime', action: 'montrer' })?.pilotage.etape).toBe('secret');
+    expect(etape(pret, { type: 'mime', action: 'lancer' })).toBeNull();
+    const secret = etat({ scene: 'jeu', manche_id: 'mi', passage_id: 'm1', etape: 'secret' });
+    expect(etape(secret, { type: 'mime', action: 'lancer' })?.pilotage).toMatchObject({
+      etape: 'lance',
+      chrono: 'demarrer',
+      chrono_duree_s: 150,
+    });
+    const lance = etat({ scene: 'jeu', manche_id: 'mi', passage_id: 'm1', etape: 'lance' });
+    const trouve = etape(lance, { type: 'mime', action: 'trouve' }, 42_000);
+    expect(trouve?.passage).toMatchObject({ id: 'm1', statut: 'termine', points: 100 });
+    expect(trouve?.scores).toEqual([
+      { equipe_id: 'e1', points: 100, motif: 'Mime Navy', manche_id: 'mi' },
+    ]);
+    expect(etape(lance, { type: 'mime', action: 'rate' })?.scores).toEqual([]);
+  });
+
+  it('Mime : passe à l’équipe suivante après le verdict', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'mi', passage_id: 'm1', etape: 'rate' });
+    e.programme[3]!.passages[0]!.statut = 'termine';
+    expect(etape(e, { type: 'suivant' })).toMatchObject({
+      pilotage: { passage_id: 'm2', etape: 'pret' },
+      passage: { id: 'm2', statut: 'en_cours' },
+    });
   });
 });

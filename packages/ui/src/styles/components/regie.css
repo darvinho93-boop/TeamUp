@@ -323,3 +323,77 @@
   color: var(--tu-primary);
   font-weight: 600;
 }
+
+/* Quiz : la question et ses propositions, la bonne réponse marquée (la régie voit tout). */
+.tu-regie-quiz {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tu-space-2);
+  margin: var(--tu-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie-quiz__choix {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tu-space-2);
+  padding: var(--tu-space-2) var(--tu-space-3);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-sm);
+}
+
+.tu-regie-quiz__choix--bonne {
+  border-color: var(--tu-primary);
+}
+
+.tu-regie-quiz__lettre {
+  font-family: var(--tu-font-numeric);
+  font-weight: 700;
+}
+
+.tu-regie-quiz__bonne {
+  color: var(--tu-primary);
+  font-weight: 600;
+}
+
+.tu-regie-survivants {
+  width: calc(var(--tu-tap-min) * 2);
+  min-height: var(--tu-tap-min);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-xl);
+  text-align: center;
+}
+
+/* Mime : le mot en plein écran, pour J1 seul. Un appui n'importe où le referme. */
+.tu-regie-mot {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-6);
+  padding: var(--tu-space-8);
+  border: 0;
+  background: var(--tu-bg);
+  color: var(--tu-text);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.tu-regie-mot__texte {
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+  overflow-wrap: anywhere;
+}
+
+.tu-regie-mot__texte + .tu-regie-mot__texte {
+  font-size: var(--tu-size-2xl);
+  color: var(--tu-text-muted);
+}

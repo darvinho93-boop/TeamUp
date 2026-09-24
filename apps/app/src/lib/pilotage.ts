@@ -10,15 +10,23 @@
  */
 
 import {
+  appliquerMime,
   appliquerPointsCommuns,
+  appliquerQuiz,
   appliquerSurenchere,
   CHRONO_SURENCHERE_DEFAUT_S,
   passageSuivant,
+  type ActionMime,
   type ActionPointsCommuns,
+  type ActionQuiz,
   type ActionSurenchere,
   type Chrono,
+  type EtapeMime,
   type EtapePointsCommuns,
+  type EtapeQuiz,
   type EtapeSurenchere,
+  type ModeQuiz,
+  type ScoresParEquipe,
 } from '@teamup/game';
 import {
   mancheCourante,
@@ -31,8 +39,11 @@ import {
 export type Commande =
   | { type: 'scene'; scene: Exclude<Scene, 'intro' | 'jeu'> }
   | { type: 'intro'; mancheId: string }
-  | { type: 'commencer' }
+  | { type: 'commencer'; mode?: ModeQuiz }
   | { type: 'pointsCommuns'; action: ActionPointsCommuns }
+  | { type: 'quiz'; action: Exclude<ActionQuiz['type'], 'valider'> }
+  | { type: 'survivants'; survivants: ScoresParEquipe }
+  | { type: 'mime'; action: ActionMime }
   | { type: 'suivant' }
   | { type: 'devoiler'; passageId: string }
   | { type: 'adjuger' }
@@ -56,7 +67,7 @@ export interface Ecriture {
     resultat?: object;
     points?: number;
   } | null;
-  manche: { id: string; statut: 'en_cours' | 'terminee' } | null;
+  manche: { id: string; statut: 'en_cours' | 'terminee'; options?: object } | null;
   scores: { equipe_id: string; points: number; motif: string; manche_id: string }[];
   /** La première manche lancée fait passer la soirée « en cours » (les téléphones le voient). */
   ouvrirLaSoiree: boolean;
@@ -67,6 +78,8 @@ export interface Motifs {
   pointsCommuns: (equipe: string) => string;
   tenu: string;
   rate: string;
+  quiz: (survivants: number) => string;
+  mime: (equipe: string) => string;
 }
 
 function chronoDe(chrono: Chrono): Pick<Ecriture['pilotage'], 'chrono' | 'chrono_duree_s'> {
@@ -138,15 +151,25 @@ export function calculerEtape(
         };
         if (manche.jeu === 'enchere2') {
           ecriture.pilotage = { ...base, passage_id: null, etape: 'themes' };
-        } else if (manche.jeu === 'list2') {
+        } else if (manche.jeu === 'list2' || manche.jeu === 'mime2') {
           const premier = passageSuivant(manche);
           if (!premier) return null;
           ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'pret' };
           ecriture.passage = { id: premier.id, statut: 'en_cours' };
+        } else if (manche.jeu === 'qcm2') {
+          // La question attend « Afficher » pour s'ouvrir : elle reste à venir jusque-là.
+          const premiere = passageSuivant(manche);
+          if (!premiere) return null;
+          ecriture.pilotage = { ...base, passage_id: premiere.id, etape: 'pret' };
         } else {
           return null;
         }
-        ecriture.manche = { id: manche.id, statut: 'en_cours' };
+        ecriture.manche = {
+          id: manche.id,
+          statut: 'en_cours',
+          // Le mode du quiz se choisit au lancement de la manche (spec v3), la croix d'abord.
+          ...(manche.jeu === 'qcm2' ? { options: { mode: commande.mode ?? 'croix' } } : {}),
+        };
         ecriture.ouvrirLaSoiree = etat.evenement.statut === 'preparation';
         return ecriture;
       }
@@ -184,7 +207,10 @@ export function calculerEtape(
       }
 
       case 'suivant': {
-        if (manche?.jeu !== 'list2' || (p.etape !== 'trouve' && p.etape !== 'echec')) return null;
+        const fini =
+          (manche?.jeu === 'list2' && (p.etape === 'trouve' || p.etape === 'echec')) ||
+          (manche?.jeu === 'mime2' && (p.etape === 'trouve' || p.etape === 'rate'));
+        if (!manche || !fini) return null;
         const suivant = passageSuivant(manche);
         if (!suivant) return null;
         Object.assign(ecriture.pilotage, {
@@ -194,6 +220,83 @@ export function calculerEtape(
           chrono: 'arreter',
         });
         ecriture.passage = { id: suivant.id, statut: 'en_cours' };
+        return ecriture;
+      }
+
+      case 'quiz':
+      case 'survivants': {
+        if (manche?.jeu !== 'qcm2' || !passage) return null;
+        const suivante = manche.passages
+          .filter((x) => x.id !== passage.id && x.statut !== 'termine')
+          .sort((a, b) => a.ordre - b.ordre)[0];
+        const action: ActionQuiz =
+          commande.type === 'quiz'
+            ? { type: commande.action }
+            : { type: 'valider', survivants: commande.survivants };
+        const suite = appliquerQuiz(
+          { etape: p.etape as EtapeQuiz, resteDesQuestions: suivante !== undefined },
+          action,
+        );
+        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        switch (action.type) {
+          case 'afficher':
+            ecriture.passage = { id: passage.id, statut: 'en_cours' };
+            break;
+          case 'reveler':
+            ecriture.passage = { id: passage.id, statut: 'termine', resultat: {} };
+            break;
+          case 'annuler':
+            ecriture.passage = { id: passage.id, statut: 'termine', resultat: { annulee: true } };
+            if (suite.etape === 'pret' && suivante) ecriture.pilotage.passage_id = suivante.id;
+            break;
+          case 'suivante':
+            if (!suivante) return null;
+            ecriture.pilotage.passage_id = suivante.id;
+            break;
+          case 'fin':
+            break;
+          case 'valider':
+            ecriture.manche = {
+              id: manche.id,
+              statut: 'en_cours',
+              options: { survivants: suite.resultat?.survivants ?? {} },
+            };
+            for (const [numero, points] of Object.entries(suite.points ?? {})) {
+              const equipe = etat.equipes.find((e) => e.numero === Number(numero));
+              if (!equipe || points <= 0) continue;
+              ecriture.scores.push({
+                equipe_id: equipe.id,
+                points,
+                motif: motifs.quiz(action.survivants[Number(numero)] ?? 0),
+                manche_id: manche.id,
+              });
+            }
+            break;
+        }
+        return ecriture;
+      }
+
+      case 'mime': {
+        if (manche?.jeu !== 'mime2' || !passage) return null;
+        const suite = appliquerMime(p.etape as EtapeMime, commande.action, ecouleMs);
+        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        if (suite.points !== undefined && suite.resultat) {
+          ecriture.passage = {
+            id: passage.id,
+            statut: 'termine',
+            resultat: suite.resultat,
+            points: suite.points,
+          };
+          const equipe = etat.equipes.find((e) => e.id === passage.equipe_id);
+          if (equipe && suite.points > 0) {
+            ecriture.scores.push({
+              equipe_id: equipe.id,
+              points: suite.points,
+              motif: motifs.mime(equipe.nom),
+              manche_id: manche.id,
+            });
+          }
+        }
         return ecriture;
       }
 

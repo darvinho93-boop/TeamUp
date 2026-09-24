@@ -426,3 +426,82 @@
     transform: scale(0.96);
   }
 }
+
+/* Quiz : quatre quadrants, comme la croix tracée au sol. La bonne zone s'allume à la
+   révélation, les autres s'effacent. */
+.tu-stage-quiz__tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-8);
+}
+
+.tu-stage-quiz {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tu-space-6);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-quiz__zone {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-6);
+  padding: var(--tu-space-6) var(--tu-space-8);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+  transition:
+    opacity var(--tu-dur-reveal) var(--tu-ease),
+    background-color var(--tu-dur-reveal) var(--tu-ease);
+}
+
+.tu-stage-quiz__lettre {
+  flex: none;
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+}
+
+.tu-stage-quiz__zone--bonne {
+  border-color: var(--tu-primary);
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-stage-quiz__zone--bonne .tu-stage-multi__autre {
+  color: var(--tu-on-primary);
+}
+
+.tu-stage-quiz__zone--fausse {
+  opacity: 0.35;
+}
+
+/* Mime : le verdict en plein écran, vert si le mot est trouvé, rouge sinon. */
+.tu-stage-verdict {
+  margin: calc(var(--tu-space-12) * -1) calc(var(--tu-space-16) * -1);
+  padding: var(--tu-space-12) var(--tu-space-16);
+  color: var(--tu-text);
+}
+
+.tu-stage-verdict--vert {
+  background: var(--tu-success);
+}
+
+.tu-stage-verdict--rouge {
+  background: var(--tu-danger);
+}
+
+.tu-stage-verdict .tu-stage-multi__autre {
+  color: var(--tu-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tu-stage-quiz__zone {
+    transition: none;
+  }
+}

@@ -135,7 +135,9 @@
       "tours": "Passages par équipe",
       "themes": "Thèmes",
       "chronoChamp": "Chrono (secondes)",
-      "ajouter": "Ajouter {jeu}"
+      "ajouter": "Ajouter {jeu}",
+      "questions": "Questions",
+      "question": "Question {numero}"
     },
     "pilotage": {
       "enDirect": "En direct",
@@ -186,7 +188,39 @@
       },
       "motifPointsCommuns": "Points communs — {equipe}",
       "motifTenu": "Surenchère — pari tenu",
-      "motifRate": "Surenchère — pari raté par une autre équipe"
+      "motifRate": "Surenchère — pari raté par une autre équipe",
+      "motifQuiz": "{survivants, plural, =0 {Quiz – aucun survivant} one {Quiz – # survivant} other {Quiz – # survivants}}",
+      "motifMime": "Mime – {equipe}",
+      "quiz": {
+        "titre": "Quiz",
+        "commencerCroix": "Commencer le quiz en mode croix",
+        "commencerTelephone": "Mode téléphone (salle sans croix)",
+        "numero": "Question {n} sur {total}",
+        "modeCroix": "mode croix",
+        "modeTelephone": "mode téléphone",
+        "bonne": "bonne réponse",
+        "afficher": "Afficher la question",
+        "reveler": "Révéler la réponse",
+        "suivante": "Question suivante",
+        "fin": "Fin des questions",
+        "annuler": "Annuler la question",
+        "reponses": "{n, plural, =0 {Aucune réponse reçue} one {# réponse reçue} other {# réponses reçues}}",
+        "survivantsCroix": "Combien de survivants par équipe ?",
+        "survivantsTelephone": "Survivants comptés par l’app",
+        "survivantsDe": "Survivants de {equipe}",
+        "survivants": "{n, plural, =0 {aucun survivant} one {# survivant} other {# survivants}}",
+        "valider": "Valider les survivants"
+      },
+      "mime": {
+        "titre": "Mime",
+        "montrer": "Montrer le mot au premier de la file",
+        "revoir": "Revoir le mot",
+        "pourJ1": "Pour le premier de la file seulement",
+        "fermer": "Touchez pour masquer",
+        "mot": "Le mot",
+        "trouve": "Trouvé",
+        "rate": "Raté"
+      }
     },
     "salle": {
       "titre": "Salle",
@@ -245,6 +279,15 @@
     "perdu": "Pari perdu",
     "scores": "Classement",
     "podium": "Podium",
-    "merci": "Merci à tous, et bravo !"
+    "merci": "Merci à tous, et bravo !",
+    "question": "Question {n} sur {total}",
+    "croix": "placez-vous dans la zone de votre réponse !",
+    "reponses": "{n, plural, =0 {aucune réponse} one {# réponse} other {# réponses}}",
+    "finQuiz": "Fin du quiz",
+    "survivants": "{n, plural, =0 {aucun survivant} one {# survivant} other {# survivants}}",
+    "mimeFile": "{equipe} : en file, tous tournés du même côté !",
+    "mimeJ1": "Le premier de la file vient lire le mot à la régie.",
+    "mimeChaine": "Mime, oreille, mime… jusqu’au dernier !",
+    "leMot": "Le mot"
   }
 }

@@ -21,6 +21,8 @@ export interface PassageSalle {
   contenu_id: string | null;
   public: ParLangue;
   secret: ParLangue | null;
+  /** Quiz : réponses reçues des téléphones pour cette question. */
+  reponses?: number | null;
 }
 
 export interface MancheSalle {
@@ -29,6 +31,8 @@ export interface MancheSalle {
   ordre: number;
   statut: StatutManche;
   options: Valeurs;
+  /** Quiz en mode téléphone : survivants par numéro d'équipe, comptés par la base. */
+  survivants?: Record<string, number> | null;
   passages: PassageSalle[];
 }
 

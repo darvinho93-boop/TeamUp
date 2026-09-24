@@ -4,14 +4,21 @@ import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
 import {
+  actionsMime,
   actionsPointsCommuns,
+  actionsQuiz,
   actionsSurenchere,
+  CHRONO_MIME_S,
   CHRONO_POINTS_COMMUNS_S,
+  CHRONO_QUESTION_S,
   CHRONO_SURENCHERE_DEFAUT_S,
   passageSuivant,
   type ActionPointsCommuns,
+  type EtapeMime,
   type EtapePointsCommuns,
+  type EtapeQuiz,
   type EtapeSurenchere,
+  type GameCode,
 } from '@teamup/game';
 import { calculerEtape, type Commande } from '@/lib/pilotage';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
@@ -31,6 +38,10 @@ import { Chrono, useMaintenant } from '@/ecran/Chrono';
 import { useEtatSalle } from '@/ecran/useEtatSalle';
 import { Apercu } from './Apercu';
 import { BoutonConfirme } from './BoutonConfirme';
+
+/** Jeux que la régie sait piloter (lots 6 et 7). */
+const PILOTABLES: readonly GameCode[] = ['list2', 'enchere2', 'qcm2', 'mime2'];
+const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
 const SCENES_LIBRES: Exclude<Scene, 'intro' | 'jeu'>[] = [
   'accueil',
@@ -67,6 +78,8 @@ export function Pilotage({
       pointsCommuns: (equipe) => t('motifPointsCommuns', { equipe }),
       tenu: t('motifTenu'),
       rate: t('motifRate'),
+      quiz: (survivants) => t('motifQuiz', { survivants }),
+      mime: (equipe) => t('motifMime', { equipe }),
     });
     if (!ecriture) {
       setAlerte(t('erreur.impossible'));
@@ -134,13 +147,11 @@ export function Pilotage({
               <span className="tu-regie-item__title">
                 {tJeux(m.jeu)} · {t(`statut.${m.statut}`)}
               </span>
-              {m.statut !== 'terminee' &&
-                m.statut !== 'annulee' &&
-                (m.jeu === 'list2' || m.jeu === 'enchere2') && (
-                  <Button variant="ghost" onClick={() => agir({ type: 'intro', mancheId: m.id })}>
-                    {t('presenter')}
-                  </Button>
-                )}
+              {m.statut !== 'terminee' && m.statut !== 'annulee' && PILOTABLES.includes(m.jeu) && (
+                <Button variant="ghost" onClick={() => agir({ type: 'intro', mancheId: m.id })}>
+                  {t('presenter')}
+                </Button>
+              )}
             </li>
           ))}
         </ol>
@@ -152,7 +163,7 @@ export function Pilotage({
             {alerte}
           </p>
         )}
-        {scene === 'intro' && manche && (
+        {scene === 'intro' && manche && manche.jeu !== 'qcm2' && (
           <Button
             variant="accent"
             size="lg"
@@ -162,11 +173,38 @@ export function Pilotage({
             {t('commencer', { jeu: tJeux(manche.jeu) })}
           </Button>
         )}
+        {scene === 'intro' && manche?.jeu === 'qcm2' && (
+          // Le mode se choisit au lancement de la manche ; la croix d'abord, le téléphone
+          // seulement quand la salle ne permet pas de tracer une croix (spec v3).
+          <div className="tu-regie-keys">
+            <Button
+              variant="accent"
+              size="lg"
+              className="tu-regie-keys__wide"
+              onClick={() => agir({ type: 'commencer', mode: 'croix' })}
+            >
+              {t('quiz.commencerCroix')}
+            </Button>
+            <Button
+              variant="ghost"
+              className="tu-regie-keys__wide"
+              onClick={() => agir({ type: 'commencer', mode: 'telephone' })}
+            >
+              {t('quiz.commencerTelephone')}
+            </Button>
+          </div>
+        )}
         {scene === 'jeu' && manche?.jeu === 'list2' && (
           <PanneauPointsCommuns etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
         {scene === 'jeu' && manche?.jeu === 'enchere2' && (
           <PanneauSurenchere etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+        )}
+        {scene === 'jeu' && manche?.jeu === 'qcm2' && (
+          <PanneauQuiz etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+        )}
+        {scene === 'jeu' && manche?.jeu === 'mime2' && (
+          <PanneauMime etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
         {scene !== 'jeu' && scene !== 'intro' && (
           <p className="tu-regie__muted">{t('choisirJeu')}</p>
@@ -396,6 +434,277 @@ function PanneauSurenchere({ etat, manche, decalageMs, agir }: PanneauProps) {
           {t('retour')}
         </Button>
       )}
+    </section>
+  );
+}
+
+function PanneauQuiz({ etat, manche, decalageMs, agir }: PanneauProps) {
+  const t = useTranslations('regie.pilotage');
+  const tq = useTranslations('regie.pilotage.quiz');
+  const [saisie, setSaisie] = useState<Record<number, string>>({});
+  const etape = etat.pilotage.etape as EtapeQuiz;
+  const passage = passageCourant(etat);
+  const telephone = manche.options['mode'] === 'telephone';
+  const langue = etat.evenement.langues[0] ?? 'fr';
+  const reste = manche.passages.some((x) => x.id !== passage?.id && x.statut !== 'termine');
+  const permises = actionsQuiz({ etape, resteDesQuestions: reste });
+
+  const question = passage?.public[langue];
+  const propositions = Array.isArray(question?.['propositions'])
+    ? (question['propositions'] as string[])
+    : [];
+  const bonne = passage?.secret?.[langue]?.['bonne'];
+
+  // Survivants : comptés par la base en mode téléphone, saisis par l'animateur en mode croix.
+  const survivants: Record<number, number> = Object.fromEntries(
+    etat.equipes.map((e) => [
+      e.numero,
+      telephone
+        ? (manche.survivants?.[String(e.numero)] ?? 0)
+        : Math.max(0, Math.trunc(Number(saisie[e.numero] ?? '0')) || 0),
+    ]),
+  );
+
+  const touche = (action: 'afficher' | 'reveler' | 'suivante' | 'fin', libelle: string) => (
+    <Button
+      key={action}
+      disabled={!permises.includes(action)}
+      onClick={() => agir({ type: 'quiz', action })}
+    >
+      {libelle}
+    </Button>
+  );
+
+  if (etape === 'survivants' || etape === 'resultat') {
+    const fini = etape === 'resultat';
+    return (
+      <section className="tu-regie__section" aria-label={tq('titre')}>
+        <p className="tu-regie-item__title">
+          {tq(telephone ? 'survivantsTelephone' : 'survivantsCroix')}
+        </p>
+        <ul className="tu-regie-list">
+          {etat.equipes.map((e) => (
+            <li key={e.id} className="tu-regie-item">
+              <span className={cx('tu-team tu-team--badge', teamModifier(e.numero))}>{e.nom}</span>
+              {telephone || fini ? (
+                <span className="tu-regie-item__title" data-testid={`survivants-${e.numero}`}>
+                  {tq('survivants', { n: survivants[e.numero] ?? 0 })}
+                </span>
+              ) : (
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  max={150}
+                  className="tu-field__control tu-regie-survivants"
+                  aria-label={tq('survivantsDe', { equipe: e.nom })}
+                  value={saisie[e.numero] ?? '0'}
+                  onChange={(ev) => setSaisie((s) => ({ ...s, [e.numero]: ev.target.value }))}
+                />
+              )}
+            </li>
+          ))}
+        </ul>
+        {!fini && (
+          <BoutonConfirme
+            size="lg"
+            confirmation={t('confirmer', { action: tq('valider') })}
+            onConfirm={() => agir({ type: 'survivants', survivants })}
+          >
+            {tq('valider')}
+          </BoutonConfirme>
+        )}
+        {fini && (
+          <Button variant="accent" size="lg" onClick={() => agir({ type: 'terminer' })}>
+            {t('terminer')}
+          </Button>
+        )}
+      </section>
+    );
+  }
+
+  if (!passage) return null;
+
+  return (
+    <section className="tu-regie__section" aria-label={tq('titre')}>
+      <p className="tu-regie__muted">
+        {tq('numero', { n: passage.ordre, total: manche.passages.length })}
+        {' · '}
+        {tq(telephone ? 'modeTelephone' : 'modeCroix')}
+      </p>
+      <div className="tu-regie-secret">
+        <p className="tu-regie-item__title">
+          {typeof question?.['question'] === 'string' ? question['question'] : '—'}
+        </p>
+        <ol className="tu-regie-quiz">
+          {propositions.map((texte, i) => (
+            <li
+              key={LETTRES[i]}
+              className={cx('tu-regie-quiz__choix', i === bonne && 'tu-regie-quiz__choix--bonne')}
+            >
+              <span className="tu-regie-quiz__lettre">{LETTRES[i]}</span>
+              <span>{texte}</span>
+              {i === bonne && <span className="tu-regie-quiz__bonne">{tq('bonne')}</span>}
+            </li>
+          ))}
+        </ol>
+      </div>
+      {etape === 'question' && (
+        <Chrono
+          departMs={etat.pilotage.chrono_depart_ms}
+          dureeS={etat.pilotage.chrono_duree_s ?? CHRONO_QUESTION_S}
+          decalageMs={decalageMs}
+          className="tu-regie-timer"
+        />
+      )}
+      {telephone && etape !== 'pret' && (
+        <p className="tu-regie__muted" role="status" data-testid="regie-reponses">
+          {tq('reponses', { n: passage.reponses ?? 0 })}
+        </p>
+      )}
+      <div className="tu-regie-keys">
+        {touche('afficher', tq('afficher'))}
+        {touche('reveler', tq('reveler'))}
+        {permises.includes('suivante') && touche('suivante', tq('suivante'))}
+        {permises.includes('fin') && touche('fin', tq('fin'))}
+        <BoutonConfirme
+          variant="ghost"
+          disabled={!permises.includes('annuler')}
+          confirmation={t('confirmer', { action: tq('annuler') })}
+          onConfirm={() => agir({ type: 'quiz', action: 'annuler' })}
+        >
+          {tq('annuler')}
+        </BoutonConfirme>
+      </div>
+    </section>
+  );
+}
+
+function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
+  const t = useTranslations('regie.pilotage');
+  const tm = useTranslations('regie.pilotage.mime');
+  const [motOuvert, setMotOuvert] = useState(false);
+  const passage = passageCourant(etat);
+  const equipe = equipeDe(etat, passage?.equipe_id ?? null);
+  const etape = etat.pilotage.etape as EtapeMime;
+  if (!passage || !equipe) return null;
+
+  const permises = actionsMime(etape);
+  const mots = texteParLangue(passage.secret, 'mot', etat.evenement.langues);
+  const fini = etape === 'trouve' || etape === 'rate';
+  const suivant = passageSuivant(manche);
+  const equipeSuivante = equipeDe(
+    etat,
+    manche.passages.find((x) => x.id === suivant?.id)?.equipe_id ?? null,
+  );
+
+  return (
+    <section className="tu-regie__section" aria-label={tm('titre')}>
+      <p className={cx('tu-team tu-team--badge tu-team--lg', teamModifier(equipe.numero))}>
+        {equipe.nom}
+      </p>
+
+      {motOuvert && (
+        // Le mot, pour J1 seul : il vient le lire sur l'écran de régie (spec v3, jeu 04).
+        <button
+          type="button"
+          className="tu-regie-mot"
+          onClick={() => setMotOuvert(false)}
+          data-testid="regie-mot"
+        >
+          <span className="tu-regie__muted">{tm('pourJ1')}</span>
+          {mots.map(({ langue, texte }) => (
+            <span key={langue} lang={langue} className="tu-regie-mot__texte">
+              {texte}
+            </span>
+          ))}
+          <span className="tu-regie__muted">{tm('fermer')}</span>
+        </button>
+      )}
+
+      {(etape === 'lance' || fini) && (
+        <div className="tu-regie-secret">
+          <p className="tu-regie__muted">{tm('mot')}</p>
+          <p className="tu-regie-item__title">{mots[0]?.texte ?? '—'}</p>
+        </div>
+      )}
+
+      <Chrono
+        departMs={etat.pilotage.chrono_depart_ms}
+        dureeS={CHRONO_MIME_S}
+        decalageMs={decalageMs}
+        className="tu-regie-timer"
+        {...(etape === 'lance'
+          ? {}
+          : {
+              arret:
+                typeof passage.resultat['ecoule_ms'] === 'number'
+                  ? passage.resultat['ecoule_ms']
+                  : 0,
+            })}
+      />
+
+      <div className="tu-regie-keys">
+        {etape === 'pret' && (
+          <Button
+            className="tu-regie-keys__wide"
+            onClick={() => {
+              setMotOuvert(true);
+              agir({ type: 'mime', action: 'montrer' });
+            }}
+          >
+            {tm('montrer')}
+          </Button>
+        )}
+        {etape === 'secret' && (
+          <>
+            <Button variant="ghost" onClick={() => setMotOuvert(true)}>
+              {tm('revoir')}
+            </Button>
+            <Button
+              onClick={() => {
+                setMotOuvert(false);
+                agir({ type: 'mime', action: 'lancer' });
+              }}
+            >
+              {t('lancer')}
+            </Button>
+          </>
+        )}
+        <BoutonConfirme
+          disabled={!permises.includes('trouve')}
+          confirmation={t('confirmer', { action: tm('trouve') })}
+          onConfirm={() => agir({ type: 'mime', action: 'trouve' })}
+        >
+          {tm('trouve')}
+        </BoutonConfirme>
+        <BoutonConfirme
+          variant="ghost"
+          disabled={!permises.includes('rate')}
+          confirmation={t('confirmer', { action: tm('rate') })}
+          onConfirm={() => agir({ type: 'mime', action: 'rate' })}
+        >
+          {tm('rate')}
+        </BoutonConfirme>
+        {fini && suivant && (
+          <Button
+            variant="accent"
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'suivant' })}
+          >
+            {t('suivant', { equipe: equipeSuivante?.nom ?? '' })}
+          </Button>
+        )}
+        {fini && (
+          <Button
+            variant={suivant ? 'ghost' : 'accent'}
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'terminer' })}
+          >
+            {t('terminer')}
+          </Button>
+        )}
+      </div>
     </section>
   );
 }

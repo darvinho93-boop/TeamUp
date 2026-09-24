@@ -1,12 +1,20 @@
 import { getTranslations } from 'next-intl/server';
 import { Button, TeamDot } from '@teamup/ui/react';
-import { CHRONO_SURENCHERE_DEFAUT_S, dureeProgramme, formatDuree } from '@teamup/game';
+import {
+  CHRONO_SURENCHERE_DEFAUT_S,
+  dureeProgramme,
+  formatDuree,
+  QUESTIONS_QUIZ,
+  QUESTIONS_QUIZ_DEFAUT,
+} from '@teamup/game';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
 import {
   ajouterEquipe,
+  ajouterMime,
   ajouterPointsCommuns,
+  ajouterQuiz,
   ajouterSurenchere,
   deplacerManche,
   renommerEquipes,
@@ -24,7 +32,7 @@ interface Traduite {
   valeur: Valeur;
 }
 
-/** Ce que l'animateur reconnaît d'un contenu : la réponse, ou le thème et son sujet. */
+/** Ce que l'animateur reconnaît d'un contenu : la réponse, le thème et son sujet, la question, le mot. */
 function libelle(jeu: string, publics: Traduite[], secrets: Traduite[], langue: string): string {
   const dans = (liste: Traduite[]) =>
     (liste.find((l) => l.langue === langue) ?? liste.find((l) => l.langue === 'fr'))?.valeur ?? {};
@@ -33,6 +41,8 @@ function libelle(jeu: string, publics: Traduite[], secrets: Traduite[], langue: 
   const s = dans(secrets);
   if (jeu === 'list2') return texte(s, 'reponse');
   if (jeu === 'enchere2') return `${texte(p, 'theme')} — ${texte(s, 'sujet')}`;
+  if (jeu === 'qcm2') return texte(p, 'question');
+  if (jeu === 'mime2') return texte(s, 'mot');
   return '—';
 }
 
@@ -60,7 +70,7 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
       supabase
         .from('contenus')
         .select('id, jeu, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)')
-        .in('jeu', ['list2', 'enchere2'])
+        .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2'])
         .eq('actif', true)
         .order('cree_le'),
       supabase.from('joueurs').select('equipe_id').eq('evenement_id', evenement.id),
@@ -169,7 +179,9 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
           <ol className="tu-regie-list">
             {programme.map((m, i) => {
               const modifiable = m.statut === 'a_venir';
-              const preparable = m.jeu === 'list2' || m.jeu === 'enchere2';
+              const preparable = ['list2', 'enchere2', 'qcm2', 'mime2'].includes(m.jeu);
+              // Un passage par équipe (Points communs, Mime), ou un par thème, par question.
+              const parEquipe = m.jeu === 'list2' || m.jeu === 'mime2';
               return (
                 <li key={m.id} className="tu-regie-item">
                   <div className="tu-regie-item__main">
@@ -186,9 +198,11 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
                         {m.passages.map((p) => (
                           <li key={p.id} className="tu-regie-player">
                             <span className="tu-regie-player__name">
-                              {m.jeu === 'list2'
+                              {parEquipe
                                 ? (nomEquipe.get(p.equipe_id ?? '')?.nom ?? '—')
-                                : t('theme', { numero: p.ordre })}
+                                : m.jeu === 'qcm2'
+                                  ? t('question', { numero: p.ordre })
+                                  : t('theme', { numero: p.ordre })}
                             </span>
                             <SelectContenu
                               code={code}
@@ -279,6 +293,37 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
               />
             </label>
             <Button type="submit">{t('ajouter', { jeu: tJeux('enchere2') })}</Button>
+          </form>
+          <form action={ajouterQuiz.bind(null, code)} className="tu-regie-item">
+            <label className="tu-field">
+              <span className="tu-field__label">{t('questions')}</span>
+              <select
+                className="tu-field__control"
+                name="questions"
+                defaultValue={QUESTIONS_QUIZ_DEFAUT}
+              >
+                {QUESTIONS_QUIZ.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button type="submit">{t('ajouter', { jeu: tJeux('qcm2') })}</Button>
+          </form>
+          <form action={ajouterMime.bind(null, code)} className="tu-regie-item">
+            <label className="tu-field">
+              <span className="tu-field__label">{t('tours')}</span>
+              <input
+                className="tu-field__control"
+                name="tours"
+                type="number"
+                min={1}
+                max={3}
+                defaultValue={1}
+              />
+            </label>
+            <Button type="submit">{t('ajouter', { jeu: tJeux('mime2') })}</Button>
           </form>
         </div>
       </section>

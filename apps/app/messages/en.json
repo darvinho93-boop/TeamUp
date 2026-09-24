@@ -135,7 +135,9 @@
       "tours": "Turns per team",
       "themes": "Themes",
       "chronoChamp": "Timer (seconds)",
-      "ajouter": "Add {jeu}"
+      "ajouter": "Add {jeu}",
+      "questions": "Questions",
+      "question": "Question {numero}"
     },
     "pilotage": {
       "enDirect": "Live",
@@ -186,7 +188,39 @@
       },
       "motifPointsCommuns": "Common ground — {equipe}",
       "motifTenu": "Bidding war — bet kept",
-      "motifRate": "Bidding war — bet missed by another team"
+      "motifRate": "Bidding war — bet missed by another team",
+      "motifQuiz": "{survivants, plural, =0 {Quiz – no survivors} one {Quiz – # survivor} other {Quiz – # survivors}}",
+      "motifMime": "Mime – {equipe}",
+      "quiz": {
+        "titre": "Quiz",
+        "commencerCroix": "Start the quiz with the floor cross",
+        "commencerTelephone": "Phone mode (no room for a cross)",
+        "numero": "Question {n} of {total}",
+        "modeCroix": "floor cross",
+        "modeTelephone": "phone mode",
+        "bonne": "right answer",
+        "afficher": "Show the question",
+        "reveler": "Reveal the answer",
+        "suivante": "Next question",
+        "fin": "End of questions",
+        "annuler": "Cancel the question",
+        "reponses": "{n, plural, =0 {No answers yet} one {# answer received} other {# answers received}}",
+        "survivantsCroix": "How many survivors per team?",
+        "survivantsTelephone": "Survivors counted by the app",
+        "survivantsDe": "Survivors of {equipe}",
+        "survivants": "{n, plural, =0 {no survivors} one {# survivor} other {# survivors}}",
+        "valider": "Confirm survivors"
+      },
+      "mime": {
+        "titre": "Mime",
+        "montrer": "Show the word to the first in line",
+        "revoir": "Show the word again",
+        "pourJ1": "For the first in line only",
+        "fermer": "Tap to hide",
+        "mot": "The word",
+        "trouve": "Found",
+        "rate": "Missed"
+      }
     },
     "salle": {
       "titre": "Room",
@@ -245,6 +279,15 @@
     "perdu": "Bet lost",
     "scores": "Standings",
     "podium": "Podium",
-    "merci": "Thank you all, and well done!"
+    "merci": "Thank you all, and well done!",
+    "question": "Question {n} of {total}",
+    "croix": "stand in the zone of your answer!",
+    "reponses": "{n, plural, =0 {no answers} one {# answer} other {# answers}}",
+    "finQuiz": "End of the quiz",
+    "survivants": "{n, plural, =0 {no survivors} one {# survivor} other {# survivors}}",
+    "mimeFile": "{equipe}: line up, all facing the same way!",
+    "mimeJ1": "The first in line comes to read the word at the control desk.",
+    "mimeChaine": "Mime, whisper, mime… all the way to the last one!",
+    "leMot": "The word"
   }
 }
