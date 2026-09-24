@@ -96,7 +96,7 @@ beforeAll(async () => {
     .select('id, contenu_id');
   if (error) throw new Error(error.message);
   const par = (contenu: string) =>
-    passages!.find((p) => p['contenu_id'] === contenu)!['id'] as string;
+    passages.find((p) => p['contenu_id'] === contenu)!['id'] as string;
   q1 = par(QUESTION_1);
   q2 = par(QUESTION_2);
   passageMime = par(MOT);
