@@ -14,6 +14,7 @@ import {
 import { mancheJouee, mancheSuivante, passageSuivant, type MancheDuProgramme } from './programme';
 import { actionsQuiz, appliquerQuiz, CHRONO_QUESTION_S, MODES_QUIZ, type EtatQuiz } from './quiz';
 import { actionsMime, appliquerMime, CHRONO_MIME_S } from './mime';
+import { actionsPhoto, appliquerPhoto } from './photo';
 
 const s = (secondes: number) => secondes * 1000;
 
@@ -242,5 +243,39 @@ describe('pilotage du Mime', () => {
   it('refuse de lancer avant d’avoir montré le mot', () => {
     expect(() => appliquerMime('pret', 'lancer', 0)).toThrow(/impossible/);
     expect(() => appliquerMime('secret', 'trouve', 0)).toThrow(/impossible/);
+  });
+});
+
+describe('pilotage de la diffusion photo', () => {
+  it('désigne la gagnante du thème : 100 à son équipe, sans chrono', () => {
+    expect(actionsPhoto('theme')).toEqual(['gagnante', 'aucune']);
+    expect(
+      appliquerPhoto('theme', { type: 'gagnante', equipe: 3, equipesAvecPhoto: [1, 3, 4] }),
+    ).toEqual({
+      etape: 'gagnante',
+      chrono: 'garder',
+      points: { 3: 100 },
+      resultat: { equipe_gagnante: 3 },
+    });
+  });
+
+  it('clôt un thème sans gagnante, sans points', () => {
+    expect(appliquerPhoto('theme', { type: 'aucune' })).toEqual({
+      etape: 'aucune',
+      chrono: 'garder',
+      points: {},
+      resultat: { equipe_gagnante: null },
+    });
+  });
+
+  it('une seule gagnante par thème, et seulement une équipe qui a envoyé', () => {
+    expect(actionsPhoto('gagnante')).toEqual([]);
+    expect(() =>
+      appliquerPhoto('gagnante', { type: 'gagnante', equipe: 1, equipesAvecPhoto: [1] }),
+    ).toThrow(/impossible/);
+    expect(() => appliquerPhoto('aucune', { type: 'aucune' })).toThrow(/impossible/);
+    expect(() =>
+      appliquerPhoto('theme', { type: 'gagnante', equipe: 2, equipesAvecPhoto: [1, 3] }),
+    ).toThrow(/rien envoyé/);
   });
 });

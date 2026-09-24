@@ -4,3 +4,4 @@ export * from './surenchere';
 export * from './programme';
 export * from './quiz';
 export * from './mime';
+export * from './photo';
