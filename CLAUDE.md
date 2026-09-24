@@ -72,9 +72,7 @@ Lis-les avant de concevoir quoi que ce soit. En cas de contradiction, l'ordre ci
 
 Ne les tranche pas seul :
 
-- Repêchage du quiz (3-4 questions sans repêchage, ou 6 avec).
 - Clôture des envois photo : manuelle par la régie, ou automatique au lancement de la diffusion.
-- Longueur maximale de la file de mime (6 ou 8 maillons).
 - Durée de conservation des photos.
 - Espace client (hors périmètre v1 par défaut).
 
@@ -194,3 +192,26 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
   l'écran dans la première. Régie en fr, en et ta (tamoul à relire).
 - Sur le thème stage, l'équipe 1 passe au navy 500 avec un liseré : le navy 700 disparaît
   sur le fond navy 900.
+
+## Conventions posées au lot 7
+
+Tranché le 2026-09-24 : quiz **sans repêchage** (3 ou 4 questions, 4 par défaut) ; file de
+mime **sans plafond** dans l'app (la composer revient à l'animateur).
+
+- Mime : le mot se montre à J1 **sur l'écran de régie seulement** (spec v3). `secret_visible`
+  ne le sort vers l'écran qu'au verdict ; aucun téléphone ne le reçoit, `joueur_designe_id`
+  n'y sert pas.
+- Quiz : le mode (croix ou téléphone) se fixe **au lancement de la manche**, dans
+  `manches.options.mode` (`enregistrer_etape` fusionne `p_manche.options`). Une question par
+  passage : révélée = passage terminé ; annulée = terminé avec `resultat.annulee`, elle ne compte pas.
+- Réponses du mode téléphone : table `reponses_quiz`, écrite **uniquement** par
+  `repondre_quiz` (rôle de service), qui refuse tout sauf une première réponse d'un
+  participant encore en jeu, question ouverte, chrono pas écoulé à l'heure de la base (+1 s).
+  Pas de réponse = éliminé ; arrivé après la 1re question = spectateur.
+- Les survivants se calculent **en base** (`quiz_joueurs`, `survivants_quiz`) ; les points,
+  une seule fois, par `scoreQuiz` à la validation, quel que soit le mode. Les survivants validés
+  sont gardés dans `manches.options.survivants` pour l'écran.
+- Téléphones : ils écoutent le même signal `salle:<id>` que l'écran (clé anon, sans données) et
+  relisent `/api/partie/[code]/etat`, étalés sur 250 ms ; la relecture de 4 s reste en secours.
+  `etat_joueur` expose donc `evenement.id`.
+- La régie écoute en plus les `INSERT` de `reponses_quiz` (compteur de réponses) ; l'écran non.
