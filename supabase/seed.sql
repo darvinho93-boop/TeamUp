@@ -164,6 +164,100 @@ from (values
   ('aaaa0203-0000-4000-8000-000000000203', 'ta', '{"sujet": "கிறிஸ்துமஸ் திரைப்படங்களைச் சொல்லுங்கள்"}')
 ) as v (id, langue, valeur);
 
+-- Quiz et mime (lot 7) : six questions et huit mots, de quoi jouer une manche de chaque.
+-- Mots de mime : un seul mot, concret, qui se traduit sans détour (spec v3, jeu 04).
+-- Tamoul : premier jet, à faire relire.
+insert into public.contenus (id, jeu, etiquette, cree_par)
+select v.id::uuid, v.jeu::public.jeu, 'tout_public', '11111111-1111-4111-8111-111111111111'
+from (values
+  ('aaaa0301-0000-4000-8000-000000000301', 'qcm2'),
+  ('aaaa0302-0000-4000-8000-000000000302', 'qcm2'),
+  ('aaaa0303-0000-4000-8000-000000000303', 'qcm2'),
+  ('aaaa0304-0000-4000-8000-000000000304', 'qcm2'),
+  ('aaaa0305-0000-4000-8000-000000000305', 'qcm2'),
+  ('aaaa0306-0000-4000-8000-000000000306', 'qcm2'),
+  ('aaaa0401-0000-4000-8000-000000000401', 'mime2'),
+  ('aaaa0402-0000-4000-8000-000000000402', 'mime2'),
+  ('aaaa0403-0000-4000-8000-000000000403', 'mime2'),
+  ('aaaa0404-0000-4000-8000-000000000404', 'mime2'),
+  ('aaaa0405-0000-4000-8000-000000000405', 'mime2'),
+  ('aaaa0406-0000-4000-8000-000000000406', 'mime2'),
+  ('aaaa0407-0000-4000-8000-000000000407', 'mime2'),
+  ('aaaa0408-0000-4000-8000-000000000408', 'mime2')
+) as v (id, jeu);
+
+insert into public.contenus_traductions (contenu_id, langue, valeur)
+select v.id::uuid, v.langue::public.langue, v.valeur::jsonb
+from (values
+  ('aaaa0301-0000-4000-8000-000000000301', 'fr', '{"question": "Combien de pattes a une araignée ?", "propositions": ["6", "8", "10", "12"]}'),
+  ('aaaa0301-0000-4000-8000-000000000301', 'en', '{"question": "How many legs does a spider have?", "propositions": ["6", "8", "10", "12"]}'),
+  ('aaaa0301-0000-4000-8000-000000000301', 'ta', '{"question": "சிலந்திக்கு எத்தனை கால்கள்?", "propositions": ["6", "8", "10", "12"]}'),
+  ('aaaa0302-0000-4000-8000-000000000302', 'fr', '{"question": "Quelle planète est la plus proche du Soleil ?", "propositions": ["Vénus", "Mars", "Mercure", "La Terre"]}'),
+  ('aaaa0302-0000-4000-8000-000000000302', 'en', '{"question": "Which planet is closest to the Sun?", "propositions": ["Venus", "Mars", "Mercury", "Earth"]}'),
+  ('aaaa0302-0000-4000-8000-000000000302', 'ta', '{"question": "சூரியனுக்கு மிக அருகில் உள்ள கோள் எது?", "propositions": ["வெள்ளி", "செவ்வாய்", "புதன்", "பூமி"]}'),
+  ('aaaa0303-0000-4000-8000-000000000303', 'fr', '{"question": "Combien de minutes dans une heure et demie ?", "propositions": ["90", "60", "80", "120"]}'),
+  ('aaaa0303-0000-4000-8000-000000000303', 'en', '{"question": "How many minutes are there in an hour and a half?", "propositions": ["90", "60", "80", "120"]}'),
+  ('aaaa0303-0000-4000-8000-000000000303', 'ta', '{"question": "ஒன்றரை மணி நேரத்தில் எத்தனை நிமிடங்கள்?", "propositions": ["90", "60", "80", "120"]}'),
+  ('aaaa0304-0000-4000-8000-000000000304', 'fr', '{"question": "Quel est le plus grand animal ?", "propositions": ["L''éléphant", "La baleine bleue", "La girafe", "L''hippopotame"]}'),
+  ('aaaa0304-0000-4000-8000-000000000304', 'en', '{"question": "Which is the largest animal?", "propositions": ["Elephant", "Blue whale", "Giraffe", "Hippopotamus"]}'),
+  ('aaaa0304-0000-4000-8000-000000000304', 'ta', '{"question": "மிகப் பெரிய விலங்கு எது?", "propositions": ["யானை", "நீலத் திமிங்கிலம்", "ஒட்டகச்சிவிங்கி", "நீர்யானை"]}'),
+  ('aaaa0305-0000-4000-8000-000000000305', 'fr', '{"question": "Combien de joueurs d''une équipe de football sont sur le terrain ?", "propositions": ["11", "9", "10", "12"]}'),
+  ('aaaa0305-0000-4000-8000-000000000305', 'en', '{"question": "How many players from one football team are on the pitch?", "propositions": ["11", "9", "10", "12"]}'),
+  ('aaaa0305-0000-4000-8000-000000000305', 'ta', '{"question": "ஒரு கால்பந்து அணியில் மைதானத்தில் எத்தனை வீரர்கள் இருப்பார்கள்?", "propositions": ["11", "9", "10", "12"]}'),
+  ('aaaa0306-0000-4000-8000-000000000306', 'fr', '{"question": "Quel est le plus grand océan ?", "propositions": ["Atlantique", "Indien", "Arctique", "Pacifique"]}'),
+  ('aaaa0306-0000-4000-8000-000000000306', 'en', '{"question": "Which is the largest ocean?", "propositions": ["Atlantic", "Indian", "Arctic", "Pacific"]}'),
+  ('aaaa0306-0000-4000-8000-000000000306', 'ta', '{"question": "மிகப் பெரிய பெருங்கடல் எது?", "propositions": ["அட்லாண்டிக்", "இந்தியப் பெருங்கடல்", "ஆர்க்டிக்", "பசிபிக்"]}')
+) as v (id, langue, valeur);
+
+-- Le mime n'a pas de partie publique : le mot ne s'affiche qu'à la régie, puis au verdict.
+insert into public.contenus_traductions (contenu_id, langue, valeur)
+select c.id, l.langue::public.langue, '{}'::jsonb
+from public.contenus c
+cross join (values ('fr'), ('en'), ('ta')) as l (langue)
+where c.id::text like 'aaaa04%';
+
+-- Les propositions sont dans le même ordre dans les trois langues : même bonne réponse.
+insert into public.contenus_secrets (contenu_id, langue, valeur)
+select v.id::uuid, l.langue::public.langue, jsonb_build_object('bonne', v.bonne)
+from (values
+  ('aaaa0301-0000-4000-8000-000000000301', 1),
+  ('aaaa0302-0000-4000-8000-000000000302', 2),
+  ('aaaa0303-0000-4000-8000-000000000303', 0),
+  ('aaaa0304-0000-4000-8000-000000000304', 1),
+  ('aaaa0305-0000-4000-8000-000000000305', 0),
+  ('aaaa0306-0000-4000-8000-000000000306', 3)
+) as v (id, bonne)
+cross join (values ('fr'), ('en'), ('ta')) as l (langue);
+
+insert into public.contenus_secrets (contenu_id, langue, valeur)
+select v.id::uuid, v.langue::public.langue, jsonb_build_object('mot', v.mot)
+from (values
+  ('aaaa0401-0000-4000-8000-000000000401', 'fr', 'parapluie'),
+  ('aaaa0401-0000-4000-8000-000000000401', 'en', 'umbrella'),
+  ('aaaa0401-0000-4000-8000-000000000401', 'ta', 'குடை'),
+  ('aaaa0402-0000-4000-8000-000000000402', 'fr', 'guitare'),
+  ('aaaa0402-0000-4000-8000-000000000402', 'en', 'guitar'),
+  ('aaaa0402-0000-4000-8000-000000000402', 'ta', 'கிட்டார்'),
+  ('aaaa0403-0000-4000-8000-000000000403', 'fr', 'vélo'),
+  ('aaaa0403-0000-4000-8000-000000000403', 'en', 'bicycle'),
+  ('aaaa0403-0000-4000-8000-000000000403', 'ta', 'மிதிவண்டி'),
+  ('aaaa0404-0000-4000-8000-000000000404', 'fr', 'lapin'),
+  ('aaaa0404-0000-4000-8000-000000000404', 'en', 'rabbit'),
+  ('aaaa0404-0000-4000-8000-000000000404', 'ta', 'முயல்'),
+  ('aaaa0405-0000-4000-8000-000000000405', 'fr', 'nager'),
+  ('aaaa0405-0000-4000-8000-000000000405', 'en', 'swim'),
+  ('aaaa0405-0000-4000-8000-000000000405', 'ta', 'நீந்துதல்'),
+  ('aaaa0406-0000-4000-8000-000000000406', 'fr', 'dormir'),
+  ('aaaa0406-0000-4000-8000-000000000406', 'en', 'sleep'),
+  ('aaaa0406-0000-4000-8000-000000000406', 'ta', 'தூங்குதல்'),
+  ('aaaa0407-0000-4000-8000-000000000407', 'fr', 'avion'),
+  ('aaaa0407-0000-4000-8000-000000000407', 'en', 'plane'),
+  ('aaaa0407-0000-4000-8000-000000000407', 'ta', 'விமானம்'),
+  ('aaaa0408-0000-4000-8000-000000000408', 'fr', 'singe'),
+  ('aaaa0408-0000-4000-8000-000000000408', 'en', 'monkey'),
+  ('aaaa0408-0000-4000-8000-000000000408', 'ta', 'குரங்கு')
+) as v (id, langue, mot);
+
 -- ---------------------------------------------------------------------------
 -- Soirée FETE24 — six équipes, en cours
 -- ---------------------------------------------------------------------------
@@ -290,3 +384,24 @@ insert into public.equipes (id, evenement_id, numero, nom) values
 insert into public.joueurs (evenement_id, equipe_id, prenom, langue, jeton_hash) values
   ('eeee0002-0000-4000-8000-000000000002', '11200001-0000-4000-8000-000000000101',
    'Claire', 'fr', encode(extensions.digest('demo-autre-evenement', 'sha256'), 'hex'));
+
+-- Une manche de quiz et une de mime à venir, pour essayer le lot 7 depuis la régie de Brahim.
+insert into public.manches (id, evenement_id, jeu, ordre, options) values
+  ('bb000001-0000-4000-8000-000000000001', 'eeee0002-0000-4000-8000-000000000002', 'qcm2', 1,
+   '{"questions": 4}'),
+  ('bb000002-0000-4000-8000-000000000002', 'eeee0002-0000-4000-8000-000000000002', 'mime2', 2,
+   '{"passages_par_equipe": 1}');
+
+insert into public.passages (manche_id, evenement_id, equipe_id, ordre, contenu_id) values
+  ('bb000001-0000-4000-8000-000000000001', 'eeee0002-0000-4000-8000-000000000002', null, 1,
+   'aaaa0301-0000-4000-8000-000000000301'),
+  ('bb000001-0000-4000-8000-000000000001', 'eeee0002-0000-4000-8000-000000000002', null, 2,
+   'aaaa0302-0000-4000-8000-000000000302'),
+  ('bb000001-0000-4000-8000-000000000001', 'eeee0002-0000-4000-8000-000000000002', null, 3,
+   'aaaa0303-0000-4000-8000-000000000303'),
+  ('bb000001-0000-4000-8000-000000000001', 'eeee0002-0000-4000-8000-000000000002', null, 4,
+   'aaaa0304-0000-4000-8000-000000000304'),
+  ('bb000002-0000-4000-8000-000000000002', 'eeee0002-0000-4000-8000-000000000002',
+   '11200001-0000-4000-8000-000000000101', 1, 'aaaa0401-0000-4000-8000-000000000401'),
+  ('bb000002-0000-4000-8000-000000000002', 'eeee0002-0000-4000-8000-000000000002',
+   '11200002-0000-4000-8000-000000000102', 2, 'aaaa0402-0000-4000-8000-000000000402');
