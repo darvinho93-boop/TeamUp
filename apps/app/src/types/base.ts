@@ -731,12 +731,20 @@ export type Database = {
         }
         Returns: string
       }
+      envoyer_photo: {
+        Args: { p_chemin: string; p_jeton_hash: string; p_theme: string }
+        Returns: Json
+      }
       est_admin: { Args: never; Returns: boolean }
       est_animateur: { Args: never; Returns: boolean }
       etat_ecran: { Args: { p_code: string; p_regie?: boolean }; Returns: Json }
       etat_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       evenement_public: { Args: { p_code: string }; Returns: Json }
       nouveau_code: { Args: never; Returns: string }
+      photos_du_joueur: {
+        Args: { p_joueur: Database["public"]["Tables"]["joueurs"]["Row"] }
+        Returns: Json
+      }
       pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       quiz_du_joueur: {
         Args: { p_joueur: Database["public"]["Tables"]["joueurs"]["Row"] }

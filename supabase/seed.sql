@@ -326,6 +326,13 @@ insert into public.passages (manche_id, evenement_id, ordre, contenu_id) values
   ('ba000003-0000-4000-8000-000000000003', 'eeee0001-0000-4000-8000-000000000001', 3,
    'aaaa0202-0000-4000-8000-000000000202');
 
+-- La manche photo : ses deux thèmes, ouverts aux capitaines dès l'arrivée (lot 8).
+insert into public.passages (manche_id, evenement_id, ordre, contenu_id) values
+  ('ba000005-0000-4000-8000-000000000005', 'eeee0001-0000-4000-8000-000000000001', 1,
+   'aaaa0005-0000-4000-8000-000000000005'),
+  ('ba000005-0000-4000-8000-000000000005', 'eeee0001-0000-4000-8000-000000000001', 2,
+   'aaaa0006-0000-4000-8000-000000000006');
+
 -- Le passage de mime en cours : seul Ravi (joueur n° 1, jeton « demo-joueur-1 ») voit le mot.
 insert into public.passages (
   id, manche_id, evenement_id, equipe_id, ordre, contenu_id, joueur_designe_id, statut, commence_le
