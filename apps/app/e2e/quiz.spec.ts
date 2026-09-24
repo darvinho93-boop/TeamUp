@@ -121,7 +121,12 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
   const telephones: APIRequestContext[] = [];
   const invites: { equipe: number; tombe: number; silence: number }[] = [];
   for (let i = 0; i < INVITES; i++) {
-    const telephone = await request.newContext({ baseURL: baseURL! });
+    // Une connexion par requête : un socket gardé ouvert entre deux questions peut être fermé
+    // par le serveur (keep-alive de 5 s) au moment même où le test s'en ressert.
+    const telephone = await request.newContext({
+      baseURL: baseURL!,
+      extraHTTPHeaders: { connection: 'close' },
+    });
     const reponse = await telephone.post(`/api/partie/${code}/rejoindre`, {
       data: { prenom: `Invité ${i + 1}`, langue: 'fr' },
     });

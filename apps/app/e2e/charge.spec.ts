@@ -16,7 +16,11 @@ test(`${JOUEURS} joueurs simulés rejoignent le même événement`, async ({ bas
 
   // 150 téléphones : un contexte de requêtes chacun, donc un cookie de session chacun.
   const telephones = await Promise.all(
-    Array.from({ length: JOUEURS + 1 }, () => request.newContext({ baseURL: baseURL! })),
+    // Une connexion par requête : un socket réutilisé que le serveur ferme (keep-alive) au même
+    // instant ferait échouer un envoi pour une raison qui n'existe pas en salle.
+    Array.from({ length: JOUEURS + 1 }, () =>
+      request.newContext({ baseURL: baseURL!, extraHTTPHeaders: { connection: 'close' } }),
+    ),
   );
   const arrivee = (i: number) =>
     telephones[i]!.post(`/api/partie/${evenement.code}/rejoindre`, {
