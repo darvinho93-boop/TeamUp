@@ -427,6 +427,42 @@
   }
 }
 
+/* Tirage de l'ordre de passage (lot 13) : les équipes se mélangent, puis se rangent une à une,
+   numérotées. Les rangées restent en place ; celles qui attendent sont estompées. */
+.tu-stage-tirage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-tirage__rang {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-6);
+  opacity: 0.45;
+}
+
+.tu-stage-tirage__rang--range {
+  opacity: 1;
+}
+
+.tu-stage-tirage__numero {
+  min-width: var(--tu-space-14);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+  text-align: end;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-tirage__rang--range {
+    animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease);
+  }
+}
+
 /* Quiz : quatre quadrants, comme la croix tracée au sol. La bonne zone s'allume à la
    révélation, les autres s'effacent. */
 .tu-stage-quiz__tete {

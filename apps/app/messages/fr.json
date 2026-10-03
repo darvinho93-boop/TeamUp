@@ -493,6 +493,10 @@
         "gobelet": "Au mot « gobelet », attrape-le le premier !",
         "points": "Gare aux pièges ! Duel gagné : +50."
       }
+    },
+    "ordre": {
+      "titre": "Ordre de passage",
+      "ligne": "Ordre de passage : {ordre}"
     }
   },
   "admin": {

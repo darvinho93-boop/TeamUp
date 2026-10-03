@@ -493,6 +493,10 @@
         "gobelet": "At the word “cup”, grab it first!",
         "points": "Watch out for traps! Duel won: +50."
       }
+    },
+    "ordre": {
+      "titre": "Playing order",
+      "ligne": "Playing order: {ordre}"
     }
   },
   "admin": {

@@ -22,9 +22,10 @@ import {
   type EtatSalle,
   type MancheSalle,
 } from '@/lib/salle';
-import { duellistesDe, scriptEnCours } from '@/lib/pilotage';
+import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
 import { Chrono, useMaintenant } from './Chrono';
 import { Explication } from './Explication';
+import { OrdreTire, ordreDesEquipes, TirageOrdre } from './TirageOrdre';
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
 
@@ -151,10 +152,22 @@ function Intro({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
       />
     );
   }
+  if (etat.pilotage.etape === ETAPE_TIRAGE_ORDRE) {
+    return (
+      <TirageOrdre
+        jeu={manche.jeu}
+        mancheId={manche.id}
+        ordre={ordreDesEquipes(etat, manche)}
+        departMs={etat.pilotage.chrono_depart_ms}
+        decalageMs={decalageMs}
+      />
+    );
+  }
   return (
     <div className="tu-stage__body tu-stage-centre tu-stage-reveal" data-scene="intro">
       <h1 className="tu-stage__giant">{t(`jeux.${manche.jeu}`)}</h1>
       <p className="tu-stage__l">{t(`ecran.regles.${manche.jeu}`)}</p>
+      {manche.options['ordre_tire'] === true && <OrdreTire ordre={ordreDesEquipes(etat, manche)} />}
     </div>
   );
 }
