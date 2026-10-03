@@ -166,4 +166,6 @@ export const TABLES = [
   'photos',
   'reponses_quiz',
   'classement',
+  'groupes',
+  'equipes_groupes',
 ] as const;
