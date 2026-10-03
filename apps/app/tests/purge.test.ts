@@ -1,5 +1,4 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { purgerPhotosExpirees } from '../src/lib/purge';
 import { baseDisponible, clientService, creerEvenementJetable, supprimerEvenements } from './base';
 
@@ -65,7 +64,7 @@ avecBase('conservation des photos', () => {
       .update({ expire_le: new Date(Date.now() - 60_000).toISOString() })
       .eq('id', ancienne.id);
 
-    const supprimees = await purgerPhotosExpirees(service as unknown as SupabaseClient);
+    const supprimees = await purgerPhotosExpirees(service);
     expect(supprimees).toBeGreaterThanOrEqual(1);
 
     const { data: restantes } = await service
