@@ -299,6 +299,19 @@
       "envoyeeA": "Reçue à {heure}",
       "pasEnvoyee": "Pas de photo",
       "gagnante": "gagnante"
+    },
+    "backOffice": "Back-office",
+    "compte": {
+      "lien": "Mon compte",
+      "titre": "Mon compte",
+      "motDePasse": "Nouveau mot de passe",
+      "aide": "{min} caractères au moins.",
+      "confirmation": "Confirme le mot de passe",
+      "bouton": "Changer le mot de passe",
+      "court": "Le mot de passe doit faire au moins {min} caractères.",
+      "different": "Les deux mots de passe ne sont pas identiques.",
+      "echec": "Le mot de passe n'a pas pu être changé. Réessaie.",
+      "change": "Mot de passe changé."
     }
   },
   "ecran": {
@@ -343,5 +356,106 @@
     "aucunePhoto": "Aucune photo sur ce thème",
     "photoDe": "Photo de l'équipe {equipe}",
     "gagnante": "La gagnante !"
+  },
+  "admin": {
+    "nav": {
+      "libelle": "Sections du back-office",
+      "contenus": "Contenus",
+      "animateurs": "Animateurs",
+      "evenements": "Historique"
+    },
+    "etiquettes": {
+      "b2c": "B2C",
+      "b2b": "B2B",
+      "tout_public": "Tout public"
+    },
+    "contenus": {
+      "titre": "Banques de contenus",
+      "jeux": "Jeux",
+      "etiquette": "Étiquette",
+      "toutes": "Toutes",
+      "nouveau": "Nouveau contenu · {jeu}",
+      "aucun": "Aucun contenu.",
+      "modifier": "Modifier",
+      "inactif": "désactivé",
+      "langues": "Langues",
+      "traduit": "complet",
+      "manquant": "manquant"
+    },
+    "formulaire": {
+      "nouveau": "Nouveau contenu",
+      "modifier": "Modifier un contenu",
+      "titreNouveau": "Nouveau contenu · {jeu}",
+      "titreModifier": "Modifier · {jeu}",
+      "retour": "← Retour aux contenus",
+      "etiquette": "Étiquette",
+      "bonne": "Bonne réponse",
+      "proposition": "Proposition {lettre}",
+      "obligatoire": "Obligatoire.",
+      "facultative": "Facultatif : laisse vide, ou remplis tous les champs.",
+      "champs": {
+        "consigne": "Consigne",
+        "reponse": "Réponse",
+        "indice1": "Indice 1",
+        "indice2": "Indice 2",
+        "question": "Question",
+        "theme": "Thème",
+        "sujet": "Sujet",
+        "mot": "Mot"
+      },
+      "erreurs": {
+        "requis": "Champ obligatoire.",
+        "trop_long": "{max} caractères au plus.",
+        "invalide": "Valeur inconnue."
+      },
+      "corriger": "Corrige les champs signalés.",
+      "echec": "Le contenu n'a pas pu être enregistré. Réessaie.",
+      "enregistrer": "Enregistrer",
+      "inactif": "Ce contenu est désactivé : il n'est plus proposé à la préparation.",
+      "desactiver": "Désactiver",
+      "reactiver": "Réactiver",
+      "aideDesactiver": "Un contenu ne se supprime pas : désactivé, il quitte la préparation mais reste dans les soirées qui l’utilisent.",
+      "aideReactiver": "Réactivé, il sera de nouveau proposé à la préparation."
+    },
+    "animateurs": {
+      "titre": "Animateurs",
+      "liste": "Comptes",
+      "vous": "toi",
+      "roles": {
+        "animateur": "Animateur",
+        "admin": "Admin"
+      },
+      "actif": "actif",
+      "inactif": "désactivé",
+      "desactiver": "Désactiver",
+      "confirmerDesactiver": "Désactiver {nom} ?",
+      "reactiver": "Réactiver",
+      "nouveau": "Nouveau compte",
+      "nom": "Nom",
+      "email": "E-mail",
+      "motDePasse": "Mot de passe provisoire",
+      "aideMotDePasse": "{min} caractères au moins. Transmets-le à l’animateur : il le changera depuis « Mon compte ».",
+      "role": "Rôle",
+      "creer": "Créer le compte",
+      "cree": "Compte créé pour {nom}.",
+      "invalide": "Vérifie les champs : nom, e-mail, mot de passe de {min} caractères au moins.",
+      "existe": "Un compte existe déjà avec cet e-mail.",
+      "echec": "Le compte n'a pas pu être créé. Réessaie.",
+      "soiMeme": "Tu ne peux pas désactiver ton propre compte.",
+      "dernierAdmin": "Il faut garder au moins un admin actif."
+    },
+    "evenements": {
+      "titre": "Historique des événements",
+      "aucun": "Aucun événement.",
+      "date": "Date",
+      "client": "Client",
+      "type": "Type",
+      "animateur": "Animateur",
+      "joueurs": "Joueurs",
+      "creneau": "Durée prévue",
+      "minutes": "{minutes} min",
+      "statut": "Statut",
+      "code": "Code"
+    }
   }
 }

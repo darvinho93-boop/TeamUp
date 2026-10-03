@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 /**
- * Régie et écran commun : réservés aux animateurs connectés. Le proxy rafraîchit la session
+ * Régie, écran commun et back-office : réservés aux animateurs connectés. Le proxy rafraîchit la session
  * Supabase à chaque requête (les composants serveur ne peuvent pas écrire de cookie) et renvoie
  * à la connexion quand il n'y en a pas. Les pages vérifient encore le compte elles-mêmes.
  */
@@ -38,5 +38,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/regie/:path*', '/ecran/:path*'],
+  matcher: ['/regie/:path*', '/ecran/:path*', '/admin/:path*'],
 };

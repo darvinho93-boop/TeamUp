@@ -13,9 +13,10 @@ export default async function Connexion({ searchParams }: PageProps<'/regie/conn
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (user) redirect('/regie');
-
   const { suite, compte } = await searchParams;
+  // Un compte désactivé garde sa session : le renvoyer à la régie le ferait revenir ici.
+  if (user && compte !== 'inactif') redirect('/regie');
+
   const t = await getTranslations('regie.connexion');
   return (
     <main className="tu-regie__main tu-regie__main--narrow">

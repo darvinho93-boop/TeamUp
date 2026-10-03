@@ -299,6 +299,19 @@
       "envoyeeA": "Received at {heure}",
       "pasEnvoyee": "No photo",
       "gagnante": "winner"
+    },
+    "backOffice": "Back office",
+    "compte": {
+      "lien": "My account",
+      "titre": "My account",
+      "motDePasse": "New password",
+      "aide": "At least {min} characters.",
+      "confirmation": "Confirm the password",
+      "bouton": "Change password",
+      "court": "The password must be at least {min} characters long.",
+      "different": "The two passwords do not match.",
+      "echec": "The password could not be changed. Try again.",
+      "change": "Password changed."
     }
   },
   "ecran": {
@@ -343,5 +356,106 @@
     "aucunePhoto": "No photos on this theme",
     "photoDe": "Photo from team {equipe}",
     "gagnante": "The winner!"
+  },
+  "admin": {
+    "nav": {
+      "libelle": "Back office sections",
+      "contenus": "Content",
+      "animateurs": "Hosts",
+      "evenements": "History"
+    },
+    "etiquettes": {
+      "b2c": "B2C",
+      "b2b": "B2B",
+      "tout_public": "All audiences"
+    },
+    "contenus": {
+      "titre": "Content banks",
+      "jeux": "Games",
+      "etiquette": "Tag",
+      "toutes": "All",
+      "nouveau": "New content · {jeu}",
+      "aucun": "No content.",
+      "modifier": "Edit",
+      "inactif": "deactivated",
+      "langues": "Languages",
+      "traduit": "complete",
+      "manquant": "missing"
+    },
+    "formulaire": {
+      "nouveau": "New content",
+      "modifier": "Edit content",
+      "titreNouveau": "New content · {jeu}",
+      "titreModifier": "Edit · {jeu}",
+      "retour": "← Back to content",
+      "etiquette": "Tag",
+      "bonne": "Correct answer",
+      "proposition": "Option {lettre}",
+      "obligatoire": "Required.",
+      "facultative": "Optional: leave empty, or fill in every field.",
+      "champs": {
+        "consigne": "Instruction",
+        "reponse": "Answer",
+        "indice1": "Hint 1",
+        "indice2": "Hint 2",
+        "question": "Question",
+        "theme": "Theme",
+        "sujet": "Topic",
+        "mot": "Word"
+      },
+      "erreurs": {
+        "requis": "Required field.",
+        "trop_long": "{max} characters at most.",
+        "invalide": "Unknown value."
+      },
+      "corriger": "Fix the highlighted fields.",
+      "echec": "The content could not be saved. Try again.",
+      "enregistrer": "Save",
+      "inactif": "This content is deactivated: it is no longer offered during preparation.",
+      "desactiver": "Deactivate",
+      "reactiver": "Reactivate",
+      "aideDesactiver": "Content is never deleted: once deactivated, it leaves preparation but stays in the events that use it.",
+      "aideReactiver": "Once reactivated, it will be offered during preparation again."
+    },
+    "animateurs": {
+      "titre": "Hosts",
+      "liste": "Accounts",
+      "vous": "you",
+      "roles": {
+        "animateur": "Host",
+        "admin": "Admin"
+      },
+      "actif": "active",
+      "inactif": "deactivated",
+      "desactiver": "Deactivate",
+      "confirmerDesactiver": "Deactivate {nom}?",
+      "reactiver": "Reactivate",
+      "nouveau": "New account",
+      "nom": "Name",
+      "email": "Email",
+      "motDePasse": "Temporary password",
+      "aideMotDePasse": "At least {min} characters. Give it to the host: they will change it under “My account”.",
+      "role": "Role",
+      "creer": "Create account",
+      "cree": "Account created for {nom}.",
+      "invalide": "Check the fields: name, email, password of at least {min} characters.",
+      "existe": "An account already exists with this email.",
+      "echec": "The account could not be created. Try again.",
+      "soiMeme": "You cannot deactivate your own account.",
+      "dernierAdmin": "At least one active admin must remain."
+    },
+    "evenements": {
+      "titre": "Event history",
+      "aucun": "No events.",
+      "date": "Date",
+      "client": "Client",
+      "type": "Type",
+      "animateur": "Host",
+      "joueurs": "Players",
+      "creneau": "Planned length",
+      "minutes": "{minutes} min",
+      "statut": "Status",
+      "code": "Code"
+    }
   }
 }

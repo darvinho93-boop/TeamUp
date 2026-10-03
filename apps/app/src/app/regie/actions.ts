@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
+import { MOT_DE_PASSE_MIN } from '@/lib/comptes';
 import { LANGUES } from '@/lib/partie';
 import { exigerAnimateur, supabaseAnimateur } from '@/serveur/supabase-animateur';
 
@@ -32,13 +33,30 @@ export async function connecter(_: EtatFormulaire, donnees: FormData): Promise<E
 
   // Retour à la page demandée, jamais vers un autre site.
   const suite = saisie.data.suite;
-  redirect(suite?.startsWith('/regie') || suite?.startsWith('/ecran') ? suite : '/regie');
+  const interne = ['/regie', '/ecran', '/admin'].some((debut) => suite?.startsWith(debut));
+  redirect(interne ? suite! : '/regie');
 }
 
 export async function deconnecter(): Promise<void> {
   const supabase = await supabaseAnimateur();
   await supabase.auth.signOut();
   redirect('/regie/connexion');
+}
+
+export type EtatCompte = { erreur?: string; ok?: string } | undefined;
+
+/** Mon compte : le mot de passe provisoire posé par l'admin se change ici. */
+export async function changerMotDePasse(_: EtatCompte, donnees: FormData): Promise<EtatCompte> {
+  const t = await getTranslations('regie.compte');
+  const { supabase } = await exigerAnimateur();
+  const motDePasse = donnees.get('motDePasse');
+  if (typeof motDePasse !== 'string' || motDePasse.length < MOT_DE_PASSE_MIN) {
+    return { erreur: t('court', { min: MOT_DE_PASSE_MIN }) };
+  }
+  if (motDePasse !== donnees.get('confirmation')) return { erreur: t('different') };
+  const { error } = await supabase.auth.updateUser({ password: motDePasse });
+  if (error) return { erreur: t('echec') };
+  return { ok: t('change') };
 }
 
 const NouvelEvenement = z.object({

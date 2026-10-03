@@ -1,0 +1,88 @@
+/* Back-office (admin Team Up!, lot 9). Même coque que la régie ; s'y ajoutent les onglets de
+   jeux, les blocs de langue d'un contenu et les pastilles de langues. */
+
+.tu-admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tu-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Un bloc par langue : le français d'abord, obligatoire ; les autres se laissent vides. */
+.tu-admin-langue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: var(--tu-space-4);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
+.tu-admin-langue > legend {
+  padding-inline: var(--tu-space-2);
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+}
+
+.tu-admin-langue__aide {
+  margin: 0;
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+}
+
+.tu-admin-pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tu-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-admin-pastille {
+  padding: var(--tu-space-1) var(--tu-space-2);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-pill);
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+  font-weight: 600;
+}
+
+.tu-admin-pastille--presente {
+  border-color: var(--tu-primary);
+  color: var(--tu-text);
+}
+
+/* Tableau de l'historique : défile seul sur un écran étroit, jamais la page. */
+.tu-admin-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tu-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--tu-size-sm);
+}
+
+.tu-admin-table th,
+.tu-admin-table td {
+  padding: var(--tu-space-3);
+  border-bottom: var(--tu-border-width) solid var(--tu-border);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.tu-admin-table th {
+  color: var(--tu-text-muted);
+  font-weight: 600;
+}
+
+.tu-admin-table td[data-nombre] {
+  font-family: var(--tu-font-numeric);
+  text-align: end;
+}

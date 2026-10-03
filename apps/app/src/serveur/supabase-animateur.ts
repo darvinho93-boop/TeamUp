@@ -1,7 +1,7 @@
 import 'server-only';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/base';
 
@@ -60,4 +60,14 @@ export async function exigerAnimateur(): Promise<{
     .maybeSingle();
   if (!animateur) redirect('/regie/connexion?compte=inactif');
   return { supabase, animateur };
+}
+
+/**
+ * Le back-office : un admin connecté et actif. Un animateur reçoit une page introuvable, qui ne
+ * lui apprend rien de plus. La RLS du lot 3 reste la vraie garde.
+ */
+export async function exigerAdmin(): Promise<{ supabase: ClientAnimateur; animateur: Animateur }> {
+  const contexte = await exigerAnimateur();
+  if (contexte.animateur.role !== 'admin') notFound();
+  return contexte;
 }

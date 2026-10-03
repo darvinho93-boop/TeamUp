@@ -49,7 +49,7 @@ export default async function Evenements() {
 
   return (
     <>
-      <EnTete />
+      <EnTete admin={animateur.role === 'admin'} />
       <main className="tu-regie__main">
         <h1 className="tu-regie__title">{t('bonjour', { nom: animateur.nom })}</h1>
         <section className="tu-regie__section" aria-labelledby="a-venir">
