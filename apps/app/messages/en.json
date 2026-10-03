@@ -166,7 +166,13 @@
       "filtre": "Content offered: {etiquettes}, complete in {langues}.",
       "filtreLeve": "Content offered: all tags, complete in {langues}.",
       "toutAfficher": "Show all",
-      "filtrer": "Filter by audience"
+      "filtrer": "Filter by audience",
+      "beta": {
+        "titre": "Beta: one-on-one duels",
+        "aide": "Not in the default programme (spec v3): keep them in reserve, to change pace after a long game.",
+        "creneauCourt": "{minutes}-minute slot: the spec only recommends duels from 60 minutes.",
+        "duels": "Duels"
+      }
     },
     "pilotage": {
       "enDirect": "Live",
@@ -260,6 +266,30 @@
         "aucune": "No winner",
         "sansGagnante": "No winner on this theme",
         "suivant": "Next theme"
+      },
+      "motifDuel": "Duel won by {prenom} – {equipe}",
+      "duel": {
+        "titre": "Duel",
+        "numero": "Duel {numero} of {total}",
+        "aTirer": "Draw two duellists from different teams.",
+        "personne": "Players are needed in at least two teams.",
+        "tirer": "Draw duellists",
+        "retirer": "Redraw (absent)",
+        "presenter": "Present the duel",
+        "sequence": "Call out, in order (for you only):",
+        "gagne": "{prenom} wins",
+        "vainqueur": "winner",
+        "suivant": "Next duel",
+        "mots": {
+          "tete": "Head",
+          "epaules": "Shoulders",
+          "genoux": "Knees",
+          "pieds": "Feet",
+          "gobelin": "Goblin (trap)",
+          "goeland": "Gull (trap)",
+          "gober": "Gobble (trap)",
+          "gobelet": "CUP"
+        }
       }
     },
     "salle": {
@@ -359,7 +389,9 @@
     "themePhoto": "Theme {n} of {total}",
     "aucunePhoto": "No photos on this theme",
     "photoDe": "Photo from team {equipe}",
-    "gagnante": "The winner!"
+    "gagnante": "The winner!",
+    "duelProchain": "Next duel…",
+    "contre": "versus"
   },
   "admin": {
     "nav": {

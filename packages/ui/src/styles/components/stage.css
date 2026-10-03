@@ -501,7 +501,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tu-stage-quiz__zone {
+  .tu-stage-quiz__zone,
+  .tu-stage-duel__joueur {
     transition: none;
   }
 }
@@ -551,4 +552,33 @@
 
 .tu-stage-photo--eteinte {
   display: none;
+}
+
+/* Duels (bêta) : les deux duellistes face à face ; au verdict, le perdant s'efface. */
+.tu-stage-duel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-8) var(--tu-space-12);
+}
+
+.tu-stage-duel__joueur {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-4);
+  transition: opacity var(--tu-dur-reveal) var(--tu-ease);
+}
+
+.tu-stage-duel__prenom {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tu-stage-duel__joueur--efface {
+  opacity: 0.35;
 }

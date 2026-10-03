@@ -9,6 +9,7 @@ const motifs = {
   quiz: (n: number) => `Quiz ${n}`,
   mime: (equipe: string) => `Mime ${equipe}`,
   photo: (equipe: string) => `Photo ${equipe}`,
+  duel: (prenom: string, equipe: string) => `Duel ${prenom} ${equipe}`,
 };
 
 function passage(id: string, ordre: number, extra: Partial<PassageSalle> = {}): PassageSalle {
@@ -337,5 +338,88 @@ describe('une touche de la régie', () => {
     });
     const theme = etat({ scene: 'jeu', manche_id: 'ph', passage_id: 'th1', etape: 'theme' });
     expect(etape(theme, { type: 'suivant' })).toBeNull();
+  });
+});
+
+describe('un duel en bêta, touche par touche', () => {
+  const duellistes = [
+    { joueur_id: 'j1', prenom: 'Zoé', equipe: 1 },
+    { joueur_id: 'j2', prenom: 'Malik', equipe: 2 },
+  ] as const;
+  const programme = (resultat = {}, statut: PassageSalle['statut'] = 'en_cours'): MancheSalle[] => [
+    {
+      id: 'du',
+      jeu: 'cup',
+      ordre: 1,
+      statut: 'en_cours',
+      options: { duels: 2 },
+      passages: [passage('d1', 1, { statut, resultat }), passage('d2', 2)],
+    },
+  ];
+  const sur = (etape: string, resultat = {}) =>
+    etat({ scene: 'jeu', manche_id: 'du', passage_id: 'd1', etape }, programme(resultat));
+
+  it('commence par le tirage du premier duel', () => {
+    const e = etat({ scene: 'intro', manche_id: 'du' }, programme());
+    const ecriture = calculerEtape(e, { type: 'commencer' }, 0, motifs)!;
+    expect(ecriture.pilotage).toMatchObject({ scene: 'jeu', passage_id: 'd1', etape: 'tirage' });
+    expect(ecriture.passage).toEqual({ id: 'd1', statut: 'en_cours' });
+  });
+
+  it('garde les duellistes tirés dans le résultat du passage', () => {
+    const ecriture = calculerEtape(
+      sur('tirage'),
+      { type: 'duel', action: { type: 'tirer', duellistes } },
+      0,
+      motifs,
+    )!;
+    expect(ecriture.pilotage.etape).toBe('tirage');
+    expect(ecriture.passage).toEqual({ id: 'd1', statut: 'en_cours', resultat: { duellistes } });
+  });
+
+  it('ne présente pas un duel sans duellistes', () => {
+    expect(
+      calculerEtape(sur('tirage'), { type: 'duel', action: { type: 'presenter' } }, 0, motifs),
+    ).toBeNull();
+  });
+
+  it('lance 45 s pour le gobelet, puis donne +50 à l’équipe du vainqueur', () => {
+    const lancer = calculerEtape(
+      sur('face_a_face', { duellistes }),
+      { type: 'duel', action: { type: 'lancer' } },
+      0,
+      motifs,
+    )!;
+    expect(lancer.pilotage).toMatchObject({
+      etape: 'chrono',
+      chrono: 'demarrer',
+      chrono_duree_s: 45,
+    });
+
+    const verdict = calculerEtape(
+      sur('chrono', { duellistes }),
+      { type: 'duel', action: { type: 'verdict', gagnant: 1 } },
+      12_000,
+      motifs,
+    )!;
+    expect(verdict.passage).toEqual({
+      id: 'd1',
+      statut: 'termine',
+      resultat: { duellistes, gagnant: 1 },
+      points: 50,
+    });
+    expect(verdict.scores).toEqual([
+      { equipe_id: 'e2', points: 50, motif: 'Duel Malik Corail', manche_id: 'du' },
+    ]);
+  });
+
+  it('passe au tirage du duel suivant', () => {
+    // Au verdict, la base a terminé le passage.
+    const e = etat(
+      { scene: 'jeu', manche_id: 'du', passage_id: 'd1', etape: 'gagne' },
+      programme({ duellistes, gagnant: 0 }, 'termine'),
+    );
+    const ecriture = calculerEtape(e, { type: 'suivant' }, 0, motifs)!;
+    expect(ecriture.pilotage).toMatchObject({ passage_id: 'd2', etape: 'tirage' });
   });
 });

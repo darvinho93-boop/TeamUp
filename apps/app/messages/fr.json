@@ -166,7 +166,13 @@
       "filtre": "Contenus proposés : {etiquettes}, complets en {langues}.",
       "filtreLeve": "Contenus proposés : toutes étiquettes, complets en {langues}.",
       "toutAfficher": "Tout afficher",
-      "filtrer": "Filtrer selon le public"
+      "filtrer": "Filtrer selon le public",
+      "beta": {
+        "titre": "Bêta : duels 1 contre 1",
+        "aide": "Hors programme par défaut (spec v3) : à garder en réserve, pour changer de registre après un jeu long.",
+        "creneauCourt": "Créneau de {minutes} min : la spec ne recommande les duels qu’à partir de 60 min.",
+        "duels": "Duels"
+      }
     },
     "pilotage": {
       "enDirect": "En direct",
@@ -260,6 +266,30 @@
         "aucune": "Aucune gagnante",
         "sansGagnante": "Pas de gagnante sur ce thème",
         "suivant": "Thème suivant"
+      },
+      "motifDuel": "Duel gagné par {prenom} – {equipe}",
+      "duel": {
+        "titre": "Duel",
+        "numero": "Duel {numero} sur {total}",
+        "aTirer": "Tirez deux duellistes, d’équipes différentes.",
+        "personne": "Il faut des joueurs inscrits dans deux équipes au moins.",
+        "tirer": "Tirer les duellistes",
+        "retirer": "Retirer (absent)",
+        "presenter": "Présenter le duel",
+        "sequence": "À annoncer, dans l’ordre (pour vous seul) :",
+        "gagne": "{prenom} gagne",
+        "vainqueur": "vainqueur",
+        "suivant": "Duel suivant",
+        "mots": {
+          "tete": "Tête",
+          "epaules": "Épaules",
+          "genoux": "Genoux",
+          "pieds": "Pieds",
+          "gobelin": "Gobelin (piège)",
+          "goeland": "Goéland (piège)",
+          "gober": "Gober (piège)",
+          "gobelet": "GOBELET"
+        }
       }
     },
     "salle": {
@@ -359,7 +389,9 @@
     "themePhoto": "Thème {n} sur {total}",
     "aucunePhoto": "Aucune photo sur ce thème",
     "photoDe": "Photo de l'équipe {equipe}",
-    "gagnante": "La gagnante !"
+    "gagnante": "La gagnante !",
+    "duelProchain": "Prochain duel…",
+    "contre": "contre"
   },
   "admin": {
     "nav": {

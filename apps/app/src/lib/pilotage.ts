@@ -10,6 +10,7 @@
  */
 
 import {
+  appliquerDuel,
   appliquerMime,
   appliquerPhoto,
   appliquerPointsCommuns,
@@ -17,12 +18,16 @@ import {
   appliquerSurenchere,
   CHRONO_SURENCHERE_DEFAUT_S,
   passageSuivant,
+  type ActionDuel,
   type ActionMime,
   type ActionPhoto,
   type ActionPointsCommuns,
   type ActionQuiz,
   type ActionSurenchere,
+  type BetaDuel,
   type Chrono,
+  type Duelliste,
+  type EtapeDuel,
   type EtapeMime,
   type EtapePhoto,
   type EtapePointsCommuns,
@@ -47,6 +52,7 @@ export type Commande =
   | { type: 'quiz'; action: Exclude<ActionQuiz['type'], 'valider'> }
   | { type: 'survivants'; survivants: ScoresParEquipe }
   | { type: 'mime'; action: ActionMime }
+  | { type: 'duel'; action: ActionDuel }
   | {
       type: 'photo';
       action:
@@ -89,6 +95,15 @@ export interface Motifs {
   quiz: (survivants: number) => string;
   mime: (equipe: string) => string;
   photo: (equipe: string) => string;
+  duel: (prenom: string, equipe: string) => string;
+}
+
+const estDuel = (jeu: string | undefined): jeu is BetaDuel => jeu === 'grab' || jeu === 'cup';
+
+/** Les duellistes tirés pour ce passage, gardés dans son résultat. */
+export function duellistesDe(resultat: Record<string, unknown>): [Duelliste, Duelliste] | null {
+  const d = resultat['duellistes'];
+  return Array.isArray(d) && d.length === 2 ? (d as [Duelliste, Duelliste]) : null;
 }
 
 function chronoDe(chrono: Chrono): Pick<Ecriture['pilotage'], 'chrono' | 'chrono_duree_s'> {
@@ -171,6 +186,12 @@ export function calculerEtape(
           if (!premier) return null;
           ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'theme' };
           ecriture.passage = { id: premier.id, statut: 'en_cours' };
+        } else if (estDuel(manche.jeu)) {
+          // Un passage par duel : on commence par tirer les duellistes.
+          const premier = passageSuivant(manche);
+          if (!premier) return null;
+          ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'tirage' };
+          ecriture.passage = { id: premier.id, statut: 'en_cours' };
         } else if (manche.jeu === 'qcm2') {
           // La question attend « Afficher » pour s'ouvrir : elle reste à venir jusque-là.
           const premiere = passageSuivant(manche);
@@ -225,13 +246,14 @@ export function calculerEtape(
         const fini =
           (manche?.jeu === 'list2' && (p.etape === 'trouve' || p.etape === 'echec')) ||
           (manche?.jeu === 'mime2' && (p.etape === 'trouve' || p.etape === 'rate')) ||
-          (manche?.jeu === 'photo2' && (p.etape === 'gagnante' || p.etape === 'aucune'));
+          (manche?.jeu === 'photo2' && (p.etape === 'gagnante' || p.etape === 'aucune')) ||
+          (estDuel(manche?.jeu) && p.etape === 'gagne');
         if (!manche || !fini) return null;
         const suivant = passageSuivant(manche);
         if (!suivant) return null;
         Object.assign(ecriture.pilotage, {
           passage_id: suivant.id,
-          etape: manche.jeu === 'photo2' ? 'theme' : 'pret',
+          etape: manche.jeu === 'photo2' ? 'theme' : estDuel(manche.jeu) ? 'tirage' : 'pret',
           indices: 0,
           chrono: 'arreter',
         });
@@ -309,6 +331,41 @@ export function calculerEtape(
               equipe_id: equipe.id,
               points: suite.points,
               motif: motifs.mime(equipe.nom),
+              manche_id: manche.id,
+            });
+          }
+        }
+        return ecriture;
+      }
+
+      case 'duel': {
+        if (!estDuel(manche?.jeu) || !manche || !passage) return null;
+        const suite = appliquerDuel(
+          manche.jeu,
+          p.etape as EtapeDuel,
+          commande.action,
+          duellistesDe(passage.resultat),
+        );
+        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        if (commande.action.type === 'tirer' && suite.resultat) {
+          ecriture.passage = { id: passage.id, statut: 'en_cours', resultat: suite.resultat };
+        }
+        if (suite.points && suite.resultat && suite.resultat.gagnant !== undefined) {
+          const points = suite.points;
+          const vainqueur = suite.resultat.duellistes[suite.resultat.gagnant];
+          ecriture.passage = {
+            id: passage.id,
+            statut: 'termine',
+            resultat: suite.resultat,
+            points: Object.values(points).reduce((a, b) => a + b, 0),
+          };
+          for (const [numero, gagnes] of Object.entries(points)) {
+            const equipe = etat.equipes.find((e) => e.numero === Number(numero));
+            if (!equipe) continue;
+            ecriture.scores.push({
+              equipe_id: equipe.id,
+              points: gagnes,
+              motif: motifs.duel(vainqueur.prenom, equipe.nom),
               manche_id: manche.id,
             });
           }

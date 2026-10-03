@@ -39,9 +39,18 @@ import { Chrono, useMaintenant } from '@/ecran/Chrono';
 import { useEtatSalle } from '@/ecran/useEtatSalle';
 import { Apercu } from './Apercu';
 import { BoutonConfirme } from './BoutonConfirme';
+import { PanneauDuel } from './PanneauDuel';
 
-/** Jeux que la régie sait piloter (lots 6 à 8). */
-const PILOTABLES: readonly GameCode[] = ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2'];
+/** Jeux que la régie sait piloter (lots 6 à 8, duels en bêta au lot 10). */
+const PILOTABLES: readonly GameCode[] = [
+  'list2',
+  'enchere2',
+  'qcm2',
+  'mime2',
+  'photo2',
+  'grab',
+  'cup',
+];
 const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
 const SCENES_LIBRES: Exclude<Scene, 'intro' | 'jeu'>[] = [
@@ -82,6 +91,7 @@ export function Pilotage({
       quiz: (survivants) => t('motifQuiz', { survivants }),
       mime: (equipe) => t('motifMime', { equipe }),
       photo: (equipe) => t('motifPhoto', { equipe }),
+      duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
     });
     if (!ecriture) {
       setAlerte(t('erreur.impossible'));
@@ -210,6 +220,14 @@ export function Pilotage({
         )}
         {scene === 'jeu' && manche?.jeu === 'photo2' && (
           <PanneauPhoto etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+        )}
+        {scene === 'jeu' && (manche?.jeu === 'grab' || manche?.jeu === 'cup') && (
+          <PanneauDuel
+            etat={etat}
+            manche={manche as MancheSalle & { jeu: 'grab' | 'cup' }}
+            decalageMs={decalageMs}
+            agir={agir}
+          />
         )}
         {scene !== 'jeu' && scene !== 'intro' && (
           <p className="tu-regie__muted">{t('choisirJeu')}</p>

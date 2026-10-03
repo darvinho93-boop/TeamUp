@@ -7,6 +7,7 @@ import {
   CHRONO_POINTS_COMMUNS_S,
   CHRONO_QUESTION_S,
   CHRONO_SURENCHERE_DEFAUT_S,
+  chronoDuelS,
   etatPaliers,
   PALIERS,
   POINTS_PAR_SURVIVANT,
@@ -21,6 +22,7 @@ import {
   type EtatSalle,
   type MancheSalle,
 } from '@/lib/salle';
+import { duellistesDe } from '@/lib/pilotage';
 import { Chrono, useMaintenant } from './Chrono';
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
@@ -151,6 +153,7 @@ function Jeu(props: Props) {
   if (manche?.jeu === 'qcm2') return <Quiz {...props} manche={manche} />;
   if (manche?.jeu === 'mime2') return <Mime {...props} />;
   if (manche?.jeu === 'photo2') return <Photo {...props} manche={manche} />;
+  if (manche?.jeu === 'grab' || manche?.jeu === 'cup') return <Duel {...props} jeu={manche.jeu} />;
   return null;
 }
 
@@ -619,6 +622,71 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
             );
           })}
         </ul>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Duel en bêta (cahier des charges § 5.2) : les noms des deux duellistes et le chrono. Rien
+ * avant « Présenter » : la régie peut encore retirer un duelliste absent.
+ */
+function Duel({ etat, decalageMs, jeu }: Props & { jeu: 'grab' | 'cup' }) {
+  const t = useTranslations('ecran');
+  const passage = passageCourant(etat);
+  const { etape, chrono_depart_ms: depart } = etat.pilotage;
+  const duellistes = passage ? duellistesDe(passage.resultat) : null;
+  const equipe = (numero: number) => etat.equipes.find((e) => e.numero === numero);
+
+  if (etape === 'tirage' || !duellistes) {
+    return (
+      <div className="tu-stage__body tu-stage-centre" data-scene="duel" data-etape="tirage">
+        <p className="tu-stage__xl">{t('duelProchain')}</p>
+      </div>
+    );
+  }
+
+  const gagnant = passage?.resultat['gagnant'];
+  const face = (i: 0 | 1) => {
+    const d = duellistes[i];
+    const e = equipe(d.equipe);
+    return (
+      <div
+        key={d.joueur_id}
+        className={cx(
+          'tu-stage-duel__joueur',
+          etape === 'gagne' && gagnant !== i && 'tu-stage-duel__joueur--efface',
+        )}
+      >
+        <p className="tu-stage-duel__prenom">{d.prenom}</p>
+        {e && <Pastille equipe={e} grande />}
+      </div>
+    );
+  };
+
+  return (
+    <div
+      className="tu-stage__body tu-stage-centre tu-stage-reveal"
+      data-scene="duel"
+      data-etape={etape ?? ''}
+    >
+      <div className="tu-stage-duel" data-testid="duel">
+        {face(0)}
+        <p className="tu-stage__l">{t('contre')}</p>
+        {face(1)}
+      </div>
+      {etape === 'chrono' && (
+        <Chrono
+          departMs={depart}
+          dureeS={chronoDuelS(jeu)}
+          decalageMs={decalageMs}
+          className="tu-stage__giant"
+        />
+      )}
+      {etape === 'gagne' && (
+        <p className="tu-stage__xl" data-testid="verdict-duel">
+          {t('points', { points: passage?.points ?? 0 })}
+        </p>
       )}
     </div>
   );

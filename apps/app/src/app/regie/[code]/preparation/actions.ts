@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
 import {
   CHRONO_SURENCHERE_DEFAUT_S,
+  DUELS_DEFAUT,
   QUESTIONS_QUIZ,
   QUESTIONS_QUIZ_DEFAUT,
   type GameCode,
@@ -212,6 +213,27 @@ export async function ajouterSurenchere(code: string, donnees: FormData) {
       equipe_id: null,
       ordre: i + 1,
       contenu_id: libres[i] ?? null,
+    })),
+  );
+  rafraichir();
+}
+
+const Duels = z.coerce.number().int().min(1).max(8).catch(DUELS_DEFAUT);
+
+/**
+ * Duels en bêta (spec v3) : un passage par duel, sans contenu. Les duellistes se tirent en
+ * soirée, à la régie. Jamais ajoutés d'office : seulement par ce bouton.
+ */
+export async function ajouterDuels(code: string, jeu: 'grab' | 'cup', donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const duels = Duels.parse(donnees.get('duels'));
+  const mancheId = await nouvelleManche(supabase, evenement, jeu, { duels });
+  await supabase.from('passages').insert(
+    Array.from({ length: duels }, (_, i) => ({
+      manche_id: mancheId,
+      evenement_id: evenement.id,
+      equipe_id: null,
+      ordre: i + 1,
     })),
   );
   rafraichir();

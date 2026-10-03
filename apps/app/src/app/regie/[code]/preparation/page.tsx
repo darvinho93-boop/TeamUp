@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Button, TeamDot } from '@teamup/ui/react';
 import {
   CHRONO_SURENCHERE_DEFAUT_S,
+  DUELS_DEFAUT,
   dureeProgramme,
   formatDuree,
   QUESTIONS_QUIZ,
@@ -13,6 +14,7 @@ import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
 import {
+  ajouterDuels,
   ajouterEquipe,
   ajouterMime,
   ajouterPhoto,
@@ -356,6 +358,39 @@ export default async function Preparation({
               <Button type="submit">{t('ajouter', { jeu: tJeux('photo2') })}</Button>
             </form>
           )}
+        </div>
+      </section>
+
+      <section className="tu-regie__section" aria-labelledby="beta">
+        <h2 id="beta" className="tu-regie__section-title">
+          {t('beta.titre')}
+        </h2>
+        <p className="tu-regie__muted">{t('beta.aide')}</p>
+        {evenement.creneau_minutes < 60 && (
+          <p className="tu-regie__alert" role="status">
+            {t('beta.creneauCourt', { minutes: evenement.creneau_minutes })}
+          </p>
+        )}
+        <div className="tu-regie__form">
+          {/* Tête, épaule, gobelet d'abord : aucun matériel, aucun contenu (spec v3). */}
+          {(['cup', 'grab'] as const).map((jeu) => (
+            <form key={jeu} action={ajouterDuels.bind(null, code, jeu)} className="tu-regie-item">
+              <label className="tu-field">
+                <span className="tu-field__label">{t('beta.duels')}</span>
+                <input
+                  className="tu-field__control"
+                  name="duels"
+                  type="number"
+                  min={1}
+                  max={8}
+                  defaultValue={DUELS_DEFAUT}
+                />
+              </label>
+              <Button type="submit" variant="ghost">
+                {t('ajouter', { jeu: tJeux(jeu) })}
+              </Button>
+            </form>
+          ))}
         </div>
       </section>
     </>
