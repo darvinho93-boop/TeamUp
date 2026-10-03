@@ -702,6 +702,25 @@ export type Database = {
     }
     Functions: {
       anime: { Args: { p_evenement: string }; Returns: boolean }
+      annuaire_animateurs: {
+        Args: never
+        Returns: {
+          actif: boolean
+          cree_le: string
+          email: string
+          id: string
+          nom: string
+          role: Database["public"]["Enums"]["role_animateur"]
+        }[]
+      }
+      contenu_bien_forme: {
+        Args: {
+          p_jeu: Database["public"]["Enums"]["jeu"]
+          p_public: Json
+          p_secret: Json
+        }
+        Returns: boolean
+      }
       contenu_public: {
         Args: {
           p_contenu: string
@@ -719,6 +738,15 @@ export type Database = {
       echanger_manches: {
         Args: { p_a: string; p_b: string }
         Returns: undefined
+      }
+      enregistrer_contenu: {
+        Args: {
+          p_etiquette: Database["public"]["Enums"]["etiquette"]
+          p_id: string
+          p_jeu: Database["public"]["Enums"]["jeu"]
+          p_langues: Json
+        }
+        Returns: string
       }
       enregistrer_etape: {
         Args: {
@@ -783,6 +811,7 @@ export type Database = {
         Returns: Json
       }
       survivants_quiz: { Args: { p_manche: string }; Returns: Json }
+      texte_rempli: { Args: { p_valeur: Json }; Returns: boolean }
     }
     Enums: {
       etiquette: "b2c" | "b2b" | "tout_public"
