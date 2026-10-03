@@ -308,3 +308,23 @@ répondre ») ; le groupe ne sert qu'au tirage de l'équipe, **rien n'est gardé
   après coup.
 - `evenement_public` expose les libellés des groupes ; l'étape « groupe » du téléphone
   n'apparaît que si la soirée en a.
+
+## Conventions posées au lot 12
+
+Tranché le 2026-10-03 : explication **codée** (ni MP4 ni vidéo générée), **20 à 30 s**, lancée
+par une touche **« Expliquer »** de la régie, pour les **5 jeux et les 2 duels**.
+
+- Scripts dans `packages/game/src/explications.ts` : des cartes `{ cle, dureeS, visuel }`,
+  20 à 30 s par script, 4 s au moins par carte (testé). Le Quiz en a deux, croix et
+  téléphone, puisque son mode ne se choisit qu'au lancement.
+- Une étape de la scène `intro` : `explication` ou `explication-telephone`, avec le chrono de
+  la salle démarré pour la durée du script. Aucune migration. L'écran déduit la carte de
+  `chrono_depart_ms` (`carteA`), donc un second écran ou un rechargement retombe au même
+  endroit. « Rejouer » repart de zéro, « Arrêter » remet l'étape à `null`.
+- Phrases dans `ecran.explications.<script>.<cle>`, dans toutes les langues de la soirée
+  (`Multilingue`, lues dans `MESSAGES`). Un test vérifie qu'à chaque carte correspond une phrase.
+- Décors dans `src/ecran/explications/Visuels.tsx`, styles dans `explication.css`, tailles
+  dans `tokens-layout.css` (`--tu-expl-*`). Couleurs d'équipe 1, 3, 4 et 6 seulement :
+  jamais le corail. Sous `prefers-reduced-motion`, les cartes changent mais rien ne bouge.
+- Hors de la durée prévue du programme et de la mesure : l'explication est à la demande et
+  précède `commence_le`.
