@@ -72,8 +72,7 @@ Lis-les avant de concevoir quoi que ce soit. En cas de contradiction, l'ordre ci
 
 Ne les tranche pas seul :
 
-- Clôture des envois photo : manuelle par la régie, ou automatique au lancement de la diffusion.
-- Durée de conservation des photos.
+- Durée de conservation des photos (remise au lot 10 ; `photos.expire_le` reste vide d'ici là).
 - Espace client (hors périmètre v1 par défaut).
 
 ## Commandes
@@ -215,3 +214,29 @@ mime **sans plafond** dans l'app (la composer revient à l'animateur).
   relisent `/api/partie/[code]/etat`, étalés sur 250 ms ; la relecture de 4 s reste en secours.
   `etat_joueur` expose donc `evenement.id`.
 - La régie écoute en plus les `INSERT` de `reponses_quiz` (compteur de réponses) ; l'écran non.
+
+## Conventions posées au lot 8
+
+Tranché le 2026-09-24 : clôture des envois photo **des deux façons**, bouton de la régie
+(confirmé, réouverture possible tant que la diffusion n'a pas commencé) et clôture automatique
+au lancement de la diffusion (déclencheur `manches_clore_photos`).
+
+- Les thèmes sont les passages de la manche `photo2`, choisis à la préparation. L'écran Photos
+  du joueur est ouvert toute la soirée ; seul le capitaine envoie, une photo par thème,
+  remplaçable jusqu'à la clôture.
+- Le téléphone compresse avant tout (`src/lib/compression.ts` : 1 600 px de côté, JPEG
+  dégressif, sous `TAILLE_MAX_PHOTO`), puis met en file dans IndexedDB (`src/joueur/filePhotos.ts`,
+  repli en mémoire) : une entrée par thème, la dernière photo prise remplace celle qui attendait.
+  La file repart au retour du réseau et toutes les 15 s.
+- `POST /api/partie/[code]/photo` dépose le fichier dans le bucket, puis appelle
+  `envoyer_photo` (rôle de service), qui refuse session inconnue, non-capitaine, envois clos
+  (heure de la base) ou thème étranger. Rejouer le même envoi ne change rien : la file peut
+  réessayer sans risque. L'ancienne photo remplacée est retirée du bucket.
+- `etat_ecran` donne des **chemins** : à la régie toujours, à l'écran une fois la diffusion
+  lancée (il précharge tout). Les images passent par des URL signées, que seule la session
+  de l'animateur obtient (`usePhotosSignees`).
+- La gagnante d'un thème est reportée sur `photos.gagnante` par déclencheur, dans la
+  transaction de `enregistrer_etape` : l'export du lot 10 n'aura qu'à la lire.
+- Latences e2e : `partie.spec.ts` exige médiane < 500 ms et 90e centile < 1 s ;
+  `quiz.spec.ts` (trente téléphones simulés sur la même machine) exige 90e centile < 1 s et
+  aucune touche au-delà de 1,5 s.
