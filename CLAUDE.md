@@ -292,3 +292,19 @@ Analytics** ; export en **CSV** et **ZIP**.
   `evenements.invites_attendus` (facultatif, saisi à la création de la soirée).
 - `pnpm add` dans un paquet peut casser les liens des autres (vu sur `@astrojs/vercel`) :
   relancer `pnpm install` à la racine.
+
+## Conventions posées au lot 11
+
+Tranché le 2026-10-03 : l'invité **choisit son groupe** à l'arrivée (ou « Je préfère ne pas
+répondre ») ; le groupe ne sert qu'au tirage de l'équipe, **rien n'est gardé sur le joueur**.
+
+- `groupes` (au plus 6 par soirée, écrits à la préparation sous la session de l'animateur) et
+  `equipes_groupes` (un compteur par équipe et par groupe, sans aucun lien vers un joueur),
+  écrit **uniquement** par `rejoindre_evenement`.
+- Avec un groupe : l'équipe qui en compte le moins, puis la moins remplie, au hasard entre
+  ex aequo, sous le verrou d'arrivée du lot 5. Sans groupe : comportement du lot 5 inchangé.
+- La répartition affichée à la Salle est celle **des arrivées** : déplacer un joueur à la régie
+  ne la change pas (on ne sait pas de quel groupe il est, et c'est voulu). Pas de rééquilibrage
+  après coup.
+- `evenement_public` expose les libellés des groupes ; l'étape « groupe » du téléphone
+  n'apparaît que si la soirée en a.
