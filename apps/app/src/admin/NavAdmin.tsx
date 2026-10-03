@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-const SECTIONS = ['contenus', 'animateurs', 'evenements'] as const;
+const SECTIONS = ['contenus', 'animateurs', 'evenements', 'mesure'] as const;
 
 export function NavAdmin() {
   const t = useTranslations('admin.nav');

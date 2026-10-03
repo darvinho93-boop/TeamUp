@@ -57,32 +57,13 @@
   color: var(--tu-text);
 }
 
-/* Tableau de l'historique : défile seul sur un écran étroit, jamais la page. */
+/* Historique : le tableau de régie (.tu-table), une ligne par cellule ; il défile seul sur un
+   écran étroit, jamais la page. */
 .tu-admin-table-wrap {
   max-width: 100%;
   overflow-x: auto;
 }
 
-.tu-admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--tu-size-sm);
-}
-
-.tu-admin-table th,
-.tu-admin-table td {
-  padding: var(--tu-space-3);
-  border-bottom: var(--tu-border-width) solid var(--tu-border);
-  text-align: start;
+.tu-admin-table :is(th, td) {
   white-space: nowrap;
-}
-
-.tu-admin-table th {
-  color: var(--tu-text-muted);
-  font-weight: 600;
-}
-
-.tu-admin-table td[data-nombre] {
-  font-family: var(--tu-font-numeric);
-  text-align: end;
 }

@@ -132,7 +132,9 @@
       "creer": "Créer et préparer",
       "invalide": "Vérifie les champs : client, date, créneau (10 à 240 min), 2 à 8 équipes, au moins une langue.",
       "echec": "L'événement n'a pas pu être créé. Réessaie.",
-      "equipeParDefaut": "Équipe {numero}"
+      "equipeParDefaut": "Équipe {numero}",
+      "invites": "Invités attendus",
+      "invitesAide": "Facultatif : sert à mesurer la part des invités qui se connectent."
     },
     "preparation": {
       "titre": "Préparation",
@@ -413,7 +415,8 @@
       "libelle": "Sections du back-office",
       "contenus": "Contenus",
       "animateurs": "Animateurs",
-      "evenements": "Historique"
+      "evenements": "Historique",
+      "mesure": "Mesure"
     },
     "etiquettes": {
       "b2c": "B2C",
@@ -506,7 +509,28 @@
       "creneau": "Durée prévue",
       "minutes": "{minutes} min",
       "statut": "Statut",
-      "code": "Code"
+      "code": "Code",
+      "taux": "Connexion",
+      "prevue": "Prévue",
+      "reelle": "Réelle",
+      "export": "Export",
+      "aide": "Durée prévue : chronos du programme plus 15 % de transitions. Durée réelle : du lancement de la première manche à la fin de la dernière. Connexion : joueurs inscrits ÷ invités attendus."
+    },
+    "mesure": {
+      "titre": "Mesure",
+      "durees": "Durée réelle par jeu",
+      "aucune": "Aucune manche terminée pour l’instant.",
+      "jeu": "Jeu",
+      "manches": "Manches",
+      "prevu": "Prévu (moyenne)",
+      "reel": "Réel (moyenne)",
+      "ecart": "Écart",
+      "aideDurees": "Sur toutes les manches terminées. Prévu : chronos de la spec plus 15 % de transitions.",
+      "connexion": "Taux de connexion des invités",
+      "connexionMoyenne": "{taux} en moyenne, sur {soirees} soirée(s) avec des invités attendus.",
+      "connexionAucune": "Aucune soirée n’a renseigné ses invités attendus.",
+      "vitrine": "Conversion de la vitrine",
+      "vitrineAide": "Dans Vercel Web Analytics (projet de la vitrine) : visites de la page /confirmation ÷ visiteurs."
     }
   }
 }

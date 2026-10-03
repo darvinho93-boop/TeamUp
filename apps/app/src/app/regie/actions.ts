@@ -66,6 +66,8 @@ const NouvelEvenement = z.object({
   creneau: z.coerce.number().int().min(10).max(240),
   equipes: z.coerce.number().int().min(2).max(8),
   langues: z.array(z.enum(LANGUES)).min(1).max(3),
+  // Facultatif : sert au taux de connexion des invités (mesure, lot 10).
+  invites: z.union([z.literal(''), z.coerce.number().int().min(1).max(1000)]),
 });
 
 export async function creerEvenement(
@@ -81,6 +83,7 @@ export async function creerEvenement(
     creneau: donnees.get('creneau'),
     equipes: donnees.get('equipes'),
     langues: donnees.getAll('langues'),
+    invites: donnees.get('invites') ?? '',
   });
   if (!saisie.success) return { erreur: t('invalide') };
 
@@ -93,6 +96,7 @@ export async function creerEvenement(
       date_evenement: saisie.data.date,
       creneau_minutes: saisie.data.creneau,
       langues: saisie.data.langues,
+      invites_attendus: saisie.data.invites === '' ? null : saisie.data.invites,
     })
     .select('id, code')
     .single();

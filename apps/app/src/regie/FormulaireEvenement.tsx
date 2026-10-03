@@ -42,6 +42,14 @@ export function FormulaireEvenement() {
           defaultValue={4}
           required
         />
+        <TextField
+          label={t('invites')}
+          hint={t('invitesAide')}
+          name="invites"
+          type="number"
+          min={1}
+          max={1000}
+        />
       </div>
       <fieldset className="tu-regie__choices">
         <legend className="tu-field__label">{t('langues')}</legend>

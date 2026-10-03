@@ -132,7 +132,9 @@
       "creer": "Create and prepare",
       "invalide": "Check the fields: client, date, time slot (10 to 240 min), 2 to 8 teams, at least one language.",
       "echec": "The event could not be created. Try again.",
-      "equipeParDefaut": "Team {numero}"
+      "equipeParDefaut": "Team {numero}",
+      "invites": "Expected guests",
+      "invitesAide": "Optional: used to measure the share of guests who connect."
     },
     "preparation": {
       "titre": "Preparation",
@@ -413,7 +415,8 @@
       "libelle": "Back office sections",
       "contenus": "Content",
       "animateurs": "Hosts",
-      "evenements": "History"
+      "evenements": "History",
+      "mesure": "Metrics"
     },
     "etiquettes": {
       "b2c": "B2C",
@@ -506,7 +509,28 @@
       "creneau": "Planned length",
       "minutes": "{minutes} min",
       "statut": "Status",
-      "code": "Code"
+      "code": "Code",
+      "taux": "Connection",
+      "prevue": "Planned",
+      "reelle": "Actual",
+      "export": "Export",
+      "aide": "Planned length: programme timers plus 15% for transitions. Actual length: from the start of the first round to the end of the last. Connection: registered players ÷ expected guests."
+    },
+    "mesure": {
+      "titre": "Metrics",
+      "durees": "Actual length per game",
+      "aucune": "No round finished yet.",
+      "jeu": "Game",
+      "manches": "Rounds",
+      "prevu": "Planned (average)",
+      "reel": "Actual (average)",
+      "ecart": "Gap",
+      "aideDurees": "Across all finished rounds. Planned: spec timers plus 15% for transitions.",
+      "connexion": "Guest connection rate",
+      "connexionMoyenne": "{taux} on average, over {soirees} event(s) with expected guests.",
+      "connexionAucune": "No event has entered its expected guests.",
+      "vitrine": "Website conversion",
+      "vitrineAide": "In Vercel Web Analytics (website project): /confirmation page views ÷ visitors."
     }
   }
 }
