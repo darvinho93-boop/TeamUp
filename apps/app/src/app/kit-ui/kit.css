@@ -35,7 +35,7 @@
 }
 
 .kit__grid--large {
-  grid-template-columns: repeat(auto-fit, minmax(var(--tu-expl-ecran-w), 1fr));
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .kit__visuel {
