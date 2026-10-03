@@ -19,6 +19,7 @@
     "@teamup/brand": "workspace:*",
     "@teamup/game": "workspace:*",
     "@teamup/ui": "workspace:*",
+    "fflate": "^0.8.3",
     "next": "^16.3.5",
     "next-intl": "^4.14.6",
     "qrcode": "^1.5.4",

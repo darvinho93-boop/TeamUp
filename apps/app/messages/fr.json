@@ -346,6 +346,21 @@
       "different": "Les deux mots de passe ne sont pas identiques.",
       "echec": "Le mot de passe n'a pas pu être changé. Réessaie.",
       "change": "Mot de passe changé."
+    },
+    "export": {
+      "titre": "Export de la soirée",
+      "scores": "Télécharger les scores (CSV)",
+      "photos": "Télécharger les photos (ZIP)",
+      "aide": "Les photos sont conservées 30 jours après la soirée, puis supprimées : exportez-les avant.",
+      "classement": "Classement",
+      "rang": "Rang",
+      "equipe": "Équipe",
+      "points": "Points",
+      "journal": "Journal des points",
+      "heure": "Heure",
+      "jeu": "Jeu",
+      "motif": "Motif",
+      "correction": "Correction"
     }
   },
   "ecran": {

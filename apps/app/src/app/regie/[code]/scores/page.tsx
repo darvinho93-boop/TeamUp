@@ -10,6 +10,7 @@ export async function generateMetadata() {
 export default async function Scores({ params }: PageProps<'/regie/[code]/scores'>) {
   const { supabase, evenement } = await evenementDeLaRegie((await params).code);
   const t = await getTranslations('regie.scores');
+  const tExport = await getTranslations('regie.export');
   const format = await getFormatter();
   const [{ data: classement }, { data: journal }] = await Promise.all([
     supabase
@@ -103,6 +104,29 @@ export default async function Scores({ params }: PageProps<'/regie/[code]/scores
             </tbody>
           </table>
         )}
+      </section>
+
+      <section className="tu-regie__section" aria-labelledby="export">
+        <h2 id="export" className="tu-regie__section-title">
+          {tExport('titre')}
+        </h2>
+        <p className="tu-regie__muted">{tExport('aide')}</p>
+        <div className="tu-cluster">
+          <a
+            className="tu-btn tu-btn--primary"
+            href={`/regie/${evenement.code}/export/scores.csv`}
+            download
+          >
+            {tExport('scores')}
+          </a>
+          <a
+            className="tu-btn tu-btn--ghost"
+            href={`/regie/${evenement.code}/export/photos.zip`}
+            download
+          >
+            {tExport('photos')}
+          </a>
+        </div>
       </section>
     </>
   );

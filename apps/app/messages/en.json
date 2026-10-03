@@ -346,6 +346,21 @@
       "different": "The two passwords do not match.",
       "echec": "The password could not be changed. Try again.",
       "change": "Password changed."
+    },
+    "export": {
+      "titre": "Event export",
+      "scores": "Download scores (CSV)",
+      "photos": "Download photos (ZIP)",
+      "aide": "Photos are kept for 30 days after the event, then deleted: export them before.",
+      "classement": "Ranking",
+      "rang": "Rank",
+      "equipe": "Team",
+      "points": "Points",
+      "journal": "Points log",
+      "heure": "Time",
+      "jeu": "Game",
+      "motif": "Reason",
+      "correction": "Correction"
     }
   },
   "ecran": {
