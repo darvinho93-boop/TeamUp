@@ -14,7 +14,7 @@ Un lot par session. Chaque lot se termine quand ses critères « Fini quand » s
 | 7 — Mime et quiz | Mime (secret au premier joueur, révélation vert / rouge). Quiz en mode croix puis en mode téléphone, même barème. | Les deux modes du quiz donnent le même score pour les mêmes survivants. |
 | 8 — Photo challenge | Écran permanent côté joueur, envoi par le capitaine (compression, file d'attente hors ligne), clôture, diffusion thème par thème. | Une photo prise hors réseau part seule au retour du réseau. |
 | 9 — Back-office | Gestion des animateurs, banques de contenus multilingues avec étiquettes B2C / B2B / tout public. | Un admin crée un contenu en trois langues et un animateur le retrouve à la préparation. |
-| 10 — Finitions | Duels en bêta, export des scores et photos, mesure (conversion devis, durée réelle par jeu). | — |
+| 10 — Finitions | Duels en bêta, export des scores et photos, mesure (conversion devis, durée réelle par jeu). | Un duel se joue de la régie à l'écran et donne ses points ; l'export d'une soirée contient ses scores et ses photos ; une photo expirée disparaît de la base et du stockage. |
 
 ## Avant de commencer
 
@@ -24,7 +24,7 @@ Un lot par session. Chaque lot se termine quand ses critères « Fini quand » s
 - **Lot 7** : repêchage tranché le 2026-09-24 (aucun, 3 ou 4 questions). Lot clos, critère vérifié par `e2e/quiz.spec.ts`.
 - **Lot 8** : clôture tranchée le 2026-09-24 (bouton de la régie et clôture automatique au lancement de la diffusion). Lot clos, critère vérifié par `e2e/photo.spec.ts`.
 - **Lot 9** : comptes à mot de passe provisoire, français obligatoire, historique ajouté (tranché le 2026-10-03). Lot clos, critère vérifié par `e2e/back-office.spec.ts`.
-- **Lot 10** : trancher la durée de conservation des photos.
+- **Lot 10** : duel +50, photos conservées 30 jours, Vercel Web Analytics, export CSV + ZIP (tranché le 2026-10-03). Lot clos, critère vérifié par `e2e/duels-export.spec.ts` et `tests/purge.test.ts`.
 
 ## Prompt de démarrage type
 

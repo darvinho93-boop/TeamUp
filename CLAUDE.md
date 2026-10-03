@@ -72,7 +72,6 @@ Lis-les avant de concevoir quoi que ce soit. En cas de contradiction, l'ordre ci
 
 Ne les tranche pas seul :
 
-- Durée de conservation des photos (remise au lot 10 ; `photos.expire_le` reste vide d'ici là).
 - Espace client (hors périmètre v1 par défaut).
 
 ## Commandes
@@ -131,13 +130,14 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 
 `apps/app/.env.local` (modèle dans `apps/app/.env.example`), lues côté serveur uniquement :
 
-| Variable                        | Rôle                                                                                                   |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `SUPABASE_URL`                  | API Supabase. En local : `http://127.0.0.1:54321`.                                                     |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Clé du rôle de service (`SERVICE_ROLE_KEY` de `pnpm db:start`). Jamais en `NEXT_PUBLIC_`.              |
-| `NEXT_PUBLIC_SUPABASE_URL`      | La même URL, pour la régie et l'écran (connexion, temps réel).                                         |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (`ANON_KEY`) : publique par nature, elle n'ouvre aucun droit (lot 3).                         |
-| `NEXT_PUBLIC_APP_URL`           | Facultative. Adresse du QR code de l'écran (`https://app.teamup.fr`) ; à défaut, l'hôte de la requête. |
+| Variable                        | Rôle                                                                                                                         |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `SUPABASE_URL`                  | API Supabase. En local : `http://127.0.0.1:54321`.                                                                           |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Clé du rôle de service (`SERVICE_ROLE_KEY` de `pnpm db:start`). Jamais en `NEXT_PUBLIC_`.                                    |
+| `NEXT_PUBLIC_SUPABASE_URL`      | La même URL, pour la régie et l'écran (connexion, temps réel).                                                               |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (`ANON_KEY`) : publique par nature, elle n'ouvre aucun droit (lot 3).                                               |
+| `NEXT_PUBLIC_APP_URL`           | Facultative. Adresse du QR code de l'écran (`https://app.teamup.fr`) ; à défaut, l'hôte de la requête.                       |
+| `CRON_SECRET`                   | Secret de la purge quotidienne des photos (Vercel Cron l'envoie en `Authorization: Bearer`). Absente : la route refuse tout. |
 
 ## Conventions posées au lot 0
 
@@ -263,3 +263,32 @@ l'anglais et le tamoul facultatifs ; l'historique des événements est au back-o
   langues. Le contenu déjà choisi pour un passage reste toujours dans son menu.
 - `pnpm db:types` écrit le fichier même quand la base ne répond pas : il le vide. Vérifier
   `git diff --stat` après coup.
+
+## Conventions posées au lot 10
+
+Tranché le 2026-10-03 : duel gagné **+50** à l'équipe du vainqueur (la spec n'en disait rien) ;
+photos conservées **30 jours** après la soirée ; mesure de la vitrine par **Vercel Web
+Analytics** ; export en **CSV** et **ZIP**.
+
+- Duels (`grab`, `cup`) : un passage par duel, une machine commune
+  (`packages/game/src/pilotage/duel.ts`) : tirage, face-à-face, chrono, verdict. Les duellistes
+  (id, prénom, équipe) sont gardés dans `passages.resultat` dès le tirage ; l'écran ne les
+  montre qu'à « Présenter ». Tirage en rotation équitable (`tirerDuel`) sur tous les duels de la
+  soirée, parmi les joueurs lus au moment du tirage.
+- Tête, épaule, gobelet : la séquence se tire de l'identifiant du passage (`aleaDepuis`), donc
+  identique après un rechargement, et ne s'affiche que sur la régie. Mots et pièges : premier
+  jet à valider.
+- Duels hors programme par défaut : section « Bêta » de la préparation seulement, avec un
+  avertissement sous 60 min de créneau.
+- Photos : `expire_le` = soirée + 31 jours à minuit UTC, posé par déclencheur et suivi si la
+  date change. `/api/cron/purge-photos` (Vercel Cron, `apps/app/vercel.json`, 3 h UTC) retire
+  le fichier puis la ligne (`src/lib/purge.ts`).
+- Export : `/regie/[code]/export/scores.csv` (`;`, BOM, CRLF) et `photos.zip` (fflate, diffusé
+  en flux, sans recompression), sous la session de l'animateur. **À vérifier sur Vercel avec
+  une vraie soirée** : la limite de taille de réponse d'une fonction (4,5 Mo) ne devrait pas
+  s'appliquer à une réponse diffusée en flux, mais rien ne l'a encore prouvé.
+- Mesure : `src/lib/mesure.ts` (prévu = chronos + 15 % ; réel = `commence_le` → `termine_le`
+  des manches), `/admin/mesure` et l'historique. Taux de connexion = joueurs ÷
+  `evenements.invites_attendus` (facultatif, saisi à la création de la soirée).
+- `pnpm add` dans un paquet peut casser les liens des autres (vu sur `@astrojs/vercel`) :
+  relancer `pnpm install` à la racine.
