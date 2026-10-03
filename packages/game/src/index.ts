@@ -13,4 +13,5 @@ export * from './photo';
 export * from './duels';
 export * from './programme';
 export * from './explications';
+export * from './ordre';
 export * from './pilotage';
