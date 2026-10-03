@@ -328,3 +328,19 @@ par une touche **« Expliquer »** de la régie, pour les **5 jeux et les 2 duel
   jamais le corail. Sous `prefers-reduced-motion`, les cartes changent mais rien ne bouge.
 - Hors de la durée prévue du programme et de la mesure : l'explication est à la demande et
   précède `commence_le`.
+
+## Conventions posées au lot 13
+
+Tranché le 2026-10-03 : l'ordre de passage des jeux joués une équipe à la fois (Points communs,
+Mime) se tire **en direct, à la régie**, et l'écran l'anime ; **un ordre** tiré, repris à
+chaque tour.
+
+- Le tirage : `tirerOrdre` (Fisher-Yates) et `ordreDesPassages` dans
+  `packages/game/src/ordre.ts`, avec le hasard du navigateur de la régie (`crypto.getRandomValues`).
+- L'écriture : `ordonner_passages` (security invoker, une transaction, contrainte d'ordre
+  différable), d'abord, puis `enregistrer_etape` avec l'étape `tirage-ordre` de l'intro et le
+  chrono de la salle pour 5 s. Refusé dès qu'un passage ou la manche a commencé. La manche
+  garde `options.ordre_tire`, et l'intro fixe rappelle alors l'ordre.
+- L'écran (`src/ecran/TirageOrdre.tsx`) : 3 s de mélange, puis une équipe rangée par quart de
+  seconde. Le mélange se tire de l'identifiant de la manche et de l'instant, donc deux écrans
+  montrent le même. Sous `prefers-reduced-motion`, l'ordre final s'affiche d'emblée.
