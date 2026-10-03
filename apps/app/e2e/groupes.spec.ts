@@ -25,8 +25,11 @@ test('groupes nommés à la préparation, choisis au téléphone, comptés à la
   await regie.goto(`/regie/${evenement.code}/preparation`);
   await regie.getByLabel('Nom du groupe 1').fill('Côté mariée');
   await regie.getByLabel('Nom du groupe 2').fill('Côté marié');
-  await regie.getByRole('button', { name: 'Enregistrer les groupes' }).click();
-  await expect(regie.getByLabel('Nom du groupe 2')).toHaveValue('Côté marié');
+  // Le champ garde ce qu'on a tapé : c'est la réponse de l'action qui dit que c'est enregistré.
+  await Promise.all([
+    regie.waitForResponse((r) => r.request().method() === 'POST' && r.ok()),
+    regie.getByRole('button', { name: 'Enregistrer les groupes' }).click(),
+  ]);
 
   // --- Un invité choisit son côté.
   const telephone = await (await browser.newContext()).newPage();
