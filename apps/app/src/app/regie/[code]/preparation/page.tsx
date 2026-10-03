@@ -7,6 +7,7 @@ import {
   QUESTIONS_QUIZ,
   QUESTIONS_QUIZ_DEFAUT,
 } from '@teamup/game';
+import { libelleContenu } from '@/lib/contenus';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
@@ -28,25 +29,6 @@ export async function generateMetadata() {
 }
 
 type Valeur = Record<string, unknown>;
-interface Traduite {
-  langue: string;
-  valeur: Valeur;
-}
-
-/** Ce que l'animateur reconnaît d'un contenu : la réponse, le thème et son sujet, la question, le mot. */
-function libelle(jeu: string, publics: Traduite[], secrets: Traduite[], langue: string): string {
-  const dans = (liste: Traduite[]) =>
-    (liste.find((l) => l.langue === langue) ?? liste.find((l) => l.langue === 'fr'))?.valeur ?? {};
-  const texte = (v: Valeur, cle: string) => (typeof v[cle] === 'string' ? v[cle] : '—');
-  const p = dans(publics);
-  const s = dans(secrets);
-  if (jeu === 'list2') return texte(s, 'reponse');
-  if (jeu === 'enchere2') return `${texte(p, 'theme')} — ${texte(s, 'sujet')}`;
-  if (jeu === 'qcm2') return texte(p, 'question');
-  if (jeu === 'mime2') return texte(s, 'mot');
-  if (jeu === 'photo2') return texte(p, 'theme');
-  return '—';
-}
 
 export default async function Preparation({ params }: PageProps<'/regie/[code]/preparation'>) {
   const { supabase, evenement } = await evenementDeLaRegie((await params).code);
@@ -91,12 +73,7 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
       .filter((c) => c.jeu === jeu)
       .map((c) => ({
         id: c.id,
-        libelle: libelle(
-          jeu,
-          c.contenus_traductions as Traduite[],
-          c.contenus_secrets as Traduite[],
-          langue,
-        ),
+        libelle: libelleContenu(jeu, c.contenus_traductions, c.contenus_secrets, langue),
       }));
 
   const programme = (manches ?? []).map((m) => ({
