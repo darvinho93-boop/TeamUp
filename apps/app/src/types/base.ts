@@ -159,6 +159,49 @@ export type Database = {
           },
         ]
       }
+      equipes_groupes: {
+        Row: {
+          effectif: number
+          equipe_id: string
+          evenement_id: string
+          groupe_id: string
+        }
+        Insert: {
+          effectif?: number
+          equipe_id: string
+          evenement_id: string
+          groupe_id: string
+        }
+        Update: {
+          effectif?: number
+          equipe_id?: string
+          evenement_id?: string
+          groupe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipes_groupes_equipe_id_evenement_id_fkey"
+            columns: ["equipe_id", "evenement_id"]
+            isOneToOne: false
+            referencedRelation: "classement"
+            referencedColumns: ["equipe_id", "evenement_id"]
+          },
+          {
+            foreignKeyName: "equipes_groupes_equipe_id_evenement_id_fkey"
+            columns: ["equipe_id", "evenement_id"]
+            isOneToOne: false
+            referencedRelation: "equipes"
+            referencedColumns: ["id", "evenement_id"]
+          },
+          {
+            foreignKeyName: "equipes_groupes_groupe_id_evenement_id_fkey"
+            columns: ["groupe_id", "evenement_id"]
+            isOneToOne: false
+            referencedRelation: "groupes"
+            referencedColumns: ["id", "evenement_id"]
+          },
+        ]
+      }
       evenements: {
         Row: {
           animateur_id: string
@@ -223,6 +266,35 @@ export type Database = {
             columns: ["animateur_id"]
             isOneToOne: false
             referencedRelation: "animateurs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groupes: {
+        Row: {
+          evenement_id: string
+          id: string
+          nom: string
+          ordre: number
+        }
+        Insert: {
+          evenement_id: string
+          id?: string
+          nom: string
+          ordre: number
+        }
+        Update: {
+          evenement_id?: string
+          id?: string
+          nom?: string
+          ordre?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groupes_evenement_id_fkey"
+            columns: ["evenement_id"]
+            isOneToOne: false
+            referencedRelation: "evenements"
             referencedColumns: ["id"]
           },
         ]
@@ -793,6 +865,7 @@ export type Database = {
       rejoindre_evenement: {
         Args: {
           p_code: string
+          p_groupe?: string
           p_jeton_hash: string
           p_langue: Database["public"]["Enums"]["langue"]
           p_prenom: string

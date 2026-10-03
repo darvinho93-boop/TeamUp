@@ -89,9 +89,14 @@ avecBase("l'arrivée d'un joueur", () => {
 });
 
 avecBase('avant de rejoindre', () => {
-  it('un code ne révèle que son statut et ses langues', async () => {
+  it('un code ne révèle que son statut, ses langues et ses groupes à mélanger', async () => {
     const { data } = await appeler(clientService(), 'evenement_public', { p_code: 'fete24' });
-    expect(data).toEqual({ code: 'FETE24', langues: ['fr', 'en', 'ta'], statut: 'en_cours' });
+    expect(data).toEqual({
+      code: 'FETE24',
+      langues: ['fr', 'en', 'ta'],
+      statut: 'en_cours',
+      groupes: [],
+    });
   });
 
   it('un visiteur sans compte ne peut même pas demander', async () => {
