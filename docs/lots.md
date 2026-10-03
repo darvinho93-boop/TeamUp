@@ -23,6 +23,7 @@ Un lot par session. Chaque lot se termine quand ses critères « Fini quand » s
   cahier des charges et sur les visuels d'écrans présents dans les maquettes vitrine.
 - **Lot 7** : repêchage tranché le 2026-09-24 (aucun, 3 ou 4 questions). Lot clos, critère vérifié par `e2e/quiz.spec.ts`.
 - **Lot 8** : clôture tranchée le 2026-09-24 (bouton de la régie et clôture automatique au lancement de la diffusion). Lot clos, critère vérifié par `e2e/photo.spec.ts`.
+- **Lot 9** : comptes à mot de passe provisoire, français obligatoire, historique ajouté (tranché le 2026-10-03). Lot clos, critère vérifié par `e2e/back-office.spec.ts`.
 - **Lot 10** : trancher la durée de conservation des photos.
 
 ## Prompt de démarrage type

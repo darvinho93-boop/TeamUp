@@ -240,3 +240,26 @@ au lancement de la diffusion (déclencheur `manches_clore_photos`).
 - Latences e2e : `partie.spec.ts` exige médiane < 500 ms et 90e centile < 1 s ;
   `quiz.spec.ts` (trente téléphones simulés sur la même machine) exige 90e centile < 1 s et
   aucune touche au-delà de 1,5 s.
+
+## Conventions posées au lot 9
+
+Tranché le 2026-10-03 : l'admin crée un compte avec un **mot de passe provisoire** (aucun
+e-mail), que l'animateur change dans `/regie/compte` ; un contenu a le **français obligatoire**,
+l'anglais et le tamoul facultatifs ; l'historique des événements est au back-office dès ce lot.
+
+- `/admin` (contenus, animateurs, historique) : même coque et thème stage que la régie,
+  gardé par `exigerAdmin()` (404 pour un animateur) ; la RLS du lot 3 reste la vraie garde.
+- Un contenu s'écrit **uniquement** par `enregistrer_contenu` (une transaction : contenu,
+  traductions, secrets), qui revérifie en base la forme de chaque langue, le français et la
+  même bonne réponse du quiz partout. La saisie et le filtre vivent dans `src/lib/contenus.ts`.
+- Rien ne se supprime : contenus et animateurs se **désactivent**. Un déclencheur garde
+  toujours un admin actif ; un admin ne se désactive pas lui-même.
+- Le rôle de service ne sert au back-office qu'à créer l'utilisateur Auth
+  (`src/serveur/comptes.ts`) ; la fiche `animateurs` s'écrit sous la session de l'admin.
+  Les e-mails viennent de `annuaire_animateurs()`, réservée à l'admin.
+- Préparation : un contenu n'est proposé que s'il est **complet** (partie publique et secret)
+  dans toutes les langues de la soirée, et de l'étiquette du public (particulier → B2C,
+  entreprise → B2B) ou tout public ; `?tout=1` lève le filtre du public, jamais celui des
+  langues. Le contenu déjà choisi pour un passage reste toujours dans son menu.
+- `pnpm db:types` écrit le fichier même quand la base ne répond pas : il le vide. Vérifier
+  `git diff --stat` après coup.
