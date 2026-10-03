@@ -22,8 +22,9 @@ import {
   type EtatSalle,
   type MancheSalle,
 } from '@/lib/salle';
-import { duellistesDe } from '@/lib/pilotage';
+import { duellistesDe, scriptEnCours } from '@/lib/pilotage';
 import { Chrono, useMaintenant } from './Chrono';
+import { Explication } from './Explication';
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
 
@@ -46,7 +47,7 @@ export function Scene(props: Props) {
     case 'programme':
       return <Programme etat={etat} />;
     case 'intro':
-      return <Intro etat={etat} />;
+      return <Intro etat={etat} decalageMs={props.decalageMs} />;
     case 'jeu':
       return <Jeu {...props} />;
     case 'scores':
@@ -134,10 +135,22 @@ function Programme({ etat }: { etat: EtatSalle }) {
   );
 }
 
-function Intro({ etat }: { etat: EtatSalle }) {
+function Intro({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   const t = useTranslations();
   const manche = mancheCourante(etat);
   if (!manche) return null;
+  const script = scriptEnCours(manche.jeu, 'intro', etat.pilotage.etape);
+  if (script) {
+    return (
+      <Explication
+        jeu={manche.jeu}
+        script={script}
+        langues={etat.evenement.langues}
+        departMs={etat.pilotage.chrono_depart_ms}
+        decalageMs={decalageMs}
+      />
+    );
+  }
   return (
     <div className="tu-stage__body tu-stage-centre tu-stage-reveal" data-scene="intro">
       <h1 className="tu-stage__giant">{t(`jeux.${manche.jeu}`)}</h1>

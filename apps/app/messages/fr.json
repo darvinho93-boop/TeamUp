@@ -438,7 +438,58 @@
     "photoDe": "Photo de l'équipe {equipe}",
     "gagnante": "La gagnante !",
     "duelProchain": "Prochain duel…",
-    "contre": "contre"
+    "contre": "contre",
+    "commentJouer": "Comment on joue",
+    "explications": {
+      "list2": {
+        "equipe-dos": "Une équipe s'assoit dos à l'écran, les yeux fermés.",
+        "ecran-cache": "L'écran montre un point commun à toute la salle, puis se cache.",
+        "salle-debout": "Les invités concernés se lèvent : l'équipe devine ce qui les rassemble.",
+        "paliers": "Plus c'est rapide, plus ça rapporte. Un indice à chaque palier."
+      },
+      "qcm2": {
+        "quadrants": "Une question, quatre réponses : A, B, C, D.",
+        "zones": "Va te placer dans la zone de ta réponse.",
+        "elimine": "Mauvaise zone : éliminé !",
+        "survivants": "100 points par survivant de ton équipe."
+      },
+      "qcm2-telephone": {
+        "quadrants": "Une question, quatre réponses : A, B, C, D.",
+        "telephone": "Réponds sur ton téléphone : tu as 30 secondes.",
+        "elimine": "Mauvaise réponse : éliminé !",
+        "survivants": "100 points par survivant de ton équipe."
+      },
+      "enchere2": {
+        "champions": "Un champion par équipe s'avance.",
+        "encheres": "Le sujet tombe, les enchères montent : « 5 ! » « 7 ! »",
+        "chrono": "Le plus offrant doit tenir son pari, chrono en main.",
+        "verdict": "Pari tenu : +100. Raté : +20 pour chaque autre équipe."
+      },
+      "mime2": {
+        "file": "L'équipe se met en file, sans se retourner.",
+        "mot": "Le premier voit le mot et le mime au suivant.",
+        "chaine": "Mime, puis à l'oreille, puis mime… jusqu'au dernier.",
+        "annonce": "Le dernier l'annonce : mot trouvé, +100 !"
+      },
+      "photo2": {
+        "capitaine": "Toute la soirée, le capitaine envoie une photo par thème.",
+        "diaporama": "Ce soir, on les découvre thème par thème.",
+        "gagnante": "Les héros de la fête choisissent la gagnante.",
+        "points-photo": "+100 par thème gagné."
+      },
+      "grab": {
+        "duellistes-table": "Deux duellistes, une table d'objets.",
+        "musique": "La musique part…",
+        "attrape": "Attrape l'objet qui va avec, le premier !",
+        "points": "Duel gagné : +50 pour ton équipe."
+      },
+      "cup": {
+        "duellistes-gobelet": "Deux duellistes, un gobelet entre eux.",
+        "tete-epaule": "Touche ce que l'animateur dit : tête, épaule…",
+        "gobelet": "Au mot « gobelet », attrape-le le premier !",
+        "points": "Gare aux pièges ! Duel gagné : +50."
+      }
+    }
   },
   "admin": {
     "nav": {

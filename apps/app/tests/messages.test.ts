@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SCRIPTS_EXPLICATION } from '@teamup/game';
 import en from '../messages/en.json';
 import fr from '../messages/fr.json';
 import ta from '../messages/ta.json';
@@ -31,5 +32,17 @@ describe('traductions de l’écran joueur', () => {
     for (const cle of cles(fr)) {
       expect(variables(valeur(messages, cle)), cle).toEqual(variables(valeur(fr, cle)));
     }
+  });
+});
+
+describe('phrases des explications animées', () => {
+  it('chaque carte de chaque script a sa phrase, et rien de plus', () => {
+    for (const [script, cartes] of Object.entries(SCRIPTS_EXPLICATION)) {
+      const phrases = (fr.ecran.explications as Record<string, Record<string, string>>)[script];
+      expect(Object.keys(phrases ?? {}).sort(), script).toEqual(cartes.map((c) => c.cle).sort());
+    }
+    expect(Object.keys(fr.ecran.explications).sort()).toEqual(
+      Object.keys(SCRIPTS_EXPLICATION).sort(),
+    );
   });
 });

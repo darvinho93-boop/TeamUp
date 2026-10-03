@@ -438,7 +438,58 @@
     "photoDe": "Photo from team {equipe}",
     "gagnante": "The winner!",
     "duelProchain": "Next duel…",
-    "contre": "versus"
+    "contre": "versus",
+    "commentJouer": "How to play",
+    "explications": {
+      "list2": {
+        "equipe-dos": "One team sits with its back to the screen, eyes closed.",
+        "ecran-cache": "The screen shows the whole room something in common, then hides it.",
+        "salle-debout": "The guests concerned stand up: the team guesses what they share.",
+        "paliers": "The faster, the more points. One more clue at each stage."
+      },
+      "qcm2": {
+        "quadrants": "One question, four answers: A, B, C, D.",
+        "zones": "Go and stand in the zone of your answer.",
+        "elimine": "Wrong zone: you're out!",
+        "survivants": "100 points for each survivor in your team."
+      },
+      "qcm2-telephone": {
+        "quadrants": "One question, four answers: A, B, C, D.",
+        "telephone": "Answer on your phone: you have 30 seconds.",
+        "elimine": "Wrong answer: you're out!",
+        "survivants": "100 points for each survivor in your team."
+      },
+      "enchere2": {
+        "champions": "Each team sends one champion forward.",
+        "encheres": "The topic is revealed, the bids go up: “5!” “7!”",
+        "chrono": "The highest bidder must keep their word, against the clock.",
+        "verdict": "Bid kept: +100. Missed: +20 for every other team."
+      },
+      "mime2": {
+        "file": "The team lines up, no looking back.",
+        "mot": "The first one sees the word and mimes it to the next.",
+        "chaine": "Mime, then whisper, then mime… down to the last one.",
+        "annonce": "The last one says it out loud: word found, +100!"
+      },
+      "photo2": {
+        "capitaine": "All evening, the captain sends one photo per theme.",
+        "diaporama": "Tonight, we reveal them theme by theme.",
+        "gagnante": "The guests of honour pick the winner.",
+        "points-photo": "+100 for each theme won."
+      },
+      "grab": {
+        "duellistes-table": "Two duellists, a table of objects.",
+        "musique": "The music starts…",
+        "attrape": "Grab the matching object, first!",
+        "points": "Duel won: +50 for your team."
+      },
+      "cup": {
+        "duellistes-gobelet": "Two duellists, a cup between them.",
+        "tete-epaule": "Touch what the host says: head, shoulder…",
+        "gobelet": "At the word “cup”, grab it first!",
+        "points": "Watch out for traps! Duel won: +50."
+      }
+    }
   },
   "admin": {
     "nav": {
