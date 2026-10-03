@@ -20,18 +20,35 @@ function instantDuRendu(): number {
 export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>) {
   const { supabase, evenement } = await evenementDeLaRegie((await params).code);
   const t = await getTranslations('regie.salle');
-  const [{ data: equipes }, { data: joueurs }] = await Promise.all([
-    supabase
-      .from('equipes')
-      .select('id, numero, nom')
-      .eq('evenement_id', evenement.id)
-      .order('numero'),
-    supabase
-      .from('joueurs')
-      .select('id, prenom, langue, capitaine, equipe_id, vu_le')
-      .eq('evenement_id', evenement.id)
-      .order('rejoint_le'),
-  ]);
+  const [{ data: equipes }, { data: joueurs }, { data: groupes }, { data: repartition }] =
+    await Promise.all([
+      supabase
+        .from('equipes')
+        .select('id, numero, nom')
+        .eq('evenement_id', evenement.id)
+        .order('numero'),
+      supabase
+        .from('joueurs')
+        .select('id, prenom, langue, capitaine, equipe_id, vu_le')
+        .eq('evenement_id', evenement.id)
+        .order('rejoint_le'),
+      supabase.from('groupes').select('id, nom').eq('evenement_id', evenement.id).order('ordre'),
+      supabase
+        .from('equipes_groupes')
+        .select('equipe_id, groupe_id, effectif')
+        .eq('evenement_id', evenement.id),
+    ]);
+  // Répartition comptée à l'arrivée (lot 11) : un déplacement à la régie ne la change pas,
+  // on ne sait pas de quel groupe est le joueur, et c'est voulu.
+  const detailGroupes = (equipeId: string) =>
+    (groupes ?? [])
+      .map((g) => {
+        const compte = (repartition ?? []).find(
+          (r) => r.equipe_id === equipeId && r.groupe_id === g.id,
+        );
+        return `${g.nom} ${compte?.effectif ?? 0}`;
+      })
+      .join(' · ');
   const maintenant = instantDuRendu();
   const connectes = (joueurs ?? []).filter(
     (j) => maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS,
@@ -96,6 +113,11 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
             <h2 className="tu-regie__section-title">
               {e.nom} · {e.membres.length}
             </h2>
+            {(groupes ?? []).length > 0 && (
+              <p className="tu-regie__muted" data-testid="groupes">
+                {t('groupes', { detail: detailGroupes(e.id) })}
+              </p>
+            )}
             <ul className="tu-regie-list">{e.membres.map(ligne)}</ul>
           </section>
         ))}
