@@ -162,7 +162,11 @@
       "chronoChamp": "Timer (seconds)",
       "ajouter": "Add {jeu}",
       "questions": "Questions",
-      "question": "Question {numero}"
+      "question": "Question {numero}",
+      "filtre": "Content offered: {etiquettes}, complete in {langues}.",
+      "filtreLeve": "Content offered: all tags, complete in {langues}.",
+      "toutAfficher": "Show all",
+      "filtrer": "Filter by audience"
     },
     "pilotage": {
       "enDirect": "Live",

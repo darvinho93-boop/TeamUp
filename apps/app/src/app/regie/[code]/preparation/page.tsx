@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Button, TeamDot } from '@teamup/ui/react';
 import {
@@ -7,7 +8,7 @@ import {
   QUESTIONS_QUIZ,
   QUESTIONS_QUIZ_DEFAUT,
 } from '@teamup/game';
-import { libelleContenu } from '@/lib/contenus';
+import { etiquettesDe, libelleContenu, proposable } from '@/lib/contenus';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
@@ -30,12 +31,18 @@ export async function generateMetadata() {
 
 type Valeur = Record<string, unknown>;
 
-export default async function Preparation({ params }: PageProps<'/regie/[code]/preparation'>) {
+export default async function Preparation({
+  params,
+  searchParams,
+}: PageProps<'/regie/[code]/preparation'>) {
   const { supabase, evenement } = await evenementDeLaRegie((await params).code);
   const t = await getTranslations('regie.preparation');
   const tJeux = await getTranslations('jeux');
+  const tEtiquettes = await getTranslations('admin.etiquettes');
   const code = evenement.code;
   const langue = evenement.langues[0] ?? 'fr';
+  // « Tout afficher » lève le filtre du public, jamais celui des langues.
+  const tout = (await searchParams)['tout'] === '1';
 
   const [
     { data: equipes },
@@ -56,9 +63,10 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
       .order('ordre'),
     supabase
       .from('contenus')
-      .select('id, jeu, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)')
+      .select(
+        'id, jeu, etiquette, actif, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
+      )
       .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2'])
-      .eq('actif', true)
       .order('cree_le'),
     supabase.from('joueurs').select('equipe_id').eq('evenement_id', evenement.id),
     supabase.from('photos').select('theme_id').eq('evenement_id', evenement.id),
@@ -68,9 +76,13 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
   const peuplees = new Set((joueurs ?? []).map((j) => j.equipe_id));
   // Un thème qui a déjà reçu des photos ne change plus : elles resteraient sans thème.
   const themesPhotographies = new Set((photos ?? []).map((p) => p.theme_id));
-  const options = (jeu: string): OptionContenu[] =>
+  // Les contenus actifs qui conviennent à la soirée (langues, public), plus celui déjà choisi
+  // pour ce passage, quel qu'il soit : sinon le menu l'afficherait comme vide.
+  const options = (jeu: string, choisi: string | null): OptionContenu[] =>
     (banque ?? [])
-      .filter((c) => c.jeu === jeu)
+      .filter(
+        (c) => c.jeu === jeu && (c.id === choisi || (c.actif && proposable(c, evenement, tout))),
+      )
       .map((c) => ({
         id: c.id,
         libelle: libelleContenu(jeu, c.contenus_traductions, c.contenus_secrets, langue),
@@ -157,6 +169,20 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
             {t('depassement', { minutes: duree.depassement.ecartMin })}
           </p>
         )}
+        <p className="tu-regie__muted" data-testid="filtre">
+          {t(tout ? 'filtreLeve' : 'filtre', {
+            etiquettes: etiquettesDe(evenement.type_client)
+              .map((e) => tEtiquettes(e))
+              .join(' + '),
+            langues: evenement.langues.map((l) => l.toUpperCase()).join(', '),
+          })}{' '}
+          <Link
+            href={tout ? `/regie/${code}/preparation` : `/regie/${code}/preparation?tout=1`}
+            className="tu-regie__lien"
+          >
+            {tout ? t('filtrer') : t('toutAfficher')}
+          </Link>
+        </p>
 
         {programme.length === 0 ? (
           <p className="tu-regie__muted">{t('programmeVide')}</p>
@@ -193,7 +219,7 @@ export default async function Preparation({ params }: PageProps<'/regie/[code]/p
                               code={code}
                               passageId={p.id}
                               valeur={p.contenu_id}
-                              options={options(m.jeu)}
+                              options={options(m.jeu, p.contenu_id)}
                               desactive={
                                 !modifiable ||
                                 p.statut !== 'a_venir' ||

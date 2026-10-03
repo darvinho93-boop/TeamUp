@@ -9,6 +9,7 @@ import {
   QUESTIONS_QUIZ_DEFAUT,
   type GameCode,
 } from '@teamup/game';
+import { etiquettesDe, proposable } from '@/lib/contenus';
 import { evenementDeLaRegie, type EvenementRegie } from '@/serveur/regie';
 import type { ClientAnimateur } from '@/serveur/supabase-animateur';
 
@@ -73,27 +74,31 @@ export async function retirerEquipe(code: string, equipeId: string) {
   rafraichir();
 }
 
-/** Les contenus de la banque que cette soirée n'utilise pas encore, adaptés à son public. */
+/**
+ * Les contenus de la banque que cette soirée n'utilise pas encore, adaptés à son public et
+ * complets dans toutes ses langues.
+ */
 async function contenusLibres(
   supabase: ClientAnimateur,
   evenement: EvenementRegie,
   jeu: GameCode,
 ): Promise<string[]> {
-  const etiquettes =
-    evenement.type_client === 'entreprise' ? ['tout_public', 'b2b'] : ['tout_public', 'b2c'];
   const { data: banque } = await supabase
     .from('contenus')
-    .select('id')
+    .select('id, jeu, etiquette, contenus_traductions(langue), contenus_secrets(langue)')
     .eq('jeu', jeu)
     .eq('actif', true)
-    .in('etiquette', etiquettes as ('tout_public' | 'b2b' | 'b2c')[])
+    .in('etiquette', etiquettesDe(evenement.type_client))
     .order('cree_le');
   const { data: utilises } = await supabase
     .from('passages')
     .select('contenu_id')
     .eq('evenement_id', evenement.id);
   const pris = new Set((utilises ?? []).map((p) => p.contenu_id));
-  return (banque ?? []).map((c) => c.id).filter((id) => !pris.has(id));
+  return (banque ?? [])
+    .filter((c) => proposable(c, evenement))
+    .map((c) => c.id)
+    .filter((id) => !pris.has(id));
 }
 
 async function nouvelleManche(

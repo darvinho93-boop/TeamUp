@@ -162,7 +162,11 @@
       "chronoChamp": "நேரம் (வினாடிகள்)",
       "ajouter": "{jeu} சேர்",
       "questions": "கேள்விகள்",
-      "question": "கேள்வி {numero}"
+      "question": "கேள்வி {numero}",
+      "filtre": "காட்டப்படும் உள்ளடக்கம்: {etiquettes}, {langues} மொழிகளில் முழுமையானவை.",
+      "filtreLeve": "காட்டப்படும் உள்ளடக்கம்: எல்லாக் குறிச்சொற்களும், {langues} மொழிகளில் முழுமையானவை.",
+      "toutAfficher": "அனைத்தையும் காட்டு",
+      "filtrer": "பார்வையாளர்களுக்கு ஏற்ப வடிகட்டு"
     },
     "pilotage": {
       "enDirect": "நேரலை",

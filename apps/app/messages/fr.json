@@ -162,7 +162,11 @@
       "chronoChamp": "Chrono (secondes)",
       "ajouter": "Ajouter {jeu}",
       "questions": "Questions",
-      "question": "Question {numero}"
+      "question": "Question {numero}",
+      "filtre": "Contenus proposés : {etiquettes}, complets en {langues}.",
+      "filtreLeve": "Contenus proposés : toutes étiquettes, complets en {langues}.",
+      "toutAfficher": "Tout afficher",
+      "filtrer": "Filtrer selon le public"
     },
     "pilotage": {
       "enDirect": "En direct",
