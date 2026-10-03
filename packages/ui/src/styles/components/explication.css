@@ -1,0 +1,593 @@
+/* Explication animée d'un jeu, sur l'écran commun (lot 12). Une carte à la fois : un visuel
+   fait de silhouettes et de formes, une phrase dessous, une barre d'avancement par carte.
+   Les couleurs d'équipe servent d'identité, jamais le corail. Sous prefers-reduced-motion,
+   les cartes changent au même rythme mais rien ne bouge à l'intérieur. */
+
+.tu-expl {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--tu-space-8);
+  min-height: 0;
+}
+
+.tu-expl__titre {
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-2xl);
+  font-weight: 600;
+}
+
+.tu-expl__carte {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-12);
+  min-height: 0;
+  text-align: center;
+}
+
+.tu-expl__phrase {
+  max-width: var(--tu-expl-phrase-max);
+}
+
+.tu-expl__phrase .tu-stage-multi__premier {
+  font-size: var(--tu-size-3xl);
+  font-weight: 600;
+}
+
+/* Barre d'avancement : un segment par carte, celui en cours se remplit. */
+.tu-expl__progression {
+  display: flex;
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-expl__segment {
+  flex: 1;
+  height: var(--tu-space-2);
+  overflow: hidden;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface-muted);
+}
+
+.tu-expl__segment-plein {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tu-primary);
+  transform-origin: left;
+}
+
+/* ---- Le décor d'une carte ---- */
+
+.tu-expl-visuel {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--tu-space-8);
+  height: var(--tu-expl-visuel-h);
+}
+
+.tu-expl-groupe {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--tu-space-4);
+}
+
+/* Silhouette : une tête, un buste. La couleur vient de la pastille d'équipe (.tu-team--n). */
+.tu-expl-perso {
+  --tu-expl-couleur: var(--tu-team-color, var(--tu-text-muted));
+
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-1);
+  width: var(--tu-expl-perso);
+}
+
+.tu-expl-perso::before {
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-expl-couleur);
+  content: '';
+}
+
+.tu-expl-perso::after {
+  width: 100%;
+  height: calc(var(--tu-expl-perso) * 1.1);
+  border-radius: var(--tu-radius-lg) var(--tu-radius-lg) var(--tu-radius-sm) var(--tu-radius-sm);
+  background: var(--tu-expl-couleur);
+  content: '';
+}
+
+.tu-expl-perso--assis::after {
+  height: calc(var(--tu-expl-perso) * 0.7);
+}
+
+.tu-expl-perso--grand {
+  width: calc(var(--tu-expl-perso) * 1.5);
+}
+
+.tu-expl-perso--grand::after {
+  height: calc(var(--tu-expl-perso) * 1.6);
+}
+
+.tu-expl-perso--eteint {
+  opacity: 0.3;
+}
+
+/* Écran projeté, dans le décor. */
+.tu-expl-ecran {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tu-expl-ecran-w);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+}
+
+.tu-expl-ecran__rideau {
+  width: 100%;
+  height: 100%;
+  background: var(--tu-surface-muted);
+}
+
+/* Bulle de parole ou de pensée. */
+.tu-expl-bulle {
+  white-space: nowrap;
+  align-self: flex-start;
+  padding: var(--tu-space-4) var(--tu-space-6);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-text);
+  color: var(--tu-text-invert);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tu-expl-fleche {
+  align-self: center;
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-3xl);
+}
+
+.tu-expl-fleche--pointillee {
+  opacity: 0.5;
+}
+
+/* Grand nombre : points gagnés, multiplicateurs. */
+.tu-expl-points {
+  white-space: nowrap;
+  align-self: center;
+  color: var(--tu-primary);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tu-expl-points--discret {
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-4xl);
+}
+
+/* Quadrants du Quiz, en réduction. */
+.tu-expl-quadrants {
+  display: grid;
+  grid-template-columns: repeat(2, var(--tu-expl-quadrant));
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-expl-quadrants__zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-2);
+  height: calc(var(--tu-expl-quadrant) * 0.55);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+}
+
+.tu-expl-quadrants__zone--bonne {
+  border-color: var(--tu-primary);
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-expl-quadrants__zone--fausse {
+  opacity: 0.3;
+}
+
+.tu-expl-quadrants__zone .tu-expl-perso {
+  width: calc(var(--tu-expl-perso) * 0.5);
+}
+
+/* Téléphone : quatre boutons de réponse. */
+.tu-expl-telephone {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--tu-space-2);
+  width: calc(var(--tu-expl-perso) * 2.6);
+  padding: var(--tu-space-6) var(--tu-space-3);
+  border: var(--tu-btn-border-width) solid var(--tu-text-muted);
+  border-radius: var(--tu-radius-lg);
+}
+
+.tu-expl-telephone__touche {
+  padding: var(--tu-space-2) 0;
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-surface-muted);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+}
+
+.tu-expl-telephone__touche--choisie {
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-expl-telephone__photo {
+  grid-column: 1 / -1;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-surface-muted);
+}
+
+/* Paliers de Points communs : 60, 35 et 35 s, ×3, ×2, ×1. */
+.tu-expl-paliers {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--tu-space-2);
+  width: var(--tu-expl-ecran-w);
+}
+
+.tu-expl-paliers__palier {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-2xl);
+  font-weight: 700;
+}
+
+.tu-expl-paliers__palier:nth-child(1) {
+  flex: 60;
+}
+
+.tu-expl-paliers__palier:nth-child(2),
+.tu-expl-paliers__palier:nth-child(3) {
+  flex: 35;
+}
+
+.tu-expl-paliers__barre {
+  height: var(--tu-space-4);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-primary);
+}
+
+.tu-expl-paliers__palier:nth-child(2) .tu-expl-paliers__barre {
+  opacity: 0.7;
+}
+
+.tu-expl-paliers__palier:nth-child(3) .tu-expl-paliers__barre {
+  opacity: 0.4;
+}
+
+/* Chrono géant en anneau. */
+.tu-expl-anneau {
+  --tu-expl-reste: 75%;
+
+  width: calc(var(--tu-expl-visuel-h) * 0.85);
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-pill);
+  background: conic-gradient(var(--tu-primary) var(--tu-expl-reste), var(--tu-surface-muted) 0);
+  mask: radial-gradient(farthest-side, transparent 72%, var(--tu-text) 73%);
+}
+
+/* Photos côte à côte. */
+.tu-expl-photo {
+  width: calc(var(--tu-expl-perso) * 2.4);
+  aspect-ratio: 3 / 4;
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: linear-gradient(
+    160deg,
+    var(--tu-team-color, var(--tu-surface-muted)),
+    var(--tu-surface)
+  );
+}
+
+.tu-expl-photo--gagnante {
+  border-color: var(--tu-primary);
+  box-shadow: var(--tu-shadow-lift);
+  transform: scale(1.25);
+}
+
+.tu-expl-photo--eteinte {
+  opacity: 0.3;
+}
+
+/* Table des duels, objets et gobelet. */
+.tu-expl-table {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--tu-space-4);
+  width: calc(var(--tu-expl-perso) * 3.5);
+  padding-bottom: var(--tu-space-2);
+  border-bottom: var(--tu-space-2) solid var(--tu-border);
+}
+
+.tu-expl-objet {
+  width: calc(var(--tu-expl-perso) * 0.6);
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-team-color, var(--tu-text-muted));
+}
+
+.tu-expl-objet--rond {
+  border-radius: var(--tu-radius-pill);
+}
+
+.tu-expl-objet--elu {
+  outline: var(--tu-focus-width) solid var(--tu-primary);
+  outline-offset: var(--tu-space-1);
+}
+
+.tu-expl-gobelet {
+  width: calc(var(--tu-expl-perso) * 0.9);
+  height: calc(var(--tu-expl-perso) * 1.1);
+  background: var(--tu-text);
+  clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+}
+
+.tu-expl-notes {
+  white-space: nowrap;
+  align-self: flex-start;
+  color: var(--tu-primary);
+  font-size: var(--tu-size-4xl);
+  letter-spacing: var(--tu-space-4);
+}
+
+/* Silhouette qui montre une partie du corps : un repère sur la tête, puis l'épaule. */
+.tu-expl-repere {
+  position: relative;
+}
+
+.tu-expl-repere__point {
+  position: absolute;
+  width: var(--tu-space-6);
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-primary);
+  opacity: 0;
+}
+
+.tu-expl-repere__point--tete {
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+}
+
+.tu-expl-repere__point--epaule {
+  top: 40%;
+  left: 0;
+}
+
+/* ---- Mouvement ---- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-expl__carte {
+    animation: tu-expl-entree var(--tu-dur-reveal) var(--tu-ease) both;
+  }
+
+  /* Les éléments marqués entrent les uns après les autres. */
+  .tu-expl-suite > * {
+    animation: tu-expl-entree var(--tu-dur-reveal) var(--tu-ease) both;
+  }
+
+  .tu-expl-suite > :nth-child(2) {
+    animation-delay: calc(var(--tu-dur-reveal) * 1);
+  }
+
+  .tu-expl-suite > :nth-child(3) {
+    animation-delay: calc(var(--tu-dur-reveal) * 2);
+  }
+
+  .tu-expl-suite > :nth-child(4) {
+    animation-delay: calc(var(--tu-dur-reveal) * 3);
+  }
+
+  .tu-expl-suite > :nth-child(5) {
+    animation-delay: calc(var(--tu-dur-reveal) * 4);
+  }
+
+  .tu-expl-suite > :nth-child(6) {
+    animation-delay: calc(var(--tu-dur-reveal) * 5);
+  }
+
+  .tu-expl-se-leve {
+    animation: tu-expl-lever var(--tu-dur-reveal) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-dur-reveal) * 2);
+  }
+
+  .tu-expl-avance {
+    animation: tu-expl-avancer calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
+    animation-delay: var(--tu-dur-reveal);
+  }
+
+  .tu-expl-ecran__rideau {
+    animation: tu-expl-rideau calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-dur-reveal) * 4);
+  }
+
+  .tu-expl-pulse {
+    animation: tu-expl-pulse calc(var(--tu-dur-reveal) * 2) var(--tu-ease) infinite;
+  }
+
+  .tu-expl-mime {
+    animation: tu-expl-mime calc(var(--tu-dur-reveal) * 2) var(--tu-ease) infinite alternate;
+  }
+
+  .tu-expl-anneau {
+    animation: tu-expl-decompte calc(var(--tu-dur-reveal) * 9) linear both;
+  }
+
+  .tu-expl-photo--gagnante {
+    animation: tu-expl-gagner calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
+    animation-delay: var(--tu-dur-reveal);
+  }
+
+  .tu-expl-photo--eteinte {
+    animation: tu-expl-eteindre calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
+    animation-delay: var(--tu-dur-reveal);
+  }
+
+  .tu-expl-quadrants__zone--fausse,
+  .tu-expl-perso--eteint {
+    animation: tu-expl-eteindre calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-dur-reveal) * 2);
+  }
+
+  .tu-expl-repere__point--tete {
+    animation: tu-expl-clin calc(var(--tu-dur-reveal) * 6) var(--tu-ease) infinite;
+  }
+
+  .tu-expl-repere__point--epaule {
+    animation: tu-expl-clin calc(var(--tu-dur-reveal) * 6) var(--tu-ease) infinite;
+    animation-delay: calc(var(--tu-dur-reveal) * 3);
+  }
+
+  .tu-expl-gobelet--saute {
+    animation: tu-expl-saut calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-dur-reveal) * 2);
+  }
+
+  .tu-expl__segment-plein {
+    transition: transform var(--tu-dur-base) linear;
+  }
+}
+
+/* Sans mouvement : l'état final de chaque animation, directement. */
+@media (prefers-reduced-motion: reduce) {
+  .tu-expl-ecran__rideau {
+    display: none;
+  }
+
+  .tu-expl-repere__point {
+    opacity: 1;
+  }
+}
+
+@keyframes tu-expl-entree {
+  from {
+    opacity: 0;
+    transform: translateY(var(--tu-space-6));
+  }
+}
+
+@keyframes tu-expl-lever {
+  from {
+    transform: translateY(var(--tu-space-8));
+  }
+}
+
+@keyframes tu-expl-avancer {
+  from {
+    transform: translateY(calc(var(--tu-space-12) * -1)) scale(0.85);
+  }
+}
+
+@keyframes tu-expl-rideau {
+  from {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes tu-expl-pulse {
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes tu-expl-mime {
+  from {
+    transform: rotate(-6deg);
+  }
+
+  to {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes tu-expl-decompte {
+  from {
+    --tu-expl-reste: 100%;
+  }
+
+  to {
+    --tu-expl-reste: 0%;
+  }
+}
+
+@keyframes tu-expl-gagner {
+  from {
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+@keyframes tu-expl-eteindre {
+  from {
+    opacity: 1;
+  }
+}
+
+@keyframes tu-expl-clin {
+  0%,
+  45%,
+  100% {
+    opacity: 0;
+  }
+
+  10%,
+  35% {
+    opacity: 1;
+  }
+}
+
+@keyframes tu-expl-saut {
+  50% {
+    transform: translateY(calc(var(--tu-space-12) * -1));
+  }
+
+  to {
+    transform: translateX(calc(var(--tu-expl-perso) * -1.5));
+  }
+}
+
+/* L'anneau ne s'anime que si le navigateur sait interpoler la variable. */
+@property --tu-expl-reste {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 75%;
+}

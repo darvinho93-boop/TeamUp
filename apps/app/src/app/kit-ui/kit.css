@@ -33,3 +33,17 @@
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: var(--tu-space-4);
 }
+
+.kit__grid--large {
+  grid-template-columns: repeat(auto-fit, minmax(var(--tu-expl-ecran-w), 1fr));
+}
+
+.kit__visuel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-4);
+  margin: 0;
+  overflow: hidden;
+  color: var(--tu-text-muted);
+}

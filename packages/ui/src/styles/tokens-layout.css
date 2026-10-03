@@ -31,6 +31,13 @@
   --tu-stage-podium-2: 14rem;
   --tu-stage-podium-3: 10rem;
 
+  /* Explications animées (lot 12) : hauteur du décor, silhouette, écran, quadrant, phrase. */
+  --tu-expl-visuel-h: 28rem;
+  --tu-expl-perso: 6rem;
+  --tu-expl-ecran-w: 26rem;
+  --tu-expl-quadrant: 16rem;
+  --tu-expl-phrase-max: 80rem;
+
   /* Tamoul : la police latine d'abord (prénoms, noms d'équipe), Noto Sans Tamil pour le reste.
      Ni Inter ni Poppins n'ont de glyphes tamouls, le navigateur passe donc à Noto. */
   --tu-font-body-ta: 'Inter', var(--tu-font-tamil);

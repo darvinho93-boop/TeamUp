@@ -1,6 +1,8 @@
 'use client';
 
 import { Button, Card, TeamDot, TextField } from '@teamup/ui/react';
+import { SCRIPTS_EXPLICATION, type VisuelExplication } from '@teamup/game';
+import { VisuelCarte } from '@/ecran/explications/Visuels';
 import './kit.css';
 
 const teams = [
@@ -13,6 +15,10 @@ const teams = [
   { index: 7, name: 'Olive' },
   { index: 8, name: 'Framboise' },
 ];
+
+const VISUELS = [
+  ...new Set(Object.values(SCRIPTS_EXPLICATION).flatMap((cartes) => cartes.map((c) => c.visuel))),
+] as VisuelExplication[];
 
 function Demo() {
   return (
@@ -94,6 +100,18 @@ export default function KitUi() {
       <section className="kit__theme" data-theme="stage" aria-labelledby="theme-stage">
         <h2 id="theme-stage">Thème stage — écran commun et régie</h2>
         <Demo />
+      </section>
+
+      <section className="kit__theme" data-theme="stage" aria-labelledby="explications">
+        <h2 id="explications">Explications animées — décors des cartes (lot 12)</h2>
+        <div className="kit__grid kit__grid--large">
+          {VISUELS.map((visuel) => (
+            <figure key={visuel} className="kit__visuel">
+              <VisuelCarte visuel={visuel} />
+              <figcaption>{visuel}</figcaption>
+            </figure>
+          ))}
+        </div>
       </section>
     </main>
   );
