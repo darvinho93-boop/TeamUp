@@ -122,7 +122,12 @@ test('un admin crée un contenu en trois langues, un animateur le retrouve à la
   const options = menu(animateur).locator('option');
   await expect(options.filter({ hasText: REPONSE })).toHaveCount(1);
   await expect(options.filter({ hasText: REPONSE_FR_SEULE })).toHaveCount(0);
+  // Le choix part par une action serveur : on attend qu'elle ait répondu avant de relire.
+  const enregistre = animateur.waitForResponse(
+    (r) => r.request().method() === 'POST' && r.url().includes('/preparation'),
+  );
   await menu(animateur).selectOption({ label: REPONSE });
+  await enregistre;
   await animateur.reload();
   await expect(menu(animateur).locator('option:checked')).toHaveText(REPONSE);
 
