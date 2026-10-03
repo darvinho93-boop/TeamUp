@@ -22,5 +22,12 @@ export default async function Partie({ params }: PageProps<'/[code]'>) {
   const evenement = await evenementPublic(code);
   if (!evenement) return <SaisieCode erreurInitiale="codeInconnu" />;
 
-  return <Arrivee code={code} langues={evenement.langues} langueCourante={await getLocale()} />;
+  return (
+    <Arrivee
+      code={code}
+      langues={evenement.langues}
+      groupes={evenement.groupes}
+      langueCourante={await getLocale()}
+    />
+  );
 }

@@ -28,6 +28,13 @@ export interface EvenementPublic {
   code: string;
   langues: Langue[];
   statut: 'preparation' | 'repetition' | 'en_cours';
+  /** Groupes à mélanger (lot 11), dans l'ordre de la préparation ; vide sans groupes. */
+  groupes: GroupePublic[];
+}
+
+export interface GroupePublic {
+  id: string;
+  nom: string;
 }
 
 /**

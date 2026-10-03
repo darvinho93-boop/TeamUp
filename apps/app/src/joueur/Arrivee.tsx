@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button, TextField } from '@teamup/ui/react';
 import { memoriserLangue, NOMS_LANGUES } from '@/lib/langue-navigateur';
-import type { EtatJoueur, Langue } from '@/lib/partie';
+import type { EtatJoueur, GroupePublic, Langue } from '@/lib/partie';
 import { Cadre } from './Cadre';
 import { EcranJoueur } from './EcranJoueur';
 
@@ -21,18 +21,24 @@ const TITRES: Record<Langue, string> = {
 
 type Erreur = 'vide' | 'complet' | 'codeInconnu' | 'serveur';
 
-/** Langue, puis prénom, puis « Mon équipe ». */
+/**
+ * Langue, puis prénom, puis groupe si la soirée en a (lot 11), puis « Mon équipe ».
+ * Le groupe ne part qu'avec l'arrivée : il sert au tirage de l'équipe, rien ne le garde.
+ */
 export function Arrivee({
   code,
   langues,
+  groupes,
   langueCourante,
 }: {
   code: string;
   langues: Langue[];
+  groupes: GroupePublic[];
   /** Langue des textes affichés, d'après le cookie. */
   langueCourante: Langue;
 }) {
   const t = useTranslations('prenom');
+  const tGroupe = useTranslations('groupe');
   const router = useRouter();
   const [langue, setLangue] = useState<Langue | null>(
     // Une seule langue, déjà celle des textes : aucun choix à faire. Sinon on demande, même
@@ -40,6 +46,7 @@ export function Arrivee({
     langues.length === 1 && langues[0] === langueCourante ? langueCourante : null,
   );
   const [prenom, setPrenom] = useState('');
+  const [etapeGroupe, setEtapeGroupe] = useState(false);
   const [erreur, setErreur] = useState<Erreur>();
   const [envoi, setEnvoi] = useState(false);
   const [rejoint, setRejoint] = useState<EtatJoueur | null>(null);
@@ -51,16 +58,22 @@ export function Arrivee({
     router.refresh();
   };
 
-  const envoyer = async (e: FormEvent) => {
+  const validerPrenom = (e: FormEvent) => {
     e.preventDefault();
     if (!prenom.trim()) return setErreur('vide');
+    setErreur(undefined);
+    if (groupes.length > 0) return setEtapeGroupe(true);
+    void envoyer(null);
+  };
+
+  const envoyer = async (groupe: string | null) => {
     setEnvoi(true);
     setErreur(undefined);
     try {
       const reponse = await fetch(`/api/partie/${code}/rejoindre`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ prenom, langue }),
+        body: JSON.stringify({ prenom, langue, groupe }),
       });
       if (reponse.ok) return setRejoint((await reponse.json()) as EtatJoueur);
       setErreur(
@@ -100,9 +113,51 @@ export function Arrivee({
     );
   }
 
+  if (etapeGroupe) {
+    return (
+      <Cadre>
+        <div className="tu-player__body">
+          <h1 className="tu-player__title">{tGroupe('titre')}</h1>
+          <p className="tu-player__lead">{tGroupe('aide')}</p>
+          <ul className="tu-choices">
+            {groupes.map((g) => (
+              <li key={g.id}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  block
+                  disabled={envoi}
+                  onClick={() => void envoyer(g.id)}
+                >
+                  {g.nom}
+                </Button>
+              </li>
+            ))}
+            <li>
+              <Button
+                variant="ghost"
+                size="lg"
+                block
+                disabled={envoi}
+                onClick={() => void envoyer(null)}
+              >
+                {tGroupe('sansReponse')}
+              </Button>
+            </li>
+          </ul>
+          {erreur && (
+            <p className="tu-player__error" role="alert">
+              {t(erreur)}
+            </p>
+          )}
+        </div>
+      </Cadre>
+    );
+  }
+
   return (
     <Cadre>
-      <form className="tu-player__body" onSubmit={(e) => void envoyer(e)} noValidate>
+      <form className="tu-player__body" onSubmit={validerPrenom} noValidate>
         <h1 className="tu-player__title">{t('titre')}</h1>
         <TextField
           label={t('champ')}

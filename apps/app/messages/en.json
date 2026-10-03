@@ -21,6 +21,11 @@
     "codeInconnu": "This game is no longer open.",
     "serveur": "That didn't work. Try again."
   },
+  "groupe": {
+    "titre": "Your group",
+    "aide": "To mix the teams. We don't keep it.",
+    "sansReponse": "I'd rather not say"
+  },
   "equipe": {
     "surtitre": "Your team",
     "aide": "Find the players wearing this colour in the room.",

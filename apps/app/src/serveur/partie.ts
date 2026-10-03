@@ -30,23 +30,27 @@ export async function etatPourJeton(code: string, jeton: string): Promise<EtatJo
 }
 
 export type ResultatArrivee =
-  { ok: true } | { ok: false; erreur: 'code_inconnu' | 'complet' | 'langue' };
+  { ok: true } | { ok: false; erreur: 'code_inconnu' | 'complet' | 'langue' | 'groupe' };
 
 export async function rejoindre(
   code: string,
   prenom: string,
   langue: Langue,
   jeton: string,
+  /** Le groupe ne sert qu'au tirage de l'équipe : la base ne le range pas sur le joueur. */
+  groupe: string | null = null,
 ): Promise<ResultatArrivee> {
   const { error } = await supabaseService().rpc('rejoindre_evenement', {
     p_code: code,
     p_prenom: prenom,
     p_langue: langue,
     p_jeton_hash: hacher(jeton),
+    ...(groupe ? { p_groupe: groupe } : {}),
   });
   if (!error) return { ok: true };
   if (/complet/.test(error.message)) return { ok: false, erreur: 'complet' };
   if (/langue/.test(error.message)) return { ok: false, erreur: 'langue' };
+  if (/groupe/.test(error.message)) return { ok: false, erreur: 'groupe' };
   if (/inconnu|expiré/.test(error.message)) return { ok: false, erreur: 'code_inconnu' };
   throw new Error(error.message);
 }

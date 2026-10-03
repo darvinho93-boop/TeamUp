@@ -21,6 +21,11 @@
     "codeInconnu": "Cette partie n'est plus ouverte.",
     "serveur": "Ça n'a pas marché. Réessaie."
   },
+  "groupe": {
+    "titre": "Ton groupe",
+    "aide": "Pour mélanger les équipes. On ne le garde pas.",
+    "sansReponse": "Je préfère ne pas répondre"
+  },
   "equipe": {
     "surtitre": "Ton équipe",
     "aide": "Retrouve les joueurs de cette couleur dans la salle.",
