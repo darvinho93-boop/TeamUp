@@ -12,4 +12,5 @@ export * from './mime';
 export * from './photo';
 export * from './duels';
 export * from './programme';
+export * from './explications';
 export * from './pilotage';
