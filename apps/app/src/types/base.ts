@@ -170,6 +170,7 @@ export type Database = {
           creneau_minutes: number
           date_evenement: string
           id: string
+          invites_attendus: number | null
           langues: Database["public"]["Enums"]["langue"][]
           lieu: string | null
           occasion: string | null
@@ -188,6 +189,7 @@ export type Database = {
           creneau_minutes: number
           date_evenement: string
           id?: string
+          invites_attendus?: number | null
           langues?: Database["public"]["Enums"]["langue"][]
           lieu?: string | null
           occasion?: string | null
@@ -206,6 +208,7 @@ export type Database = {
           creneau_minutes?: number
           date_evenement?: string
           id?: string
+          invites_attendus?: number | null
           langues?: Database["public"]["Enums"]["langue"][]
           lieu?: string | null
           occasion?: string | null
@@ -448,7 +451,7 @@ export type Database = {
           envoyee_par: string | null
           equipe_id: string
           evenement_id: string
-          expire_le: string | null
+          expire_le: string
           gagnante: boolean
           id: string
           theme_id: string
@@ -459,7 +462,7 @@ export type Database = {
           envoyee_par?: string | null
           equipe_id: string
           evenement_id: string
-          expire_le?: string | null
+          expire_le: string
           gagnante?: boolean
           id?: string
           theme_id: string
@@ -470,7 +473,7 @@ export type Database = {
           envoyee_par?: string | null
           equipe_id?: string
           evenement_id?: string
-          expire_le?: string | null
+          expire_le?: string
           gagnante?: boolean
           id?: string
           theme_id?: string
@@ -768,6 +771,7 @@ export type Database = {
       etat_ecran: { Args: { p_code: string; p_regie?: boolean }; Returns: Json }
       etat_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       evenement_public: { Args: { p_code: string }; Returns: Json }
+      expiration_photo: { Args: { p_evenement: string }; Returns: string }
       nouveau_code: { Args: never; Returns: string }
       photos_du_joueur: {
         Args: { p_joueur: Database["public"]["Tables"]["joueurs"]["Row"] }
