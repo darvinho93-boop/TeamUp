@@ -10,6 +10,7 @@ import {
   QUESTIONS_QUIZ_DEFAUT,
 } from '@teamup/game';
 import { etiquettesDe, libelleContenu, proposable } from '@/lib/contenus';
+import { MAX_GROUPES } from '@/lib/groupes';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
@@ -22,6 +23,7 @@ import {
   ajouterQuiz,
   ajouterSurenchere,
   deplacerManche,
+  enregistrerGroupes,
   renommerEquipes,
   retirerEquipe,
   retirerManche,
@@ -52,6 +54,7 @@ export default async function Preparation({
     { data: banque },
     { data: joueurs },
     { data: photos },
+    { data: groupes },
   ] = await Promise.all([
     supabase
       .from('equipes')
@@ -72,7 +75,9 @@ export default async function Preparation({
       .order('cree_le'),
     supabase.from('joueurs').select('equipe_id').eq('evenement_id', evenement.id),
     supabase.from('photos').select('theme_id').eq('evenement_id', evenement.id),
+    supabase.from('groupes').select('ordre, nom').eq('evenement_id', evenement.id),
   ]);
+  const groupeDeRang = new Map((groupes ?? []).map((g) => [g.ordre, g.nom]));
 
   const nomEquipe = new Map((equipes ?? []).map((e) => [e.id, e]));
   const peuplees = new Set((joueurs ?? []).map((j) => j.equipe_id));
@@ -150,6 +155,38 @@ export default async function Preparation({
                 {t('ajouterEquipe')}
               </Button>
             )}
+          </div>
+        </form>
+      </section>
+
+      <section className="tu-regie__section" aria-labelledby="groupes">
+        <h2 id="groupes" className="tu-regie__section-title">
+          {t('groupes.titre')}
+        </h2>
+        <p className="tu-regie__muted">{t('groupes.aide')}</p>
+        <form action={enregistrerGroupes.bind(null, code)} className="tu-regie__section">
+          <ul className="tu-regie-list">
+            {Array.from({ length: MAX_GROUPES }, (_, i) => i + 1).map((ordre) => (
+              <li key={ordre} className="tu-regie-item">
+                <label className="tu-field tu-regie-item__grow">
+                  <span className="tu-visually-hidden">{t('groupes.nom', { numero: ordre })}</span>
+                  <input
+                    className="tu-field__control"
+                    name={`groupe-${ordre}`}
+                    defaultValue={groupeDeRang.get(ordre) ?? ''}
+                    placeholder={
+                      ordre === 1 || ordre === 2
+                        ? t(`groupes.exemple.${evenement.type_client}.${ordre}`)
+                        : ''
+                    }
+                    maxLength={40}
+                  />
+                </label>
+              </li>
+            ))}
+          </ul>
+          <div className="tu-cluster">
+            <Button type="submit">{t('groupes.enregistrer')}</Button>
           </div>
         </form>
       </section>

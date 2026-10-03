@@ -11,6 +11,7 @@ import {
   type GameCode,
 } from '@teamup/game';
 import { etiquettesDe, proposable } from '@/lib/contenus';
+import { MAX_GROUPES } from '@/lib/groupes';
 import { evenementDeLaRegie, type EvenementRegie } from '@/serveur/regie';
 import type { ClientAnimateur } from '@/serveur/supabase-animateur';
 
@@ -72,6 +73,29 @@ export async function retirerEquipe(code: string, equipeId: string) {
     .eq('equipe_id', equipeId);
   if ((equipes ?? 0) <= MIN_EQUIPES || (joueurs ?? 0) > 0) return;
   await supabase.from('equipes').delete().eq('id', equipeId).eq('evenement_id', evenement.id);
+  rafraichir();
+}
+
+/**
+ * Groupes à mélanger (lot 11) : une case par rang, de 1 à 6. Une case remplie crée ou renomme
+ * le groupe de ce rang, ses compteurs restent ; une case vidée le retire, compteurs compris.
+ */
+export async function enregistrerGroupes(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const remplis: { evenement_id: string; ordre: number; nom: string }[] = [];
+  const vides: number[] = [];
+  for (let ordre = 1; ordre <= MAX_GROUPES; ordre++) {
+    const brut = donnees.get(`groupe-${ordre}`);
+    const nom = typeof brut === 'string' ? brut.trim().slice(0, 40) : '';
+    if (nom) remplis.push({ evenement_id: evenement.id, ordre, nom });
+    else vides.push(ordre);
+  }
+  if (vides.length) {
+    await supabase.from('groupes').delete().eq('evenement_id', evenement.id).in('ordre', vides);
+  }
+  if (remplis.length) {
+    await supabase.from('groupes').upsert(remplis, { onConflict: 'evenement_id,ordre' });
+  }
   rafraichir();
 }
 

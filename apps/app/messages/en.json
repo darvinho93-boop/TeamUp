@@ -174,6 +174,22 @@
         "aide": "Not in the default programme (spec v3): keep them in reserve, to change pace after a long game.",
         "creneauCourt": "{minutes}-minute slot: the spec only recommends duels from 60 minutes.",
         "duels": "Duels"
+      },
+      "groupes": {
+        "titre": "Groups to mix",
+        "aide": "Optional. On arrival, each guest picks their group (or prefers not to say); their team is drawn among those with the fewest of that group. Nothing is kept about the guest. Clear a field to remove the group.",
+        "nom": "Group {numero} name",
+        "enregistrer": "Save groups",
+        "exemple": {
+          "particulier": {
+            "1": "E.g. Bride's side",
+            "2": "E.g. Groom's side"
+          },
+          "entreprise": {
+            "1": "E.g. Sales",
+            "2": "E.g. Accounting"
+          }
+        }
       }
     },
     "pilotage": {
