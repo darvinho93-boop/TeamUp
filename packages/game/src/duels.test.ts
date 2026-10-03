@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  aleaDepuis,
   GESTES_GOBELET,
   LONGUEUR_MAX_GOBELET,
   LONGUEUR_MIN_GOBELET,
@@ -81,6 +82,20 @@ describe('tirage des duellistes', () => {
 });
 
 describe('séquence de Tête, épaule, gobelet', () => {
+  it('se rejoue à l’identique pour un même passage, change d’un passage à l’autre', () => {
+    const a = sequenceGobelet(aleaDepuis('passage-1'));
+    expect(sequenceGobelet(aleaDepuis('passage-1'))).toEqual(a);
+    const autres = ['passage-2', 'passage-3', 'passage-4'].map((id) =>
+      sequenceGobelet(aleaDepuis(id)),
+    );
+    expect(autres.some((s) => JSON.stringify(s) !== JSON.stringify(a))).toBe(true);
+    for (let i = 0; i < 100; i++) {
+      const x = aleaDepuis(String(i))();
+      expect(x).toBeGreaterThanOrEqual(0);
+      expect(x).toBeLessThan(1);
+    }
+  });
+
   it('finit par gobelet, une seule fois, à une longueur variable', () => {
     const longueurs = new Set<number>();
     for (let n = 0; n < 200; n++) {

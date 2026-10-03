@@ -10,6 +10,9 @@ import type { ScoresParEquipe } from './scores';
 
 export const POINTS_DUEL = 50;
 
+/** Duels par manche à la préparation : la spec demande si la salle en tient plus de deux. */
+export const DUELS_DEFAUT = 3;
+
 export function scoreDuel(equipeGagnante: number): ScoresParEquipe {
   return { [equipeGagnante]: POINTS_DUEL };
 }
@@ -24,6 +27,26 @@ export interface Candidat {
 
 /** Les deux duellistes, d'équipes différentes. */
 export type Duel = readonly [Candidat, Candidat];
+
+/**
+ * Un aléa reproductible tiré d'un texte (l'identifiant d'un passage) : la même séquence à
+ * chaque rendu et après un rechargement de la régie. Hachage FNV-1a, puis mulberry32.
+ */
+export function aleaDepuis(texte: string): Alea {
+  let h = 2166136261;
+  for (let i = 0; i < texte.length; i++) {
+    h ^= texte.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  let a = h >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 function auHasard<T>(liste: readonly T[], alea: Alea): T {
   return liste[Math.min(liste.length - 1, Math.floor(alea() * liste.length))]!;
