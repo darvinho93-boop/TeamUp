@@ -132,10 +132,14 @@ avecBase('les groupes à mélanger', () => {
 
   it('sans réponse, l’invité va dans la moins remplie, sans rien compter', async () => {
     const { id, code, groupes } = await soireeAGroupes(3, ['Côté A']);
-    await rejoindre(code, groupes.get('Côté A')!);
-    await rejoindre(code, groupes.get('Côté A')!);
+    // Les deux du côté A sont tirés au hasard parmi les équipes ex aequo : l'invité sans
+    // réponse va dans celle qui reste vide, quelle qu'elle soit.
+    const a1 = await rejoindre(code, groupes.get('Côté A')!);
+    const a2 = await rejoindre(code, groupes.get('Côté A')!);
+    const prises = [a1.data?.equipe?.numero, a2.data?.equipe?.numero];
+    const vide = [1, 2, 3].find((n) => !prises.includes(n));
     const { data } = await rejoindre(code, null);
-    expect(data?.equipe?.numero).toBe(3);
+    expect(data?.equipe?.numero).toBe(vide);
     const lignes = await repartition(id);
     expect(lignes.reduce((s, l) => s + l.effectif, 0)).toBe(2);
   });
