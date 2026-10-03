@@ -321,6 +321,10 @@
         "enCours": "Explication à l'écran :",
         "rejouer": "Rejouer",
         "arreter": "Arrêter l'explication"
+      },
+      "tirage": {
+        "tirer": "Tirer l'ordre de passage",
+        "retirer": "Tirer à nouveau"
       }
     },
     "salle": {

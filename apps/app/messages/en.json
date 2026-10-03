@@ -321,6 +321,10 @@
         "enCours": "Explanation on screen:",
         "rejouer": "Replay",
         "arreter": "Stop the explanation"
+      },
+      "tirage": {
+        "tirer": "Draw the playing order",
+        "retirer": "Draw the order again"
       }
     },
     "salle": {

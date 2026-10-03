@@ -18,6 +18,7 @@ import {
   appliquerSurenchere,
   CHRONO_SURENCHERE_DEFAUT_S,
   dureeExplicationS,
+  DUREE_TIRAGE_S,
   passageSuivant,
   scriptExplication,
   type ActionDuel,
@@ -53,6 +54,8 @@ export type Commande =
   | { type: 'intro'; mancheId: string }
   | { type: 'expliquer'; telephone?: boolean }
   | { type: 'arreterExplication' }
+  /** L'ordre tiré par la régie (lot 13) : les ids des passages de la manche, dans l'ordre. */
+  | { type: 'tirerOrdre'; passages: string[] }
   | { type: 'commencer'; mode?: ModeQuiz }
   | { type: 'pointsCommuns'; action: ActionPointsCommuns }
   | { type: 'quiz'; action: Exclude<ActionQuiz['type'], 'valider'> }
@@ -91,6 +94,8 @@ export interface Ecriture {
   scores: { equipe_id: string; points: number; motif: string; manche_id: string }[];
   /** La première manche lancée fait passer la soirée « en cours » (les téléphones le voient). */
   ouvrirLaSoiree: boolean;
+  /** Nouvel ordre des passages, écrit par `ordonner_passages` avant l'étape (lot 13). */
+  ordre: { manche_id: string; passages: string[] } | null;
 }
 
 /** Libellés du journal des points, dans la langue de la régie. */
@@ -122,6 +127,13 @@ export function scriptEnCours(
   if (etape === ETAPE_EXPLICATION_TELEPHONE && jeu === 'qcm2') return scriptExplication(jeu, true);
   return null;
 }
+
+/** Tirage de l'ordre de passage en direct (lot 13) : une étape de l'intro, animée à l'écran. */
+export const ETAPE_TIRAGE_ORDRE = 'tirage-ordre';
+
+/** Les jeux qui se jouent une équipe à la fois : leur ordre de passage se tire. */
+export const jeuParEquipe = (jeu: string | undefined): boolean =>
+  jeu === 'list2' || jeu === 'mime2';
 
 const estDuel = (jeu: string | undefined): jeu is BetaDuel => jeu === 'grab' || jeu === 'cup';
 
@@ -168,6 +180,7 @@ export function calculerEtape(
     manche: null,
     scores: [],
     ouvrirLaSoiree: false,
+    ordre: null,
   };
 
   try {
@@ -207,6 +220,26 @@ export function calculerEtape(
         ecriture.pilotage.etape = null;
         ecriture.pilotage.chrono = 'arreter';
         return ecriture;
+
+      case 'tirerOrdre': {
+        if (p.scene !== 'intro' || !manche || !jeuParEquipe(manche.jeu)) return null;
+        if (manche.statut !== 'a_venir' || manche.passages.some((pa) => pa.statut !== 'a_venir')) {
+          return null;
+        }
+        const attendus = new Set(manche.passages.map((pa) => pa.id));
+        const recus = new Set(commande.passages);
+        if (
+          recus.size !== commande.passages.length ||
+          recus.size !== attendus.size ||
+          commande.passages.some((id) => !attendus.has(id))
+        ) {
+          return null;
+        }
+        ecriture.pilotage.etape = ETAPE_TIRAGE_ORDRE;
+        Object.assign(ecriture.pilotage, chronoDe({ demarrer: DUREE_TIRAGE_S }));
+        ecriture.ordre = { manche_id: manche.id, passages: commande.passages };
+        return ecriture;
+      }
 
       case 'commencer': {
         if (!manche || manche.statut === 'terminee' || manche.statut === 'annulee') return null;

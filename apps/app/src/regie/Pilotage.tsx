@@ -20,8 +20,10 @@ import {
   type EtapeQuiz,
   type EtapeSurenchere,
   type GameCode,
+  ordreDesPassages,
+  tirerOrdre,
 } from '@teamup/game';
-import { calculerEtape, scriptEnCours, type Commande } from '@/lib/pilotage';
+import { calculerEtape, jeuParEquipe, scriptEnCours, type Commande } from '@/lib/pilotage';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import type { Json } from '@/types/base';
 import {
@@ -99,6 +101,18 @@ export function Pilotage({
     }
     demarrer(async () => {
       const supabase = supabaseNavigateur();
+      // L'ordre tiré s'écrit d'abord : l'écran, réveillé par l'étape, le lira déjà rangé.
+      if (ecriture.ordre) {
+        const { error: refus } = await supabase.rpc('ordonner_passages', {
+          p_manche: ecriture.ordre.manche_id,
+          p_passages: ecriture.ordre.passages,
+        });
+        if (refus) {
+          setAlerte(t('erreur.impossible'));
+          await relire();
+          return;
+        }
+      }
       const { error } = await supabase.rpc('enregistrer_etape', {
         p_evenement: etat.evenement.id,
         p_version: etat.pilotage.version,
@@ -175,6 +189,9 @@ export function Pilotage({
             {alerte}
           </p>
         )}
+        {scene === 'intro' && manche && jeuParEquipe(manche.jeu) && manche.statut === 'a_venir' && (
+          <PanneauTirage manche={manche} agir={agir} />
+        )}
         {scene === 'intro' && manche && (
           <PanneauExplication etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
@@ -245,6 +262,33 @@ interface PanneauProps {
   manche: MancheSalle;
   decalageMs: number;
   agir: Agir;
+}
+
+/** Un hasard sûr, celui du navigateur : personne ne peut prévoir le tirage. */
+function aleaCrypto(): number {
+  return crypto.getRandomValues(new Uint32Array(1))[0]! / 2 ** 32;
+}
+
+/**
+ * Tirage de l'ordre de passage en direct (lot 13) : la régie tire, l'écran anime. Les équipes
+ * sont celles des passages de la manche ; chaque tour reprend l'ordre tiré.
+ */
+function PanneauTirage({ manche, agir }: Pick<PanneauProps, 'manche' | 'agir'>) {
+  const t = useTranslations('regie.pilotage.tirage');
+  const tirer = () => {
+    const equipes = [
+      ...new Set(manche.passages.flatMap((p) => (p.equipe_id ? [p.equipe_id] : []))),
+    ];
+    const ordre = tirerOrdre(equipes, aleaCrypto);
+    agir({ type: 'tirerOrdre', passages: ordreDesPassages(manche.passages, ordre) });
+  };
+  return (
+    <div className="tu-cluster">
+      <Button variant="ghost" onClick={tirer}>
+        {manche.options['ordre_tire'] === true ? t('retirer') : t('tirer')}
+      </Button>
+    </div>
+  );
 }
 
 /**

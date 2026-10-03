@@ -479,3 +479,43 @@ describe('l’explication animée', () => {
     expect(scriptEnCours('mime2', 'jeu', 'explication')).toBeNull();
   });
 });
+
+describe("le tirage de l'ordre de passage", () => {
+  const intro = (manche: string, extra: Partial<EtatSalle['pilotage']> = {}) =>
+    etat({ scene: 'intro', manche_id: manche, ...extra });
+
+  it('anime le tirage et emporte le nouvel ordre', () => {
+    const ecriture = etape(intro('pc'), { type: 'tirerOrdre', passages: ['p2', 'p1'] });
+    expect(ecriture?.pilotage).toMatchObject({
+      scene: 'intro',
+      etape: 'tirage-ordre',
+      chrono: 'demarrer',
+      chrono_duree_s: 5,
+    });
+    expect(ecriture?.ordre).toEqual({ manche_id: 'pc', passages: ['p2', 'p1'] });
+    expect(ecriture?.passage).toBeNull();
+  });
+
+  it('seulement pour les jeux joués une équipe à la fois', () => {
+    expect(etape(intro('mi'), { type: 'tirerOrdre', passages: ['m2', 'm1'] })).not.toBeNull();
+    expect(etape(intro('qz'), { type: 'tirerOrdre', passages: ['q2', 'q1'] })).toBeNull();
+  });
+
+  it('refuse une liste qui n’est pas exactement celle des passages', () => {
+    for (const passages of [['p1'], ['p1', 'p1'], ['p1', 'x'], ['p1', 'p2', 'p2']]) {
+      expect(etape(intro('pc'), { type: 'tirerOrdre', passages })).toBeNull();
+    }
+  });
+
+  it('refuse hors de l’intro, ou une fois la manche commencée', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'pc', passage_id: 'p1', etape: 'pret' });
+    expect(etape(e, { type: 'tirerOrdre', passages: ['p2', 'p1'] })).toBeNull();
+    const commencee = intro('pc');
+    commencee.programme[0] = { ...commencee.programme[0]!, statut: 'en_cours' };
+    expect(etape(commencee, { type: 'tirerOrdre', passages: ['p2', 'p1'] })).toBeNull();
+  });
+
+  it('les autres touches n’emportent aucun ordre', () => {
+    expect(etape(intro('pc'), { type: 'expliquer' })?.ordre).toBeNull();
+  });
+});
