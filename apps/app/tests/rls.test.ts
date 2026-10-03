@@ -87,14 +87,28 @@ avecBase('un animateur connecté', () => {
   });
 
   it('ne voit que ses propres événements', async () => {
-    const { data } = await anna.from('evenements').select('code').returns<{ code: string }[]>();
-    expect(data?.map((e) => e.code)).toEqual(['FETE24']);
-
-    const { data: autres } = await brahim
+    // La base locale peut porter d'autres soirées créées à la main : on vérifie le cloisonnement,
+    // pas la liste exacte.
+    const { data: demo } = await clientService()
       .from('evenements')
-      .select('code')
-      .returns<{ code: string }[]>();
-    expect(autres?.map((e) => e.code)).toEqual(['BUREAU']);
+      .select('code, animateur_id')
+      .in('code', ['FETE24', 'BUREAU'])
+      .returns<{ code: string; animateur_id: string }[]>();
+    const idDe = (code: string) => demo?.find((e) => e.code === code)?.animateur_id;
+
+    for (const [client, sienne, autre, id] of [
+      [anna, 'FETE24', 'BUREAU', idDe('FETE24')],
+      [brahim, 'BUREAU', 'FETE24', idDe('BUREAU')],
+    ] as const) {
+      const { data } = await client
+        .from('evenements')
+        .select('code, animateur_id')
+        .returns<{ code: string; animateur_id: string }[]>();
+      const codes = data?.map((e) => e.code) ?? [];
+      expect(codes).toContain(sienne);
+      expect(codes).not.toContain(autre);
+      expect(data?.every((e) => e.animateur_id === id)).toBe(true);
+    }
   });
 
   it("ne voit pas les joueurs d'un événement qui n'est pas le sien", async () => {
