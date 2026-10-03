@@ -68,6 +68,7 @@
 
 .tu-regie__tools {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--tu-space-3);
 }
