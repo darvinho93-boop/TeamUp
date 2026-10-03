@@ -845,6 +845,10 @@ export type Database = {
       evenement_public: { Args: { p_code: string }; Returns: Json }
       expiration_photo: { Args: { p_evenement: string }; Returns: string }
       nouveau_code: { Args: never; Returns: string }
+      ordonner_passages: {
+        Args: { p_manche: string; p_passages: string[] }
+        Returns: undefined
+      }
       photos_du_joueur: {
         Args: { p_joueur: Database["public"]["Tables"]["joueurs"]["Row"] }
         Returns: Json
