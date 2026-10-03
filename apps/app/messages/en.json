@@ -313,6 +313,14 @@
           "gober": "Gobble (trap)",
           "gobelet": "CUP"
         }
+      },
+      "explication": {
+        "expliquer": "Explain",
+        "expliquerCroix": "Explain (cross)",
+        "expliquerTelephone": "Explain (phone)",
+        "enCours": "Explanation on screen:",
+        "rejouer": "Replay",
+        "arreter": "Stop the explanation"
       }
     },
     "salle": {

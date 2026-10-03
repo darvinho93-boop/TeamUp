@@ -313,6 +313,14 @@
           "gober": "Gober (piège)",
           "gobelet": "GOBELET"
         }
+      },
+      "explication": {
+        "expliquer": "Expliquer",
+        "expliquerCroix": "Expliquer (croix)",
+        "expliquerTelephone": "Expliquer (téléphone)",
+        "enCours": "Explication à l'écran :",
+        "rejouer": "Rejouer",
+        "arreter": "Arrêter l'explication"
       }
     },
     "salle": {

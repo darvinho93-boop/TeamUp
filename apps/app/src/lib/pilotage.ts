@@ -17,7 +17,9 @@ import {
   appliquerQuiz,
   appliquerSurenchere,
   CHRONO_SURENCHERE_DEFAUT_S,
+  dureeExplicationS,
   passageSuivant,
+  scriptExplication,
   type ActionDuel,
   type ActionMime,
   type ActionPhoto,
@@ -33,8 +35,10 @@ import {
   type EtapePointsCommuns,
   type EtapeQuiz,
   type EtapeSurenchere,
+  type GameCode,
   type ModeQuiz,
   type ScoresParEquipe,
+  type ScriptExplication,
 } from '@teamup/game';
 import {
   mancheCourante,
@@ -47,6 +51,8 @@ import {
 export type Commande =
   | { type: 'scene'; scene: Exclude<Scene, 'intro' | 'jeu'> }
   | { type: 'intro'; mancheId: string }
+  | { type: 'expliquer'; telephone?: boolean }
+  | { type: 'arreterExplication' }
   | { type: 'commencer'; mode?: ModeQuiz }
   | { type: 'pointsCommuns'; action: ActionPointsCommuns }
   | { type: 'quiz'; action: Exclude<ActionQuiz['type'], 'valider'> }
@@ -96,6 +102,25 @@ export interface Motifs {
   mime: (equipe: string) => string;
   photo: (equipe: string) => string;
   duel: (prenom: string, equipe: string) => string;
+}
+
+/**
+ * Explication animée (lot 12) : une étape de la scène intro, `explication` ou, pour le Quiz
+ * en mode téléphone, `explication-telephone`. Le chrono de la salle en donne le départ.
+ */
+const ETAPE_EXPLICATION = 'explication';
+const ETAPE_EXPLICATION_TELEPHONE = 'explication-telephone';
+
+/** Le script que l'écran doit jouer, ou `null` hors explication. */
+export function scriptEnCours(
+  jeu: GameCode | undefined,
+  scene: Scene,
+  etape: string | null,
+): ScriptExplication | null {
+  if (!jeu || scene !== 'intro') return null;
+  if (etape === ETAPE_EXPLICATION) return scriptExplication(jeu);
+  if (etape === ETAPE_EXPLICATION_TELEPHONE && jeu === 'qcm2') return scriptExplication(jeu, true);
+  return null;
 }
 
 const estDuel = (jeu: string | undefined): jeu is BetaDuel => jeu === 'grab' || jeu === 'cup';
@@ -164,6 +189,24 @@ export function calculerEtape(
         };
         return ecriture;
       }
+
+      case 'expliquer': {
+        if (p.scene !== 'intro' || !manche) return null;
+        const telephone = commande.telephone === true && manche.jeu === 'qcm2';
+        // Rejouer, c'est la même touche : un nouveau départ, posé par la base.
+        ecriture.pilotage.etape = telephone ? ETAPE_EXPLICATION_TELEPHONE : ETAPE_EXPLICATION;
+        Object.assign(
+          ecriture.pilotage,
+          chronoDe({ demarrer: dureeExplicationS(scriptExplication(manche.jeu, telephone)) }),
+        );
+        return ecriture;
+      }
+
+      case 'arreterExplication':
+        if (p.scene !== 'intro') return null;
+        ecriture.pilotage.etape = null;
+        ecriture.pilotage.chrono = 'arreter';
+        return ecriture;
 
       case 'commencer': {
         if (!manche || manche.statut === 'terminee' || manche.statut === 'annulee') return null;

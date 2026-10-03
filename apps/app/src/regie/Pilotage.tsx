@@ -21,7 +21,7 @@ import {
   type EtapeSurenchere,
   type GameCode,
 } from '@teamup/game';
-import { calculerEtape, type Commande } from '@/lib/pilotage';
+import { calculerEtape, scriptEnCours, type Commande } from '@/lib/pilotage';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import type { Json } from '@/types/base';
 import {
@@ -175,6 +175,9 @@ export function Pilotage({
             {alerte}
           </p>
         )}
+        {scene === 'intro' && manche && (
+          <PanneauExplication etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+        )}
         {scene === 'intro' && manche && manche.jeu !== 'qcm2' && (
           <Button
             variant="accent"
@@ -242,6 +245,50 @@ interface PanneauProps {
   manche: MancheSalle;
   decalageMs: number;
   agir: Agir;
+}
+
+/**
+ * Explication animée (lot 12) : facultative, lancée à la demande. La salle la voit sur
+ * l'écran, la régie dans son aperçu ; ici, seulement les touches et le temps qui reste.
+ */
+function PanneauExplication({ etat, manche, decalageMs, agir }: PanneauProps) {
+  const t = useTranslations('regie.pilotage.explication');
+  const { etape, chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
+  const enCours = scriptEnCours(manche.jeu, 'intro', etape) !== null;
+  if (!enCours) {
+    return manche.jeu === 'qcm2' ? (
+      <div className="tu-cluster">
+        <Button variant="ghost" onClick={() => agir({ type: 'expliquer' })}>
+          {t('expliquerCroix')}
+        </Button>
+        <Button variant="ghost" onClick={() => agir({ type: 'expliquer', telephone: true })}>
+          {t('expliquerTelephone')}
+        </Button>
+      </div>
+    ) : (
+      <div className="tu-cluster">
+        <Button variant="ghost" onClick={() => agir({ type: 'expliquer' })}>
+          {t('expliquer')}
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="tu-cluster">
+      <span className="tu-regie__muted">
+        {t('enCours')} <Chrono departMs={depart} dureeS={duree ?? 0} decalageMs={decalageMs} />
+      </span>
+      <Button
+        variant="ghost"
+        onClick={() => agir({ type: 'expliquer', telephone: etape === 'explication-telephone' })}
+      >
+        {t('rejouer')}
+      </Button>
+      <Button variant="ghost" onClick={() => agir({ type: 'arreterExplication' })}>
+        {t('arreter')}
+      </Button>
+    </div>
+  );
 }
 
 function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) {

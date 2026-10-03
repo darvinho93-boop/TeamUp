@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculerEtape, type Commande } from '../src/lib/pilotage';
+import { calculerEtape, scriptEnCours, type Commande } from '../src/lib/pilotage';
 import type { EtatSalle, MancheSalle, PassageSalle } from '../src/lib/salle';
 
 const motifs = {
@@ -421,5 +421,61 @@ describe('un duel en bêta, touche par touche', () => {
     );
     const ecriture = calculerEtape(e, { type: 'suivant' }, 0, motifs)!;
     expect(ecriture.pilotage).toMatchObject({ passage_id: 'd2', etape: 'tirage' });
+  });
+});
+
+describe('l’explication animée', () => {
+  it('démarre le chrono pour la durée du script, sans quitter l’intro', () => {
+    const ecriture = etape(etat({ scene: 'intro', manche_id: 'pc' }), { type: 'expliquer' });
+    expect(ecriture?.pilotage).toMatchObject({
+      scene: 'intro',
+      manche_id: 'pc',
+      etape: 'explication',
+      chrono: 'demarrer',
+      chrono_duree_s: 24,
+    });
+    expect(ecriture?.manche).toBeNull();
+    expect(ecriture?.ouvrirLaSoiree).toBe(false);
+  });
+
+  it('rejouer repart de zéro', () => {
+    const e = etat({ scene: 'intro', manche_id: 'pc', etape: 'explication' });
+    expect(etape(e, { type: 'expliquer' })?.pilotage.chrono).toBe('demarrer');
+  });
+
+  it('le Quiz s’explique en mode téléphone sur demande, les autres jeux l’ignorent', () => {
+    const quiz = etape(etat({ scene: 'intro', manche_id: 'qz' }), {
+      type: 'expliquer',
+      telephone: true,
+    });
+    expect(quiz?.pilotage.etape).toBe('explication-telephone');
+    const mime = etape(etat({ scene: 'intro', manche_id: 'mi' }), {
+      type: 'expliquer',
+      telephone: true,
+    });
+    expect(mime?.pilotage.etape).toBe('explication');
+  });
+
+  it('arrêter ramène l’intro fixe', () => {
+    const e = etat({ scene: 'intro', manche_id: 'pc', etape: 'explication' });
+    expect(etape(e, { type: 'arreterExplication' })?.pilotage).toMatchObject({
+      scene: 'intro',
+      etape: null,
+      chrono: 'arreter',
+    });
+  });
+
+  it('n’existe qu’en intro', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'pc', passage_id: 'p1', etape: 'lance' });
+    expect(etape(e, { type: 'expliquer' })).toBeNull();
+    expect(etape(e, { type: 'arreterExplication' })).toBeNull();
+  });
+
+  it('l’écran sait quel script jouer', () => {
+    expect(scriptEnCours('qcm2', 'intro', 'explication')).toBe('qcm2');
+    expect(scriptEnCours('qcm2', 'intro', 'explication-telephone')).toBe('qcm2-telephone');
+    expect(scriptEnCours('mime2', 'intro', 'explication-telephone')).toBeNull();
+    expect(scriptEnCours('mime2', 'intro', null)).toBeNull();
+    expect(scriptEnCours('mime2', 'jeu', 'explication')).toBeNull();
   });
 });

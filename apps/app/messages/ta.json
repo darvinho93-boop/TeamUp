@@ -313,6 +313,14 @@
           "gober": "Gober (பொறி)",
           "gobelet": "குவளை"
         }
+      },
+      "explication": {
+        "expliquer": "விளக்கு",
+        "expliquerCroix": "விளக்கு (தரைக் குறி)",
+        "expliquerTelephone": "விளக்கு (தொலைபேசி)",
+        "enCours": "திரையில் விளக்கம்:",
+        "rejouer": "மீண்டும் இயக்கு",
+        "arreter": "விளக்கத்தை நிறுத்து"
       }
     },
     "salle": {
