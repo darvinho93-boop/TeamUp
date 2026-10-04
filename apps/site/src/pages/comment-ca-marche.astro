@@ -13,52 +13,52 @@ import RegiePanel from '../components/visuels/RegiePanel.astro';
 const avant = [
   {
     title: 'Demande de devis',
-    body: "Vous remplissez le formulaire : date, lieu, nombre d'invités, groupes à mélanger.",
+    body: "Deux minutes pour nous décrire votre événement : date, lieu, nombre d'invités, groupes à mélanger.",
   },
   {
-    title: 'Appel de cadrage',
-    body: 'On fixe ensemble le créneau, les langues parlées et ce que vous attendez de la soirée.',
+    title: 'Un premier échange',
+    body: "Nous faisons connaissance et fixons ensemble le format, les langues de vos invités et l'ambiance que vous souhaitez.",
   },
   {
     title: 'Préparation',
-    body: 'On compose les équipes, on cale le programme sur votre créneau et on choisit les contenus.',
+    body: 'Nous définissons les groupes à mélanger, calons le programme sur votre soirée et choisissons les contenus avec vous.',
   },
   {
     title: 'Le jour J',
-    body: "L'animateur arrive [DÉLAI] avant le début pour installer l'écran et tester la salle.",
+    body: "L'animateur arrive [DÉLAI] avant le début pour installer l'écran et tester la salle. Vous accueillez vos invités l'esprit libre.",
   },
 ];
 
 const deroule = [
-  'Les invités rejoignent',
-  "Les équipes s'affichent",
+  'Les invités rejoignent la partie',
+  'Les équipes se découvrent',
   "Les jeux s'enchaînent",
-  'Diffusion des photos',
-  'Podium',
+  'Le final en photos',
+  'Le podium',
 ];
 
 const durees = [
-  { teams: '4 équipes', jeu: '≈ 36 min', creneau: '40 min', programme: 'Programme complet' },
+  { teams: '4 équipes', jeu: '≈ 36 min', creneau: '40 min', programme: 'Les cinq jeux au complet' },
   {
     teams: '5 équipes',
     jeu: '≈ 42 min',
     creneau: '40 min',
-    programme: "Programme resserré d'un thème ou d'une question",
+    programme: "Les cinq jeux, allégés d'un thème ou d'une question",
   },
-  { teams: '6 équipes', jeu: '≈ 47 min', creneau: '60 min', programme: 'Programme complet' },
-  { teams: '8 équipes', jeu: '≈ 58 min', creneau: '60 min', programme: 'Programme complet' },
+  { teams: '6 équipes', jeu: '≈ 47 min', creneau: '1 h', programme: 'Les cinq jeux au complet' },
+  { teams: '8 équipes', jeu: '≈ 58 min', creneau: '1 h', programme: 'Les cinq jeux au complet' },
 ];
 ---
 
 <Base
   title="Comment ça marche — Team Up!"
-  description="De la demande de devis au podium : vous décrivez l'événement, on prépare tout avec vous, un animateur fait jouer la salle. Rien à installer."
+  description="De la demande de devis au podium : vous nous parlez de votre événement, nous préparons tout avec vous, un animateur fait jouer la salle. Rien à installer."
 >
   <PageIntro
     wide
     eyebrow="Comment ça marche"
     title="De la demande de devis au podium."
-    lead="Vous nous décrivez l'événement, on prépare tout avec vous, et le jour venu un animateur Team Up! fait jouer la salle. Vous n'avez rien à installer."
+    lead="Vous nous parlez de votre événement, nous préparons tout avec vous, et le jour venu un animateur Team Up! fait vibrer la salle. Vous n'avez rien à installer, ni rien à gérer."
   />
 
   <Section eyebrow="Avant la soirée" title="Quatre étapes, un seul interlocuteur.">
@@ -71,8 +71,8 @@ const durees = [
         <ScreenMimeLive class="surface__visual" />
         <h3 class="surface__title">L'écran de la salle</h3>
         <p class="surface__body">
-          Projeté en grand : règles, chronos, scores et révélations. C'est lui que tout le monde
-          regarde.
+          Projeté en grand : règles animées, chronos, scores et révélations. C'est lui que toute la
+          salle regarde.
         </p>
       </article>
 
@@ -80,15 +80,16 @@ const durees = [
         <PhonePeek class="surface__visual" />
         <h3 class="surface__title">Le téléphone des invités</h3>
         <p class="surface__body">
-          On rejoint la partie en scannant un QR code. Ensuite, il reste presque toujours en poche.
+          Un scan du QR code et l'invité rejoint la partie, dans sa langue. Ensuite, le téléphone
+          reste presque toujours dans la poche.
         </p>
       </article>
 
       <article class="surface">
         <RegiePanel class="surface__visual" />
-        <h3 class="surface__title">L'animateur et sa régie</h3>
+        <h3 class="surface__title">L'animateur</h3>
         <p class="surface__body">
-          Il tient la salle au micro et pilote chaque étape depuis une tablette.
+          Il tient la salle au micro, donne le rythme et pilote chaque jeu depuis sa tablette.
         </p>
       </article>
     </div>
@@ -107,15 +108,15 @@ const durees = [
       ))}
     </ol>
     <p class="flow__note">
-      Les photos se prennent tout au long de la soirée, entre les jeux. L'animateur annonce les
-      scores après chaque jeu.
+      Les photos se prennent tout au long de la soirée, entre deux jeux. L'animateur annonce les
+      scores après chaque jeu, pour garder le suspense jusqu'au podium.
     </p>
   </Section>
 
   <Section
     eyebrow="Combien de temps ?"
     title="Tout dépend du nombre d'équipes."
-    lead="Deux jeux se jouent équipe par équipe : chaque équipe en plus ajoute du temps. Une équipe compte environ [TAILLE D'ÉQUIPE] personnes."
+    lead="Deux jeux se jouent une équipe après l'autre : plus il y a d'équipes, plus la partie dure. Une équipe compte environ [TAILLE D'ÉQUIPE] personnes."
     layout="aside"
   >
     <div class="tu-panel durees">
@@ -123,8 +124,8 @@ const durees = [
         <thead>
           <tr>
             <th scope="col">Équipes</th>
-            <th scope="col">Durée de jeu</th>
-            <th scope="col">Créneau</th>
+            <th scope="col">Temps de jeu</th>
+            <th scope="col">Durée prévue</th>
             <th scope="col">Programme</th>
           </tr>
         </thead>

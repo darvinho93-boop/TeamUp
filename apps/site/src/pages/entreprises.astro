@@ -20,53 +20,72 @@ const formats = [
   },
   {
     title: 'Séminaire',
-    body: 'Une pause active entre deux sessions de travail, ou le temps fort de la soirée.',
+    body: 'Une respiration entre deux sessions de travail, ou le temps fort de la soirée.',
   },
   {
     title: 'Intégration',
-    body: "Les nouveaux arrivants rencontrent leurs collègues de tous les services, en moins d'une heure.",
+    body: 'Les nouveaux arrivants rencontrent leurs collègues de tous les services, dans la bonne humeur.',
   },
 ];
 
 const benefices = [
   {
     title: 'Des équipes transverses',
-    body: 'On compose les équipes avec vous pour que chacune mélange services, sites et niveaux hiérarchiques.',
+    body: "En arrivant, chaque participant indique son service ou son site : il rejoint l'équipe où ses collègues directs sont les moins nombreux.",
   },
   {
     title: 'Tout le monde participe',
-    body: 'Pas de spectateurs rivés à leur téléphone : on se lève, on mime, on négocie à voix haute.',
+    body: 'Pas de spectateurs rivés à leur téléphone : on se lève, on mime, on négocie à voix haute. Du stagiaire au comité de direction.',
   },
   {
-    title: 'Des contenus adaptés au cadre pro',
-    body: "Questions, mots et thèmes choisis pour un public professionnel. Rien de gênant, rien d'intrusif.",
+    title: 'Des contenus pensés pour le cadre pro',
+    body: "Questions, mots et thèmes choisis pour un public professionnel, et adaptables à votre entreprise. Rien de gênant, rien d'intrusif.",
   },
 ];
 
-/* Seule la première réponse est rédigée dans la maquette. Les autres sont à fournir. */
+/* Réponses tirées de la spec v3 et du cahier des charges ; le commercial reste entre crochets. */
 const faq: FaqItem[] = [
   {
     question: "Et si le réseau tombe pendant l'animation ?",
     answer:
-      "La plupart des jeux se jouent dans la salle, sans les téléphones : l'animation continue. Les envois de photos reprennent dès le retour du réseau.",
+      "L'animation continue : la plupart des jeux se jouent dans la salle, sans les téléphones. Les photos en attente partent d'elles-mêmes dès le retour du réseau.",
   },
-  { question: 'Pour combien de participants ?' },
-  { question: 'Peut-on adapter les contenus à notre entreprise ?' },
-  { question: 'Quelles données collectez-vous sur les participants ?' },
-  { question: 'Comment se passent le devis et la facturation ?' },
+  {
+    question: 'Pour combien de participants ?',
+    answer:
+      "De [MIN] à [MAX] participants. Le nombre d'équipes et le programme s'adaptent à votre effectif.",
+  },
+  {
+    question: 'Peut-on adapter les contenus à notre entreprise ?',
+    answer:
+      "Oui. Nous partons de nos questions, mots et thèmes pensés pour le cadre professionnel, et pouvons y ajouter des contenus à votre image : votre secteur, vos valeurs, vos clins d'œil internes. Nous les validons avec vous avant l'événement.",
+  },
+  {
+    question: 'Quelles données collectez-vous sur les participants ?',
+    answer:
+      "Le strict minimum. Les participants jouent sous leur seul prénom, sans compte, sans e-mail ni numéro de téléphone. Les photos de l'événement sont supprimées 30 jours après.",
+  },
+  {
+    question: 'Comment se passent le devis et la facturation ?',
+    answer:
+      'Vous décrivez votre événement, nous vous rappelons sous [DÉLAI] et vous adressons un devis détaillé, gratuit et sans engagement. [CONDITIONS DE FACTURATION]',
+  },
 ];
 ---
 
 <Base
   title="Team building, séminaire, intégration — Team Up!"
-  description="Un temps fort de 40 à 60 minutes qui fait se parler des équipes qui ne se croisent jamais. Animé de bout en bout, rien à installer."
+  description="Team building, séminaire, intégration : un temps fort animé de bout en bout, qui fait jouer ensemble des équipes qui ne se croisent jamais. Rien à installer."
   accent="entreprises"
 >
   <PageIntro
     eyebrow="Entreprises"
     title="Faites se parler des équipes qui ne se croisent jamais."
-    lead="Team building, séminaire, intégration : un temps fort de 40 à 60 minutes, animé par Team Up!, où les services jouent ensemble au lieu de rester entre eux."
+    lead="Team building, séminaire, intégration : un temps fort animé par Team Up!, où les services jouent ensemble au lieu de rester entre eux. Et le lendemain, on en parle encore."
   >
+    <p slot="footnote" class="intro-note">
+      Devis gratuit et sans engagement · à partir de [PRIX] € HT
+    </p>
     <Fragment slot="actions">
       <Button href="/devis?type=entreprise" variant="accent" size="cta">
         Demander un devis
@@ -93,24 +112,19 @@ const faq: FaqItem[] = [
       </div>
       <div class="creneaux">
         <article class="creneau creneau--light">
-          <p class="creneau__duration">
-            <span class="creneau__number">40</span>
-            <span class="creneau__unit">minutes</span>
-          </p>
+          <h3 class="creneau__name">L'Essentiel</h3>
           <p class="creneau__body">
-            Jusqu’à 5 équipes. Les cinq jeux, avec un programme resserré à partir de la cinquième
-            équipe.
+            Les cinq jeux et le final en photos, pour des groupes jusqu'à cinq équipes.
           </p>
+          <p class="creneau__price">À partir de [PRIX] € HT</p>
         </article>
         <article class="tu-panel tu-panel--dark creneau" data-theme="stage">
-          <p class="creneau__duration">
-            <span class="creneau__number">60</span>
-            <span class="creneau__unit">minutes</span>
-          </p>
+          <h3 class="creneau__name">Le Grand format</h3>
           <p class="creneau__body">
-            Jusqu’à 8 équipes. Les cinq jeux au complet, et des duels en un contre un possibles pour
-            relancer la salle.
+            Les cinq jeux au complet pour les grands groupes, jusqu'à huit équipes, et des duels en
+            un contre un pour relancer la salle.
           </p>
+          <p class="creneau__price">À partir de [PRIX] € HT</p>
         </article>
       </div>
     </div>
@@ -152,10 +166,15 @@ const faq: FaqItem[] = [
     <Faq items={faq} />
   </Section>
 
-  <CtaBanner title="Parlons de votre prochain séminaire." href="/devis?type=entreprise" />
+  <CtaBanner title="Parlons de votre prochain événement d'équipe." href="/devis?type=entreprise" />
 </Base>
 
 <style>
+  .intro-note {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+
   .offer {
     display: flex;
     flex-direction: column;
@@ -201,24 +220,17 @@ const faq: FaqItem[] = [
     background: var(--tu-navy-50);
   }
 
-  .creneau__duration {
-    display: flex;
-    align-items: baseline;
-    gap: var(--tu-space-3);
+  .creneau__name {
+    font-size: var(--tu-size-3xl);
+    line-height: 1.1;
   }
 
-  .creneau__number {
-    font-family: var(--tu-font-numeric);
-    font-size: var(--tu-type-numeral);
-    font-weight: 700;
-    line-height: 1;
-  }
-
-  .tu-panel--dark .creneau__number {
+  .tu-panel--dark .creneau__name {
     color: var(--tu-primary);
   }
 
-  .creneau__unit {
+  .creneau__price {
+    margin-top: auto;
     font-family: var(--tu-font-display);
     font-size: var(--tu-size-lg);
     font-weight: 600;
@@ -335,7 +347,11 @@ const faq: FaqItem[] = [
       padding: var(--tu-space-6);
     }
 
-    .creneau__unit {
+    .creneau__name {
+      font-size: var(--tu-size-xl);
+    }
+
+    .creneau__price {
       font-size: var(--tu-size-base);
     }
 

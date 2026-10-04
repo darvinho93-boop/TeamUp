@@ -6,7 +6,8 @@
  */
 export type TimelineItem = {
   label: string;
-  duration: string;
+  /** Facultative : la page Particuliers montre les proportions sans chiffrer les durées. */
+  duration?: string;
   /** Poids du segment, en secondes. */
   seconds: number;
   tone: 'navy' | 'sage' | 'amber' | 'mint' | 'stone' | 'muted';
@@ -33,7 +34,7 @@ const { items } = Astro.props;
           aria-hidden="true"
         />
         <span class="timeline__label">{item.label}</span>
-        <span class="timeline__duration">{item.duration}</span>
+        {item.duration && <span class="timeline__duration">{item.duration}</span>}
       </li>
     ))}
   </ol>

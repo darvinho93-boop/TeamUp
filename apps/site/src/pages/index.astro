@@ -16,29 +16,29 @@ import { games } from '../data/jeux';
 
 const steps = [
   {
-    title: "Vous décrivez l'événement",
-    body: "Date, lieu, nombre d'invités, groupes à mélanger, langues parlées. On vous répond avec un devis.",
+    title: 'Vous nous parlez de votre événement',
+    body: "L'occasion, vos invités, l'ambiance que vous imaginez. Nous revenons vers vous avec une proposition sur mesure.",
   },
   {
-    title: 'On compose le programme',
-    body: 'Un appel de cadrage fixe les équipes, les jeux et leur durée pour tenir dans votre créneau.',
+    title: 'Nous préparons tout avec vous',
+    body: 'Groupes à mélanger, jeux, contenus et langues : chaque détail est pensé pour vos invités.',
   },
   {
-    title: "L'animateur fait jouer la salle",
-    body: "Il suffit d'un vidéoprojecteur. Les invités rejoignent la partie en scannant un QR code, sans rien installer.",
+    title: 'Le jour J, vous profitez',
+    body: "Notre animateur fait jouer toute la salle. Vos invités rejoignent la partie d'un simple scan, sans rien installer.",
   },
 ];
 ---
 
 <Base
   title="Team Up! — On joue. On se rencontre. On crée du lien."
-  description="Animation de soirée en salle : un animateur Team Up! fait jouer vos invités en équipes mélangées. Anniversaires, mariages, séminaires, team building."
+  description="L'animation de soirée qui transforme vos invités en équipes : des rires, des jeux et de vraies rencontres. Mariages, anniversaires, séminaires, team building."
 >
   <PageIntro
     size="display"
-    eyebrow="Animation de soirée · particuliers et entreprises"
+    eyebrow="Animation de soirée sur mesure"
     title="Vos invités arrivent en groupes. Ils repartent en équipe."
-    lead="Un animateur Team Up! fait jouer toute la salle : cinq jeux, un grand écran, des équipes qui mélangent familles, amis ou collègues."
+    lead="Un animateur Team Up! prend votre salle en main. Les tablées se mélangent, les rires fusent, et vos invités repartent en ayant vraiment fait connaissance. Vous, vous n'avez qu'à profiter."
   >
     <Fragment slot="actions">
       <Button href="/devis" variant="accent" size="cta">
@@ -75,8 +75,8 @@ const steps = [
             Les deux familles ne se connaissent pas ? Elles vont jouer ensemble.
           </h2>
           <p class="tu-body-lg">
-            Anniversaire, mariage, anniversaire de mariage, fête de famille. On mélange les tablées,
-            même quand tout le monde ne parle pas la même langue.
+            Mariage, anniversaire, fête de famille : on fait jouer ensemble ceux qui ne se
+            connaissaient pas, quelle que soit la langue qu'ils parlent.
           </p>
           <a class="tu-arrow-link" href="/particuliers">
             Découvrir l'offre particuliers
@@ -91,8 +91,8 @@ const steps = [
           <p class="tu-eyebrow tu-eyebrow--navy">Entreprises</p>
           <h2 class="tu-subtitle">Des services qui ne se croisent jamais, dans la même équipe.</h2>
           <p class="tu-body-lg">
-            Team building, séminaire, intégration. Un temps fort de 40 à 60 minutes, animé de bout
-            en bout, sans rien à installer pour vos équipes.
+            Team building, séminaire, intégration : un temps fort animé de bout en bout, qui crée
+            des liens qu'aucune réunion ne crée. Rien à installer, rien à gérer.
           </p>
           <a class="tu-arrow-link" href="/entreprises">
             Découvrir l'offre entreprises
@@ -110,13 +110,7 @@ const steps = [
     </a>
     <div class="games">
       {games.map((game) => (
-        <GameCard
-          icon={game.icon}
-          tone={game.tone}
-          title={game.title}
-          body={game.body}
-          duration={game.duration}
-        />
+        <GameCard icon={game.icon} tone={game.tone} title={game.title} body={game.body} />
       ))}
     </div>
   </Section>
@@ -129,10 +123,11 @@ const steps = [
     <div class="tu-container langs">
       <div class="langs__text">
         <p class="tu-eyebrow">Multilingue</p>
-        <h2 class="tu-title">Une soirée, plusieurs langues.</h2>
+        <h2 class="tu-title">Une soirée, toutes les langues de vos invités.</h2>
         <p class="langs__body">
-          Chaque invité choisit sa langue sur son téléphone. Les jeux sont pensés pour passer la
-          barrière de la langue : on mime, on se lève, on montre.
+          Chaque invité joue dans sa langue, sur son téléphone : les contenus sont traduits pour
+          votre soirée et relus avec vous. Et les jeux passent la barrière de la langue : on mime,
+          on se lève, on montre.
         </p>
       </div>
       <ul class="tu-panel langs__list">

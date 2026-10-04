@@ -9,17 +9,20 @@ import ScreenSurenchere from '../components/visuels/ScreenSurenchere.astro';
 import ScreenMime from '../components/visuels/ScreenMime.astro';
 import ScreenPhoto from '../components/visuels/ScreenPhoto.astro';
 import { duels, games } from '../data/jeux';
+
+/** L'accroche de chaque jeu est celle de l'accueil : une seule source. */
+const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '';
 ---
 
 <Base
   title="Les cinq jeux — Team Up!"
-  description="Points communs, Quiz, Surenchère, Mime, Photo challenge : cinq jeux qui se jouent debout, dans la salle, et s'expliquent en une phrase."
+  description="Points communs, Quiz, Surenchère, Mime, Photo challenge : cinq jeux qui se jouent debout, ensemble, et s'expliquent en une phrase."
 >
   <PageIntro
     wide
     eyebrow="Les jeux"
     title="Cinq jeux pensés pour la salle, pas pour l'écran."
-    lead="Chaque jeu s'explique en une phrase et se joue debout. Le téléphone ne sert qu'à porter un secret ou à envoyer une photo."
+    lead="Chaque jeu s'explique en une phrase et se joue debout, ensemble. Avant chaque jeu, une courte animation sur le grand écran en montre les règles : personne n'est perdu."
   >
     <nav slot="footnote" class="toc" aria-label="Aller à un jeu">
       {games.map((game) => (
@@ -34,14 +37,14 @@ import { duels, games } from '../data/jeux';
     id="points-communs"
     number="01"
     title="Points communs"
-    lead="Une équipe dos à l'écran doit deviner ce qui rassemble les invités qui se lèvent."
+    lead={accroche('points-communs')}
     steps={[
-      "L'équipe ferme les yeux ; l'écran montre le point commun à toute la salle.",
-      "Les personnes concernées se lèvent, l'équipe devine, chrono lancé.",
-      'Trois paliers, un indice de plus à chaque palier.',
+      "L'équipe ferme les yeux ; le point commun s'affiche pour toute la salle.",
+      "Les invités concernés se lèvent : à l'équipe de deviner ce qui les rassemble, chrono lancé.",
+      'Plus elle trouve vite, plus elle marque. Si elle sèche, un indice vient à son secours.',
     ]}
     facts={[
-      { label: 'Durée', value: '2 min 10 par équipe' },
+      { label: 'Durée', value: 'Un peu plus de 2 minutes par équipe' },
       { label: 'Qui joue', value: 'Une équipe, la salle participe' },
       { label: 'Téléphone', value: 'Non' },
     ]}
@@ -54,16 +57,16 @@ import { duels, games } from '../data/jeux';
     id="quiz"
     number="02"
     title="Quiz"
-    lead="Quatre zones au sol, une question. Mauvaise zone : on sort du jeu."
+    lead={accroche('quiz')}
     steps={[
-      "La question s'affiche dans quatre quadrants A, B, C, D.",
-      'Chacun va se placer dans la zone de sa réponse, marquée au sol.',
-      'Les mauvaises zones sortent. Chaque survivant rapporte 100 points à son équipe.',
+      "La question s'affiche sur le grand écran, avec quatre réponses.",
+      'Chacun file dans le coin de la salle qui correspond à la sienne, marqué au sol.',
+      'Les bonnes réponses restent en jeu. Chaque joueur encore debout à la fin rapporte des points à son équipe.',
     ]}
     facts={[
-      { label: 'Durée', value: '≈ 30 s par question' },
+      { label: 'Durée', value: 'Une trentaine de secondes par question' },
       { label: 'Qui joue', value: 'Tout le monde' },
-      { label: 'Téléphone', value: 'Seulement si la salle est trop petite' },
+      { label: 'Téléphone', value: 'Seulement si la salle manque de place' },
     ]}
   >
     <ScreenQuiz label="Écran de la salle · Quiz" />
@@ -73,14 +76,14 @@ import { duels, games } from '../data/jeux';
     id="surenchere"
     number="03"
     title="Surenchère"
-    lead="Les champions surenchérissent à voix haute sur un sujet dévoilé au dernier moment."
+    lead={accroche('surenchere')}
     steps={[
-      "Les thèmes sont affichés d'avance ; chaque équipe choisit son champion.",
-      "Les champions s'avancent, le sujet précis est dévoilé.",
-      'On surenchérit à voix haute. Le plus offrant doit tenir sa promesse, chrono en main.',
+      "Les thèmes sont annoncés à l'avance : chaque équipe choisit son champion.",
+      "Les champions s'avancent, le sujet précis n'est dévoilé qu'au dernier moment.",
+      'Chacun surenchérit à voix haute. Le plus audacieux doit tenir parole, chrono en main, devant toute la salle.',
     ]}
     facts={[
-      { label: 'Durée', value: '≈ 2 min par thème' },
+      { label: 'Durée', value: 'Environ 2 minutes par thème' },
       { label: 'Qui joue', value: 'Un champion par équipe' },
       { label: 'Téléphone', value: 'Non' },
     ]}
@@ -93,14 +96,14 @@ import { duels, games } from '../data/jeux';
     id="mime"
     number="04"
     title="Mime"
-    lead="Le mot traverse l'équipe en alternant mime et chuchotement. Il arrive rarement intact."
+    lead={accroche('mime')}
     steps={[
-      'Seul le premier joueur voit le mot.',
+      'Seul le premier joueur de la file découvre le mot.',
       'Il le mime au suivant, qui le chuchote au suivant, et ainsi de suite.',
-      "Le dernier l'annonce ; l'écran révèle le mot, vert si trouvé, rouge sinon.",
+      "Le dernier annonce sa réponse, puis l'écran révèle le mot : vert s'il est trouvé, rouge sinon.",
     ]}
     facts={[
-      { label: 'Durée', value: '2 min 30 par équipe' },
+      { label: 'Durée', value: 'Environ 2 minutes et demie par équipe' },
       { label: 'Qui joue', value: 'Une équipe, en file' },
       { label: 'Téléphone', value: 'Non' },
     ]}
@@ -112,14 +115,14 @@ import { duels, games } from '../data/jeux';
     id="photo"
     number="05"
     title="Photo challenge"
-    lead="Toute la soirée, chaque équipe met en scène des thèmes. Diffusion en clôture."
+    lead={accroche('photo')}
     steps={[
-      'Les thèmes sont annoncés au début de la soirée.',
-      'Le capitaine envoie une photo par thème, quand il veut, entre les jeux.',
-      'En fin de soirée, on diffuse thème par thème et les héros de la fête désignent la gagnante.',
+      'Les thèmes sont annoncés en début de soirée.',
+      'Entre deux jeux, au bar ou dehors, chaque équipe met en scène ses photos ; le capitaine les envoie.',
+      'En final, les photos sont dévoilées thème par thème, et les héros de la fête désignent leur préférée.',
     ]}
     facts={[
-      { label: 'Durée', value: 'Toute la soirée + 5 min de diffusion' },
+      { label: 'Durée', value: 'Toute la soirée, puis 5 minutes de final' },
       { label: 'Qui joue', value: 'Une équipe entière' },
       { label: 'Téléphone', value: 'Celui du capitaine' },
     ]}
@@ -134,7 +137,7 @@ import { duels, games } from '../data/jeux';
         <div class="duels__intro">
           <p class="tu-eyebrow tu-eyebrow--navy">En option</p>
           <h2 class="duels__title">Les duels en un contre un</h2>
-          <p class="duels__lead">Pour relancer la salle sur les créneaux de 60 minutes.</p>
+          <p class="duels__lead">Pour relancer l'ambiance lors des soirées les plus longues.</p>
         </div>
         {duels.map((duel) => (
           <article class="duel">

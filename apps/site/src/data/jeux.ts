@@ -1,6 +1,7 @@
 /**
  * Les cinq jeux socles et les deux duels en bêta de la spec v3. Rien d'autre n'existe.
- * Repris des maquettes « Accueil » et « Les jeux », qui partagent ces libellés.
+ * `body` est l'accroche d'un jeu, partagée par l'accueil et la page Les jeux : elle raconte
+ * ce que vit la salle, la règle détaillée reste sur Les jeux.
  */
 export type GameSummary = {
   id: string;
@@ -9,7 +10,6 @@ export type GameSummary = {
   tone: 'navy' | 'sage' | 'amber' | 'mint' | 'stone';
   title: string;
   body: string;
-  duration: string;
 };
 
 export const games: GameSummary[] = [
@@ -18,52 +18,47 @@ export const games: GameSummary[] = [
     icon: 'users',
     tone: 'navy',
     title: 'Points communs',
-    body: "Une équipe dos à l'écran devine ce qui rassemble les invités qui se lèvent.",
-    duration: '2 min 10 par équipe',
+    body: "Toute la salle est dans la confidence, sauf une équipe. Ceux qui se lèvent sont l'indice : à elle de deviner ce qui les rassemble.",
   },
   {
     id: 'quiz',
     icon: 'cross',
     tone: 'sage',
     title: 'Quiz',
-    body: 'Quatre zones au sol, une question. Mauvaise zone : on sort du jeu.',
-    duration: '≈ 30 s par question',
+    body: "Une question, quatre coins de la salle. Chacun file vers sa réponse… et découvre qui l'a suivi.",
   },
   {
     id: 'surenchere',
     icon: 'hand',
     tone: 'amber',
     title: 'Surenchère',
-    body: 'Les champions surenchérissent à voix haute sur un sujet dévoilé au dernier moment.',
-    duration: '≈ 2 min par thème',
+    body: "« J'en cite dix ! — Douze ! » Les champions font monter les enchères, puis doivent tenir parole devant tout le monde.",
   },
   {
     id: 'mime',
     icon: 'mime',
     tone: 'mint',
     title: 'Mime',
-    body: "Le mot traverse l'équipe en alternant mime et chuchotement. Il arrive rarement intact.",
-    duration: '2 min 30 par équipe',
+    body: 'Le mot passe de joueur en joueur, mimé puis chuchoté. Ce qui arrive au bout de la file fait toujours rire la salle.',
   },
   {
     id: 'photo',
     icon: 'camera',
     tone: 'stone',
     title: 'Photo challenge',
-    body: 'Toute la soirée, chaque équipe met en scène des thèmes. Diffusion en clôture.',
-    duration: '≈ 5 min de diffusion',
+    body: 'Tout au long de la soirée, chaque équipe met en scène ses plus belles photos. Elles sont dévoilées en grand, en final.',
   },
 ];
 
 export const duels = [
   {
     title: 'Tête, épaule, gobelet',
-    body: "L'animateur enchaîne les consignes et les pièges. Au mot « gobelet », le premier qui l'attrape gagne.",
-    duration: '45 s par duel',
+    body: "L'animateur enchaîne les consignes et glisse des pièges. Au mot « gobelet », le plus rapide l'attrape et l'emporte.",
+    duration: 'Environ 45 s par duel',
   },
   {
     title: "Attrape l'objet",
-    body: "Une musique part, les deux duellistes attrapent sur la table l'objet qui va avec.",
-    duration: '30 s par duel',
+    body: "Une musique démarre : les deux duellistes se jettent sur l'objet qui va avec. Le premier qui le tient gagne.",
+    duration: 'Environ 30 s par duel',
   },
 ];

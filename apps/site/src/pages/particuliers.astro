@@ -18,15 +18,15 @@ import type { TimelineItem } from '../components/jeux/Timeline.astro';
 const occasions = [
   {
     title: 'Anniversaire',
-    body: "Amis d'enfance, collègues, famille : les cercles de la personne fêtée se rencontrent enfin.",
+    body: "Amis d'enfance, collègues, famille : tous les cercles de la personne fêtée se rencontrent enfin, et jouent ensemble.",
   },
   {
     title: 'Mariage',
-    body: "Les deux familles et les deux bandes d'amis dans les mêmes équipes, entre le dîner et la piste.",
+    body: "Les deux familles et les deux bandes d'amis dans les mêmes équipes, entre le dîner et l'ouverture du bal.",
   },
   {
     title: 'Anniversaire de mariage',
-    body: "Plusieurs générations autour du couple, avec des jeux qui s'expliquent en une phrase.",
+    body: 'Plusieurs générations réunies autour du couple, avec des jeux que chacun comprend en une phrase.',
   },
   {
     title: 'Fête de famille',
@@ -36,51 +36,75 @@ const occasions = [
 
 const raisons = [
   {
-    title: "Des équipes composées à l'avance",
-    body: 'On répartit ensemble les invités pour que chaque équipe mélange vos groupes : familles, amis, collègues.',
+    title: "Des équipes mélangées d'office",
+    body: "En arrivant, chaque invité indique de quel côté il vient : famille, amis, collègues. Il rejoint l'équipe où les siens sont les moins nombreux.",
   },
   {
     title: 'Tout le monde debout, personne sur son écran',
-    body: "Le téléphone ne sert qu'à recevoir un secret ou envoyer une photo. Le jeu se passe dans la salle.",
+    body: 'Le téléphone sert à rejoindre la partie, recevoir un secret ou envoyer une photo. Tout le reste se joue dans la salle, ensemble.',
   },
   {
     title: 'Les héros de la fête au centre',
-    body: 'Ce sont eux qui désignent les photos gagnantes en fin de soirée, devant tout le monde.',
+    body: 'Ce sont eux qui désignent les plus belles photos de la soirée, devant tous leurs invités.',
   },
 ];
 
 const programme: TimelineItem[] = [
-  { label: 'Points communs', duration: '8 min 40', seconds: 520, tone: 'navy' },
-  { label: 'Quiz', duration: '2 min', seconds: 120, tone: 'sage' },
-  { label: 'Surenchère', duration: '6 min', seconds: 360, tone: 'amber' },
-  { label: 'Mime', duration: '10 min', seconds: 600, tone: 'mint' },
-  { label: 'Diffusion photo', duration: '5 min', seconds: 300, tone: 'stone' },
-  { label: 'Transitions', duration: '≈ 4 min', seconds: 220, tone: 'muted' },
+  { label: 'Points communs', seconds: 520, tone: 'navy' },
+  { label: 'Quiz', seconds: 120, tone: 'sage' },
+  { label: 'Surenchère', seconds: 360, tone: 'amber' },
+  { label: 'Mime', seconds: 600, tone: 'mint' },
+  { label: 'Final photo', seconds: 300, tone: 'stone' },
+  { label: 'Podium', seconds: 220, tone: 'muted' },
 ];
 
-/* Seule la première réponse est rédigée dans la maquette. Les autres sont à fournir. */
+/* Réponses tirées de la spec v3 ; les chiffres commerciaux restent entre crochets. */
 const faq: FaqItem[] = [
   {
     question: "Pour combien d'invités ?",
-    answer: "De [MIN] à [MAX] invités. Le nombre d'équipes et la durée s'ajustent en conséquence.",
+    answer:
+      "De [MIN] à [MAX] invités. Le nombre d'équipes et le programme s'adaptent à votre liste.",
   },
-  { question: "Combien de temps dure l'animation ?" },
-  { question: 'Mes invités doivent-ils installer une application ?' },
-  { question: 'De quoi avez-vous besoin sur place ?' },
-  { question: 'Quelles langues sont disponibles ?' },
-  { question: 'Combien ça coûte ?' },
+  {
+    question: "Combien de temps dure l'animation ?",
+    answer:
+      "Environ 40 minutes de jeu jusqu'à cinq équipes, une heure au-delà. Les photos, elles, se prennent tout au long de la soirée, entre deux jeux.",
+  },
+  {
+    question: 'Mes invités doivent-ils installer une application ?',
+    answer:
+      "Non. Ils scannent le QR code affiché sur le grand écran, choisissent leur langue et entrent leur prénom : c'est tout. Ni application, ni compte, ni adresse e-mail.",
+  },
+  {
+    question: 'De quoi avez-vous besoin sur place ?',
+    answer:
+      "D'un vidéoprojecteur ou d'un grand écran, d'une sono avec micro, d'un peu d'espace au sol et d'une connexion Wi-Fi ou 4G. Nous apportons tout le reste : l'animation, les jeux et les accessoires.",
+  },
+  {
+    question: 'Quelles langues sont disponibles ?',
+    answer:
+      'Celles de vos invités. Indiquez-les dans votre demande : nous traduisons les contenus de la soirée et les relisons avec vous. Chaque invité choisit ensuite la sienne sur son téléphone.',
+  },
+  {
+    question: 'Combien ça coûte ?',
+    answer:
+      "À partir de [PRIX] €. Le tarif dépend du nombre d'invités, de la durée et du lieu de la soirée. Le devis est gratuit et sans engagement.",
+  },
 ];
 ---
 
 <Base
   title="Anniversaire, mariage, fête de famille — Team Up!"
-  description="Une fête où tout le monde finit par se parler : un animateur Team Up! mélange vos tablées en équipes et fait jouer toute la salle."
+  description="Mariage, anniversaire, fête de famille : un animateur Team Up! mélange vos invités en équipes et fait de votre soirée un souvenir partagé."
 >
   <PageIntro
     eyebrow="Particuliers"
     title="Une fête où tout le monde finit par se parler."
-    lead="Anniversaire, mariage, fête de famille : on transforme des tablées qui s'observent en équipes qui jouent ensemble. Vous, vous profitez de vos invités."
+    lead="Mariage, anniversaire, fête de famille : nous transformons des tablées qui s'observent en équipes qui rient ensemble. Vous, vous profitez de vos invités."
   >
+    <p slot="footnote" class="intro-note">
+      Devis gratuit et sans engagement · à partir de [PRIX] €
+    </p>
     <Fragment slot="actions">
       <Button href="/devis?type=particulier" variant="accent" size="cta">
         Demander un devis
@@ -124,13 +148,13 @@ const faq: FaqItem[] = [
   <Section
     id="programme"
     eyebrow="Exemple de soirée"
-    title="40 minutes, 4 équipes, 5 jeux."
+    title="Cinq jeux, un final en photos."
     tone="dark"
   >
     <Timeline items={programme} />
     <p class="programme__note">
-      Les photos se prennent tout au long de la soirée, entre les jeux. Le programme s'adapte au
-      nombre d'invités : au-delà de cinq équipes, on prévoit un créneau de 60 minutes.
+      Les photos se prennent tout au long de la soirée, entre deux jeux, puis sont dévoilées en
+      grand avant le podium. Le programme s'ajuste au nombre de vos invités.
     </p>
   </Section>
 
@@ -140,8 +164,9 @@ const faq: FaqItem[] = [
         <p class="tu-eyebrow">Multilingue</p>
         <h2 class="tu-title">Chacun joue dans sa langue.</h2>
         <p class="multi__body">
-          Les familles ne parlent pas toutes la même langue ? Chaque invité choisit la sienne en
-          rejoignant la partie. Les jeux reposent sur le geste et le mouvement, pas sur les mots.
+          Vos invités ne parlent pas tous la même langue ? Chacun choisit la sienne en rejoignant la
+          partie, et les contenus sont traduits pour votre soirée, relus avec vous. Les jeux, eux,
+          reposent sur le geste et le mouvement plus que sur les mots.
         </p>
       </div>
       <div class="multi__visual">
@@ -158,6 +183,11 @@ const faq: FaqItem[] = [
 </Base>
 
 <style>
+  .intro-note {
+    font-size: var(--tu-size-sm);
+    color: var(--tu-text-muted);
+  }
+
   .occasions {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
