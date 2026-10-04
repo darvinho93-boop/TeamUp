@@ -1,0 +1,23 @@
+{
+  "name": "teamup-video",
+  "private": true,
+  "type": "module",
+  "description": "Vidéo de présentation Team Up! pour les réseaux sociaux (Remotion). Hors du workspace pnpm.",
+  "scripts": {
+    "capture": "node scripts/capture.mjs",
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts Presentation out/teamup-presentation.mp4"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.1.0",
+    "@fontsource/poppins": "^5.1.0",
+    "@remotion/cli": "4.0.532",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.532"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "~5.9.0"
+  }
+}

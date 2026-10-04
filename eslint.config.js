@@ -17,6 +17,8 @@ export default tseslint.config(
       '**/.vercel/**',
       // Référence visuelle uniquement : styles en ligne, jamais reconstruits tels quels.
       'design/maquettes/**',
+      // Vidéo de présentation (Remotion) : projet à part, hors workspace, avec ses propres dépendances.
+      'video/**',
       // Généré par `pnpm db:types` depuis le schéma Supabase.
       'apps/app/src/types/base.ts',
     ],
