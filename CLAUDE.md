@@ -125,6 +125,7 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 | `RESEND_API_KEY`     | Clé Resend. **Absente : mode à sec**, les e-mails de devis s'écrivent dans la console au lieu de partir. |
 | `DEVIS_DESTINATAIRE` | Adresse qui reçoit les demandes de devis.                                                                |
 | `DEVIS_EXPEDITEUR`   | Expéditeur sur un domaine vérifié chez Resend, ex. `Team Up! <devis@teamup.fr>`.                         |
+| `PUBLIC_APP_URL`     | Adresse de l'app (lien « Espace animateur », page Rejoindre). À défaut : `https://app.teamup.fr`.        |
 
 À reporter dans les variables du projet Vercel de la vitrine avant la mise en ligne.
 

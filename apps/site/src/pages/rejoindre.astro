@@ -2,13 +2,14 @@
 import Base from '../layouts/Base.astro';
 import Button from '@teamup/ui/astro/Button.astro';
 import ScreenJoin from '../components/visuels/ScreenJoin.astro';
+import { APP_URL } from '../lib/app';
 
 /**
  * Filet de sécurité : la plupart des invités arrivent par le QR code, directement dans l'app.
- * Le sous-domaine réel se règle par variable d'environnement — le choix
+ * Le sous-domaine réel se règle par variable d'environnement (`src/lib/app.ts`) — le choix
  * « sous-domaine ou chemin /jouer » reste ouvert (cahier des charges §8).
  */
-const appUrl = import.meta.env['PUBLIC_APP_URL'] ?? 'https://app.teamup.fr';
+const appUrl = APP_URL;
 
 const slots = [1, 2, 3, 4, 5, 6];
 ---

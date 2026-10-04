@@ -2,6 +2,7 @@
 import '@teamup/ui/styles.css';
 import SiteHeader from '@teamup/ui/astro/SiteHeader.astro';
 import SiteFooter from '@teamup/ui/astro/SiteFooter.astro';
+import { APP_URL } from '../lib/app';
 import SiteActionBar from '@teamup/ui/astro/SiteActionBar.astro';
 import favicon32 from '@teamup/brand/icons/favicon32.png';
 import favicon16 from '@teamup/brand/icons/favicon16.png';
@@ -57,7 +58,7 @@ const canonical = new URL(currentPath, Astro.site);
     <main id="contenu" data-accent={accent}>
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter regieUrl={`${APP_URL}/regie`} />
     {actionBar && <SiteActionBar />}
   </body>
 </html>
