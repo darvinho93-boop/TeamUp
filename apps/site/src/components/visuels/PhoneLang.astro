@@ -4,17 +4,16 @@ import PhoneFrame from './PhoneFrame.astro';
 type Props = { class?: string };
 const { class: className } = Astro.props;
 
-/** Le tamoul doit être rendu en Noto Sans Tamil : `lang` déclenche la bonne pile. */
+/** La vitrine ne met en avant aucune langue de niche : l'app, elle, en propose davantage. */
 const languages = [
   { label: 'Français', lang: 'fr', selected: true },
-  { label: 'தமிழ்', lang: 'ta', selected: false },
   { label: 'English', lang: 'en', selected: false },
 ];
 ---
 
 <PhoneFrame
   size="wide"
-  caption="Illustration : en rejoignant la partie, chaque invité choisit sa langue entre le français, le tamoul et l'anglais."
+  caption="Illustration : en rejoignant la partie, chaque invité choisit sa langue, ici le français ou l'anglais."
   class={className}
 >
   <p class="lang__title">Choisis ta langue</p>
@@ -61,10 +60,6 @@ const languages = [
 
   .lang__item--selected {
     border-color: var(--tu-primary);
-  }
-
-  .lang__item:lang(ta) {
-    font-family: var(--tu-font-tamil);
   }
 
   .lang__button {

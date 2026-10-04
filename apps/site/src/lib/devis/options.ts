@@ -25,7 +25,6 @@ export const CRENEAUX = [
 
 export const LANGUES = [
   { id: 'fr', label: 'Français', lang: 'fr' },
-  { id: 'ta', label: 'தமிழ்', lang: 'ta' },
   { id: 'en', label: 'English', lang: 'en' },
   { id: 'autre', label: 'Autre', lang: 'fr' },
 ] as const;

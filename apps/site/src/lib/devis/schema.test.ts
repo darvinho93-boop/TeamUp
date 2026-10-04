@@ -15,7 +15,7 @@ function formulaire(champs: Champs = {}): FormData {
     nom: 'Camille Martin',
     tel: '06 12 34 56 78',
     email: 'camille@exemple.fr',
-    langues: ['fr', 'ta'],
+    langues: ['fr', 'en'],
     consentement: 'on',
     ...champs,
   };
@@ -39,7 +39,7 @@ describe('lireDevis', () => {
     if (!lecture.ok) return;
     expect(lecture.demande.invites).toBe(80);
     expect(lecture.demande.message).toBe('Surprise !');
-    expect(lecture.demande.langues).toEqual(['fr', 'ta']);
+    expect(lecture.demande.langues).toEqual(['fr', 'en']);
   });
 
   it('rend les champs facultatifs vides absents', () => {
@@ -63,7 +63,7 @@ describe('lireDevis', () => {
   it('garde la saisie telle quelle pour réafficher le formulaire', () => {
     const lecture = lireDevis(formulaire({ email: 'pas-une-adresse' }), AUJOURDHUI);
     expect(lecture.saisie.email).toBe('pas-une-adresse');
-    expect(lecture.saisie.langues).toEqual(['fr', 'ta']);
+    expect(lecture.saisie.langues).toEqual(['fr', 'en']);
     expect(lecture.saisie.consentement).toBe(true);
   });
 
