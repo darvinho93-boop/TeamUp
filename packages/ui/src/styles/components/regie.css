@@ -248,6 +248,92 @@
   color: var(--tu-primary);
 }
 
+/* Membres en étiquettes : toute une équipe d'un coup d'œil. */
+.tu-regie-recherche {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--tu-space-4);
+}
+
+.tu-regie-recherche .tu-field {
+  flex: 0 1 var(--tu-regie-team-min);
+}
+
+.tu-regie-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tu-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  min-height: var(--tu-regie-chip-h);
+  padding-inline: var(--tu-space-2);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-pill);
+  background: transparent;
+  color: var(--tu-text);
+  font: inherit;
+  font-size: var(--tu-size-sm);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  transition:
+    opacity var(--tu-dur-base) var(--tu-ease),
+    border-color var(--tu-dur-base) var(--tu-ease);
+}
+
+button.tu-regie-chip {
+  cursor: pointer;
+}
+
+button.tu-regie-chip:hover,
+.tu-regie-chip--ouvert {
+  border-color: var(--tu-team-color, var(--tu-primary));
+}
+
+.tu-regie-chip--estompe {
+  opacity: var(--tu-regie-estompe);
+}
+
+.tu-regie-chip--lecture {
+  font-weight: 500;
+}
+
+.tu-regie-chip__etat {
+  flex: none;
+  width: var(--tu-regie-chip-point);
+  height: var(--tu-regie-chip-point);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-border);
+}
+
+.tu-regie-chip__etat--on {
+  background: var(--tu-primary);
+}
+
+/* Les commandes d'un invité, ouvertes au clic sur son prénom. */
+.tu-regie-fiche {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tu-space-2);
+  padding-top: var(--tu-space-3);
+  border-top: var(--tu-btn-border-width) solid var(--tu-border);
+}
+
+.tu-regie-fiche__nom {
+  flex: 1 1 100%;
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
 /* Pilotage : l'aperçu de l'écran à gauche, les touches à droite. */
 .tu-regie-pilot {
   display: grid;

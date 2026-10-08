@@ -1,9 +1,7 @@
 import { getTranslations } from 'next-intl/server';
-import { cx, teamModifier } from '@teamup/ui/react';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { RafraichirAuto } from '@/regie/RafraichirAuto';
-import { ChoixEquipe } from '@/regie/ChoixEquipe';
-import { designerCapitaine } from './actions';
+import { SalleEquipes } from '@/regie/SalleEquipes';
 
 export async function generateMetadata() {
   return { title: (await getTranslations('regie.nav'))('salle') };
@@ -53,43 +51,6 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
   const connectes = (joueurs ?? []).filter(
     (j) => maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS,
   ).length;
-  const sansEquipe = (joueurs ?? []).filter((j) => !j.equipe_id);
-  const colonnes = [
-    ...(equipes ?? []).map((e) => ({
-      ...e,
-      membres: (joueurs ?? []).filter((j) => j.equipe_id === e.id),
-    })),
-  ];
-
-  const ligne = (j: NonNullable<typeof joueurs>[number]) => {
-    const enLigne = maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS;
-    return (
-      <li key={j.id} className="tu-regie-player">
-        <span className="tu-regie-player__name">
-          {j.prenom}
-          {j.capitaine && ` · ${t('capitaine')}`}
-        </span>
-        <span className={cx('tu-regie-player__state', enLigne && 'tu-regie-player__state--on')}>
-          {enLigne ? t('connecte') : t('horsLigne')}
-        </span>
-        <ChoixEquipe
-          code={evenement.code}
-          joueurId={j.id}
-          equipeId={j.equipe_id}
-          equipes={(equipes ?? []).map((e) => ({ id: e.id, nom: e.nom }))}
-          libelle={t('deplacer', { prenom: j.prenom })}
-        />
-        {j.equipe_id && !j.capitaine && (
-          <form action={designerCapitaine.bind(null, evenement.code, j.id)}>
-            <button type="submit" className="tu-btn tu-btn--ghost">
-              {t('nommerCapitaine')}
-            </button>
-          </form>
-        )}
-      </li>
-    );
-  };
-
   return (
     <>
       <RafraichirAuto intervalleMs={5000} />
@@ -107,27 +68,17 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
       <p className="tu-regie__muted" role="status">
         {t('compte', { joueurs: (joueurs ?? []).length, connectes })}
       </p>
-      <div className="tu-regie-teams">
-        {colonnes.map((e) => (
-          <section key={e.id} className={cx('tu-regie-team', teamModifier(e.numero))}>
-            <h2 className="tu-regie__section-title">
-              {e.nom} · {e.membres.length}
-            </h2>
-            {(groupes ?? []).length > 0 && (
-              <p className="tu-regie__muted" data-testid="groupes">
-                {t('groupes', { detail: detailGroupes(e.id) })}
-              </p>
-            )}
-            <ul className="tu-regie-list">{e.membres.map(ligne)}</ul>
-          </section>
-        ))}
-        {sansEquipe.length > 0 && (
-          <section className="tu-regie-team">
-            <h2 className="tu-regie__section-title">{t('sansEquipe')}</h2>
-            <ul className="tu-regie-list">{sansEquipe.map(ligne)}</ul>
-          </section>
-        )}
-      </div>
+      <SalleEquipes
+        code={evenement.code}
+        equipes={(equipes ?? []).map((e) => ({ ...e, groupes: detailGroupes(e.id) }))}
+        joueurs={(joueurs ?? []).map((j) => ({
+          id: j.id,
+          prenom: j.prenom,
+          capitaine: j.capitaine,
+          equipe_id: j.equipe_id,
+          enLigne: maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS,
+        }))}
+      />
     </>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier, Wordmark } from '@teamup/ui/react';
 import {
@@ -25,6 +26,7 @@ import {
   indicesMsDe,
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
+import { grilleDesEquipes, membresTries, pageA, pagesDe } from '@/lib/membres';
 import { Chrono, useMaintenant } from './Chrono';
 import { Explication } from './Explication';
 import { OrdreTire, ordreDesEquipes, TirageOrdre } from './TirageOrdre';
@@ -46,7 +48,7 @@ export function Scene(props: Props) {
     case 'accueil':
       return <Accueil {...props} />;
     case 'equipes':
-      return <Equipes etat={etat} />;
+      return <Equipes etat={etat} decalageMs={props.decalageMs} />;
     case 'programme':
       return <Programme etat={etat} />;
     case 'intro':
@@ -94,19 +96,71 @@ function Accueil({ etat, qrSvg, adresse }: Props) {
   );
 }
 
-function Equipes({ etat }: { etat: EtatSalle }) {
+/**
+ * Toutes les équipes et tous leurs membres, capitaine en tête. Une équipe trop nombreuse pour
+ * sa carte passe par pages, qui tournent seules et toutes ensemble : la page se déduit de
+ * l'heure de la base, donc deux écrans montrent la même.
+ */
+function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   const t = useTranslations('ecran');
+  const { colonnes, parPage } = grilleDesEquipes(etat.equipes.length);
+  const equipes = etat.equipes.map((e) => ({
+    ...e,
+    pages: pagesDe(membresTries(e.prenoms, e.capitaine), parPage),
+  }));
+  const maintenant = useMaintenant(equipes.some((e) => e.pages.length > 1)) + decalageMs;
+  // Au premier rendu, la première page : le serveur et le navigateur n'ont pas la même heure.
+  const monte = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   return (
     <div className="tu-stage__body" data-scene="equipes">
       <h1 className="tu-stage__xl">{t('equipes')}</h1>
-      <ul className="tu-stage-teams">
-        {etat.equipes.map((e) => (
-          <li key={e.id} className={cx('tu-stage-team', teamModifier(e.numero))}>
-            <span className="tu-stage-team__nom">{e.nom}</span>
-            <span className="tu-stage-team__nombre">{t('joueurs', { n: e.joueurs })}</span>
-            <span className="tu-stage-team__prenoms">{e.prenoms.join(' · ')}</span>
-          </li>
-        ))}
+      <ul className={cx('tu-stage-teams', `tu-stage-teams--${colonnes}`)}>
+        {equipes.map((e) => {
+          const page = monte ? pageA(maintenant, e.pages.length) : 0;
+          return (
+            <li key={e.id} className={cx('tu-stage-team', teamModifier(e.numero))}>
+              <span className="tu-stage-team__nom">{e.nom}</span>
+              <span className="tu-stage-team__nombre">{t('joueurs', { n: e.joueurs })}</span>
+              <ul
+                key={page}
+                className={cx(
+                  'tu-stage-membres tu-stage-reveal',
+                  parPage > 10 && 'tu-stage-membres--haute',
+                )}
+                data-testid={`membres-${e.numero}`}
+                data-page={page}
+              >
+                {(e.pages[page] ?? []).map((m, i) => (
+                  <li key={i} className="tu-stage-membre">
+                    {m.capitaine && (
+                      <>
+                        <span className="tu-stage-membre__capitaine" aria-hidden="true">
+                          ★
+                        </span>
+                        <span className="tu-visually-hidden">{t('capitaine')} : </span>
+                      </>
+                    )}
+                    {m.prenom}
+                  </li>
+                ))}
+              </ul>
+              {e.pages.length > 1 && (
+                <span className="tu-stage-points" aria-hidden="true">
+                  {e.pages.map((_, i) => (
+                    <span
+                      key={i}
+                      className={cx('tu-stage-point', i === page && 'tu-stage-point--actif')}
+                    />
+                  ))}
+                </span>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

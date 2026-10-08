@@ -224,6 +224,7 @@
       "surenchere": "Surenchère",
       "reponse": "Réponse (toi seul la vois)",
       "indices": "Indices",
+      "membres": "Membres de l'équipe",
       "afficher": "Afficher",
       "masquer": "Masquer",
       "lancer": "Lancer",
@@ -338,6 +339,9 @@
       "horsLigne": "hors ligne",
       "deplacer": "Équipe de {prenom}",
       "nommerCapitaine": "Nommer capitaine",
+      "rechercher": "Rechercher un invité",
+      "resultats": "{n, plural, =0 {Aucun invité trouvé} one {# invité trouvé} other {# invités trouvés}}",
+      "fermer": "Fermer",
       "sansEquipe": "Sans équipe",
       "groupes": "À l'arrivée : {detail}"
     },
@@ -406,6 +410,7 @@
     "adresse": "Scannez le QR code, ou tapez le code sur {adresse}",
     "joueurs": "{n, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}}",
     "equipes": "Les équipes",
+    "capitaine": "Capitaine",
     "programme": "Au programme",
     "regles": {
       "list2": "Une équipe, dos à l'écran, devine ce qui rassemble les invités debout.",

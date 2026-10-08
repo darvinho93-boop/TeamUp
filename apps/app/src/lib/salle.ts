@@ -53,6 +53,8 @@ export interface EquipeSalle {
   points: number;
   joueurs: number;
   prenoms: string[];
+  /** Prénom du capitaine ; absent tant que la base n'a pas la migration du 2026-10-09. */
+  capitaine?: string | null;
 }
 
 export interface EtatSalle {

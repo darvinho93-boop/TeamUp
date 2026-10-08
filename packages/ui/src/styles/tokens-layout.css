@@ -19,6 +19,10 @@
   /* Régie : largeur minimale d'un champ de formulaire et d'une colonne d'équipe. */
   --tu-regie-field-min: 14rem;
   --tu-regie-team-min: 16rem;
+  /* Étiquette d'un membre : hauteur, et point qui dit s'il est connecté. */
+  --tu-regie-chip-h: 1.875rem;
+  --tu-regie-chip-point: 0.625rem;
+  --tu-regie-estompe: 0.3;
   /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
   --tu-tracking-code: 0.08em;
 
@@ -27,6 +31,11 @@
   --tu-stage-height: 67.5rem;
   --tu-stage-qr: 32rem;
   --tu-stage-team-min: 22rem;
+  /* Membres d'une équipe : hauteur d'un prénom, rangs par page (5, ou 13 jusqu'à 3 équipes), repère de page. */
+  --tu-stage-membre-h: 2.75rem;
+  --tu-stage-membres-rangs: 5;
+  --tu-stage-membres-rangs-haute: 13;
+  --tu-stage-point: 0.75rem;
   --tu-stage-podium-1: 20rem;
   --tu-stage-podium-2: 14rem;
   --tu-stage-podium-3: 10rem;

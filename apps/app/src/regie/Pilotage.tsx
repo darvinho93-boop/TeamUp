@@ -25,6 +25,7 @@ import {
   tempsDeJeu,
 } from '@teamup/game';
 import { calculerEtape, jeuParEquipe, scriptEnCours, type Commande } from '@/lib/pilotage';
+import { membresTries } from '@/lib/membres';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import type { Json } from '@/types/base';
 import {
@@ -38,6 +39,7 @@ import {
   type ParLangue,
   type Scene,
   indicesMsDe,
+  type EquipeSalle,
 } from '@/lib/salle';
 import { Chrono, useMaintenant } from '@/ecran/Chrono';
 import { useEtatSalle } from '@/ecran/useEtatSalle';
@@ -337,6 +339,23 @@ function PanneauExplication({ etat, manche, decalageMs, agir }: PanneauProps) {
   );
 }
 
+/** Les membres de l'équipe qui passe, capitaine en tête : de quoi les appeler par leur prénom. */
+function MembresEquipe({ equipe }: { equipe: EquipeSalle }) {
+  const t = useTranslations('regie.pilotage');
+  const membres = membresTries(equipe.prenoms, equipe.capitaine);
+  if (membres.length === 0) return null;
+  return (
+    <ul className="tu-regie-chips" aria-label={t('membres')} data-testid="regie-membres">
+      {membres.map((m, i) => (
+        <li key={i} className="tu-regie-chip tu-regie-chip--lecture">
+          {m.capitaine && <span aria-hidden="true">★</span>}
+          {m.prenom}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) {
   const t = useTranslations('regie.pilotage');
   const passage = passageCourant(etat);
@@ -377,6 +396,7 @@ function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) 
       <p className={cx('tu-team tu-team--badge tu-team--lg', teamModifier(equipe.numero))}>
         {equipe.nom}
       </p>
+      <MembresEquipe equipe={equipe} />
       <div className="tu-regie-secret">
         <p className="tu-regie__muted">{t('reponse')}</p>
         <p className="tu-regie-item__title" data-testid="regie-reponse">
@@ -736,6 +756,7 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
       <p className={cx('tu-team tu-team--badge tu-team--lg', teamModifier(equipe.numero))}>
         {equipe.nom}
       </p>
+      <MembresEquipe equipe={equipe} />
 
       {motOuvert && (
         // Le mot, pour J1 seul : il vient le lire sur l'écran de régie (spec v3, jeu 04).

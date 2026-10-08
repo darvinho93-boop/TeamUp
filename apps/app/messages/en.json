@@ -224,6 +224,7 @@
       "surenchere": "Bidding war",
       "reponse": "Answer (only you can see it)",
       "indices": "Clues",
+      "membres": "Team members",
       "afficher": "Show",
       "masquer": "Hide",
       "lancer": "Start",
@@ -338,6 +339,9 @@
       "horsLigne": "offline",
       "deplacer": "{prenom}'s team",
       "nommerCapitaine": "Make captain",
+      "rechercher": "Find a guest",
+      "resultats": "{n, plural, =0 {No guest found} one {# guest found} other {# guests found}}",
+      "fermer": "Close",
       "sansEquipe": "No team",
       "groupes": "On arrival: {detail}"
     },
@@ -406,6 +410,7 @@
     "adresse": "Scan the QR code, or type the code at {adresse}",
     "joueurs": "{n, plural, =0 {No players} one {# player} other {# players}}",
     "equipes": "The teams",
+    "capitaine": "Captain",
     "programme": "Tonight's games",
     "regles": {
       "list2": "One team, back to the screen, guesses what the standing guests have in common.",
