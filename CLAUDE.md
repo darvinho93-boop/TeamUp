@@ -360,3 +360,23 @@ pendant l'arrêt, au score du palier qui s'ouvre ; la durée prévue du programm
   le passage `en_cours`. Un second écran ou un rechargement retombe donc au même endroit.
 - `passages.resultat.ecoule_ms` est le **temps de jeu**, arrêts déduits.
 - Sans indice donné, le chrono attend indéfiniment : c'est voulu.
+
+## Conventions posées le 2026-10-09 (membres des équipes)
+
+Tranché le 2026-10-08 : à l'écran, **toutes les équipes restent affichées et les prénoms
+défilent par pages** ; à la régie, membres en **étiquettes**, **recherche**, commandes d'un
+invité **au clic** sur son prénom, membres de l'équipe qui passe au pilotage ; ordre
+**capitaine d'abord, puis alphabétique**. Scène « Équipes » seulement (ni podium, ni appel).
+
+- Rangement, pages et recherche : `apps/app/src/lib/membres.ts` (pur, testé). La page
+  affichée se déduit de l'heure de la base (`pageA`, 5 s par page) : deux écrans montrent la
+  même, toutes les cartes tournent ensemble. Au premier rendu, la page 0 (le serveur et le
+  navigateur n'ont pas la même heure : sinon, erreur d'hydratation).
+- Grille de la scène : une rangée jusqu'à 3 équipes (26 prénoms par page), deux au-delà
+  (10 par page). Ces nombres vont avec `--tu-stage-membres-rangs*` : la scène 16:9 n'en loge
+  pas plus, à revérifier à l'écran si on touche aux tailles. Prénoms en 2 rem, le plancher
+  du cahier des charges.
+- `etat_ecran` donne `capitaine` (son prénom ou `null`) par équipe. Le client tolère son
+  absence : sans la migration `20261009090000`, tri alphabétique sans capitaine marqué.
+- Page Salle : la page serveur lit et se rafraîchit, `src/regie/SalleEquipes.tsx` affiche.
+  Une seule fiche d'invité ouverte à la fois.
