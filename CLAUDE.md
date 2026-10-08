@@ -345,3 +345,18 @@ chaque tour.
 - L'écran (`src/ecran/TirageOrdre.tsx`) : 3 s de mélange, puis une équipe rangée par quart de
   seconde. Le mélange se tire de l'identifiant de la manche et de l'instant, donc deux écrans
   montrent le même. Sous `prefers-reduced-motion`, l'ordre final s'affiche d'emblée.
+
+## Conventions posées le 2026-10-08 (Points communs)
+
+Tranché le 2026-10-08 : le chrono de Points communs **s'arrête seul** à la fin des paliers 1
+et 2 ; l'animateur donne l'indice ; le chrono **repart seul 5 s après** ; on peut valider
+pendant l'arrêt, au score du palier qui s'ouvre ; la durée prévue du programme ne change pas.
+
+- Aucune migration : le chrono de la base reste un instant de départ. Le temps de jeu se
+  déduit du temps écoulé et des instants des indices (`tempsDeJeu`,
+  `packages/game/src/points-communs.ts`) ; barème, paliers et affichage lisent ce temps de jeu.
+- Les instants des indices (ms depuis le lancement) vivent dans `passages.resultat.indices_ms`
+  pendant le passage (`indicesMsDe`, `src/lib/salle.ts`), écrits par la touche « Indice » avec
+  le passage `en_cours`. Un second écran ou un rechargement retombe donc au même endroit.
+- `passages.resultat.ecoule_ms` est le **temps de jeu**, arrêts déduits.
+- Sans indice donné, le chrono attend indéfiniment : c'est voulu.

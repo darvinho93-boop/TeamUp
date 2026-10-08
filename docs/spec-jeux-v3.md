@@ -44,10 +44,16 @@ salle (« les personnes retraitées »), puis se masque. L'équipe rouvre les ye
 bonnes personnes se lèvent, top chrono. Trois paliers de 60 / 35 / 35 s, un indice
 supplémentaire à chaque palier.
 
+**Arrêt à chaque palier** (décision du 8 octobre 2026). À la fin des paliers 1 et 2, le
+chrono s'arrête seul. L'animateur donne l'indice ; le chrono repart de lui-même 5 s plus
+tard. Tant que l'indice n'est pas donné, le chrono attend. L'équipe peut répondre pendant
+l'arrêt : le palier qui s'ouvre compte alors en entier (105 points au premier arrêt, 35 au
+second).
+
 | | |
 |---|---|
 | Support | Aucun écran joueur — tout en salle |
-| Chrono de passage | **2 min 10** (130 s de jeu, hors installation) |
+| Chrono de passage | **2 min 10** (130 s de jeu, hors installation et hors arrêts pour les indices) |
 | Qui joue | Une équipe à la fois, la salle participe |
 | Matériel | De la place pour asseoir une équipe dos à l'écran |
 | Barème | Temps restant × multiplicateur de palier (×3 / ×2 / ×1), max 285, échec 0 |
@@ -55,6 +61,7 @@ supplémentaire à chaque palier.
 | Existant réutilisé | `0045`, `0053`, `0058`, `round_item_secrets` |
 
 **Régie.** Cinq étapes manuelles par passage : afficher, masquer, lancer, indice, valider.
+« Indice » ne se donne que chrono arrêté, une fois par arrêt.
 C'est le jeu le plus exigeant pour la personne en régie — à confier à quelqu'un de rodé,
 ou à répéter une fois avant la soirée.
 
