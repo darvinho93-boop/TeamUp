@@ -6,6 +6,7 @@ import {
   clientAnon,
   clientService,
   creerEvenementJetable,
+  hacher,
   supprimerEvenements,
 } from './base';
 
@@ -16,6 +17,7 @@ const THEME = 'aaaa0201-0000-4000-8000-000000000201';
 
 interface Etat {
   pilotage: { version: string; etape: string | null };
+  equipes: { numero: number; prenoms: string[]; capitaine: string | null }[];
   programme: {
     jeu: string;
     passages: { id: string; secret: Record<string, Record<string, unknown>> | null }[];
@@ -220,5 +222,33 @@ avecBase("ce que l'écran montre des secrets", () => {
     await piloter({ scene: 'jeu', passage_id: null, etape: 'themes' });
     const secret = secretDe((await etat(true)).data, passagePC);
     expect(secret?.['fr']).toMatchObject({ reponse: 'les personnes qui portent des lunettes' });
+  });
+});
+
+avecBase('les membres des équipes', () => {
+  it('sortent avec leur équipe, et le capitaine est nommé', async () => {
+    const service = clientService();
+    for (const prenom of ['Zoé', 'Adam', 'Mila']) {
+      const { erreur } = await appeler(service, 'rejoindre_evenement', {
+        p_code: evenement.code,
+        p_prenom: prenom,
+        p_langue: 'fr',
+        p_jeton_hash: hacher(`membres-${prenom}-${evenement.id}`),
+      });
+      expect(erreur).toBeNull();
+    }
+    const avant = (await etat()).data!.equipes;
+    expect(avant.flatMap((e) => e.prenoms).sort()).toEqual(['Adam', 'Mila', 'Zoé']);
+    expect(avant.map((e) => e.capitaine)).toEqual([null, null]);
+
+    await service
+      .from('joueurs')
+      .update({ capitaine: true })
+      .eq('evenement_id', evenement.id)
+      .eq('prenom', 'Mila');
+    const apres = (await etat()).data!.equipes;
+    const equipeDeMila = apres.find((e) => e.prenoms.includes('Mila'))!;
+    expect(equipeDeMila.capitaine).toBe('Mila');
+    expect(apres.filter((e) => e !== equipeDeMila).map((e) => e.capitaine)).toEqual([null]);
   });
 });
