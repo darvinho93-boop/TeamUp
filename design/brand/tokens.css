@@ -29,9 +29,9 @@
   --tu-stone-200: #F4F0E9;
 
   /* ---- Rôles sémantiques (thème clair, écran des joueurs) ---- */
-  --tu-bg:            #FAF7F2;
+  --tu-bg:            #F7F3E6;   /* le beige du logo */
   --tu-surface:       #FFFFFF;
-  --tu-surface-muted: var(--tu-stone-200);
+  --tu-surface-muted: var(--tu-stone-500);
   --tu-border:        #E2DCD2;
 
   --tu-text:          var(--tu-navy-700);
@@ -109,9 +109,15 @@
   --tu-dur-fast: 120ms;
   --tu-dur-base: 220ms;
   --tu-dur-reveal: 600ms;
+  --tu-dur-attente: 300ms;     /* une page qui arrive plus vite ne montre pas l'écran de chargement */
+  --tu-ease-logo: cubic-bezier(0.45, 0, 0.2, 1);  /* départ doux : on voit les personnages arriver */
+  --tu-dur-logo: 1100ms;       /* les quatre personnages du logo se rejoignent */
+  --tu-dur-logo-court: 600ms;  /* le même mouvement, dans l'interlude entre deux jeux */
+  --tu-dur-interlude: 1100ms;  /* le logo entre deux jeux, à l'écran commun */
+  --tu-dur-barre: 1400ms;      /* un aller de la barre de chargement */
 }
 
-/* ---- Thème sombre : écran commun projeté en salle ---- */
+/* ---- Thème sombre : blocs marine de la vitrine. L'app n'en a plus (fond beige partout, 2026-10-09). ---- */
 [data-theme="stage"] {
   --tu-bg:            var(--tu-navy-900);
   --tu-surface:       #10254A;
@@ -135,5 +141,10 @@
     --tu-dur-fast: 0ms;
     --tu-dur-base: 0ms;
     --tu-dur-reveal: 0ms;
+    --tu-dur-attente: 0ms;
+    --tu-dur-logo: 0ms;
+    --tu-dur-logo-court: 0ms;
+    --tu-dur-interlude: 0ms;
+    --tu-dur-barre: 0ms;
   }
 }

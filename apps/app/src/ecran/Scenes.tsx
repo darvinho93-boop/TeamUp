@@ -26,6 +26,7 @@ import {
   indicesMsDe,
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
+import { Pictogramme } from '@/marque/Pictogramme';
 import { grilleDesEquipes, membresTries, pageA, pagesDe } from '@/lib/membres';
 import { Chrono, useMaintenant } from './Chrono';
 import { Explication } from './Explication';
@@ -82,7 +83,10 @@ function Accueil({ etat, qrSvg, adresse }: Props) {
     <div className="tu-stage__body tu-stage-accueil" data-scene="accueil">
       <div className="tu-stage-qr" dangerouslySetInnerHTML={{ __html: qrSvg }} />
       <div className="tu-stage-accueil__texte">
-        <Wordmark className="tu-stage-accueil__logo" />
+        <span className="tu-marque">
+          <Pictogramme taille="coin" />
+          <Wordmark className="tu-stage-accueil__logo" />
+        </span>
         <p className="tu-stage__l">{t('rejoindre')}</p>
         <p className="tu-stage-code" data-testid="code">
           {etat.evenement.code}

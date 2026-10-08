@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { Wordmark } from '@teamup/ui/react';
 import { supabaseAnimateur } from '@/serveur/supabase-animateur';
+import { Pictogramme } from '@/marque/Pictogramme';
 import { FormulaireConnexion } from '@/regie/FormulaireConnexion';
 
 export async function generateMetadata() {
@@ -20,7 +21,10 @@ export default async function Connexion({ searchParams }: PageProps<'/regie/conn
   const t = await getTranslations('regie.connexion');
   return (
     <main className="tu-regie__main tu-regie__main--narrow">
-      <Wordmark />
+      <span className="tu-marque">
+        <Pictogramme />
+        <Wordmark />
+      </span>
       <h1 className="tu-regie__title">{t('titre')}</h1>
       {compte === 'inactif' && <p className="tu-regie__alert">{t('inactif')}</p>}
       <FormulaireConnexion suite={typeof suite === 'string' ? suite : undefined} />

@@ -26,6 +26,14 @@
   /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
   --tu-tracking-code: 0.08em;
 
+  /* Pictogramme : en-tête, coin de l'écran commun, interlude, écran de chargement. */
+  --tu-picto-sm: 2rem;
+  --tu-picto-coin: 4.5rem;
+  --tu-picto-lg: 16rem;
+  --tu-picto-xl: 11rem;
+  --tu-chargement-barre: 11rem;
+  --tu-z-chargement: 50;
+
   /* Écran commun : scène 16:9 de référence (1 920 × 1 080), QR, colonnes et podium. */
   --tu-stage-width: 120rem;
   --tu-stage-height: 67.5rem;

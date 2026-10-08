@@ -1,0 +1,216 @@
+/* Pictogramme : quatre calques superposés, un par couleur du logo. */
+.tu-picto {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: var(--tu-picto-taille);
+  height: var(--tu-picto-taille);
+  vertical-align: middle;
+}
+
+.tu-picto--sm {
+  --tu-picto-taille: var(--tu-picto-sm);
+}
+
+.tu-picto--coin {
+  --tu-picto-taille: var(--tu-picto-coin);
+}
+
+.tu-picto--lg {
+  --tu-picto-taille: var(--tu-picto-lg);
+}
+
+.tu-picto--xl {
+  --tu-picto-taille: var(--tu-picto-xl);
+}
+
+.tu-picto__calque {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+
+/* Le logo et le nom côte à côte, dans un en-tête. */
+.tu-marque {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+}
+
+/* Chaque personnage arrive de son côté, l'un après l'autre, et prend sa place. */
+.tu-picto__calque--navy {
+  --tu-picto-dx: 0%;
+  --tu-picto-dy: -110%;
+  --tu-picto-rang: 0;
+}
+
+.tu-picto__calque--corail {
+  --tu-picto-dx: 110%;
+  --tu-picto-dy: 0%;
+  --tu-picto-rang: 1;
+}
+
+.tu-picto__calque--sable {
+  --tu-picto-dx: 0%;
+  --tu-picto-dy: 110%;
+  --tu-picto-rang: 2;
+}
+
+.tu-picto__calque--vert {
+  --tu-picto-dx: -110%;
+  --tu-picto-dy: 0%;
+  --tu-picto-rang: 3;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-picto--anime .tu-picto__calque {
+    animation: tu-picto-arrivee var(--tu-dur-logo) var(--tu-ease-logo) both;
+    animation-delay: calc(var(--tu-picto-rang) * var(--tu-dur-fast));
+  }
+}
+
+@keyframes tu-picto-arrivee {
+  from {
+    opacity: 0;
+    transform: translate(var(--tu-picto-dx), var(--tu-picto-dy)) scale(0.15) rotate(-60deg);
+  }
+
+  45% {
+    opacity: 1;
+  }
+}
+
+/* Écran de chargement : le logo, le nom, « Loading… » et une barre qui va et vient. */
+.tu-chargement {
+  position: fixed;
+  inset: 0;
+  z-index: var(--tu-z-chargement);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-4);
+  padding: var(--tu-space-6);
+  background: var(--tu-bg);
+  color: var(--tu-text);
+  text-align: center;
+}
+
+.tu-chargement__nom {
+  --tu-wordmark-size: var(--tu-size-3xl);
+}
+
+.tu-chargement__texte {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+  letter-spacing: var(--tu-tracking-code);
+}
+
+.tu-chargement__barre {
+  position: relative;
+  overflow: hidden;
+  width: var(--tu-chargement-barre);
+  max-width: 100%;
+  height: var(--tu-space-1);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-stone-500);
+}
+
+.tu-chargement__curseur {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 40%;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-sage-500);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* L'écran n'apparaît qu'après un court délai : une page rapide ne le fait pas clignoter. */
+  .tu-chargement {
+    animation: tu-fondu var(--tu-dur-base) var(--tu-ease) var(--tu-dur-attente) both;
+  }
+
+  .tu-chargement .tu-picto__calque {
+    animation-delay: calc(var(--tu-dur-attente) + var(--tu-picto-rang) * var(--tu-dur-fast));
+  }
+
+  .tu-chargement__nom,
+  .tu-chargement__texte,
+  .tu-chargement__barre {
+    animation: tu-fondu var(--tu-dur-reveal) var(--tu-ease)
+      calc(var(--tu-dur-attente) + var(--tu-dur-logo)) both;
+  }
+
+  .tu-chargement__curseur {
+    animation: tu-chargement-va-et-vient var(--tu-dur-barre) ease-in-out infinite alternate;
+  }
+}
+
+@keyframes tu-chargement-va-et-vient {
+  to {
+    transform: translateX(150%);
+  }
+}
+
+/* Fondu d'apparition : changement de scène à l'écran commun, d'écran sur le téléphone. */
+@keyframes tu-fondu {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage__body,
+  .tu-player > :not(.tu-player__head) {
+    animation: tu-fondu var(--tu-dur-base) var(--tu-ease) both;
+  }
+}
+
+/* Écran commun : le pictogramme dans un coin, et l'interlude entre deux jeux. */
+.tu-stage {
+  position: relative;
+}
+
+.tu-stage__picto {
+  position: absolute;
+  right: var(--tu-space-8);
+  bottom: var(--tu-space-6);
+}
+
+.tu-interlude {
+  position: absolute;
+  inset: 0;
+  z-index: var(--tu-z-chargement);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--tu-bg);
+  pointer-events: none;
+}
+
+/* Sans mouvement, pas d'interlude : le titre du jeu s'affiche directement. */
+@media (prefers-reduced-motion: no-preference) {
+  .tu-interlude {
+    display: flex;
+    animation: tu-interlude var(--tu-dur-interlude) var(--tu-ease) both;
+  }
+
+  .tu-interlude .tu-picto__calque {
+    animation-duration: var(--tu-dur-logo-court);
+    animation-delay: calc(var(--tu-picto-rang) * var(--tu-dur-fast) / 2);
+  }
+}
+
+@keyframes tu-interlude {
+  75% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}

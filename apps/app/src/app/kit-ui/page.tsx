@@ -93,16 +93,16 @@ export default function KitUi() {
       </header>
 
       <section className="kit__theme" aria-labelledby="theme-clair">
-        <h2 id="theme-clair">Thème clair — vitrine et écran joueur</h2>
+        <h2 id="theme-clair">Thème clair — toute l'app et la vitrine</h2>
         <Demo />
       </section>
 
       <section className="kit__theme" data-theme="stage" aria-labelledby="theme-stage">
-        <h2 id="theme-stage">Thème stage — écran commun et régie</h2>
+        <h2 id="theme-stage">Thème stage — blocs marine de la vitrine</h2>
         <Demo />
       </section>
 
-      <section className="kit__theme" data-theme="stage" aria-labelledby="explications">
+      <section className="kit__theme" aria-labelledby="explications">
         <h2 id="explications">Explications animées — décors des cartes (lot 12)</h2>
         <div className="kit__grid kit__grid--large">
           {VISUELS.map((visuel) => (

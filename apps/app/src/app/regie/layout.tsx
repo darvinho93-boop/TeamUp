@@ -6,11 +6,7 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-/** Régie : thème stage, pour ne pas éblouir en salle sombre. */
+/** Régie : même fond beige que le reste de l'app (2026-10-09). */
 export default function RegieLayout({ children }: { children: ReactNode }) {
-  return (
-    <div className="tu-regie" data-theme="stage">
-      {children}
-    </div>
-  );
+  return <div className="tu-regie">{children}</div>;
 }

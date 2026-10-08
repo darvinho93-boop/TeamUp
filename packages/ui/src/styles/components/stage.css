@@ -338,7 +338,7 @@
 }
 
 .tu-stage-gagne {
-  color: var(--tu-primary);
+  color: var(--tu-success);
 }
 
 .tu-stage-perdu {

@@ -1,10 +1,15 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { cx } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
 import type { EtatSalle } from '@/lib/salle';
+import { Pictogramme } from '@/marque/Pictogramme';
 import { Scene } from './Scenes';
+
+/** Durée de l'interlude entre deux jeux : celle de `--tu-dur-interlude`. */
+const INTERLUDE_MS = 1100;
 
 /**
  * L'écran de la salle, dans la première langue de la soirée quelle que soit celle du navigateur
@@ -26,15 +31,44 @@ export function Salle({
   apercu?: boolean;
 }) {
   const langue = etat.evenement.langues[0] ?? 'fr';
+  const { scene, manche_id: mancheId } = etat.pilotage;
+
+  // Entre deux jeux, le logo passe en plein écran, par-dessus une scène déjà à jour. Seulement
+  // si cet écran a vu le jeu arriver : ni au chargement, ni dans l'aperçu de la régie.
+  const presente = scene === 'intro' ? mancheId : null;
+  const [vue, setVue] = useState(presente);
+  const [interlude, setInterlude] = useState<string | null>(null);
+  if (presente !== vue) {
+    setVue(presente);
+    if (presente && !apercu) setInterlude(presente);
+  }
+  useEffect(() => {
+    if (!interlude) return;
+    const fin = setTimeout(() => setInterlude(null), INTERLUDE_MS);
+    return () => clearTimeout(fin);
+  }, [interlude]);
+
   return (
     <NextIntlClientProvider locale={langue} messages={MESSAGES[langue]}>
       <div
         className={cx('tu-stage', apercu && 'tu-stage--apercu')}
-        data-theme="stage"
         lang={langue}
         aria-hidden={apercu || undefined}
       >
-        <Scene etat={etat} decalageMs={decalageMs} qrSvg={qrSvg} adresse={adresse} />
+        {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
+        <Scene
+          key={`${scene}:${mancheId ?? ''}`}
+          etat={etat}
+          decalageMs={decalageMs}
+          qrSvg={qrSvg}
+          adresse={adresse}
+        />
+        {scene !== 'accueil' && <Pictogramme taille="coin" className="tu-stage__picto" />}
+        {interlude && (
+          <div key={interlude} className="tu-interlude" data-testid="interlude">
+            <Pictogramme taille="lg" anime />
+          </div>
+        )}
       </div>
     </NextIntlClientProvider>
   );

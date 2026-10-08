@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   await exigerAdmin();
   return (
-    <div className="tu-regie" data-theme="stage">
+    <div className="tu-regie">
       <EnTete admin nav={<NavAdmin />} />
       <main className="tu-regie__main">{children}</main>
     </div>

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Wordmark } from '@teamup/ui/react';
 import { deconnecter } from '@/app/regie/actions';
+import { Pictogramme } from '@/marque/Pictogramme';
 import { ChoixLangue } from './ChoixLangue';
 import { NavEvenement } from './NavEvenement';
 
@@ -24,7 +25,8 @@ export async function EnTete({
   const t = await getTranslations('regie');
   return (
     <header className="tu-regie__head">
-      <Link href="/regie" aria-label={t('accueil')}>
+      <Link href="/regie" aria-label={t('accueil')} className="tu-marque">
+        <Pictogramme />
         <Wordmark />
       </Link>
       {evenement && (
