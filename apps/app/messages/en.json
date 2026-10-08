@@ -228,6 +228,8 @@
       "masquer": "Hide",
       "lancer": "Start",
       "indice": "Clue ({n}/2)",
+      "arretIndice": "Timer stopped: give the clue",
+      "reprise": "Timer restarts in {s} s",
       "valider": "Found",
       "echec": "Failed",
       "confirmer": "Confirm: {action}",
@@ -418,6 +420,8 @@
     "pointCommun": "What they have in common",
     "ouvrezLesYeux": "{equipe}, open your eyes!",
     "palier": "Stage {n}",
+    "arretIndice": "Timer stopped: here comes a clue",
+    "reprise": "Back in {s} s",
     "trouve": "Found it!",
     "rate": "Missed",
     "points": "{points, plural, =0 {0 points} one {+# point} other {+# points}}",
@@ -449,7 +453,7 @@
         "equipe-dos": "One team sits with its back to the screen, eyes closed.",
         "ecran-cache": "The screen shows the whole room something in common, then hides it.",
         "salle-debout": "The guests concerned stand up: the team guesses what they share.",
-        "paliers": "The faster, the more points. One more clue at each stage."
+        "paliers": "The faster, the more points. The timer stops at each stage for a clue."
       },
       "qcm2": {
         "quadrants": "One question, four answers: A, B, C, D.",

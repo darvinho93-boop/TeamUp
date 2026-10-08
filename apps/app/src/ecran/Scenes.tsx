@@ -11,6 +11,7 @@ import {
   etatPaliers,
   PALIERS,
   POINTS_PAR_SURVIVANT,
+  tempsDeJeu,
 } from '@teamup/game';
 import {
   classement,
@@ -21,6 +22,7 @@ import {
   type EquipeSalle,
   type EtatSalle,
   type MancheSalle,
+  indicesMsDe,
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
 import { Chrono, useMaintenant } from './Chrono';
@@ -198,7 +200,10 @@ function PointsCommuns({ etat, decalageMs }: Props) {
       : depart === null
         ? 0
         : Math.max(0, maintenant + decalageMs - depart);
-  const palier = etatPaliers(ecoule).palier;
+  // Le temps de jeu : figé à la fin de chaque palier, jusqu'à l'indice et un peu après.
+  const fini = typeof passage.resultat['ecoule_ms'] === 'number';
+  const jeu = fini ? { jeuMs: ecoule, arret: null } : tempsDeJeu(ecoule, indicesMsDe(passage));
+  const palier = etatPaliers(jeu.jeuMs).palier;
   const indices = langues.flatMap((langue) => {
     const liste = passage.secret?.[langue]?.['indices'];
     // La régie reçoit tous les indices : l'aperçu n'en montre pas plus que l'écran.
@@ -241,8 +246,8 @@ function PointsCommuns({ etat, decalageMs }: Props) {
             departMs={depart}
             dureeS={CHRONO_POINTS_COMMUNS_S}
             decalageMs={decalageMs}
-            className="tu-stage__giant"
-            {...(etape === 'lance' ? {} : { arret: ecoule })}
+            className={cx('tu-stage__giant', jeu.arret && 'tu-stage__muted')}
+            arret={jeu.jeuMs}
           />
           <ol className="tu-stage-paliers">
             {PALIERS.map((p, i) => (
@@ -255,6 +260,13 @@ function PointsCommuns({ etat, decalageMs }: Props) {
               </li>
             ))}
           </ol>
+          {etape === 'lance' && jeu.arret && (
+            <p className="tu-stage__l" data-testid="arret" role="status">
+              {jeu.arret.repriseDansMs === null
+                ? t('arretIndice')
+                : t('reprise', { s: Math.ceil(jeu.arret.repriseDansMs / 1000) })}
+            </p>
+          )}
           {etat.pilotage.indices > 0 && indices.length > 0 && (
             <div className="tu-stage-indices" data-testid="indices">
               {indices[0]!.liste.map((_, i) => (

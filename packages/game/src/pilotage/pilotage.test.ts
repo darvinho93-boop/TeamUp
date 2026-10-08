@@ -37,31 +37,70 @@ describe('pilotage de Points communs', () => {
     );
   });
 
-  it('ne donne un indice qu’au palier qui l’autorise', () => {
-    const lance: EtatPointsCommuns = { etape: 'lance', indices: 0 };
-    expect(actionsPointsCommuns(lance, s(30))).not.toContain('indice');
-    expect(actionsPointsCommuns(lance, s(60))).toContain('indice');
-    const unIndice = appliquerPointsCommuns(lance, 'indice', s(60)).etat;
-    expect(unIndice.indices).toBe(1);
-    expect(actionsPointsCommuns(unIndice, s(80))).not.toContain('indice');
-    expect(actionsPointsCommuns(unIndice, s(95))).toContain('indice');
-    const deux = appliquerPointsCommuns(unIndice, 'indice', s(95)).etat;
-    expect(actionsPointsCommuns(deux, s(120))).toEqual(['valider', 'echec']);
+  it('ne donne un indice que chrono arrêté, une fois par arrêt', () => {
+    const lance: EtatPointsCommuns = { etape: 'lance', indices: 0, indicesMs: [] };
+    expect(actionsPointsCommuns(lance, s(30))).toEqual(['valider', 'echec']);
+    expect(actionsPointsCommuns(lance, s(60))).toEqual(['indice', 'valider', 'echec']);
+    expect(actionsPointsCommuns(lance, s(72))).toContain('indice');
+
+    const unIndice = appliquerPointsCommuns(lance, 'indice', s(72));
+    expect(unIndice.chrono).toBe('garder');
+    expect(unIndice.etat).toMatchObject({ indices: 1, indicesMs: [72_000] });
+    // Le temps de lire l'indice, puis le palier 2 : plus d'indice avant le second arrêt.
+    expect(actionsPointsCommuns(unIndice.etat, s(74))).not.toContain('indice');
+    expect(actionsPointsCommuns(unIndice.etat, s(100))).not.toContain('indice');
+    expect(() => appliquerPointsCommuns(unIndice.etat, 'indice', s(100))).toThrow(/impossible/);
+
+    // Reprise à 77 s, second arrêt 35 s de jeu plus tard.
+    expect(actionsPointsCommuns(unIndice.etat, s(112))).toContain('indice');
+    const deux = appliquerPointsCommuns(unIndice.etat, 'indice', s(115)).etat;
+    expect(deux).toMatchObject({ indices: 2, indicesMs: [72_000, 115_000] });
+    expect(actionsPointsCommuns(deux, s(140))).toEqual(['valider', 'echec']);
   });
 
-  it('valider compte le barème au temps écoulé et arrête le chrono', () => {
-    const t = appliquerPointsCommuns({ etape: 'lance', indices: 1 }, 'valider', s(80));
+  it('valider compte le barème au temps de jeu, arrêts déduits, et arrête le chrono', () => {
+    // Indice à 72 s, reprise à 77 s : 97 s après le lancement, 80 s de jeu.
+    const t = appliquerPointsCommuns(
+      { etape: 'lance', indices: 1, indicesMs: [72_000] },
+      'valider',
+      s(97),
+    );
     expect(t.etat.etape).toBe('trouve');
     expect(t.chrono).toBe('arreter');
     expect(t.points).toBe(15 * 2 + 35);
-    expect(t.resultat).toEqual({ ecoule_ms: 80_000, palier: 2, indices: 1, trouve: true });
+    expect(t.resultat).toEqual({
+      ecoule_ms: 80_000,
+      palier: 2,
+      indices: 1,
+      indices_ms: [72_000],
+      trouve: true,
+    });
+  });
+
+  it('trouvé pendant un arrêt : le palier qui s’ouvre compte en entier', () => {
+    const lance: EtatPointsCommuns = { etape: 'lance', indices: 0, indicesMs: [] };
+    const premier = appliquerPointsCommuns(lance, 'valider', s(90));
+    expect(premier.points).toBe(35 * 2 + 35);
+    expect(premier.resultat).toMatchObject({ ecoule_ms: 60_000, palier: 2 });
+
+    const second = appliquerPointsCommuns(
+      { etape: 'lance', indices: 1, indicesMs: [60_000] },
+      'valider',
+      s(150),
+    );
+    expect(second.points).toBe(35);
+    expect(second.resultat).toMatchObject({ ecoule_ms: 95_000, palier: 3 });
   });
 
   it('l’échec vaut 0', () => {
-    const t = appliquerPointsCommuns({ etape: 'lance', indices: 2 }, 'echec', s(130));
+    const t = appliquerPointsCommuns(
+      { etape: 'lance', indices: 2, indicesMs: [60_000, 100_000] },
+      'echec',
+      s(200),
+    );
     expect(t.etat.etape).toBe('echec');
     expect(t.points).toBe(0);
-    expect(actionsPointsCommuns(t.etat, s(130))).toEqual([]);
+    expect(actionsPointsCommuns(t.etat, s(200))).toEqual([]);
   });
 });
 

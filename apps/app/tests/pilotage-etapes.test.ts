@@ -158,6 +158,34 @@ describe('une touche de la régie', () => {
     ).toBe(1);
   });
 
+  it('l’indice se donne chrono arrêté et garde son instant dans le passage en cours', () => {
+    const lance = etat({ scene: 'jeu', manche_id: 'pc', passage_id: 'p1', etape: 'lance' });
+    const indice = etape(lance, { type: 'pointsCommuns', action: 'indice' }, 68_000);
+    expect(indice?.pilotage).toMatchObject({ etape: 'lance', indices: 1, chrono: 'garder' });
+    expect(indice?.passage).toEqual({
+      id: 'p1',
+      statut: 'en_cours',
+      resultat: { indices_ms: [68_000] },
+    });
+
+    // L'indice donné, le chrono repart 5 s plus tard : 93 s au mur, 80 s de jeu.
+    const apres = etat({
+      scene: 'jeu',
+      manche_id: 'pc',
+      passage_id: 'p1',
+      etape: 'lance',
+      indices: 1,
+    });
+    apres.programme[0]!.passages[0]!.resultat = { indices_ms: [68_000] };
+    expect(etape(apres, { type: 'pointsCommuns', action: 'indice' }, 80_000)).toBeNull();
+    const trouve = etape(apres, { type: 'pointsCommuns', action: 'valider' }, 93_000);
+    expect(trouve?.passage).toMatchObject({
+      statut: 'termine',
+      points: 15 * 2 + 35,
+      resultat: { ecoule_ms: 80_000, indices_ms: [68_000] },
+    });
+  });
+
   it('passe à l’équipe suivante une fois le passage joué', () => {
     const e = etat({ scene: 'jeu', manche_id: 'pc', passage_id: 'p1', etape: 'trouve' });
     e.programme[0]!.passages[0]!.statut = 'termine';

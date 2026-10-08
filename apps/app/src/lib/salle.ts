@@ -106,6 +106,15 @@ export function ecouleMs(etat: EtatSalle, decalageMs: number, maintenant = Date.
   return depart === null ? 0 : Math.max(0, maintenant + decalageMs - depart);
 }
 
+/**
+ * Points communs : l'instant de chaque indice donné (ms depuis le lancement), gardé dans le
+ * résultat du passage pendant qu'il se joue. Le temps de jeu s'en déduit (`tempsDeJeu`).
+ */
+export function indicesMsDe(passage: PassageSalle | null): number[] {
+  const instants = passage?.resultat['indices_ms'];
+  return Array.isArray(instants) ? instants.filter((i): i is number => typeof i === 'number') : [];
+}
+
 /** Un champ texte d'un contenu, dans chaque langue de l'événement qui l'a. */
 export function texteParLangue(
   valeurs: ParLangue | null,

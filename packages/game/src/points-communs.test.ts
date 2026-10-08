@@ -3,8 +3,10 @@ import {
   CHRONO_POINTS_COMMUNS_S,
   etatPaliers,
   PALIERS,
+  REPRISE_APRES_INDICE_S,
   SCORE_MAX_POINTS_COMMUNS,
   scorePointsCommuns,
+  tempsDeJeu,
 } from './points-communs';
 
 const s = (secondes: number) => secondes * 1000;
@@ -101,5 +103,65 @@ describe('barème de Points communs', () => {
       expect(score).toBeLessThanOrEqual(precedent);
       precedent = score;
     }
+  });
+});
+
+describe('arrêts du chrono de Points communs', () => {
+  const R = REPRISE_APRES_INDICE_S;
+
+  it('tourne sans arrêt pendant le premier palier', () => {
+    expect(tempsDeJeu(0)).toEqual({ jeuMs: 0, arret: null });
+    expect(tempsDeJeu(s(59) + 999)).toEqual({ jeuMs: s(59) + 999, arret: null });
+  });
+
+  it('se fige à 60 s et attend l’indice aussi longtemps qu’il faut', () => {
+    for (const mur of [s(60), s(75), s(600)]) {
+      expect(tempsDeJeu(mur)).toEqual({
+        jeuMs: s(60),
+        arret: { palier: 1, repriseDansMs: null },
+      });
+    }
+    // Pendant l'arrêt, c'est déjà le palier 2 : il compte en entier.
+    expect(etatPaliers(tempsDeJeu(s(75)).jeuMs)).toMatchObject({ palier: 1, resteDansPalierS: 35 });
+    expect(scorePointsCommuns(tempsDeJeu(s(75)).jeuMs)).toBe(35 * 2 + 35);
+  });
+
+  it('repart seul quelques secondes après l’indice', () => {
+    const indices = [s(70)];
+    expect(tempsDeJeu(s(70), indices)).toEqual({
+      jeuMs: s(60),
+      arret: { palier: 1, repriseDansMs: s(R) },
+    });
+    expect(tempsDeJeu(s(70 + R) - 1, indices).arret).toEqual({ palier: 1, repriseDansMs: 1 });
+    expect(tempsDeJeu(s(70 + R), indices)).toEqual({ jeuMs: s(60), arret: null });
+    expect(tempsDeJeu(s(70 + R + 20), indices)).toEqual({ jeuMs: s(80), arret: null });
+  });
+
+  it('se fige une seconde fois à 95 s de jeu, puis va au bout des 130 s', () => {
+    // Premier arrêt de 60 à 70 + R au mur ; le second palier dure 35 s de jeu.
+    const second = 70 + R + 35;
+    expect(tempsDeJeu(s(second), [s(70)])).toEqual({
+      jeuMs: s(95),
+      arret: { palier: 2, repriseDansMs: null },
+    });
+    expect(scorePointsCommuns(tempsDeJeu(s(second + 40), [s(70)]).jeuMs)).toBe(35);
+
+    const indices = [s(70), s(second + 3)];
+    const reprise = second + 3 + R;
+    expect(tempsDeJeu(s(reprise + 10), indices)).toEqual({ jeuMs: s(105), arret: null });
+    expect(tempsDeJeu(s(reprise + 35), indices)).toEqual({ jeuMs: s(130), arret: null });
+    expect(tempsDeJeu(s(reprise + 500), indices)).toEqual({ jeuMs: s(130), arret: null });
+  });
+
+  it('ne recule jamais et ne dépasse jamais le temps écoulé', () => {
+    const indices = [s(64), s(120)];
+    let precedent = 0;
+    for (let mur = 0; mur <= s(200); mur += 250) {
+      const { jeuMs } = tempsDeJeu(mur, indices);
+      expect(jeuMs).toBeGreaterThanOrEqual(precedent);
+      expect(jeuMs).toBeLessThanOrEqual(mur);
+      precedent = jeuMs;
+    }
+    expect(precedent).toBe(s(130));
   });
 });

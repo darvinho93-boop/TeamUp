@@ -22,6 +22,7 @@ import {
   type GameCode,
   ordreDesPassages,
   tirerOrdre,
+  tempsDeJeu,
 } from '@teamup/game';
 import { calculerEtape, jeuParEquipe, scriptEnCours, type Commande } from '@/lib/pilotage';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
@@ -36,6 +37,7 @@ import {
   type MancheSalle,
   type ParLangue,
   type Scene,
+  indicesMsDe,
 } from '@/lib/salle';
 import { Chrono, useMaintenant } from '@/ecran/Chrono';
 import { useEtatSalle } from '@/ecran/useEtatSalle';
@@ -344,7 +346,12 @@ function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) 
   if (!passage || !equipe) return null;
 
   const ecoule = ecouleMs(etat, decalageMs, maintenant);
-  const permises = actionsPointsCommuns({ etape, indices: etat.pilotage.indices }, ecoule);
+  const indicesMs = indicesMsDe(passage);
+  const permises = actionsPointsCommuns(
+    { etape, indices: etat.pilotage.indices, indicesMs },
+    ecoule,
+  );
+  const jeu = tempsDeJeu(ecoule, indicesMs);
   const langue = etat.evenement.langues[0] ?? 'fr';
   const reponse = texteParLangue(passage.secret, 'reponse', [langue])[0]?.texte;
   const indices = passage.secret?.[langue]?.['indices'];
@@ -386,20 +393,32 @@ function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) 
         dureeS={CHRONO_POINTS_COMMUNS_S}
         decalageMs={decalageMs}
         className="tu-regie-timer"
-        {...(etape === 'lance'
-          ? {}
-          : {
-              arret:
-                typeof passage.resultat['ecoule_ms'] === 'number'
-                  ? passage.resultat['ecoule_ms']
-                  : 0,
-            })}
+        arret={
+          etape === 'lance'
+            ? jeu.jeuMs
+            : typeof passage.resultat['ecoule_ms'] === 'number'
+              ? passage.resultat['ecoule_ms']
+              : 0
+        }
       />
+      {etape === 'lance' && jeu.arret && (
+        <p className="tu-regie__muted" data-testid="regie-arret" role="status">
+          {jeu.arret.repriseDansMs === null
+            ? t('arretIndice')
+            : t('reprise', { s: Math.ceil(jeu.arret.repriseDansMs / 1000) })}
+        </p>
+      )}
       <div className="tu-regie-keys">
         {touche('afficher', t('afficher'))}
         {touche('masquer', t('masquer'))}
         {touche('lancer', t('lancer'))}
-        {touche('indice', t('indice', { n: etat.pilotage.indices }))}
+        <Button
+          variant={permises.includes('indice') ? 'accent' : 'primary'}
+          disabled={!permises.includes('indice')}
+          onClick={() => agir({ type: 'pointsCommuns', action: 'indice' })}
+        >
+          {t('indice', { n: etat.pilotage.indices })}
+        </Button>
         <BoutonConfirme
           disabled={!permises.includes('valider')}
           confirmation={t('confirmer', { action: t('valider') })}

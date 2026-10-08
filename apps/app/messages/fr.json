@@ -228,6 +228,8 @@
       "masquer": "Masquer",
       "lancer": "Lancer",
       "indice": "Indice ({n}/2)",
+      "arretIndice": "Chrono arrêté : donnez l'indice",
+      "reprise": "Le chrono repart dans {s} s",
       "valider": "Valider",
       "echec": "Échec",
       "confirmer": "Confirmer : {action}",
@@ -418,6 +420,8 @@
     "pointCommun": "Le point commun",
     "ouvrezLesYeux": "{equipe}, ouvrez les yeux !",
     "palier": "Palier {n}",
+    "arretIndice": "Chrono arrêté : place à l'indice",
+    "reprise": "Reprise dans {s} s",
     "trouve": "Trouvé !",
     "rate": "Raté",
     "points": "{points, plural, =0 {0 point} one {+# point} other {+# points}}",
@@ -449,7 +453,7 @@
         "equipe-dos": "Une équipe s'assoit dos à l'écran, les yeux fermés.",
         "ecran-cache": "L'écran montre un point commun à toute la salle, puis se cache.",
         "salle-debout": "Les invités concernés se lèvent : l'équipe devine ce qui les rassemble.",
-        "paliers": "Plus c'est rapide, plus ça rapporte. Un indice à chaque palier."
+        "paliers": "Plus c'est rapide, plus ça rapporte. Le chrono s'arrête à chaque palier pour un indice."
       },
       "qcm2": {
         "quadrants": "Une question, quatre réponses : A, B, C, D.",

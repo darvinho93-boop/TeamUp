@@ -42,6 +42,7 @@ import {
   type ScriptExplication,
 } from '@teamup/game';
 import {
+  indicesMsDe,
   mancheCourante,
   passageCourant,
   type EtatSalle,
@@ -289,7 +290,11 @@ export function calculerEtape(
       case 'pointsCommuns': {
         if (manche?.jeu !== 'list2' || !passage) return null;
         const suite = appliquerPointsCommuns(
-          { etape: p.etape as EtapePointsCommuns, indices: p.indices },
+          {
+            etape: p.etape as EtapePointsCommuns,
+            indices: p.indices,
+            indicesMs: indicesMsDe(passage),
+          },
           commande.action,
           ecouleMs,
         );
@@ -298,6 +303,14 @@ export function calculerEtape(
           indices: suite.etat.indices,
           ...chronoDe(suite.chrono),
         });
+        if (commande.action === 'indice') {
+          // L'instant de l'indice : l'écran et la régie en déduisent la reprise du chrono.
+          ecriture.passage = {
+            id: passage.id,
+            statut: 'en_cours',
+            resultat: { indices_ms: suite.etat.indicesMs },
+          };
+        }
         if (suite.points !== undefined && suite.resultat) {
           ecriture.passage = {
             id: passage.id,
