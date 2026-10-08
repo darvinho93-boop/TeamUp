@@ -82,9 +82,14 @@ export default {
 
 ## Deux thèmes
 
-- **Par défaut** (téléphones des invités) : fond crème `#FAF7F2`, texte navy.
-- **`data-theme="stage"`** (écran commun projeté en salle) : fond navy profond, texte
-  blanc, primaire en vert sauge. À poser sur le `<html>` ou le conteneur de l'écran régie.
+- **Par défaut** (toute l'app et la vitrine) : fond beige du logo `#F7F3E6`, texte navy.
+  Depuis le 9 octobre 2026, l'écran commun, la régie et le back-office sont eux aussi sur ce
+  fond : un écran projeté clair, c'est un choix assumé.
+- **`data-theme="stage"`** : fond navy profond, texte blanc, primaire en vert sauge. Il ne
+  sert plus qu'aux blocs marine de la vitrine.
+
+Le pictogramme existe en quatre calques (`logo/calques/`, un par couleur) : l'app les empile
+et les anime pour l'écran de chargement.
 
 ## Choix faits, et pourquoi
 

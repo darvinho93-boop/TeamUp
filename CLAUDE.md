@@ -40,7 +40,8 @@ Lis-les avant de concevoir quoi que ce soit. En cas de contradiction, l'ordre ci
 - Toute couleur, taille, espacement, rayon passe par les tokens. Aucune valeur en dur.
 - Corail (`--tu-accent`) réservé aux actions (« Demander un devis », « Envoyer », « c'est à toi »). Jamais en décor.
 - Cibles tactiles ≥ 56 px (`--tu-tap-min`) sur l'écran joueur.
-- Deux thèmes : clair (vitrine, joueur) et `data-theme="stage"` (écran commun, régie).
+- Un seul fond dans toute l'app : le beige du logo (`--tu-bg`, `#F7F3E6`), décision du 2026-10-09.
+  `data-theme="stage"` (sombre) ne sert plus qu'aux blocs marine de la vitrine.
 - Polices : Poppins (titres, chiffres), Inter (texte), Noto Sans Tamil (obligatoire pour le tamoul).
 - `prefers-reduced-motion` respecté.
 - Vitrine : **aucune photo d'événement**, uniquement des visuels du jeu.
@@ -380,3 +381,30 @@ invité **au clic** sur son prénom, membres de l'équipe qui passe au pilotage 
   absence : sans la migration `20261009090000`, tri alphabétique sans capitaine marqué.
 - Page Salle : la page serveur lit et se rafraîchit, `src/regie/SalleEquipes.tsx` affiche.
   Une seule fiche d'invité ouverte à la fois.
+
+## Conventions posées le 2026-10-09 (identité : logo, beige, chargement, transitions)
+
+Tranché le 2026-10-09 : **fond beige partout** (téléphones, écran commun, régie, back-office) ;
+**pictogramme seul** sur chaque page ; écran de chargement au logo ; fondu à chaque changement
+de scène et d'écran ; logo en plein écran entre deux jeux ; « Loading… » dans toutes les langues.
+Les mentions plus anciennes du « thème stage » pour l'écran et la régie (lots 6, 9, 12) sont
+caduques : même coque, fond beige.
+
+- Le pictogramme est fait des quatre calques du logo (`design/brand/logo/calques/`), empilés
+  par `src/marque/Pictogramme.tsx` ; styles dans `packages/ui/src/styles/components/brand.css`.
+  En-tête du téléphone, de la régie et du back-office ; coin bas droit de l'écran commun, sauf
+  à l'accueil qui le porte près du nom.
+- Chargement : `src/marque/Chargement.tsx`, branché par un `loading.tsx` à la racine, dans
+  `regie/` et dans `admin/` (celui de la racine ne couvre pas la navigation à l'intérieur d'une
+  section). Il n'apparaît qu'après `--tu-dur-attente` (300 ms) : une page rapide ne clignote
+  pas. La barre va et vient, elle ne mesure rien. Page de contrôle : `/kit-ui/chargement`.
+- Fondu : `.tu-stage__body` et les enfants de `.tu-player` fondent à leur montage. À l'écran,
+  `Salle.tsx` donne à la scène la clé `scène:manche` : elle est remontée au changement de scène
+  ou de jeu, **jamais par une touche pendant un jeu**.
+- Interlude : quand l'intro d'un nouveau jeu arrive, le logo passe par-dessus la scène déjà à
+  jour (`--tu-dur-interlude`, 1,1 s, à garder égal à `INTERLUDE_MS`). Ni au rechargement, ni dans
+  l'aperçu de la régie, ni sous `prefers-reduced-motion`.
+- Sur beige, la sauge 500 ne tient pas comme couleur de texte ni comme repère (1,9:1) :
+  `--tu-success` (sauge 700) pour les verdicts et l'état « connecté ».
+- Revue visuelle : `node e2e/captures.mjs <dossier> [CODE]` depuis `apps/app` capture chaque
+  écran en taille réelle (serveur local démarré).

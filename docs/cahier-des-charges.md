@@ -104,7 +104,7 @@ Principe v3 : le téléphone est un instrument de régie. Il reste la plupart du
 | Fin | Podium, remerciement, lien vers le site |
 | Hors ligne | Bandeau de reconnexion ; la session reprend sans ressaisie |
 
-### 5.2 Écran commun (projection, thème stage)
+### 5.2 Écran commun (projection, fond beige)
 
 Lisible depuis le fond de salle : chronos et scores en 6 rem, aucun texte courant sous 2 rem, aucune interaction.
 
@@ -154,7 +154,7 @@ La vitrine et l'app partagent le kit de marque existant (`tokens.css`). Aucune c
 | --- | --- | --- |
 | Site vitrine | Clair (crème #FAF7F2, texte navy) | Aucune photo d'événement : uniquement des visuels du jeu (écran commun, téléphones, régie), ton chaleureux |
 | Écran joueur | Clair | Une action par écran ; cibles tactiles de 56 px minimum ; lisible en deux secondes |
-| Écran commun | Stage (navy profond, primaire sauge) | Aucun contrôle visible ; typo display 4 à 6 rem ; animations de révélation 600 ms |
+| Écran commun | Fond beige du logo, texte navy (décision du 9 octobre 2026) | Aucun contrôle visible ; typo display 4 à 6 rem ; animations de révélation 600 ms |
 | Régie | Stage, pour ne pas éblouir en salle | Grosses touches d'étape ; confirmation sur les actions irréversibles (valider un score, clore les photos) |
 
 **Règles communes, reprises du kit :**
