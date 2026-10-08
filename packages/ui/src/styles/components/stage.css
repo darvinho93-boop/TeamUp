@@ -215,9 +215,9 @@
   white-space: nowrap;
 }
 
+/* L'étoile garde la couleur du texte : celle de l'équipe 1 (navy) disparaît sur le fond stage. */
 .tu-stage-membre__capitaine {
   margin-inline-end: var(--tu-space-2);
-  color: var(--tu-team-color);
 }
 
 /* Repère de page : un point par page, celui de la page affichée à la couleur de l'équipe. */
