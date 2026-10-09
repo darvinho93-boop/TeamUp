@@ -599,6 +599,8 @@ export type Database = {
           manche_id: string | null
           passage_id: string | null
           scene: Database["public"]["Enums"]["scene"]
+          son_actif: boolean
+          son_volume: number
         }
         Insert: {
           chrono_depart?: string | null
@@ -610,6 +612,8 @@ export type Database = {
           manche_id?: string | null
           passage_id?: string | null
           scene?: Database["public"]["Enums"]["scene"]
+          son_actif?: boolean
+          son_volume?: number
         }
         Update: {
           chrono_depart?: string | null
@@ -621,6 +625,8 @@ export type Database = {
           manche_id?: string | null
           passage_id?: string | null
           scene?: Database["public"]["Enums"]["scene"]
+          son_actif?: boolean
+          son_volume?: number
         }
         Relationships: [
           {
@@ -865,6 +871,10 @@ export type Database = {
           equipe_id: string
           joueur_id: string
         }[]
+      }
+      regler_son: {
+        Args: { p_actif: boolean; p_evenement: string; p_volume: number }
+        Returns: undefined
       }
       rejoindre_evenement: {
         Args: {

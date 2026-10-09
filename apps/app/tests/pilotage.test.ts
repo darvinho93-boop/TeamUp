@@ -17,6 +17,7 @@ const THEME = 'aaaa0201-0000-4000-8000-000000000201';
 
 interface Etat {
   pilotage: { version: string; etape: string | null };
+  son: { actif: boolean; volume: number };
   equipes: { numero: number; prenoms: string[]; capitaine: string | null }[];
   programme: {
     jeu: string;
@@ -250,5 +251,41 @@ avecBase('les membres des équipes', () => {
     const equipeDeMila = apres.find((e) => e.prenoms.includes('Mila'))!;
     expect(equipeDeMila.capitaine).toBe('Mila');
     expect(apres.filter((e) => e !== equipeDeMila).map((e) => e.capitaine)).toEqual([null]);
+  });
+});
+
+avecBase('le son de la salle', () => {
+  it('est actif à 80 par défaut, et se règle sans périmer le pilotage', async () => {
+    const avant = (await etat()).data!;
+    expect(avant.son).toEqual({ actif: true, volume: 80 });
+
+    const anna = await clientAnimateur('anna@teamup.test');
+    const { erreur } = await appeler(anna, 'regler_son', {
+      p_evenement: evenement.id,
+      p_actif: false,
+      p_volume: 35,
+    });
+    expect(erreur).toBeNull();
+    const apres = (await etat()).data!;
+    expect(apres.son).toEqual({ actif: false, volume: 35 });
+    // La version n'a pas bougé : la touche de régie suivante passe.
+    expect(apres.pilotage.version).toBe(avant.pilotage.version);
+    expect((await piloter({ scene: 'equipes' })).erreur).toBeNull();
+
+    // Un volume hors bornes est ramené dans les bornes.
+    await appeler(anna, 'regler_son', { p_evenement: evenement.id, p_actif: true, p_volume: 250 });
+    expect((await etat()).data!.son).toEqual({ actif: true, volume: 100 });
+  });
+
+  it('ne se règle ni par un autre animateur, ni sans compte', async () => {
+    const brahim = await clientAnimateur('brahim@teamup.test');
+    await appeler(brahim, 'regler_son', { p_evenement: evenement.id, p_actif: false, p_volume: 0 });
+    expect((await etat()).data!.son).toEqual({ actif: true, volume: 100 });
+    const { erreur } = await appeler(clientAnon(), 'regler_son', {
+      p_evenement: evenement.id,
+      p_actif: false,
+      p_volume: 0,
+    });
+    expect(erreur).toBeTruthy();
   });
 });
