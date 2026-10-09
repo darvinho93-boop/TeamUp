@@ -33,6 +33,8 @@
   --tu-picto-xl: 11rem;
   --tu-chargement-barre: 11rem;
   --tu-z-chargement: 50;
+  /* Place du logo en haut à droite de l'écran commun : ce qu'un en-tête pleine largeur lui laisse. */
+  --tu-stage-marque: 21rem;
 
   /* Écran commun : scène 16:9 de référence (1 920 × 1 080), QR, colonnes et podium. */
   --tu-stage-width: 120rem;

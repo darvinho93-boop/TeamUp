@@ -525,6 +525,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--tu-space-8);
+  /* Le chrono se range à gauche du logo, posé en haut à droite de l'écran. */
+  padding-inline-end: var(--tu-stage-marque);
 }
 
 .tu-stage-quiz {
@@ -573,7 +575,12 @@
 }
 
 /* Mime : le verdict en plein écran, vert si le mot est trouvé, rouge sinon. */
+/* Sur ces fonds pleins, le texte est blanc (et le texte atténué aussi) : le navy du fond beige
+   n'y tient pas (2,8:1 sur le rouge). */
 .tu-stage-verdict {
+  --tu-text: var(--tu-text-invert);
+  --tu-text-muted: var(--tu-text-invert);
+
   margin: calc(var(--tu-space-12) * -1) calc(var(--tu-space-16) * -1);
   padding: var(--tu-space-12) var(--tu-space-16);
   color: var(--tu-text);
