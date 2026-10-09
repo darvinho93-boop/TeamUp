@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "dev:host": "next dev -H 0.0.0.0",
     "test:e2e": "playwright test",
-    "sons": "node scripts/sons.mjs"
+    "sons": "node scripts/sons-elevenlabs.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

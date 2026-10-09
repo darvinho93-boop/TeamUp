@@ -415,10 +415,17 @@ Tranché le 2026-10-09 : le son sort de **l'écran commun seulement** ; chronos,
 forts et ambiance ; sons **composés en code**, esprit « jeu télé » du teaser ; coupure et
 volume **depuis la régie**.
 
-- Les sons sont fabriqués par `apps/app/scripts/sons.mjs` (`pnpm --filter @teamup/app sons`,
-  mêmes instruments que `video/scripts/jingle.mjs`) et **versionnés** dans
-  `apps/app/public/sons/` (2,6 Mo). Composés à l'aveugle : c'est l'utilisateur qui les juge,
-  sur `/kit-ui/sons`. Retoucher une partition, refabriquer, réécouter.
+- Les sons sont **générés par ElevenLabs** (effets sonores à partir d'une description), puis
+  recalés par `apps/app/scripts/sons-elevenlabs.mjs` (`pnpm --filter @teamup/app sons`) :
+  silence coupé au début, niveau aligné, roulement monté avec la cymbale à 5 s. Une première
+  série synthétisée en code a été jugée trop artificielle par l'utilisateur le 2026-10-09 et
+  remplacée ; elle reste dans l'historique git (`scripts/sons.mjs`).
+- Deux versions par son (`-a`, `-b`) dans `apps/app/public/sons/`, à l'écoute sur
+  `/kit-ui/sons` ; `CHOIX` (`src/lib/sons.ts`) dit laquelle l'écran joue. Une fois le choix
+  fait, retirer les fichiers écartés.
+- Générer coûte des crédits ElevenLabs : les sons bruts restent dans `scripts/sons-bruts/`
+  (ignoré par git, lourd) et ne sont pas redemandés. La clé (`ELEVENLABS_API_KEY`, `.env` de la
+  racine) doit avoir la permission « Sound Effects ». ElevenLabs renvoie du PCM **stéréo**.
 - `src/lib/sons.ts` (pur, testé) dit quel son part à quel changement d'état (`sonsPour`), quand
   l'ambiance joue (`ambianceA`, à l'accueil) et ce que bat un chrono (`sonDuChrono`, les dix
   dernières secondes). Rien ne sonne au chargement ni à la relecture d'un état inchangé.

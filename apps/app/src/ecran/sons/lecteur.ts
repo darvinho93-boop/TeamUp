@@ -1,4 +1,4 @@
-import { NIVEAUX, SONS, type ReglageSon, type Son } from '@/lib/sons';
+import { fichierDe, NIVEAUX, SONS, type ReglageSon, type Son, type Variante } from '@/lib/sons';
 
 /** Fondu de l'ambiance, à l'entrée comme à la sortie, et du volume quand la régie le change. */
 const FONDU_S = 0.8;
@@ -29,7 +29,7 @@ export interface Lecteur {
  * navigateur refuse de jouer. Tous les sons sont chargés et décodés d'avance, pour partir sans
  * délai le moment venu.
  */
-export async function creerLecteur(reglage: ReglageSon): Promise<Lecteur> {
+export async function creerLecteur(reglage: ReglageSon, variante?: Variante): Promise<Lecteur> {
   const contexte = new AudioContext();
   await contexte.resume();
   const sortie = contexte.createGain();
@@ -42,7 +42,8 @@ export async function creerLecteur(reglage: ReglageSon): Promise<Lecteur> {
   const tampons = new Map<Son, AudioBuffer>();
   await Promise.all(
     SONS.map(async (son) => {
-      const reponse = await fetch(`/sons/${son}.wav`);
+      // Sans variante imposée (la page d'écoute en impose une), la version retenue de chaque son.
+      const reponse = await fetch(fichierDe(son, variante));
       if (!reponse.ok) return;
       tampons.set(son, await contexte.decodeAudioData(await reponse.arrayBuffer()));
     }),

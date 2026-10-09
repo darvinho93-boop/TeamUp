@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   ambianceA,
+  fichierDe,
   NIVEAUX,
   reglageDe,
   SONS,
@@ -26,8 +27,8 @@ const enJeu = (jeu: Instant['jeu'], etape: string, passageId = 'p1') =>
 describe('les fichiers de son', () => {
   it('existent tous, et chacun a son niveau', () => {
     for (const son of SONS) {
-      const fichier = fileURLToPath(new URL(`../public/sons/${son}.wav`, import.meta.url));
-      expect(existsSync(fichier), `${son}.wav (pnpm --filter @teamup/app sons)`).toBe(true);
+      const fichier = fileURLToPath(new URL(`../public${fichierDe(son)}`, import.meta.url));
+      expect(existsSync(fichier), `${fichierDe(son)} (pnpm --filter @teamup/app sons)`).toBe(true);
       expect(NIVEAUX[son]).toBeGreaterThan(0);
       expect(NIVEAUX[son]).toBeLessThanOrEqual(1);
     }

@@ -3,8 +3,8 @@ import { ETAPE_TIRAGE_ORDRE } from './pilotage';
 import { mancheCourante, type EtatSalle } from './salle';
 
 /**
- * Les sons de l'écran commun (fabriqués par `scripts/sons.mjs`, servis depuis `/sons/`), et la
- * règle qui dit lequel part à quel moment. Seul l'écran commun en joue : ni la régie, ni son
+ * Les sons de l'écran commun (générés par `scripts/sons-elevenlabs.mjs`, servis depuis
+ * `/sons/`), et la règle qui dit lequel part à quel moment. Seul l'écran commun en joue : ni la régie, ni son
  * aperçu, ni les téléphones.
  */
 export const SONS = [
@@ -22,6 +22,30 @@ export const SONS = [
   'ambiance',
 ] as const;
 export type Son = (typeof SONS)[number];
+
+/** Chaque son existe en deux versions, à l'écoute sur `/kit-ui/sons`. */
+export const VARIANTES = ['a', 'b'] as const;
+export type Variante = (typeof VARIANTES)[number];
+
+/** La version retenue pour chaque son : celle que joue l'écran commun. */
+export const CHOIX: Record<Son, Variante> = {
+  tic: 'a',
+  tac: 'a',
+  'fin-de-temps': 'a',
+  indice: 'a',
+  reussite: 'a',
+  echec: 'a',
+  revelation: 'a',
+  jingle: 'a',
+  roulement: 'a',
+  fanfare: 'a',
+  arrivee: 'a',
+  ambiance: 'a',
+};
+
+/** L'adresse du fichier d'un son ; sans variante, celle qui a été retenue. */
+export const fichierDe = (son: Son, variante: Variante = CHOIX[son]) =>
+  `/sons/${son}-${variante}.wav`;
 
 /** Niveau de chaque son par rapport au volume de la salle : l'ambiance reste en fond. */
 export const NIVEAUX: Record<Son, number> = {

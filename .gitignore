@@ -1,4 +1,6 @@
 # Dépendances
+# Sons bruts rendus par ElevenLabs : lourds, et régénérables (voir apps/app/scripts/sons-elevenlabs.mjs).
+apps/app/scripts/sons-bruts/
 node_modules/
 .pnpm-store/
 

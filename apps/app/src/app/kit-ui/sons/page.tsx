@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@teamup/ui/react';
-import { SONS, type Son } from '@/lib/sons';
+import { CHOIX, SONS, VARIANTES, type Son, type Variante } from '@/lib/sons';
 import { creerLecteur, type Lecteur } from '@/ecran/sons/lecteur';
 
 const MOMENTS: Record<Son, string> = {
@@ -20,35 +20,44 @@ const MOMENTS: Record<Son, string> = {
   ambiance: 'Accueil : musique de fond, en boucle',
 };
 
-/** Page d'écoute : chaque son de l'écran commun, à juger à l'oreille. */
+type Lecteurs = Record<Variante, Lecteur>;
+
+/**
+ * Page d'écoute : chaque son de l'écran commun, dans ses deux versions, à juger à l'oreille.
+ * Le bouton plein est la version que l'écran joue aujourd'hui (`CHOIX`, dans `src/lib/sons.ts`).
+ */
 export default function KitSons() {
-  const [lecteur, setLecteur] = useState<Lecteur | null>(null);
+  const [lecteurs, setLecteurs] = useState<Lecteurs | null>(null);
   const [volume, setVolume] = useState(80);
-  const [ambiance, setAmbiance] = useState(false);
+  const [ambiance, setAmbiance] = useState<Variante | null>(null);
 
-  // Réveillé tant que l'écran est monté, en veille sinon (voir `veiller`).
+  // En veille quand la page se démonte, réveillés sinon (voir `Lecteur.veiller`).
   useEffect(() => {
-    lecteur?.veiller(false);
-    return () => lecteur?.veiller(true);
-  }, [lecteur]);
-  useEffect(() => lecteur?.regler({ actif: true, volume }), [lecteur, volume]);
-  useEffect(() => lecteur?.ambiance(ambiance), [lecteur, ambiance]);
+    if (!lecteurs) return;
+    for (const v of VARIANTES) lecteurs[v].veiller(false);
+    return () => {
+      for (const v of VARIANTES) lecteurs[v].veiller(true);
+    };
+  }, [lecteurs]);
+  useEffect(() => {
+    if (lecteurs) for (const v of VARIANTES) lecteurs[v].regler({ actif: true, volume });
+  }, [lecteurs, volume]);
+  useEffect(() => {
+    if (lecteurs) for (const v of VARIANTES) lecteurs[v].ambiance(ambiance === v);
+  }, [lecteurs, ambiance]);
 
-  if (!lecteur) {
+  if (!lecteurs) {
+    const activer = async () => {
+      const reglage = { actif: true, volume };
+      const [a, b] = await Promise.all([creerLecteur(reglage, 'a'), creerLecteur(reglage, 'b')]);
+      window.__tuLecteur = a;
+      setLecteurs({ a, b });
+    };
     return (
       <main className="tu-regie__main tu-regie__main--narrow">
         <h1 className="tu-regie__title">Sons de l’écran commun</h1>
         <p>Le navigateur demande un clic avant de jouer du son.</p>
-        <Button
-          onClick={() =>
-            void creerLecteur({ actif: true, volume }).then((neuf) => {
-              window.__tuLecteur = neuf;
-              setLecteur(neuf);
-            })
-          }
-        >
-          Activer le son
-        </Button>
+        <Button onClick={() => void activer()}>Activer le son</Button>
       </main>
     );
   }
@@ -56,6 +65,9 @@ export default function KitSons() {
   return (
     <main className="tu-regie__main tu-regie__main--narrow">
       <h1 className="tu-regie__title">Sons de l’écran commun</h1>
+      <p className="tu-regie__muted">
+        Deux versions par son. Le bouton plein est la version que l’écran joue aujourd’hui.
+      </p>
       <label className="tu-regie-son__volume">
         <span>Volume {volume} %</span>
         <input
@@ -70,18 +82,26 @@ export default function KitSons() {
       <ul className="tu-regie-list">
         {SONS.map((son) => (
           <li key={son} className="tu-cluster">
-            {son === 'ambiance' ? (
-              <Button
-                variant={ambiance ? 'primary' : 'ghost'}
-                aria-pressed={ambiance}
-                onClick={() => setAmbiance(!ambiance)}
-              >
-                {ambiance ? 'Arrêter l’ambiance' : 'ambiance'}
-              </Button>
-            ) : (
-              <Button variant="ghost" onClick={() => lecteur.jouer(son)}>
-                {son}
-              </Button>
+            <strong>{son}</strong>
+            {VARIANTES.map((v) =>
+              son === 'ambiance' ? (
+                <Button
+                  key={v}
+                  variant={CHOIX[son] === v ? 'primary' : 'ghost'}
+                  aria-pressed={ambiance === v}
+                  onClick={() => setAmbiance(ambiance === v ? null : v)}
+                >
+                  {ambiance === v ? `Arrêter ${v.toUpperCase()}` : v.toUpperCase()}
+                </Button>
+              ) : (
+                <Button
+                  key={v}
+                  variant={CHOIX[son] === v ? 'primary' : 'ghost'}
+                  onClick={() => lecteurs[v].jouer(son)}
+                >
+                  {v.toUpperCase()}
+                </Button>
+              ),
             )}
             <span className="tu-regie__muted">{MOMENTS[son]}</span>
           </li>
