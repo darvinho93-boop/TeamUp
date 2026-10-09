@@ -108,6 +108,8 @@ Principe v3 : le téléphone est un instrument de régie. Il reste la plupart du
 
 Lisible depuis le fond de salle : chronos et scores en 6 rem, aucun texte courant sous 2 rem, aucune interaction.
 
+L'écran commun porte aussi le son de la soirée (décision du 9 octobre 2026), relié à la sono de la salle : battement des dix dernières secondes d'un chrono et fin de temps, verdicts, jingle entre deux jeux, roulement du tirage, fanfare du podium, musique d'ambiance à l'accueil. Une seule interaction, imposée par les navigateurs : un bouton « Activer le son » à cliquer une fois à l'ouverture. Le volume et la coupure se règlent depuis la régie. Les téléphones et la régie restent silencieux.
+
 | Écran | Contenu |
 | --- | --- |
 | Accueil | Logo, QR code géant, code de salle, compteur de joueurs connectés |

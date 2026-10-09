@@ -408,3 +408,28 @@ caduques : même coque, fond beige.
   `--tu-success` (sauge 700) pour les verdicts et l'état « connecté ».
 - Revue visuelle : `node e2e/captures.mjs <dossier> [CODE]` depuis `apps/app` capture chaque
   écran en taille réelle (serveur local démarré).
+
+## Conventions posées le 2026-10-09 (son)
+
+Tranché le 2026-10-09 : le son sort de **l'écran commun seulement** ; chronos, verdicts, temps
+forts et ambiance ; sons **composés en code**, esprit « jeu télé » du teaser ; coupure et
+volume **depuis la régie**.
+
+- Les sons sont fabriqués par `apps/app/scripts/sons.mjs` (`pnpm --filter @teamup/app sons`,
+  mêmes instruments que `video/scripts/jingle.mjs`) et **versionnés** dans
+  `apps/app/public/sons/` (2,6 Mo). Composés à l'aveugle : c'est l'utilisateur qui les juge,
+  sur `/kit-ui/sons`. Retoucher une partition, refabriquer, réécouter.
+- `src/lib/sons.ts` (pur, testé) dit quel son part à quel changement d'état (`sonsPour`), quand
+  l'ambiance joue (`ambianceA`, à l'accueil) et ce que bat un chrono (`sonDuChrono`, les dix
+  dernières secondes). Rien ne sonne au chargement ni à la relecture d'un état inchangé.
+- `src/ecran/sons/` : `creerLecteur` (Web Audio, tout décodé d'avance) et `useSons`, branché
+  dans `Salle.tsx`. `SonsContexte` n'est fourni que par l'écran commun : `Chrono` et l'arrêt d'un
+  palier s'en servent, donc la régie et son aperçu, qui partagent ces composants, restent muets.
+- Un navigateur ne joue rien sans geste : le bouton « Activer le son » est la seule commande
+  visible sur l'écran commun, à cliquer une fois par ouverture.
+- Réglage : `pilotage.son_actif` et `son_volume`, écrits par `regler_son` (qui ne touche pas à
+  `maj_le` : pas de « pilotage périmé » à la touche suivante), lus dans `etat_ecran.son`. Le
+  client tient sans la migration `20261010090000` (actif à 80).
+- Contrôle en navigateur : `window.__tuLecteur` (journal des sons joués, réglage appliqué).
+- Points communs : « Lancer » remet les indices à zéro (`resultat: {}`). Sans cela, un passage
+  relancé gardait les instants du premier essai et le chrono repartait seul au palier.
