@@ -49,7 +49,12 @@ export default function KitSons() {
   if (!lecteurs) {
     const activer = async () => {
       const reglage = { actif: true, volume };
-      const [a, b] = await Promise.all([creerLecteur(reglage, 'a'), creerLecteur(reglage, 'b')]);
+      // Même groupe : A et B cohabitent ici ; un écran commun ouvert à côté, lui, se tait.
+      const options = { groupe: crypto.randomUUID(), surCession: () => setLecteurs(null) };
+      const [a, b] = await Promise.all([
+        creerLecteur(reglage, { ...options, variante: 'a' }),
+        creerLecteur(reglage, { ...options, variante: 'b' }),
+      ]);
       window.__tuLecteur = a;
       setLecteurs({ a, b });
     };

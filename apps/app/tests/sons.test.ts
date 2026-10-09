@@ -2,7 +2,9 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
+  AMBIANCE_SOUS_UN_SON,
   ambianceA,
+  estBattement,
   fichierDe,
   NIVEAUX,
   reglageDe,
@@ -137,5 +139,16 @@ describe('le réglage de la régie', () => {
   it('suit la régie, borné de 0 à 100', () => {
     expect(reglageDe({ son: { actif: false, volume: 35 } })).toEqual({ actif: false, volume: 35 });
     expect(reglageDe({ son: { actif: true, volume: 250 } })).toEqual({ actif: true, volume: 100 });
+  });
+});
+
+describe('un son à la fois', () => {
+  it('seuls les battements du chrono se posent sur un autre son', () => {
+    expect(SONS.filter(estBattement)).toEqual(['tic', 'tac']);
+  });
+
+  it('l’ambiance s’efface sous un son, sans s’arrêter', () => {
+    expect(AMBIANCE_SOUS_UN_SON).toBeGreaterThan(0);
+    expect(AMBIANCE_SOUS_UN_SON).toBeLessThan(0.5);
   });
 });

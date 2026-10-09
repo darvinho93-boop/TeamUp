@@ -432,6 +432,10 @@ volume **depuis la régie**.
 - `src/ecran/sons/` : `creerLecteur` (Web Audio, tout décodé d'avance) et `useSons`, branché
   dans `Salle.tsx`. `SonsContexte` n'est fourni que par l'écran commun : `Chrono` et l'arrêt d'un
   palier s'en servent, donc la régie et son aperçu, qui partagent ces composants, restent muets.
+- **Un son à la fois** : un son coupe celui qui jouait encore (seuls les battements du chrono se
+  posent dessus), et l'ambiance s'efface dessous puis revient. **Un onglet à la fois** : celui
+  qui active le son le prend aux autres onglets du même navigateur (`BroadcastChannel`), qui
+  reproposent « Activer le son ». Deux écrans ouverts ne jouent donc pas en double.
 - Un navigateur ne joue rien sans geste : le bouton « Activer le son » est la seule commande
   visible sur l'écran commun, à cliquer une fois par ouverture.
 - Réglage : `pilotage.son_actif` et `son_volume`, écrits par `regler_son` (qui ne touche pas à

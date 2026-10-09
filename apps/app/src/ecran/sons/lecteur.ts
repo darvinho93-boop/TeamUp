@@ -1,9 +1,22 @@
-import { fichierDe, NIVEAUX, SONS, type ReglageSon, type Son, type Variante } from '@/lib/sons';
+import {
+  AMBIANCE_SOUS_UN_SON,
+  estBattement,
+  fichierDe,
+  NIVEAUX,
+  SONS,
+  type ReglageSon,
+  type Son,
+  type Variante,
+} from '@/lib/sons';
 
 /** Fondu de l'ambiance, à l'entrée comme à la sortie, et du volume quand la régie le change. */
 const FONDU_S = 0.8;
 /** Deux arrivées rapprochées ne font qu'un son. */
 const ESPACE_ARRIVEES_MS = 600;
+/** Un son coupé par le suivant s'éteint en un clin d'œil, sans clic. */
+const COUPE_S = 0.06;
+/** Le canal par lequel les onglets d'un même navigateur se passent le son. */
+const CANAL = 'teamup-son';
 
 export interface Lecteur {
   jouer(son: Son): void;
@@ -29,7 +42,21 @@ export interface Lecteur {
  * navigateur refuse de jouer. Tous les sons sont chargés et décodés d'avance, pour partir sans
  * délai le moment venu.
  */
-export async function creerLecteur(reglage: ReglageSon, variante?: Variante): Promise<Lecteur> {
+export async function creerLecteur(
+  reglage: ReglageSon,
+  {
+    variante,
+    groupe = crypto.randomUUID(),
+    surCession,
+  }: {
+    /** Une version imposée pour tous les sons (page d'écoute) ; sinon celle retenue pour chacun. */
+    variante?: Variante;
+    /** Les lecteurs d'un même groupe cohabitent (les versions A et B de la page d'écoute). */
+    groupe?: string;
+    /** Un autre onglet vient d'activer le son : celui-ci s'est tu. */
+    surCession?: () => void;
+  } = {},
+): Promise<Lecteur> {
   const contexte = new AudioContext();
   await contexte.resume();
   const sortie = contexte.createGain();
@@ -42,7 +69,6 @@ export async function creerLecteur(reglage: ReglageSon, variante?: Variante): Pr
   const tampons = new Map<Son, AudioBuffer>();
   await Promise.all(
     SONS.map(async (son) => {
-      // Sans variante imposée (la page d'écoute en impose une), la version retenue de chaque son.
       const reponse = await fetch(fichierDe(son, variante));
       if (!reponse.ok) return;
       tampons.set(son, await contexte.decodeAudioData(await reponse.arrayBuffer()));
@@ -52,6 +78,30 @@ export async function creerLecteur(reglage: ReglageSon, variante?: Variante): Pr
   const journal: Lecteur['journal'] = [];
   let derniereArrivee = 0;
   let boucle: { source: AudioBufferSourceNode; gain: GainNode } | null = null;
+  /** Le son (hors battements) qui joue encore : le suivant le coupera. */
+  let enCours: { source: AudioBufferSourceNode; gain: GainNode } | null = null;
+
+  // Un seul onglet sonne à la fois : deux écrans ouverts sur le même ordinateur joueraient
+  // chaque son deux fois, un peu décalés. Le dernier activé garde le son, les autres se taisent.
+  const canal = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel(CANAL);
+  canal?.postMessage(groupe);
+  if (canal) {
+    canal.onmessage = (message) => {
+      if (message.data === groupe) return;
+      void contexte.suspend();
+      surCession?.();
+    };
+  }
+
+  /** L'ambiance s'efface sous un son, puis revient. */
+  const effacerLAmbiance = (dureeS: number) => {
+    if (!boucle) return;
+    const t = contexte.currentTime;
+    const { gain } = boucle.gain;
+    gain.cancelScheduledValues(t);
+    gain.setTargetAtTime(NIVEAUX.ambiance * AMBIANCE_SOUS_UN_SON, t, COUPE_S);
+    gain.setTargetAtTime(NIVEAUX.ambiance, t + dureeS, FONDU_S / 3);
+  };
 
   const source = (son: Son, niveau: number) => {
     const tampon = tampons.get(son);
@@ -75,6 +125,19 @@ export async function creerLecteur(reglage: ReglageSon, variante?: Variante): Pr
       }
       const voix = source(son, NIVEAUX[son]);
       if (!voix) return;
+      if (!estBattement(son)) {
+        // Un son à la fois : celui qui jouait encore s'éteint, l'ambiance s'efface dessous.
+        if (enCours) {
+          const t = contexte.currentTime;
+          enCours.gain.gain.setTargetAtTime(0, t, COUPE_S / 3);
+          enCours.source.stop(t + COUPE_S);
+        }
+        enCours = voix;
+        voix.source.onended = () => {
+          if (enCours === voix) enCours = null;
+        };
+        effacerLAmbiance(voix.source.buffer?.duration ?? 1);
+      }
       voix.source.start();
       journal.push({ son, a: Math.round(maintenant) });
     },

@@ -63,6 +63,18 @@ export const NIVEAUX: Record<Son, number> = {
   ambiance: 0.3,
 };
 
+/**
+ * Un son à la fois. Les battements du chrono sont brefs et se posent sur tout ; un autre son
+ * (verdict, jingle, fanfare, arrivée…) coupe celui qui jouait encore, au lieu de s'y ajouter :
+ * un échec déclaré pendant le buzzer de fin de temps le remplace.
+ */
+export function estBattement(son: Son): boolean {
+  return son === 'tic' || son === 'tac';
+}
+
+/** Pendant qu'un son joue, l'ambiance s'efface à cette fraction de son niveau. */
+export const AMBIANCE_SOUS_UN_SON = 0.25;
+
 /** Le chrono se fait entendre à partir de là : une seconde, un battement. */
 export const DERNIERES_SECONDES = 10;
 

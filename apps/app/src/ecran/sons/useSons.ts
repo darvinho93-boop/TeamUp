@@ -29,10 +29,21 @@ export function useSons(etat: EtatSalle, eteint: boolean) {
   const reglage = reglageDe(etat);
   const instant = instantDe(etat);
 
+  // Un second clic pendant le chargement ne crée pas un second lecteur.
+  const chargement = useRef(false);
   const activer = useCallback(async () => {
-    const neuf = await creerLecteur(reglageDe(etat));
-    window.__tuLecteur = neuf;
-    setLecteur(neuf);
+    if (chargement.current) return;
+    chargement.current = true;
+    try {
+      const neuf = await creerLecteur(reglageDe(etat), {
+        // Le son est parti dans un autre onglet : celui-ci repropose de l'activer.
+        surCession: () => setLecteur(null),
+      });
+      window.__tuLecteur = neuf;
+      setLecteur(neuf);
+    } finally {
+      chargement.current = false;
+    }
   }, [etat]);
 
   // Réveillé tant que l'écran est monté, en veille sinon (voir `veiller`).
