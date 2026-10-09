@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "dev:host": "next dev -H 0.0.0.0",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "sons": "node scripts/sons.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
