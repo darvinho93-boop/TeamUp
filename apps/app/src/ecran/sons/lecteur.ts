@@ -7,7 +7,6 @@ import {
   type Fond,
   type ReglageSon,
   type Son,
-  type Variante,
 } from '@/lib/sons';
 
 /** Fondu d'une musique de fond, à l'entrée comme à la sortie, et du volume quand la régie le change. */
@@ -47,13 +46,10 @@ export interface Lecteur {
 export async function creerLecteur(
   reglage: ReglageSon,
   {
-    variante,
     groupe = crypto.randomUUID(),
     surCession,
   }: {
-    /** Une version imposée pour tous les sons (page d'écoute) ; sinon celle retenue pour chacun. */
-    variante?: Variante;
-    /** Les lecteurs d'un même groupe cohabitent (les versions A et B de la page d'écoute). */
+    /** Les lecteurs d'un même groupe cohabitent dans un onglet sans se couper le son. */
     groupe?: string;
     /** Un autre onglet vient d'activer le son : celui-ci s'est tu. */
     surCession?: () => void;
@@ -71,7 +67,7 @@ export async function creerLecteur(
   const tampons = new Map<Son, AudioBuffer>();
   await Promise.all(
     SONS.map(async (son) => {
-      const reponse = await fetch(fichierDe(son, variante));
+      const reponse = await fetch(fichierDe(son));
       if (!reponse.ok) return;
       tampons.set(son, await contexte.decodeAudioData(await reponse.arrayBuffer()));
     }),

@@ -4,7 +4,7 @@
  * clic. Registre « jeu télé festif » (décision du 2026-10-09 : les sons synthétisés par
  * `sons.mjs` sonnaient trop artificiels).
  *
- *   node scripts/sons-elevenlabs.mjs [--seulement nom,nom] [--variantes a,b]
+ *   node scripts/sons-elevenlabs.mjs [--seulement nom,nom] [--prise b]
  *
  * La clé se lit dans ELEVENLABS_API_KEY ou dans le `.env` de la racine ; elle n'est jamais
  * affichée. Chaque génération consomme des crédits : le son brut est gardé dans
@@ -119,7 +119,9 @@ const option = (nom, defaut) => {
   return i > 0 ? process.argv[i + 1].split(',') : defaut;
 };
 const seulement = option('seulement', Object.keys(DEMANDES));
-const variantes = option('variantes', ['a', 'b']);
+// La prise retenue de chaque son est la « a » (choix de l'utilisateur, 2026-10-09). Demander une
+// autre prise (`--prise b`) la génère si elle manque et l'écrit à la place : à écouter avant de commiter.
+const variantes = option('prise', ['a']).slice(0, 1);
 
 function cle() {
   if (process.env.ELEVENLABS_API_KEY) return process.env.ELEVENLABS_API_KEY;
@@ -240,8 +242,7 @@ for (const variante of variantes) {
       `${`${nom}-${variante}`.padEnd(22)} ${(son.length / FREQUENCE).toFixed(2).padStart(5)} s  ` +
         `silence coupé au début ${String(coupeAuDebutMs).padStart(4)} ms  niveau moyen ${niveauMoyen(son).toFixed(3)}`,
     );
-    if (!nom.startsWith('roulement-'))
-      writeFileSync(path.join(SORTIE, `${nom}-${variante}.wav`), wav(son));
+    if (!nom.startsWith('roulement-')) writeFileSync(path.join(SORTIE, `${nom}.wav`), wav(son));
   }
   // Le roulement se monte ici : la caisse claire pendant 5 s exactement, puis la cymbale, pour
   // que le coup tombe quand l'écran a fini de ranger les équipes.
@@ -254,7 +255,7 @@ for (const variante of variantes) {
     for (let i = 0; i < Math.min(caisse.length, coup); i += 1)
       monte[i] = caisse[i] * Math.min(1, (coup - i) / sortieCaisse) * (0.45 + 0.55 * (i / coup));
     for (let i = 0; i < cymbale.length; i += 1) monte[coup + i] += cymbale[i];
-    writeFileSync(path.join(SORTIE, `roulement-${variante}.wav`), wav(monte));
+    writeFileSync(path.join(SORTIE, 'roulement.wav'), wav(monte));
 
     // Le roulement de présentation : la fin du même roulement, qui enfle le temps de l'interlude
     // et s'arrête net pour laisser la place au jingle.
@@ -273,7 +274,7 @@ for (const variante of variantes) {
     let cretePresentation = 0;
     for (const v of presentation) cretePresentation = Math.max(cretePresentation, Math.abs(v));
     for (let i = 0; i < longueur; i += 1) presentation[i] *= 0.85 / (cretePresentation || 1);
-    writeFileSync(path.join(SORTIE, `presentation-${variante}.wav`), wav(presentation));
+    writeFileSync(path.join(SORTIE, 'presentation.wav'), wav(presentation));
     console.log(
       `${`presentation-${variante}`.padEnd(22)} ${INTERLUDE_S.toFixed(2).padStart(5)} s  monté  niveau moyen ${niveauMoyen(presentation).toFixed(3)}`,
     );

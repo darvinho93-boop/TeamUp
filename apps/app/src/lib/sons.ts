@@ -25,31 +25,8 @@ export const SONS = [
 ] as const;
 export type Son = (typeof SONS)[number];
 
-/** Chaque son existe en deux versions, à l'écoute sur `/kit-ui/sons`. */
-export const VARIANTES = ['a', 'b'] as const;
-export type Variante = (typeof VARIANTES)[number];
-
-/** La version retenue pour chaque son : celle que joue l'écran commun. */
-export const CHOIX: Record<Son, Variante> = {
-  tic: 'a',
-  tac: 'a',
-  'fin-de-temps': 'a',
-  indice: 'a',
-  reussite: 'a',
-  echec: 'a',
-  revelation: 'a',
-  presentation: 'a',
-  jingle: 'a',
-  roulement: 'a',
-  fanfare: 'a',
-  arrivee: 'a',
-  ambiance: 'a',
-  explication: 'a',
-};
-
-/** L'adresse du fichier d'un son ; sans variante, celle qui a été retenue. */
-export const fichierDe = (son: Son, variante: Variante = CHOIX[son]) =>
-  `/sons/${son}-${variante}.wav`;
+/** L'adresse du fichier d'un son. */
+export const fichierDe = (son: Son) => `/sons/${son}.wav`;
 
 /** Niveau de chaque son par rapport au volume de la salle : l'ambiance reste en fond. */
 export const NIVEAUX: Record<Son, number> = {
