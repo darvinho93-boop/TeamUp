@@ -1,6 +1,6 @@
 import { Chargement } from '@/marque/Chargement';
 
-/** Affiché pendant que la page arrive : téléphone, écran commun, régie et back-office. */
+/** Affiché pendant que l'écran du joueur arrive. Cette page ne répond jamais 404 : rien à préserver. */
 export default function Loading() {
   return <Chargement />;
 }

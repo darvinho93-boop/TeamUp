@@ -394,10 +394,14 @@ caduques : même coque, fond beige.
   par `src/marque/Pictogramme.tsx` ; styles dans `packages/ui/src/styles/components/brand.css`.
   En-tête du téléphone, de la régie et du back-office ; coin haut droit de l'écran commun avec le nom « Team Up! », sauf
   à l'accueil qui le porte près du nom.
-- Chargement : `src/marque/Chargement.tsx`, branché par un `loading.tsx` à la racine, dans
-  `regie/` et dans `admin/` (celui de la racine ne couvre pas la navigation à l'intérieur d'une
-  section). Il n'apparaît qu'après `--tu-dur-attente` (300 ms) : une page rapide ne clignote
-  pas. La barre va et vient, elle ne mesure rien. Page de contrôle : `/kit-ui/chargement`.
+- Chargement : `src/marque/Chargement.tsx`, branché par un `loading.tsx` dans `[code]/` (le
+  téléphone), `regie/[code]/` (les pages d'une soirée) et `admin/`. **Jamais plus haut qu'un
+  gabarit qui vérifie un accès** : un `loading.tsx` fait partir la réponse (200) avant le verdict
+  des gabarits et des pages qu'il enveloppe, et un `notFound()` n'y donne plus un vrai 404 (vu
+  sur `/admin` avec un `loading.tsx` à la racine ; `back-office.spec.ts` le garde). L'écran
+  commun n'en a donc pas : sa page répond 404 à un code inconnu. Il n'apparaît qu'après
+  `--tu-dur-attente` (300 ms) : une page rapide ne clignote pas. La barre va et vient, elle ne
+  mesure rien. Page de contrôle : `/kit-ui/chargement`.
 - Fondu : `.tu-stage__body` et les enfants de `.tu-player` fondent à leur montage. À l'écran,
   `Salle.tsx` donne à la scène la clé `scène:manche` : elle est remontée au changement de scène
   ou de jeu, **jamais par une touche pendant un jeu**.
