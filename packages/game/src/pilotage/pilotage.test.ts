@@ -31,6 +31,17 @@ describe('pilotage de Points communs', () => {
     expect(lancement.etat.etape).toBe('lance');
   });
 
+  it('relancer un passage efface les indices du premier essai', () => {
+    const relance = appliquerPointsCommuns(
+      { etape: 'masque', indices: 1, indicesMs: [62_000] },
+      'lancer',
+      0,
+    );
+    expect(relance.etat).toEqual({ etape: 'lance', indices: 0, indicesMs: [] });
+    // Sans cela, le chrono repartirait seul au premier palier, sans indice donné.
+    expect(actionsPointsCommuns(relance.etat, s(70))).toContain('indice');
+  });
+
   it('refuse une touche hors de son étape', () => {
     expect(() => appliquerPointsCommuns(ETAT_INITIAL_POINTS_COMMUNS, 'lancer', 0)).toThrow(
       /impossible/,

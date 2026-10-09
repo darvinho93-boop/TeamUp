@@ -89,8 +89,9 @@ export function appliquerPointsCommuns(
     case 'masquer':
       return { etat: { ...etat, etape: 'masque' }, chrono: 'garder' };
     case 'lancer':
+      // Un passage relancé repart sans indice : ceux d'un premier essai ne comptent plus.
       return {
-        etat: { ...etat, etape: 'lance' },
+        etat: { etape: 'lance', indices: 0, indicesMs: [] },
         chrono: { demarrer: CHRONO_POINTS_COMMUNS_S },
       };
     case 'indice':

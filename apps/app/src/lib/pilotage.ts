@@ -303,6 +303,10 @@ export function calculerEtape(
           indices: suite.etat.indices,
           ...chronoDe(suite.chrono),
         });
+        if (commande.action === 'lancer') {
+          // Un passage relancé repart d'un résultat vide : pas d'indice hérité d'un premier essai.
+          ecriture.passage = { id: passage.id, statut: 'en_cours', resultat: {} };
+        }
         if (commande.action === 'indice') {
           // L'instant de l'indice : l'écran et la régie en déduisent la reprise du chrono.
           ecriture.passage = {

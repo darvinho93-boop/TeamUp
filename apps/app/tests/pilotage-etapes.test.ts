@@ -158,6 +158,20 @@ describe('une touche de la régie', () => {
     ).toBe(1);
   });
 
+  it('relancer un passage efface les indices d’un premier essai', () => {
+    const masque = etat({
+      scene: 'jeu',
+      manche_id: 'pc',
+      passage_id: 'p1',
+      etape: 'masque',
+      indices: 1,
+    });
+    masque.programme[0]!.passages[0]!.resultat = { indices_ms: [62_000] };
+    const lancement = etape(masque, { type: 'pointsCommuns', action: 'lancer' });
+    expect(lancement?.pilotage).toMatchObject({ etape: 'lance', indices: 0, chrono: 'demarrer' });
+    expect(lancement?.passage).toEqual({ id: 'p1', statut: 'en_cours', resultat: {} });
+  });
+
   it('l’indice se donne chrono arrêté et garde son instant dans le passage en cours', () => {
     const lance = etat({ scene: 'jeu', manche_id: 'pc', passage_id: 'p1', etape: 'lance' });
     const indice = etape(lance, { type: 'pointsCommuns', action: 'indice' }, 68_000);
