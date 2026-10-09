@@ -402,7 +402,8 @@ caduques : même coque, fond beige.
   `Salle.tsx` donne à la scène la clé `scène:manche` : elle est remontée au changement de scène
   ou de jeu, **jamais par une touche pendant un jeu**.
 - Interlude : quand l'intro d'un nouveau jeu arrive, le logo passe par-dessus la scène déjà à
-  jour (`--tu-dur-interlude`, 1,1 s, à garder égal à `INTERLUDE_MS`). Ni au rechargement, ni dans
+  jour (`--tu-dur-interlude`, 1,6 s depuis qu'il porte un roulement de tambour, à garder égal à
+  `INTERLUDE_MS` dans `src/lib/sons.ts` et à `INTERLUDE_S` dans `scripts/sons-elevenlabs.mjs`). Ni au rechargement, ni dans
   l'aperçu de la régie, ni sous `prefers-reduced-motion`.
 - Sur beige, la sauge 500 ne tient pas comme couleur de texte ni comme repère (1,9:1) :
   `--tu-success` (sauge 700) pour les verdicts et l'état « connecté ».
@@ -432,6 +433,12 @@ volume **depuis la régie**.
 - `src/ecran/sons/` : `creerLecteur` (Web Audio, tout décodé d'avance) et `useSons`, branché
   dans `Salle.tsx`. `SonsContexte` n'est fourni que par l'écran commun : `Chrono` et l'arrêt d'un
   palier s'en servent, donc la régie et son aperçu, qui partagent ces composants, restent muets.
+- Présenter un jeu se déroule en deux temps (`deroule`) : le roulement `presentation` pendant
+  que le logo est à l'écran, puis le `jingle` quand le nom du jeu paraît. Le roulement est un
+  extrait de celui du tirage, monté par le script (aucune génération).
+- Deux musiques de fond en boucle (`fondA`) : `ambiance` à l'accueil, `explication` sous
+  l'explication animée d'un jeu. Celle-ci s'arrête à la fin du script (chrono de la salle),
+  même si l'étape reste « explication » tant que la régie n'a rien touché.
 - **Un son à la fois** : un son coupe celui qui jouait encore (seuls les battements du chrono se
   posent dessus), et l'ambiance s'efface dessous puis revient. **Un onglet à la fois** : celui
   qui active le son le prend aux autres onglets du même navigateur (`BroadcastChannel`), qui

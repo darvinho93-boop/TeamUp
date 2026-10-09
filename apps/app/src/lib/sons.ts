@@ -15,11 +15,13 @@ export const SONS = [
   'reussite',
   'echec',
   'revelation',
+  'presentation',
   'jingle',
   'roulement',
   'fanfare',
   'arrivee',
   'ambiance',
+  'explication',
 ] as const;
 export type Son = (typeof SONS)[number];
 
@@ -36,11 +38,13 @@ export const CHOIX: Record<Son, Variante> = {
   reussite: 'a',
   echec: 'a',
   revelation: 'a',
+  presentation: 'a',
   jingle: 'a',
   roulement: 'a',
   fanfare: 'a',
   arrivee: 'a',
   ambiance: 'a',
+  explication: 'a',
 };
 
 /** L'adresse du fichier d'un son ; sans variante, celle qui a été retenue. */
@@ -56,11 +60,13 @@ export const NIVEAUX: Record<Son, number> = {
   reussite: 1,
   echec: 0.8,
   revelation: 0.8,
+  presentation: 0.8,
   jingle: 0.9,
   roulement: 0.9,
   fanfare: 1,
   arrivee: 0.45,
   ambiance: 0.3,
+  explication: 0.22,
 };
 
 /**
@@ -72,8 +78,30 @@ export function estBattement(son: Son): boolean {
   return son === 'tic' || son === 'tac';
 }
 
-/** Pendant qu'un son joue, l'ambiance s'efface à cette fraction de son niveau. */
-export const AMBIANCE_SOUS_UN_SON = 0.25;
+/** Les musiques de fond, en boucle : une seule joue à la fois. */
+export type Fond = 'ambiance' | 'explication';
+
+/** Pendant qu'un son joue, la musique de fond s'efface à cette fraction de son niveau. */
+export const FOND_SOUS_UN_SON = 0.25;
+
+/**
+ * Durée de l'interlude entre deux jeux, celle de `--tu-dur-interlude` : le logo passe en plein
+ * écran sur un roulement de tambour, puis le nom du jeu paraît sur son jingle.
+ */
+export const INTERLUDE_MS = 1600;
+
+/**
+ * Ce qu'un son devient au moment de le jouer. Le jingle d'un nouveau jeu se déroule en deux
+ * temps : le roulement pendant que le logo est à l'écran, puis le jingle quand le nom paraît.
+ * Sans mouvement (`prefers-reduced-motion`), il n'y a pas d'interlude : le jingle part seul.
+ */
+export function deroule(son: Son, sansMouvement: boolean): { son: Son; apresMs: number }[] {
+  if (son !== 'jingle' || sansMouvement) return [{ son, apresMs: 0 }];
+  return [
+    { son: 'presentation', apresMs: 0 },
+    { son: 'jingle', apresMs: INTERLUDE_MS },
+  ];
+}
 
 /** Le chrono se fait entendre à partir de là : une seconde, un battement. */
 export const DERNIERES_SECONDES = 10;
@@ -129,7 +157,7 @@ const VERDICTS: Partial<Record<GameCode, Record<string, Son>>> = {
 /**
  * Les sons qu'un changement d'état déclenche, dans l'ordre. Un état relu sans changement ne
  * sonne pas ; le premier état d'un écran qu'on ouvre non plus (il n'a pas d'« avant »).
- * L'ambiance n'est pas ici : elle dure tant que la scène est l'accueil (`ambianceA`).
+ * Les musiques de fond ne sont pas ici : elles durent tant que leur moment dure (`fondA`).
  */
 export function sonsPour(avant: Instant, apres: Instant): Son[] {
   const sons: Son[] = [];
@@ -153,9 +181,14 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
   return sons;
 }
 
-/** L'ambiance joue à l'accueil, pendant que les invités scannent le QR code. */
-export function ambianceA(instant: Instant): boolean {
-  return instant.scene === 'accueil';
+/**
+ * La musique de fond du moment : l'ambiance à l'accueil, pendant que les invités scannent le QR
+ * code ; une musique légère sous l'explication animée d'un jeu ; rien ailleurs.
+ */
+export function fondA(instant: Instant): Fond | null {
+  if (instant.scene === 'accueil') return 'ambiance';
+  if (instant.scene === 'intro' && instant.etape?.startsWith('explication')) return 'explication';
+  return null;
 }
 
 /**

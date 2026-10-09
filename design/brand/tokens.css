@@ -112,8 +112,8 @@
   --tu-dur-attente: 300ms;     /* une page qui arrive plus vite ne montre pas l'écran de chargement */
   --tu-ease-logo: cubic-bezier(0.45, 0, 0.2, 1);  /* départ doux : on voit les personnages arriver */
   --tu-dur-logo: 1100ms;       /* les quatre personnages du logo se rejoignent */
-  --tu-dur-logo-court: 600ms;  /* le même mouvement, dans l'interlude entre deux jeux */
-  --tu-dur-interlude: 1100ms;  /* le logo entre deux jeux, à l'écran commun */
+  --tu-dur-logo-court: 900ms;  /* le même mouvement, dans l'interlude entre deux jeux */
+  --tu-dur-interlude: 1600ms;  /* le logo entre deux jeux, à l'écran commun : le temps d'un roulement de tambour */
   --tu-dur-barre: 1400ms;      /* un aller de la barre de chargement */
 }
 

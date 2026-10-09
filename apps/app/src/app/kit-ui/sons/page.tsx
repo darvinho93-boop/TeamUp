@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@teamup/ui/react';
-import { CHOIX, SONS, VARIANTES, type Son, type Variante } from '@/lib/sons';
+import { CHOIX, SONS, VARIANTES, type Fond, type Son, type Variante } from '@/lib/sons';
 import { creerLecteur, type Lecteur } from '@/ecran/sons/lecteur';
 
 const MOMENTS: Record<Son, string> = {
@@ -13,12 +13,16 @@ const MOMENTS: Record<Son, string> = {
   reussite: 'Trouvé, pari tenu, gagnante d’un thème, duel gagné',
   echec: 'Raté, échec',
   revelation: 'Quiz : la bonne réponse s’affiche',
-  jingle: 'Le logo passe entre deux jeux',
+  presentation: 'Présenter un jeu : roulement pendant que le logo est à l’écran',
+  jingle: 'Présenter un jeu : le nom du jeu paraît',
   roulement: 'Tirage de l’ordre de passage (5 s, puis le coup de cymbale)',
   fanfare: 'Le podium s’affiche',
   arrivee: 'Un invité rejoint la soirée',
   ambiance: 'Accueil : musique de fond, en boucle',
+  explication: 'Explication animée d’un jeu : musique de fond, en boucle',
 };
+
+const estFond = (son: Son): son is Fond => son === 'ambiance' || son === 'explication';
 
 type Lecteurs = Record<Variante, Lecteur>;
 
@@ -29,7 +33,7 @@ type Lecteurs = Record<Variante, Lecteur>;
 export default function KitSons() {
   const [lecteurs, setLecteurs] = useState<Lecteurs | null>(null);
   const [volume, setVolume] = useState(80);
-  const [ambiance, setAmbiance] = useState<Variante | null>(null);
+  const [fond, setFond] = useState<{ son: Fond; v: Variante } | null>(null);
 
   // En veille quand la page se démonte, réveillés sinon (voir `Lecteur.veiller`).
   useEffect(() => {
@@ -43,8 +47,8 @@ export default function KitSons() {
     if (lecteurs) for (const v of VARIANTES) lecteurs[v].regler({ actif: true, volume });
   }, [lecteurs, volume]);
   useEffect(() => {
-    if (lecteurs) for (const v of VARIANTES) lecteurs[v].ambiance(ambiance === v);
-  }, [lecteurs, ambiance]);
+    if (lecteurs) for (const v of VARIANTES) lecteurs[v].fond(fond?.v === v ? fond.son : null);
+  }, [lecteurs, fond]);
 
   if (!lecteurs) {
     const activer = async () => {
@@ -89,14 +93,16 @@ export default function KitSons() {
           <li key={son} className="tu-cluster">
             <strong>{son}</strong>
             {VARIANTES.map((v) =>
-              son === 'ambiance' ? (
+              estFond(son) ? (
                 <Button
                   key={v}
                   variant={CHOIX[son] === v ? 'primary' : 'ghost'}
-                  aria-pressed={ambiance === v}
-                  onClick={() => setAmbiance(ambiance === v ? null : v)}
+                  aria-pressed={fond?.son === son && fond.v === v}
+                  onClick={() => setFond(fond?.son === son && fond.v === v ? null : { son, v })}
                 >
-                  {ambiance === v ? `Arrêter ${v.toUpperCase()}` : v.toUpperCase()}
+                  {fond?.son === son && fond.v === v
+                    ? `Arrêter ${v.toUpperCase()}`
+                    : v.toUpperCase()}
                 </Button>
               ) : (
                 <Button

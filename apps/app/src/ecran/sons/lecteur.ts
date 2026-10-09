@@ -1,15 +1,16 @@
 import {
-  AMBIANCE_SOUS_UN_SON,
   estBattement,
   fichierDe,
+  FOND_SOUS_UN_SON,
   NIVEAUX,
   SONS,
+  type Fond,
   type ReglageSon,
   type Son,
   type Variante,
 } from '@/lib/sons';
 
-/** Fondu de l'ambiance, à l'entrée comme à la sortie, et du volume quand la régie le change. */
+/** Fondu d'une musique de fond, à l'entrée comme à la sortie, et du volume quand la régie le change. */
 const FONDU_S = 0.8;
 /** Deux arrivées rapprochées ne font qu'un son. */
 const ESPACE_ARRIVEES_MS = 600;
@@ -19,9 +20,10 @@ const COUPE_S = 0.06;
 const CANAL = 'teamup-son';
 
 export interface Lecteur {
-  jouer(son: Son): void;
-  /** L'ambiance en boucle : la lancer ou l'éteindre, en fondu. */
-  ambiance(active: boolean): void;
+  /** Joue un son, tout de suite ou après un délai (le jingle attend la fin de l'interlude). */
+  jouer(son: Son, apresMs?: number): void;
+  /** La musique de fond, en boucle : en changer ou l'éteindre (`null`), en fondu. */
+  fond(son: Fond | null): void;
   regler(reglage: ReglageSon): void;
   /**
    * Met le lecteur en veille, ou le réveille. Réversible, contrairement à une fermeture : en
@@ -77,7 +79,7 @@ export async function creerLecteur(
 
   const journal: Lecteur['journal'] = [];
   let derniereArrivee = 0;
-  let boucle: { source: AudioBufferSourceNode; gain: GainNode } | null = null;
+  let boucle: { son: Fond; source: AudioBufferSourceNode; gain: GainNode } | null = null;
   /** Le son (hors battements) qui joue encore : le suivant le coupera. */
   let enCours: { source: AudioBufferSourceNode; gain: GainNode } | null = null;
 
@@ -93,14 +95,14 @@ export async function creerLecteur(
     };
   }
 
-  /** L'ambiance s'efface sous un son, puis revient. */
-  const effacerLAmbiance = (dureeS: number) => {
+  /** La musique de fond s'efface sous un son, puis revient. */
+  const effacerLeFond = (dureeS: number) => {
     if (!boucle) return;
     const t = contexte.currentTime;
     const { gain } = boucle.gain;
     gain.cancelScheduledValues(t);
-    gain.setTargetAtTime(NIVEAUX.ambiance * AMBIANCE_SOUS_UN_SON, t, COUPE_S);
-    gain.setTargetAtTime(NIVEAUX.ambiance, t + dureeS, FONDU_S / 3);
+    gain.setTargetAtTime(NIVEAUX[boucle.son] * FOND_SOUS_UN_SON, t, COUPE_S);
+    gain.setTargetAtTime(NIVEAUX[boucle.son], t + dureeS, FONDU_S / 3);
   };
 
   const source = (son: Son, niveau: number) => {
@@ -117,7 +119,11 @@ export async function creerLecteur(
   const lecteur: Lecteur = {
     journal,
     reglage,
-    jouer(son) {
+    jouer(son, apresMs = 0) {
+      if (apresMs > 0) {
+        setTimeout(() => lecteur.jouer(son), apresMs);
+        return;
+      }
       const maintenant = performance.now();
       if (son === 'arrivee') {
         if (maintenant - derniereArrivee < ESPACE_ARRIVEES_MS) return;
@@ -126,7 +132,7 @@ export async function creerLecteur(
       const voix = source(son, NIVEAUX[son]);
       if (!voix) return;
       if (!estBattement(son)) {
-        // Un son à la fois : celui qui jouait encore s'éteint, l'ambiance s'efface dessous.
+        // Un son à la fois : celui qui jouait encore s'éteint, la musique de fond s'efface dessous.
         if (enCours) {
           const t = contexte.currentTime;
           enCours.gain.gain.setTargetAtTime(0, t, COUPE_S / 3);
@@ -136,22 +142,15 @@ export async function creerLecteur(
         voix.source.onended = () => {
           if (enCours === voix) enCours = null;
         };
-        effacerLAmbiance(voix.source.buffer?.duration ?? 1);
+        effacerLeFond(voix.source.buffer?.duration ?? 1);
       }
       voix.source.start();
       journal.push({ son, a: Math.round(maintenant) });
     },
-    ambiance(active) {
+    fond(son) {
+      if (boucle?.son === son || (!boucle && !son)) return;
       const t = contexte.currentTime;
-      if (active && !boucle) {
-        const voix = source('ambiance', 0);
-        if (!voix) return;
-        voix.source.loop = true;
-        voix.gain.gain.linearRampToValueAtTime(NIVEAUX.ambiance, t + FONDU_S);
-        voix.source.start();
-        boucle = voix;
-        journal.push({ son: 'ambiance', a: Math.round(performance.now()) });
-      } else if (!active && boucle) {
+      if (boucle) {
         const { source: noeud, gain } = boucle;
         boucle = null;
         gain.gain.cancelScheduledValues(t);
@@ -159,6 +158,14 @@ export async function creerLecteur(
         gain.gain.linearRampToValueAtTime(0, t + FONDU_S);
         noeud.stop(t + FONDU_S);
       }
+      if (!son) return;
+      const voix = source(son, 0);
+      if (!voix) return;
+      voix.source.loop = true;
+      voix.gain.gain.linearRampToValueAtTime(NIVEAUX[son], t + FONDU_S);
+      voix.source.start();
+      boucle = { son, ...voix };
+      journal.push({ son, a: Math.round(performance.now()) });
     },
     regler({ actif, volume }) {
       lecteur.reglage = { actif, volume };

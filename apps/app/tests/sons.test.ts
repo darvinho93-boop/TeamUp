@@ -2,10 +2,12 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
-  AMBIANCE_SOUS_UN_SON,
-  ambianceA,
+  deroule,
   estBattement,
   fichierDe,
+  fondA,
+  FOND_SOUS_UN_SON,
+  INTERLUDE_MS,
   NIVEAUX,
   reglageDe,
   SONS,
@@ -111,11 +113,36 @@ describe('le son d’un changement d’état', () => {
   });
 });
 
-describe('l’ambiance', () => {
-  it('ne joue qu’à l’accueil', () => {
-    expect(ambianceA(instant())).toBe(true);
-    expect(ambianceA(instant({ scene: 'equipes' }))).toBe(false);
-    expect(ambianceA(enJeu('qcm2', 'question'))).toBe(false);
+describe('la musique de fond', () => {
+  it('est l’ambiance à l’accueil, et rien pendant les jeux', () => {
+    expect(fondA(instant())).toBe('ambiance');
+    expect(fondA(instant({ scene: 'equipes' }))).toBeNull();
+    expect(fondA(enJeu('qcm2', 'question'))).toBeNull();
+  });
+
+  it('accompagne l’explication animée d’un jeu, pas son intro fixe ni le tirage', () => {
+    const intro = instant({ scene: 'intro', mancheId: 'm1', jeu: 'qcm2' });
+    expect(fondA(intro)).toBeNull();
+    expect(fondA({ ...intro, etape: 'explication' })).toBe('explication');
+    expect(fondA({ ...intro, etape: 'explication-telephone' })).toBe('explication');
+    expect(fondA({ ...intro, etape: 'tirage-ordre' })).toBeNull();
+  });
+});
+
+describe('présenter un jeu', () => {
+  it('se déroule en deux temps : le roulement sous le logo, puis le jingle sur le nom du jeu', () => {
+    expect(deroule('jingle', false)).toEqual([
+      { son: 'presentation', apresMs: 0 },
+      { son: 'jingle', apresMs: INTERLUDE_MS },
+    ]);
+  });
+
+  it('sans mouvement, il n’y a pas d’interlude : le jingle part seul', () => {
+    expect(deroule('jingle', true)).toEqual([{ son: 'jingle', apresMs: 0 }]);
+  });
+
+  it('laisse les autres sons partir tout de suite', () => {
+    expect(deroule('fanfare', false)).toEqual([{ son: 'fanfare', apresMs: 0 }]);
   });
 });
 
@@ -147,8 +174,8 @@ describe('un son à la fois', () => {
     expect(SONS.filter(estBattement)).toEqual(['tic', 'tac']);
   });
 
-  it('l’ambiance s’efface sous un son, sans s’arrêter', () => {
-    expect(AMBIANCE_SOUS_UN_SON).toBeGreaterThan(0);
-    expect(AMBIANCE_SOUS_UN_SON).toBeLessThan(0.5);
+  it('la musique de fond s’efface sous un son, sans s’arrêter', () => {
+    expect(FOND_SOUS_UN_SON).toBeGreaterThan(0);
+    expect(FOND_SOUS_UN_SON).toBeLessThan(0.5);
   });
 });

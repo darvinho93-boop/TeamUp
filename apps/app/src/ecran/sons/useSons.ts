@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useEffect, useRef, useState } from 'react';
-import { ambianceA, instantDe, reglageDe, sonsPour, type Instant, type Son } from '@/lib/sons';
+import { deroule, fondA, instantDe, reglageDe, sonsPour, type Instant, type Son } from '@/lib/sons';
 import type { EtatSalle } from '@/lib/salle';
 import { creerLecteur, type Lecteur } from './lecteur';
 
@@ -20,10 +20,10 @@ declare global {
 
 /**
  * Le son de l'écran commun : un clic l'active (les navigateurs l'exigent), puis chaque
- * changement d'état joue ce que `sonsPour` en dit, l'ambiance suit la scène, et le volume suit
- * la régie.
+ * changement d'état joue ce que `sonsPour` en dit, la musique de fond suit le moment, et le
+ * volume suit la régie.
  */
-export function useSons(etat: EtatSalle, eteint: boolean) {
+export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
   const [lecteur, setLecteur] = useState<Lecteur | null>(null);
   const precedent = useRef<Instant | null>(null);
   const reglage = reglageDe(etat);
@@ -61,10 +61,30 @@ export function useSons(etat: EtatSalle, eteint: boolean) {
     const avant = precedent.current;
     precedent.current = apres;
     if (!lecteur) return;
-    // À l'activation, pas d'« avant » à comparer : seule l'ambiance démarre si c'est l'accueil.
-    if (avant) for (const son of sonsPour(avant, apres)) lecteur.jouer(son);
-    lecteur.ambiance(ambianceA(apres));
+    // À l'activation, pas d'« avant » à comparer : seule la musique de fond du moment démarre.
+    if (avant) {
+      const sansMouvement = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      for (const son of sonsPour(avant, apres))
+        for (const pas of deroule(son, sansMouvement)) lecteur.jouer(pas.son, pas.apresMs);
+    }
   }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs]);
+
+  // La musique de fond du moment. Celle d'une explication s'arrête avec elle : l'étape reste
+  // « explication » tant que la régie n'a rien touché, mais le script, lui, a une fin.
+  const { chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
+  useEffect(() => {
+    if (!lecteur) return;
+    const fond = fondA({ scene, etape, mancheId, passageId, jeu, joueurs });
+    if (fond !== 'explication' || depart === null || duree === null) {
+      lecteur.fond(fond);
+      return;
+    }
+    const reste = depart + duree * 1000 - (Date.now() + decalageMs);
+    lecteur.fond(reste > 0 ? fond : null);
+    if (reste <= 0) return;
+    const fin = setTimeout(() => lecteur.fond(null), reste);
+    return () => clearTimeout(fin);
+  }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs, depart, duree, decalageMs]);
 
   const jouer = useCallback((son: Son) => lecteur?.jouer(son), [lecteur]);
 

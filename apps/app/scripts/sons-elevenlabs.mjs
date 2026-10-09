@@ -101,7 +101,18 @@ const DEMANDES = {
     boucle: true,
     crete: 0.7,
   },
+  explication: {
+    texte:
+      'Light playful background music for explaining the rules of a party game: pizzicato strings, marimba and soft shaker, upbeat but calm, instrumental, no melody that distracts, seamless loop',
+    duree: 22,
+    fidelite: 0.4,
+    boucle: true,
+    crete: 0.7,
+  },
 };
+
+/** Durée de l'interlude entre deux jeux (`INTERLUDE_MS`, dans `src/lib/sons.ts`). */
+const INTERLUDE_S = 1.6;
 
 const option = (nom, defaut) => {
   const i = process.argv.indexOf(`--${nom}`);
@@ -244,6 +255,28 @@ for (const variante of variantes) {
       monte[i] = caisse[i] * Math.min(1, (coup - i) / sortieCaisse) * (0.45 + 0.55 * (i / coup));
     for (let i = 0; i < cymbale.length; i += 1) monte[coup + i] += cymbale[i];
     writeFileSync(path.join(SORTIE, `roulement-${variante}.wav`), wav(monte));
+
+    // Le roulement de présentation : la fin du même roulement, qui enfle le temps de l'interlude
+    // et s'arrête net pour laisser la place au jingle.
+    const longueur = Math.round(INTERLUDE_S * FREQUENCE);
+    const depart = Math.max(0, Math.min(caisse.length, coup) - longueur);
+    const presentation = new Float32Array(longueur);
+    const entree = Math.round(0.08 * FREQUENCE);
+    const sortiePresentation = Math.round(0.05 * FREQUENCE);
+    for (let i = 0; i < longueur && depart + i < caisse.length; i += 1)
+      presentation[i] =
+        caisse[depart + i] *
+        Math.min(1, i / entree) *
+        Math.min(1, (longueur - i) / sortiePresentation) *
+        (0.5 + 0.5 * (i / longueur));
+    // Ramené au niveau des autres sons : un extrait du roulement, pris seul, est trop discret.
+    let cretePresentation = 0;
+    for (const v of presentation) cretePresentation = Math.max(cretePresentation, Math.abs(v));
+    for (let i = 0; i < longueur; i += 1) presentation[i] *= 0.85 / (cretePresentation || 1);
+    writeFileSync(path.join(SORTIE, `presentation-${variante}.wav`), wav(presentation));
+    console.log(
+      `${`presentation-${variante}`.padEnd(22)} ${INTERLUDE_S.toFixed(2).padStart(5)} s  monté  niveau moyen ${niveauMoyen(presentation).toFixed(3)}`,
+    );
     console.log(
       `${`roulement-${variante}`.padEnd(22)} ${(monte.length / FREQUENCE).toFixed(2).padStart(5)} s  monté (cymbale à 5,00 s)`,
     );

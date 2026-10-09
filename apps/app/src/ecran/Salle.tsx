@@ -5,12 +5,10 @@ import { NextIntlClientProvider } from 'next-intl';
 import { cx, Wordmark } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
 import type { EtatSalle } from '@/lib/salle';
+import { INTERLUDE_MS } from '@/lib/sons';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Scene } from './Scenes';
 import { SonsContexte, useSons } from './sons/useSons';
-
-/** Durée de l'interlude entre deux jeux : celle de `--tu-dur-interlude`. */
-const INTERLUDE_MS = 1100;
 
 /**
  * L'écran de la salle, dans la première langue de la soirée quelle que soit celle du navigateur
@@ -50,7 +48,7 @@ export function Salle({
   }, [interlude]);
 
   // Le son ne sort que de l'écran commun : l'aperçu de la régie reste muet.
-  const sons = useSons(etat, apercu);
+  const sons = useSons(etat, apercu, decalageMs);
 
   return (
     <NextIntlClientProvider locale={langue} messages={MESSAGES[langue]}>
