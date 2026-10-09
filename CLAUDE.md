@@ -392,7 +392,7 @@ caduques : même coque, fond beige.
 
 - Le pictogramme est fait des quatre calques du logo (`design/brand/logo/calques/`), empilés
   par `src/marque/Pictogramme.tsx` ; styles dans `packages/ui/src/styles/components/brand.css`.
-  En-tête du téléphone, de la régie et du back-office ; coin bas droit de l'écran commun, sauf
+  En-tête du téléphone, de la régie et du back-office ; coin haut droit de l'écran commun, sauf
   à l'accueil qui le porte près du nom.
 - Chargement : `src/marque/Chargement.tsx`, branché par un `loading.tsx` à la racine, dans
   `regie/` et dans `admin/` (celui de la racine ne couvre pas la navigation à l'intérieur d'une

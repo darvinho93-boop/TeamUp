@@ -170,15 +170,15 @@
   }
 }
 
-/* Écran commun : le pictogramme dans un coin, et l'interlude entre deux jeux. */
+/* Écran commun : le pictogramme en haut à droite, et l'interlude entre deux jeux. */
 .tu-stage {
   position: relative;
 }
 
 .tu-stage__picto {
   position: absolute;
-  right: var(--tu-space-8);
-  bottom: var(--tu-space-6);
+  top: var(--tu-space-6);
+  right: var(--tu-space-16);
 }
 
 .tu-interlude {
