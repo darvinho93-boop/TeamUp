@@ -36,7 +36,7 @@
 }
 
 .tu-player__head {
-  --tu-wordmark-size: var(--tu-size-lg);
+  --tu-wordmark-size: var(--tu-size-xl);
 }
 
 /* Occupe la hauteur restante : l'action principale tombe en bas de l'écran. */

@@ -27,8 +27,8 @@
   --tu-tracking-code: 0.08em;
 
   /* Pictogramme : en-tête, coin de l'écran commun, interlude, écran de chargement. */
-  --tu-picto-sm: 2rem;
-  --tu-picto-coin: 4.5rem;
+  --tu-picto-sm: 2.75rem;
+  --tu-picto-coin: 5.5rem;
   --tu-picto-lg: 16rem;
   --tu-picto-xl: 11rem;
   --tu-chargement-barre: 11rem;

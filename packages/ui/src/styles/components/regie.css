@@ -16,7 +16,7 @@
   padding: var(--tu-space-3) var(--tu-space-6);
   border-bottom: var(--tu-border-width) solid var(--tu-border);
   background: var(--tu-surface);
-  --tu-wordmark-size: var(--tu-size-lg);
+  --tu-wordmark-size: var(--tu-size-xl);
 }
 
 .tu-regie__head .tu-wordmark {

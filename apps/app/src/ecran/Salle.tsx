@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
-import { cx } from '@teamup/ui/react';
+import { cx, Wordmark } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
 import type { EtatSalle } from '@/lib/salle';
 import { Pictogramme } from '@/marque/Pictogramme';
@@ -63,7 +63,12 @@ export function Salle({
           qrSvg={qrSvg}
           adresse={adresse}
         />
-        {scene !== 'accueil' && <Pictogramme taille="coin" className="tu-stage__picto" />}
+        {scene !== 'accueil' && (
+          <span className="tu-marque tu-stage__picto">
+            <Pictogramme taille="coin" />
+            <Wordmark className="tu-stage__nom" />
+          </span>
+        )}
         {interlude && (
           <div key={interlude} className="tu-interlude" data-testid="interlude">
             <Pictogramme taille="lg" anime />

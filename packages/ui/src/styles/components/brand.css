@@ -181,6 +181,11 @@
   right: var(--tu-space-16);
 }
 
+.tu-stage__nom {
+  --tu-wordmark-size: var(--tu-size-3xl);
+  color: var(--tu-text);
+}
+
 .tu-interlude {
   position: absolute;
   inset: 0;
