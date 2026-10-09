@@ -10,7 +10,14 @@ export interface Lecteur {
   /** L'ambiance en boucle : la lancer ou l'éteindre, en fondu. */
   ambiance(active: boolean): void;
   regler(reglage: ReglageSon): void;
-  fermer(): void;
+  /**
+   * Met le lecteur en veille, ou le réveille. Réversible, contrairement à une fermeture : en
+   * développement, React démonte et remonte chaque composant une fois, et un lecteur fermé à ce
+   * moment-là resterait muet pour de bon.
+   */
+  veiller(endormi: boolean): void;
+  /** Pour les contrôles : l'état du contexte audio et le niveau réellement envoyé en sortie. */
+  mesure(): { etat: AudioContextState; niveau: number };
   /** Ce qui a été joué, pour les contrôles : le nom du son et l'instant (ms). */
   journal: { son: Son; a: number }[];
   /** Le dernier réglage appliqué, pour les contrôles. */
@@ -28,6 +35,9 @@ export async function creerLecteur(reglage: ReglageSon): Promise<Lecteur> {
   const sortie = contexte.createGain();
   sortie.gain.value = reglage.actif ? reglage.volume / 100 : 0;
   sortie.connect(contexte.destination);
+  const sonde = contexte.createAnalyser();
+  sortie.connect(sonde);
+  const echantillons = new Float32Array(sonde.fftSize);
 
   const tampons = new Map<Son, AudioBuffer>();
   await Promise.all(
@@ -90,8 +100,14 @@ export async function creerLecteur(reglage: ReglageSon): Promise<Lecteur> {
       lecteur.reglage = { actif, volume };
       sortie.gain.setTargetAtTime(actif ? volume / 100 : 0, contexte.currentTime, FONDU_S / 5);
     },
-    fermer() {
-      void contexte.close();
+    veiller(endormi) {
+      void (endormi ? contexte.suspend() : contexte.resume());
+    },
+    mesure() {
+      sonde.getFloatTimeDomainData(echantillons);
+      let carres = 0;
+      for (const v of echantillons) carres += v * v;
+      return { etat: contexte.state, niveau: Math.sqrt(carres / echantillons.length) };
     },
   };
   return lecteur;

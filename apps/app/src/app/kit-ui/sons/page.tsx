@@ -26,7 +26,11 @@ export default function KitSons() {
   const [volume, setVolume] = useState(80);
   const [ambiance, setAmbiance] = useState(false);
 
-  useEffect(() => () => lecteur?.fermer(), [lecteur]);
+  // Réveillé tant que l'écran est monté, en veille sinon (voir `veiller`).
+  useEffect(() => {
+    lecteur?.veiller(false);
+    return () => lecteur?.veiller(true);
+  }, [lecteur]);
   useEffect(() => lecteur?.regler({ actif: true, volume }), [lecteur, volume]);
   useEffect(() => lecteur?.ambiance(ambiance), [lecteur, ambiance]);
 
@@ -37,7 +41,10 @@ export default function KitSons() {
         <p>Le navigateur demande un clic avant de jouer du son.</p>
         <Button
           onClick={() =>
-            void creerLecteur({ actif: true, volume }).then((neuf) => setLecteur(neuf))
+            void creerLecteur({ actif: true, volume }).then((neuf) => {
+              window.__tuLecteur = neuf;
+              setLecteur(neuf);
+            })
           }
         >
           Activer le son

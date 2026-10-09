@@ -430,6 +430,11 @@ volume **depuis la régie**.
 - Réglage : `pilotage.son_actif` et `son_volume`, écrits par `regler_son` (qui ne touche pas à
   `maj_le` : pas de « pilotage périmé » à la touche suivante), lus dans `etat_ecran.son`. Le
   client tient sans la migration `20261010090000` (actif à 80).
-- Contrôle en navigateur : `window.__tuLecteur` (journal des sons joués, réglage appliqué).
+- Contrôle en navigateur : `window.__tuLecteur` (journal des sons joués, réglage appliqué, et
+  `mesure()` : état du contexte audio et niveau réellement en sortie). Le journal seul ne prouve
+  rien : un son « joué » dans un contexte fermé ne s'entend pas, vérifier `mesure()`.
+- Le lecteur ne se ferme jamais dans un nettoyage d'effet : il se met en veille (`veiller`).
+  En développement, React démonte et remonte chaque composant une fois ; une fermeture à ce
+  moment-là rendait tout muet (vu le 2026-10-09).
 - Points communs : « Lancer » remet les indices à zéro (`resultat: {}`). Sans cela, un passage
   relancé gardait les instants du premier essai et le chrono repartait seul au palier.

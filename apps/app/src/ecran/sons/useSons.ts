@@ -35,7 +35,11 @@ export function useSons(etat: EtatSalle, eteint: boolean) {
     setLecteur(neuf);
   }, [etat]);
 
-  useEffect(() => () => lecteur?.fermer(), [lecteur]);
+  // Réveillé tant que l'écran est monté, en veille sinon (voir `veiller`).
+  useEffect(() => {
+    lecteur?.veiller(false);
+    return () => lecteur?.veiller(true);
+  }, [lecteur]);
 
   const { actif, volume } = reglage;
   useEffect(() => lecteur?.regler({ actif, volume }), [lecteur, actif, volume]);
