@@ -7,6 +7,7 @@ import { MESSAGES } from '@/i18n/messages';
 import type { EtatSalle } from '@/lib/salle';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Scene } from './Scenes';
+import { SonsContexte, useSons } from './sons/useSons';
 
 /** Durée de l'interlude entre deux jeux : celle de `--tu-dur-interlude`. */
 const INTERLUDE_MS = 1100;
@@ -48,33 +49,47 @@ export function Salle({
     return () => clearTimeout(fin);
   }, [interlude]);
 
+  // Le son ne sort que de l'écran commun : l'aperçu de la régie reste muet.
+  const sons = useSons(etat, apercu);
+
   return (
     <NextIntlClientProvider locale={langue} messages={MESSAGES[langue]}>
-      <div
-        className={cx('tu-stage', apercu && 'tu-stage--apercu')}
-        lang={langue}
-        aria-hidden={apercu || undefined}
-      >
-        {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
-        <Scene
-          key={`${scene}:${mancheId ?? ''}`}
-          etat={etat}
-          decalageMs={decalageMs}
-          qrSvg={qrSvg}
-          adresse={adresse}
-        />
-        {scene !== 'accueil' && (
-          <span className="tu-marque tu-stage__picto">
-            <Pictogramme taille="coin" />
-            <Wordmark className="tu-stage__nom" />
-          </span>
-        )}
-        {interlude && (
-          <div key={interlude} className="tu-interlude" data-testid="interlude">
-            <Pictogramme taille="lg" anime />
-          </div>
-        )}
-      </div>
+      <SonsContexte value={sons.jouer}>
+        <div
+          className={cx('tu-stage', apercu && 'tu-stage--apercu')}
+          lang={langue}
+          aria-hidden={apercu || undefined}
+        >
+          {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
+          <Scene
+            key={`${scene}:${mancheId ?? ''}`}
+            etat={etat}
+            decalageMs={decalageMs}
+            qrSvg={qrSvg}
+            adresse={adresse}
+          />
+          {scene !== 'accueil' && (
+            <span className="tu-marque tu-stage__picto">
+              <Pictogramme taille="coin" />
+              <Wordmark className="tu-stage__nom" />
+            </span>
+          )}
+          {interlude && (
+            <div key={interlude} className="tu-interlude" data-testid="interlude">
+              <Pictogramme taille="lg" anime />
+            </div>
+          )}
+          {sons.aActiver && (
+            <button
+              type="button"
+              className="tu-btn tu-btn--ghost tu-stage__son"
+              onClick={() => void sons.activer()}
+            >
+              {MESSAGES[langue].ecran.activerSon}
+            </button>
+          )}
+        </div>
+      </SonsContexte>
     </NextIntlClientProvider>
   );
 }

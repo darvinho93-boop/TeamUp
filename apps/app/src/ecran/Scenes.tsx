@@ -1,6 +1,6 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useContext, useEffect, useRef, useSyncExternalStore } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier, Wordmark } from '@teamup/ui/react';
 import {
@@ -29,6 +29,7 @@ import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage'
 import { Pictogramme } from '@/marque/Pictogramme';
 import { grilleDesEquipes, membresTries, pageA, pagesDe } from '@/lib/membres';
 import { Chrono, useMaintenant } from './Chrono';
+import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
 import { OrdreTire, ordreDesEquipes, TirageOrdre } from './TirageOrdre';
 import { Multilingue } from './Multilingue';
@@ -243,6 +244,18 @@ function Jeu(props: Props) {
   return null;
 }
 
+/** Le chrono vient de s'arrêter à un palier : un carillon appelle l'indice. */
+function SonDeLArret({ palier }: { palier: number | null }) {
+  const jouer = useContext(SonsContexte);
+  const dernier = useRef(palier);
+  useEffect(() => {
+    const avant = dernier.current;
+    dernier.current = palier;
+    if (jouer && palier !== null && palier !== avant) jouer('indice');
+  }, [jouer, palier]);
+  return null;
+}
+
 function PointsCommuns({ etat, decalageMs }: Props) {
   const t = useTranslations('ecran');
   const passage = passageCourant(etat);
@@ -262,6 +275,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
   const fini = typeof passage.resultat['ecoule_ms'] === 'number';
   const jeu = fini ? { jeuMs: ecoule, arret: null } : tempsDeJeu(ecoule, indicesMsDe(passage));
   const palier = etatPaliers(jeu.jeuMs).palier;
+  const palierArrete = etape === 'lance' ? (jeu.arret?.palier ?? null) : null;
   const indices = langues.flatMap((langue) => {
     const liste = passage.secret?.[langue]?.['indices'];
     // La régie reçoit tous les indices : l'aperçu n'en montre pas plus que l'écran.
@@ -272,6 +286,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
 
   return (
     <div className="tu-stage__body" data-scene="list2" data-etape={etape ?? ''}>
+      <SonDeLArret palier={palierArrete} />
       <p className="tu-stage__head-line">
         <Pastille equipe={equipe} grande />
       </p>

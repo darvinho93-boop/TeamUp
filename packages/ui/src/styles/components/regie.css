@@ -248,6 +248,29 @@
   color: var(--tu-primary);
 }
 
+/* Le son de l'écran commun : un bouton pour couper, un curseur pour le volume. */
+.tu-regie-son {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tu-space-4);
+}
+
+.tu-regie-son__volume {
+  display: flex;
+  flex: 1 1 var(--tu-regie-field-min);
+  align-items: center;
+  gap: var(--tu-space-3);
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+}
+
+.tu-regie-son__volume input {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--tu-primary);
+}
+
 /* Membres en étiquettes : toute une équipe d'un coup d'œil. */
 .tu-regie-recherche {
   display: flex;

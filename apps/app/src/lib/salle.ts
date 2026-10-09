@@ -78,6 +78,8 @@ export interface EtatSalle {
     chrono_duree_s: number | null;
     version: string;
   };
+  /** Réglage du son de la salle ; absent tant que la base n'a pas la migration du 2026-10-10. */
+  son?: { actif: boolean; volume: number };
   equipes: EquipeSalle[];
   joueurs: number;
   connectes: number;

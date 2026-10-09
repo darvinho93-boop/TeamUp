@@ -181,6 +181,15 @@
   right: var(--tu-space-16);
 }
 
+/* Le son demande un clic pour démarrer : le seul bouton de l'écran commun, en bas à gauche. */
+.tu-stage__son {
+  position: absolute;
+  bottom: var(--tu-space-6);
+  left: var(--tu-space-16);
+  z-index: var(--tu-z-chargement);
+  font-size: var(--tu-size-lg);
+}
+
 .tu-stage__nom {
   --tu-wordmark-size: var(--tu-size-3xl);
   color: var(--tu-text);

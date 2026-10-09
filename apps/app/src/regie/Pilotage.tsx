@@ -26,6 +26,7 @@ import {
 } from '@teamup/game';
 import { calculerEtape, jeuParEquipe, scriptEnCours, type Commande } from '@/lib/pilotage';
 import { membresTries } from '@/lib/membres';
+import { reglageDe } from '@/lib/sons';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import type { Json } from '@/types/base';
 import {
@@ -156,6 +157,14 @@ export function Pilotage({
             {t('ouvrirEcran')}
           </a>
         </p>
+        <ReglageSon
+          evenementId={etat.evenement.id}
+          reglage={reglageDe(etat)}
+          apresEcriture={async () => {
+            signaler();
+            await relire();
+          }}
+        />
         <div className="tu-cluster" role="group" aria-label={t('scenes')}>
           {SCENES_LIBRES.map((s) => (
             <Button
@@ -353,6 +362,59 @@ function MembresEquipe({ equipe }: { equipe: EquipeSalle }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/**
+ * Le son de l'écran commun, coupé ou réglé d'ici. Le réglage s'écrit en base puis le signal
+ * habituel prévient l'écran : il l'applique aussitôt, et un écran rouvert le retrouve.
+ */
+function ReglageSon({
+  evenementId,
+  reglage,
+  apresEcriture,
+}: {
+  evenementId: string;
+  reglage: { actif: boolean; volume: number };
+  apresEcriture: () => Promise<void>;
+}) {
+  const t = useTranslations('regie.pilotage.son');
+  // Le curseur suit le doigt ; on n'écrit qu'au relâchement.
+  const [volume, setVolume] = useState<number | null>(null);
+  const regler = async (actif: boolean, niveau: number) => {
+    await supabaseNavigateur().rpc('regler_son', {
+      p_evenement: evenementId,
+      p_actif: actif,
+      p_volume: niveau,
+    });
+    await apresEcriture();
+    setVolume(null);
+  };
+  const affiche = volume ?? reglage.volume;
+  return (
+    <div className="tu-regie-son" role="group" aria-label={t('titre')}>
+      <Button
+        variant={reglage.actif ? 'primary' : 'ghost'}
+        aria-pressed={reglage.actif}
+        onClick={() => void regler(!reglage.actif, reglage.volume)}
+      >
+        {reglage.actif ? t('actif') : t('coupe')}
+      </Button>
+      <label className="tu-regie-son__volume">
+        <span>{t('volume', { n: affiche })}</span>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          step={5}
+          value={affiche}
+          disabled={!reglage.actif}
+          onChange={(e) => setVolume(Number(e.target.value))}
+          onPointerUp={() => volume !== null && void regler(reglage.actif, volume)}
+          onKeyUp={() => volume !== null && void regler(reglage.actif, volume)}
+        />
+      </label>
+    </div>
   );
 }
 

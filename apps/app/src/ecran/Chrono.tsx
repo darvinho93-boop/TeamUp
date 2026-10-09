@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { cx } from '@teamup/ui/react';
 import { formatChrono, tempsRestant } from '@teamup/game';
+import { sonDuChrono } from '@/lib/sons';
+import { SonsContexte } from './sons/useSons';
 
 /** L'heure du navigateur, rafraîchie cinq fois par seconde tant que `actif`. */
 export function useMaintenant(actif: boolean): number {
@@ -38,6 +40,18 @@ export function Chrono({
 
   const ecoule = arret ?? (departMs === null ? 0 : Math.max(0, maintenant + decalageMs - departMs));
   const reste = tempsRestant(dureeS, ecoule);
+
+  // Les dix dernières secondes s'entendent, puis la fin de temps. Seulement quand la seconde
+  // change sous nos yeux : un chrono qu'on retrouve arrêté, ou un écran qu'on recharge, se tait.
+  const jouer = useContext(SonsContexte);
+  const dernier = useRef(reste);
+  useEffect(() => {
+    const avant = dernier.current;
+    dernier.current = reste;
+    if (!jouer || reste >= avant) return;
+    const son = sonDuChrono(reste);
+    if (son) jouer(son);
+  }, [jouer, reste]);
   return (
     <span
       className={cx('tu-stage-chrono', reste === 0 && 'tu-stage-chrono--zero', className)}

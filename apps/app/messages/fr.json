@@ -225,6 +225,12 @@
       "reponse": "Réponse (toi seul la vois)",
       "indices": "Indices",
       "membres": "Membres de l'équipe",
+      "son": {
+        "titre": "Son de l'écran commun",
+        "actif": "Son actif",
+        "coupe": "Son coupé",
+        "volume": "Volume {n} %"
+      },
       "afficher": "Afficher",
       "masquer": "Masquer",
       "lancer": "Lancer",
@@ -411,6 +417,7 @@
     "joueurs": "{n, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}}",
     "equipes": "Les équipes",
     "capitaine": "Capitaine",
+    "activerSon": "Activer le son",
     "programme": "Au programme",
     "regles": {
       "list2": "Une équipe, dos à l'écran, devine ce qui rassemble les invités debout.",

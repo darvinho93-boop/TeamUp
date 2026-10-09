@@ -225,6 +225,12 @@
       "reponse": "Answer (only you can see it)",
       "indices": "Clues",
       "membres": "Team members",
+      "son": {
+        "titre": "Shared screen sound",
+        "actif": "Sound on",
+        "coupe": "Sound off",
+        "volume": "Volume {n}%"
+      },
       "afficher": "Show",
       "masquer": "Hide",
       "lancer": "Start",
@@ -411,6 +417,7 @@
     "joueurs": "{n, plural, =0 {No players} one {# player} other {# players}}",
     "equipes": "The teams",
     "capitaine": "Captain",
+    "activerSon": "Turn sound on",
     "programme": "Tonight's games",
     "regles": {
       "list2": "One team, back to the screen, guesses what the standing guests have in common.",
