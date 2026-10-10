@@ -67,7 +67,7 @@ const faq: FaqItem[] = [
   {
     question: "Pour combien d'invités ?",
     answer:
-      "Jusqu'à 150 invités, à partir de [MIN]. Le nombre d'équipes et le programme s'adaptent à votre liste, et toute la salle joue en même temps.",
+      "Jusqu'à 150 invités. Le nombre d'équipes et le programme s'adaptent à votre liste, et toute la salle joue en même temps.",
   },
   {
     question: "Qu'ai-je à faire le jour J ?",
@@ -102,7 +102,7 @@ const faq: FaqItem[] = [
   {
     question: 'Combien ça coûte ?',
     answer:
-      "À partir de [PRIX] €. Le tarif dépend du nombre d'invités, de la durée et du lieu de la soirée. Le devis est gratuit et sans engagement.",
+      "À partir de 690 € TTC. Ce prix comprend la préparation avec vous, la saisie de vos jeux et l'animation le jour J ; le déplacement est chiffré dans le devis, selon le lieu de votre soirée. Offre de lancement : à partir de 470 € TTC pour les dix premières soirées réservées, et au plus tard jusqu'au 31 décembre 2026. Le devis est gratuit et sans engagement.",
   },
 ];
 ---
@@ -117,7 +117,8 @@ const faq: FaqItem[] = [
     lead="Mariage, anniversaire, fête de famille : nous transformons des tablées qui s'observent en équipes qui rient ensemble. Vous n'avez rien à animer : vous profitez de vos invités, l'esprit libre."
   >
     <p slot="footnote" class="intro-note">
-      Devis gratuit et sans engagement · à partir de [PRIX] €
+      Offre de lancement : à partir de 470 € TTC pour les dix premières soirées réservées avant le
+      31 décembre 2026. Ensuite, à partir de 690 € TTC.
     </p>
     <Fragment slot="actions">
       <Button href="/devis?type=particulier" variant="accent" size="cta">
@@ -136,7 +137,7 @@ const faq: FaqItem[] = [
   <Section eyebrow="Les occasions" title="Dès que plusieurs cercles se retrouvent.">
     <div class="occasions">
       {occasions.map((occasion) => (
-        <article class="tu-panel occasion">
+        <article class="tu-panel occasion" data-tu-apparait>
           <h3 class="occasion__title">{occasion.title}</h3>
           <p class="occasion__body">{occasion.body}</p>
         </article>

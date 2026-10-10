@@ -12,6 +12,7 @@ import Stage from '../components/visuels/Stage.astro';
 import ScreenRanking from '../components/visuels/ScreenRanking.astro';
 import ScreenPointsCommuns from '../components/visuels/ScreenPointsCommuns.astro';
 import PhoneJoin from '../components/visuels/PhoneJoin.astro';
+import { PREUVES_FOURNIES } from '../data/preuves';
 
 const formats = [
   {
@@ -69,7 +70,7 @@ const faq: FaqItem[] = [
   {
     question: 'Pour combien de participants ?',
     answer:
-      "Jusqu'à 150 participants, à partir de [MIN]. Le nombre d'équipes et le programme s'adaptent à votre effectif.",
+      "Jusqu'à 150 participants. Le nombre d'équipes et le programme s'adaptent à votre effectif.",
   },
   {
     question: 'Peut-on adapter les contenus à notre entreprise ?',
@@ -84,7 +85,7 @@ const faq: FaqItem[] = [
   {
     question: 'Comment se passent le devis et la facturation ?',
     answer:
-      'Vous décrivez votre événement, nous vous rappelons sous [DÉLAI] et vous adressons un devis détaillé, gratuit et sans engagement. [CONDITIONS DE FACTURATION]',
+      'Vous décrivez votre événement, nous vous rappelons sous 48 heures et vous adressons un devis détaillé, gratuit et sans engagement.',
   },
 ];
 ---
@@ -100,7 +101,7 @@ const faq: FaqItem[] = [
     lead="Team building, séminaire, intégration : un temps fort animé de bout en bout, où les services jouent ensemble au lieu de rester entre eux. Vous n'avez rien à animer, et personne ne reste spectateur."
   >
     <p slot="footnote" class="intro-note">
-      Devis gratuit et sans engagement · à partir de [PRIX] € HT
+      Sur devis, gratuit et sans engagement
     </p>
     <Fragment slot="actions">
       <Button href="/devis?type=entreprise" variant="accent" size="cta">
@@ -120,27 +121,27 @@ const faq: FaqItem[] = [
     <div class="offer">
       <div class="formats">
         {formats.map((format) => (
-          <article class="tu-panel format">
+          <article class="tu-panel format" data-tu-apparait>
             <h3 class="format__title">{format.title}</h3>
             <p class="format__body">{format.body}</p>
           </article>
         ))}
       </div>
       <div class="creneaux">
-        <article class="creneau creneau--light">
+        <article class="creneau creneau--light" data-tu-apparait>
           <h3 class="creneau__name">L'Essentiel</h3>
           <p class="creneau__body">
             Les cinq jeux et le final en photos, pour des groupes jusqu'à cinq équipes.
           </p>
-          <p class="creneau__price">À partir de [PRIX] € HT</p>
+          <p class="creneau__price">Sur devis</p>
         </article>
-        <article class="tu-panel tu-panel--dark creneau" data-theme="stage">
+        <article class="tu-panel tu-panel--dark creneau" data-theme="stage" data-tu-apparait>
           <h3 class="creneau__name">Le Grand format</h3>
           <p class="creneau__body">
             Les cinq jeux au complet pour les grands groupes, jusqu'à huit équipes et 150
             participants.
           </p>
-          <p class="creneau__price">À partir de [PRIX] € HT</p>
+          <p class="creneau__price">Sur devis</p>
         </article>
       </div>
     </div>
@@ -162,7 +163,7 @@ const faq: FaqItem[] = [
   <Section title="Pour vous qui organisez.">
     <div class="formats">
       {organisation.map((point) => (
-        <article class="tu-panel format">
+        <article class="tu-panel format" data-tu-apparait>
           <h3 class="format__title">{point.title}</h3>
           <p class="format__body">{point.body}</p>
         </article>
@@ -176,18 +177,20 @@ const faq: FaqItem[] = [
     </div>
   </section>
 
-  <Section title="Ils nous ont fait confiance.">
-    <!-- Contenu à fournir : cinq emplacements de logo, pas de faux logos. -->
-    <ul class="logos">
-      {Array.from({ length: 5 }).map(() => (
-        <li class="logos__item">[LOGO CLIENT]</li>
-      ))}
-    </ul>
-    <figure class="tu-panel quote">
-      <blockquote class="quote__text">« [CITATION CLIENT ENTREPRISE] »</blockquote>
-      <figcaption class="quote__author">[Prénom], [fonction], [entreprise]</figcaption>
-    </figure>
-  </Section>
+  {PREUVES_FOURNIES && (
+    <Section title="Ils nous ont fait confiance.">
+      <!-- Contenu à fournir : cinq emplacements de logo, pas de faux logos. -->
+      <ul class="logos">
+        {Array.from({ length: 5 }).map(() => (
+          <li class="logos__item">[LOGO CLIENT]</li>
+        ))}
+      </ul>
+      <figure class="tu-panel quote">
+        <blockquote class="quote__text">« [CITATION CLIENT ENTREPRISE] »</blockquote>
+        <figcaption class="quote__author">[Prénom], [fonction], [entreprise]</figcaption>
+      </figure>
+    </Section>
+  )}
 
   <Section eyebrow="Questions fréquentes" title="Côté organisation." layout="aside">
     <Faq items={faq} />

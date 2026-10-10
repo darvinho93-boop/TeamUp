@@ -25,7 +25,7 @@ const avant = [
   },
   {
     title: 'Le jour J',
-    body: "L'animateur arrive [DÉLAI] avant vos invités : il branche l'écran, teste le son et le réseau. Quand la salle se remplit, tout fonctionne déjà.",
+    body: "L'animateur arrive en avance : il branche l'écran, teste le son et le réseau. Quand la salle se remplit, tout fonctionne déjà.",
   },
 ];
 
@@ -70,7 +70,7 @@ const durees = [
     title="Un animateur, un grand écran, et les téléphones dans les poches."
   >
     <div class="surfaces">
-      <article class="surface">
+      <article class="surface" data-tu-apparait>
         <RegiePanel class="surface__visual" />
         <h3 class="surface__title">L'animateur</h3>
         <p class="surface__body">
@@ -79,7 +79,7 @@ const durees = [
         </p>
       </article>
 
-      <article class="surface">
+      <article class="surface" data-tu-apparait>
         <ScreenMimeLive class="surface__visual" />
         <h3 class="surface__title">L'écran de la salle</h3>
         <p class="surface__body">
@@ -88,7 +88,7 @@ const durees = [
         </p>
       </article>
 
-      <article class="surface">
+      <article class="surface" data-tu-apparait>
         <PhonePeek class="surface__visual" />
         <h3 class="surface__title">Le téléphone des invités</h3>
         <p class="surface__body">
@@ -102,7 +102,7 @@ const durees = [
   <Section eyebrow="Le déroulé" title="Du QR code au podium." tone="dark">
     <ol class="flow">
       {deroule.map((step, index) => (
-        <li class="flow__step">
+        <li class="flow__step" data-tu-apparait>
           <span class="flow__head" aria-hidden="true">
             {index > 0 && <Icon name="arrow" size="sm" class="flow__arrow" />}
             <span class="flow__number">{index + 1}</span>
@@ -120,10 +120,10 @@ const durees = [
   <Section
     eyebrow="Combien de temps ?"
     title="Tout dépend du nombre d'équipes."
-    lead="Deux jeux se jouent une équipe après l'autre : plus il y a d'équipes, plus la partie dure. Une équipe compte environ [TAILLE D'ÉQUIPE] personnes."
+    lead="Deux jeux se jouent une équipe après l'autre : plus il y a d'équipes, plus la partie dure."
     layout="aside"
   >
-    <div class="tu-panel durees">
+    <div class="tu-panel durees" data-tu-apparait>
       <table class="durees__table">
         <thead>
           <tr>

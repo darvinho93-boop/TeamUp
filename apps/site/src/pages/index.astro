@@ -5,23 +5,19 @@ import PageIntro from '../components/layout/PageIntro.astro';
 import Section from '../components/layout/Section.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
 import Icon from '../components/Icon.astro';
-import Stage from '../components/visuels/Stage.astro';
-import ScreenQuiz from '../components/visuels/ScreenQuiz.astro';
-import PhoneWaiting from '../components/visuels/PhoneWaiting.astro';
+import VideoEcran from '../components/visuels/VideoEcran.astro';
+import { PREUVES_FOURNIES } from '../data/preuves';
 
 const apports = [
   {
-    axe: "L'émotion",
     title: 'Une émotion qui se partage',
     body: "Des inconnus qui rient ensemble, plusieurs générations dans la même équipe, des photos que l'on garde. Vos invités repartent avec une soirée en commun, et vous avec la fierté de les avoir réunis.",
   },
   {
-    axe: 'La sérénité',
     title: 'Tout est prêt avant vos invités',
     body: "Un seul interlocuteur, du premier échange au podium. Tout se prépare avec vous avant la soirée ; le jour venu, l'animateur arrive en avance, installe et teste. Il ne vous reste qu'à accueillir.",
   },
   {
-    axe: 'Le nombre',
     title: "Toute la salle, jusqu'à 150 invités",
     body: "Personne ne reste à sa table. Les équipes se forment dès l'arrivée, et tout le monde joue en même temps, debout, dans la salle. L'animateur tient le rythme du début à la fin.",
   },
@@ -31,39 +27,29 @@ const portes = [
   {
     icon: 'mime',
     tone: 'sage',
-    title: 'Les jeux',
-    body: 'Cinq jeux où toute la salle se lève, se mélange et rit, quelle que soit la langue de chacun.',
+    title: 'Cinq jeux, toute la salle debout',
+    body: 'On se lève, on se mélange, on rit, quelle que soit la langue de chacun.',
     liens: [{ href: '/les-jeux', label: 'Voir les jeux' }],
   },
   {
     icon: 'screen',
     tone: 'amber',
-    title: 'Comment ça marche',
-    body: "De votre demande au podium : ce que nous préparons avec vous, et tout ce dont vous n'aurez pas à vous occuper.",
+    title: 'Du premier échange au podium',
+    body: "Ce que nous préparons avec vous, et tout ce dont vous n'aurez pas à vous occuper.",
     liens: [{ href: '/comment-ca-marche', label: 'Voir le déroulé' }],
   },
   {
     icon: 'checkCircle',
     tone: 'stone',
-    title: 'Offres et devis',
-    body: 'Une proposition sur mesure, pour une fête de famille comme pour un séminaire. Devis gratuit, sans engagement.',
-    liens: [
-      { href: '/particuliers', label: 'Offre particuliers' },
-      { href: '/entreprises', label: 'Offre entreprises' },
-    ],
-  },
-  {
-    icon: 'users',
-    tone: 'navy',
-    title: 'Qui sommes-nous',
-    body: "L'équipe derrière Team Up!, et ce qui nous a donné envie de faire jouer vos invités ensemble.",
-    liens: [{ href: '/qui-sommes-nous', label: 'Nous découvrir' }],
+    title: 'Un devis sur mesure',
+    body: 'Une proposition pensée pour votre événement, fête de famille ou séminaire. Gratuit, sans engagement.',
+    liens: [{ href: '/devis', label: 'Demander un devis' }],
   },
 ] as const;
 ---
 
 <Base
-  title="Team Up! — On joue. On se rencontre. On crée du lien."
+  title="Animation de soirée, mariage, team building — Team Up!"
   description="Animation de soirée pour mariages, anniversaires et séminaires : un animateur fait jouer toute votre salle. Des rires, des rencontres, et vous l'esprit libre."
 >
   <PageIntro
@@ -80,21 +66,22 @@ const portes = [
         Voir les jeux
       </Button>
     </Fragment>
-    <p slot="footnote" class="intro-note">
-      Anniversaires · mariages · fêtes de famille · séminaires · team building
-    </p>
-    <Stage slot="visual">
-      <ScreenQuiz slot="screen" />
-      <PhoneWaiting
-        slot="phone"
-        name="Léa"
-        team="Équipe 3"
-        teamClass="tu-team--3"
-        hint="Retrouve les joueurs en vert."
-        score="240 pts"
-        next="Prochain jeu : Mime"
-      />
-    </Stage>
+    <nav slot="footnote" class="publics" aria-label="Nos offres">
+      <a class="tu-arrow-link" href="/particuliers">
+        Pour une fête ou un mariage
+        <Icon name="arrow" size="sm" />
+      </a>
+      <a class="tu-arrow-link" href="/entreprises">
+        Pour une entreprise
+        <Icon name="arrow" size="sm" />
+      </a>
+    </nav>
+    <VideoEcran
+      slot="visual"
+      src="/videos/boucle-accueil.mp4"
+      affiche="/videos/boucle-accueil.jpg"
+      caption="Vidéo : sur un plateau de jeu télé, les cinq jeux de Team Up! sont rejoués tour à tour par de petits personnages, puis trois équipes montent sur le podium sous les confettis."
+    />
   </PageIntro>
 
   <Section
@@ -104,8 +91,7 @@ const portes = [
   >
     <div class="apports">
       {apports.map((apport) => (
-        <article class="apport">
-          <p class="tu-eyebrow">{apport.axe}</p>
+        <article class="apport" data-tu-apparait>
           <h3 class="apport__title">{apport.title}</h3>
           <p class="apport__body">{apport.body}</p>
         </article>
@@ -116,7 +102,10 @@ const portes = [
   <section class="portes-section" aria-label="Découvrir Team Up!">
     <div class="tu-container portes">
       {portes.map((porte) => (
-        <article class:list={['tu-panel', 'porte', porte.liens.length === 1 && 'porte--lien']}>
+        <article
+          class:list={['tu-panel', 'porte', porte.liens.length === 1 && 'porte--lien']}
+          data-tu-apparait
+        >
           <span class:list={['porte__icon', `porte__icon--${porte.tone}`]}>
             <Icon name={porte.icon} size="md" />
           </span>
@@ -135,26 +124,34 @@ const portes = [
     </div>
   </section>
 
-  <Section title="Ils ont joué.">
-    <div class="quotes">
-      <figure class="tu-panel quote">
-        <blockquote class="quote__text">« [CITATION CLIENT PARTICULIER] »</blockquote>
-        <figcaption class="quote__author">[Prénom], [occasion], [ville]</figcaption>
-      </figure>
-      <figure class="tu-panel quote">
-        <blockquote class="quote__text">« [CITATION CLIENT ENTREPRISE] »</blockquote>
-        <figcaption class="quote__author">[Prénom], [fonction], [entreprise]</figcaption>
-      </figure>
-    </div>
-  </Section>
+  {PREUVES_FOURNIES && (
+    <Section title="Ils ont joué.">
+      <div class="quotes">
+        <figure class="tu-panel quote">
+          <blockquote class="quote__text">« [CITATION CLIENT PARTICULIER] »</blockquote>
+          <figcaption class="quote__author">[Prénom], [occasion], [ville]</figcaption>
+        </figure>
+        <figure class="tu-panel quote">
+          <blockquote class="quote__text">« [CITATION CLIENT ENTREPRISE] »</blockquote>
+          <figcaption class="quote__author">[Prénom], [fonction], [entreprise]</figcaption>
+        </figure>
+      </div>
+    </Section>
+  )}
 
   <CtaBanner title="Parlez-nous de votre événement." />
 </Base>
 
 <style>
-  .intro-note {
-    font-size: var(--tu-size-sm);
-    color: var(--tu-text-muted);
+  /* Les deux publics, sous les boutons : chacun sa page d'offre. */
+  .publics {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--tu-space-8);
+  }
+
+  .publics .tu-arrow-link {
+    font-size: var(--tu-size-base);
   }
 
   /* Les trois apports : l'émotion, la sérénité, le nombre. Titre en deux lignes égales. */
@@ -183,14 +180,14 @@ const portes = [
     color: var(--tu-text-muted);
   }
 
-  /* Les quatre portes : l'accueil résume, les pages intérieures détaillent. */
+  /* Les trois portes : l'accueil résume, les pages intérieures détaillent. */
   .portes-section {
     padding-bottom: var(--tu-section-space);
   }
 
   .portes {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--tu-space-5);
   }
 
@@ -247,6 +244,25 @@ const portes = [
     flex-direction: column;
   }
 
+  /* Au survol, la carte se soulève. Seule son apparition suit la cascade, pas le survol. */
+  @media (prefers-reduced-motion: no-preference) {
+    .porte.porte--lien {
+      transition:
+        opacity var(--tu-dur-reveal) var(--tu-ease),
+        translate var(--tu-dur-reveal) var(--tu-ease),
+        transform var(--tu-dur-base) var(--tu-ease),
+        box-shadow var(--tu-dur-base) var(--tu-ease);
+      transition-delay:
+        calc(var(--tu-apparait-rang, 0) * var(--tu-dur-cascade)),
+        calc(var(--tu-apparait-rang, 0) * var(--tu-dur-cascade)), 0s, 0s;
+    }
+
+    .porte.porte--lien:hover {
+      transform: translateY(calc(var(--tu-space-1) * -1));
+      box-shadow: var(--tu-shadow-lift);
+    }
+  }
+
   /* Une seule destination : toute la carte se clique. */
   .porte--lien .tu-arrow-link::after {
     content: '';
@@ -278,12 +294,6 @@ const portes = [
   .quote__author {
     font-size: var(--tu-btn-sm-font);
     color: var(--tu-text-muted);
-  }
-
-  @media (max-width: 75rem) {
-    .portes {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 
   @media (max-width: 60rem) {
