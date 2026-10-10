@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import PageIntro from '../components/layout/PageIntro.astro';
+import Section from '../components/layout/Section.astro';
+import CtaBanner from '../components/layout/CtaBanner.astro';
+
+// Contenu à fournir : la page reste hors index tant que les crochets ne sont pas remplacés.
+const blocs = [
+  { title: "D'où vient Team Up!", body: "[TEXTE À FOURNIR : l'origine du projet.]" },
+  {
+    title: 'Ce qui nous anime',
+    body: '[TEXTE À FOURNIR : notre conviction, notre façon de faire.]',
+  },
+  { title: "L'équipe", body: '[TEXTE À FOURNIR : qui nous sommes.]' },
+];
+---
+
+<Base
+  title="Qui sommes-nous — Team Up!"
+  description="L'équipe derrière Team Up!, l'animation de soirée qui fait jouer vos invités ensemble."
+  noindex
+>
+  <PageIntro
+    wide
+    eyebrow="Qui sommes-nous"
+    title="[TITRE À FOURNIR]"
+    lead="[CHAPEAU À FOURNIR : Team Up! en deux phrases, par ceux qui le font.]"
+  />
+
+  <Section>
+    <div class="blocs">
+      {blocs.map((bloc) => (
+        <article class="tu-panel bloc">
+          <h2 class="tu-subtitle">{bloc.title}</h2>
+          <p class="tu-body-lg">{bloc.body}</p>
+        </article>
+      ))}
+    </div>
+  </Section>
+
+  <CtaBanner title="Parlez-nous de votre événement." />
+</Base>
+
+<style>
+  .blocs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--tu-space-5);
+  }
+
+  .bloc {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-4);
+    padding: var(--tu-space-7);
+  }
+
+  @media (max-width: 60rem) {
+    .blocs {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--tu-space-3);
+    }
+
+    .bloc {
+      padding: var(--tu-space-6);
+    }
+  }
+</style>
