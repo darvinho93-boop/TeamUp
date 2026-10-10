@@ -62,7 +62,7 @@ describe('emailAccuse', () => {
   it('remercie, annonce le rappel et reprend la demande', () => {
     const { subject, text } = emailAccuse(demande);
     expect(subject).toBe('Votre demande de devis Team Up!');
-    expect(text).toContain('On vous rappelle sous [DÉLAI]');
+    expect(text).toContain('Nous vous rappelons sous [DÉLAI]');
     expect(text).toContain('Occasion : Séminaire');
   });
 });

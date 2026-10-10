@@ -95,7 +95,7 @@ export function emailAccuse(demande: Demande): Email {
   const lignes = recapitulatif(demande);
   const intro = [
     'Bonjour,',
-    'Merci pour votre demande, elle est bien arrivée. On vous rappelle sous [DÉLAI] pour faire connaissance et parler de votre événement.',
+    "Merci pour votre demande, elle est bien arrivée. Nous vous rappelons sous [DÉLAI] pour faire connaissance et parler de votre événement. D'ici là, vous n'avez rien à préparer.",
     'Pour rappel, voici ce que vous nous avez indiqué :',
   ];
   const fin = "À très vite,\nL'équipe Team Up!";
