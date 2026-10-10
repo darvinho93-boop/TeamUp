@@ -91,6 +91,11 @@ export default {
 Le pictogramme existe en quatre calques (`logo/calques/`, un par couleur) : l'app les empile
 et les anime pour l'écran de chargement.
 
+Les icônes (`icons/` : onglet du navigateur, écran d'accueil du téléphone, app installée) sont
+fabriquées à partir de ces calques, posés au centre du beige du logo, par
+`pnpm --filter @teamup/site icones`. Celles du kit d'origine, sur carré marine, portaient le
+dessin dans le coin d'une image plus grande : elles ont été remplacées le 10 octobre 2026.
+
 ## Choix faits, et pourquoi
 
 - **Pierre claire écartée des couleurs d'équipe.** `#EAE3D7` sur fond crème n'a pas assez

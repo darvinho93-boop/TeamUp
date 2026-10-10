@@ -411,6 +411,10 @@ caduques : même coque, fond beige.
   l'aperçu de la régie, ni sous `prefers-reduced-motion`.
 - Sur beige, la sauge 500 ne tient pas comme couleur de texte ni comme repère (1,9:1) :
   `--tu-success` (sauge 700) pour les verdicts et l'état « connecté ».
+- Icônes (`design/brand/icons/`, onglet du navigateur et app installée) : les quatre calques
+  sur le beige du logo, fabriquées par `pnpm --filter @teamup/site icones`
+  (`apps/site/scripts/icones.mjs`, `sharp` étant une dépendance de la vitrine). À relancer si
+  le logo change ; ne pas les retoucher à la main.
 - Revue visuelle : `node e2e/captures.mjs <dossier> [CODE]` depuis `apps/app` capture chaque
   écran en taille réelle (serveur local démarré).
 

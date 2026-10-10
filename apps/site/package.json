@@ -12,6 +12,7 @@
     "typecheck": "astro check",
     "test": "vitest run",
     "test:watch": "vitest",
+    "icones": "node scripts/icones.mjs",
     "dev:host": "astro dev --host"
   },
   "dependencies": {
