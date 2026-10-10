@@ -25,7 +25,7 @@ const avant = [
   },
   {
     title: 'Le jour J',
-    body: "L'animateur arrive [DÉLAI] avant le début pour installer l'écran et tester la salle. Vous accueillez vos invités l'esprit libre.",
+    body: "L'animateur arrive [DÉLAI] avant vos invités : il branche l'écran, teste le son et le réseau. Quand la salle se remplit, tout fonctionne déjà.",
   },
 ];
 
@@ -52,21 +52,33 @@ const durees = [
 
 <Base
   title="Comment ça marche — Team Up!"
-  description="De la demande de devis au podium : vous nous parlez de votre événement, nous préparons tout avec vous, un animateur fait jouer la salle. Rien à installer."
+  description="Un seul interlocuteur, une soirée préparée avec vous, un animateur qui arrive en avance et teste tout. Le jour J, il ne vous reste qu'à accueillir."
 >
   <PageIntro
     wide
     eyebrow="Comment ça marche"
-    title="De la demande de devis au podium."
-    lead="Vous nous parlez de votre événement, nous préparons tout avec vous, et le jour venu un animateur Team Up! fait vibrer la salle. Vous n'avez rien à installer, ni rien à gérer."
+    title="Le jour J, il ne vous reste qu'à accueillir."
+    lead="Un seul interlocuteur, de votre demande au podium. Nous préparons la soirée avec vous ; le jour venu, l'animateur arrive en avance, teste tout, puis fait vibrer la salle. Vos invités, eux, n'ont rien à installer."
   />
 
   <Section eyebrow="Avant la soirée" title="Quatre étapes, un seul interlocuteur.">
     <StepList steps={avant} variant="cards" />
   </Section>
 
-  <Section eyebrow="Pendant la soirée" title="Un écran, des téléphones, un animateur.">
+  <Section
+    eyebrow="Pendant la soirée"
+    title="Un animateur, un grand écran, et les téléphones dans les poches."
+  >
     <div class="surfaces">
+      <article class="surface">
+        <RegiePanel class="surface__visual" />
+        <h3 class="surface__title">L'animateur</h3>
+        <p class="surface__body">
+          Il tient la salle au micro, donne le rythme et pilote chaque jeu. Jusqu'à 150 invités, et
+          personne sur le côté.
+        </p>
+      </article>
+
       <article class="surface">
         <ScreenMimeLive class="surface__visual" />
         <h3 class="surface__title">L'écran de la salle</h3>
@@ -82,14 +94,6 @@ const durees = [
         <p class="surface__body">
           Un scan du QR code et l'invité rejoint la partie, dans sa langue. Ensuite, le téléphone
           reste presque toujours dans la poche.
-        </p>
-      </article>
-
-      <article class="surface">
-        <RegiePanel class="surface__visual" />
-        <h3 class="surface__title">L'animateur</h3>
-        <p class="surface__body">
-          Il tient la salle au micro, donne le rythme et pilote chaque jeu depuis sa tablette.
         </p>
       </article>
     </div>
@@ -151,6 +155,9 @@ const durees = [
   <section class="equipment-section">
     <div class="tu-container">
       <Equipment />
+      <p class="equipment__note">
+        Un doute sur votre salle ? Nous le vérifions avec vous pendant la préparation.
+      </p>
     </div>
   </section>
 
@@ -288,6 +295,11 @@ const durees = [
 
   .equipment-section {
     padding-bottom: var(--tu-section-space);
+  }
+
+  .equipment__note {
+    margin-top: var(--tu-space-5);
+    color: var(--tu-text-muted);
   }
 
   @media (max-width: 60rem) {
