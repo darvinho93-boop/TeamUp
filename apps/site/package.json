@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Site vitrine teamup.fr — statique, en français.",
+  "description": "Site vitrine teamup-game.fr — statique, en français.",
   "scripts": {
     "dev": "astro dev",
     "prepare": "astro sync",

@@ -4,4 +4,4 @@
  */
 const declaree = import.meta.env['PUBLIC_APP_URL'] as string | undefined;
 
-export const APP_URL = (declaree || 'https://app.teamup.fr').replace(/\/$/, '');
+export const APP_URL = (declaree || 'https://app.teamup-game.fr').replace(/\/$/, '');

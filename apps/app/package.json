@@ -2,7 +2,7 @@
   "name": "@teamup/app",
   "version": "0.0.0",
   "private": true,
-  "description": "App de jeu app.teamup.fr — joueur, écran commun, régie, back-office.",
+  "description": "App de jeu app.teamup-game.fr — joueur, écran commun, régie, back-office.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -21,8 +21,8 @@ Lis-les avant de concevoir quoi que ce soit. En cas de contradiction, l'ordre ci
 ## Stack
 
 - Monorepo **pnpm + Turborepo**, TypeScript strict partout.
-- `apps/site` : **Astro**, site vitrine statique, en français. Domaine `teamup.fr`.
-- `apps/app` : **Next.js** (App Router), PWA. Domaine `app.teamup.fr`.
+- `apps/site` : **Astro**, site vitrine statique, en français. Domaine `teamup-game.fr`.
+- `apps/app` : **Next.js** (App Router), PWA. Domaine `app.teamup-game.fr`.
   Surfaces : `/[code]` (joueur), `/ecran/[code]` (écran commun), `/regie`, `/admin`.
 - `packages/ui` : tokens (importés depuis `tokens.css`) et composants partagés.
 - `packages/game` : logique de jeu **pure**, sans I/O (barèmes, paliers, chronos,
@@ -125,8 +125,8 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `RESEND_API_KEY`     | Clé Resend. **Absente : mode à sec**, les e-mails de devis s'écrivent dans la console au lieu de partir. |
 | `DEVIS_DESTINATAIRE` | Adresse qui reçoit les demandes de devis.                                                                |
-| `DEVIS_EXPEDITEUR`   | Expéditeur sur un domaine vérifié chez Resend, ex. `Team Up! <devis@teamup.fr>`.                         |
-| `PUBLIC_APP_URL`     | Adresse de l'app (lien « Espace animateur », page Rejoindre). À défaut : `https://app.teamup.fr`.        |
+| `DEVIS_EXPEDITEUR`   | Expéditeur sur un domaine vérifié chez Resend, ex. `Team Up! <devis@teamup-game.fr>`.                         |
+| `PUBLIC_APP_URL`     | Adresse de l'app (lien « Espace animateur », page Rejoindre). À défaut : `https://app.teamup-game.fr`.        |
 
 À reporter dans les variables du projet Vercel de la vitrine avant la mise en ligne.
 
@@ -138,7 +138,7 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 | `SUPABASE_SERVICE_ROLE_KEY`     | Clé du rôle de service (`SERVICE_ROLE_KEY` de `pnpm db:start`). Jamais en `NEXT_PUBLIC_`.                                    |
 | `NEXT_PUBLIC_SUPABASE_URL`      | La même URL, pour la régie et l'écran (connexion, temps réel).                                                               |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (`ANON_KEY`) : publique par nature, elle n'ouvre aucun droit (lot 3).                                               |
-| `NEXT_PUBLIC_APP_URL`           | Facultative. Adresse du QR code de l'écran (`https://app.teamup.fr`) ; à défaut, l'hôte de la requête.                       |
+| `NEXT_PUBLIC_APP_URL`           | Facultative. Adresse du QR code de l'écran (`https://app.teamup-game.fr`) ; à défaut, l'hôte de la requête.                       |
 | `CRON_SECRET`                   | Secret de la purge quotidienne des photos (Vercel Cron l'envoie en `Authorization: Bearer`). Absente : la route refuse tout. |
 
 ## Conventions posées au lot 0
@@ -464,3 +464,38 @@ volume **depuis la régie**.
   moment-là rendait tout muet (vu le 2026-10-09).
 - Points communs : « Lancer » remet les indices à zéro (`resultat: {}`). Sans cela, un passage
   relancé gardait les instants du premier essai et le chrono repartait seul au palier.
+
+## Conventions posées le 2026-10-10 (vitrine : wording, mouvement, prix, légal)
+
+Tranché le 2026-10-10 : le wording dit ce que Team Up! **apporte** (l'émotion d'abord, puis la
+sérénité de l'organisateur, le nombre en preuve : jusqu'à 150 invités) ; domaine
+**`teamup-game.fr`** (`teamup.fr` appartient à une autre société) ; particuliers **à partir de
+690 € TTC**, offre de lancement **à partir de 470 € TTC** pour les dix premières soirées et au
+plus tard jusqu'au 31/12/2026, déplacement chiffré au devis ; entreprises **sur devis**.
+
+- Coordonnées et délai de rappel (48 heures) : une seule source, `apps/site/src/data/contact.ts`.
+- **Aucun crochet visible** : un contenu qui manque se cache, il ne s'affiche pas entre crochets
+  (cela remplace, pour la vitrine en ligne, la règle « garde le placeholder »). Témoignages et
+  logos : `PREUVES_FOURNIES` dans `src/data/preuves.ts`. Pages masquées par un tiret bas, donc
+  hors du site : `_mentions-legales.astro` et `_cgv.astro` (la société n'est pas encore créée),
+  `_qui-sommes-nous.astro` (textes à fournir). Pour en remettre une : la renommer, puis rétablir
+  ses liens (pied de page, `LegalLayout`, carte de l'accueil).
+- Les écrans de jeu illustrés (`components/visuels/Screen*.astro`) **restent en bleu marine** :
+  essayés en beige comme l'app, l'utilisateur a préféré le marine.
+- Logo de la vitrine : `@teamup/ui/astro/Pictogramme.astro`, les quatre calques, mêmes classes
+  que l'app.
+- Mouvement : `packages/ui/src/styles/site-motion.css`, importé par la vitrine seule (transitions
+  entre pages natives, entrée des hauts de page, survols). Un bloc marqué `data-tu-apparait`
+  apparaît en entrant dans la fenêtre ; le script en ligne de `Base.astro` pose `tu-anime` sur
+  `<html>` avant le premier affichage, donc sans script rien n'est caché. Rien ne bouge sous
+  `prefers-reduced-motion`.
+- Vidéo du haut de l'accueil : `VideoEcran.astro` joue `public/videos/boucle-accueil.mp4`
+  seulement quand elle est à l'écran, jamais sous `prefers-reduced-motion` (l'affiche `.jpg`
+  reste). Elle se compose avec Remotion dans `video/src/site/` (hors dépôt pour l'instant, avec
+  le reste du projet vidéo) : le podium montre des **équipes**, jamais un joueur seul.
+- Consentement : `Consentement.astro`. Le site ne dépose aucun cookie ; la mesure d'audience
+  Vercel n'est plus posée d'office (`webAnalytics.enabled: false`), elle se charge après un
+  « Accepter ». Deux boutons égaux, choix gardé six mois en `localStorage`, modifiable depuis
+  la page Cookies (`data-tu-consentement-rouvrir`).
+- Le serveur de développement d'Astro garde parfois d'anciens styles quand un fichier est
+  modifié par script : le redémarrer avant de juger un rendu.

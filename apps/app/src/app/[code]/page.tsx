@@ -9,7 +9,7 @@ import { etatDuJoueur, evenementPublic } from '@/serveur/partie';
 export const metadata: Metadata = { robots: { index: false } };
 
 /**
- * `app.teamup.fr/K7P2M9` : l'adresse du QR code. Un joueur qui a déjà sa session dans cette
+ * `app.teamup-game.fr/K7P2M9` : l'adresse du QR code. Un joueur qui a déjà sa session dans cette
  * salle retrouve son écran d'attente sans rien ressaisir ; les autres commencent l'arrivée.
  */
 export default async function Partie({ params }: PageProps<'/[code]'>) {

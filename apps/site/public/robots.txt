@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /kit-ui
 
-Sitemap: https://teamup.fr/sitemap-index.xml
+Sitemap: https://teamup-game.fr/sitemap-index.xml

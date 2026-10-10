@@ -7,7 +7,7 @@ export interface ConfigEnvoi {
   apiKey?: string | undefined;
   /** Adresse qui reçoit les demandes. */
   destinataire?: string | undefined;
-  /** Expéditeur vérifié chez Resend, ex. « Team Up! <devis@teamup.fr> ». */
+  /** Expéditeur vérifié chez Resend, ex. « Team Up! <devis@teamup-game.fr> ». */
   expediteur?: string | undefined;
 }
 

@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import QRCode from 'qrcode';
 import tokens from '@teamup/brand/tokens.json';
 
-/** L'adresse publique de l'app, telle que le téléphone la joindra (`app.teamup.fr`, ou le réseau local en dev). */
+/** L'adresse publique de l'app, telle que le téléphone la joindra (`app.teamup-game.fr`, ou le réseau local en dev). */
 export async function adresseDeLApp(): Promise<URL> {
   const configuree = process.env['NEXT_PUBLIC_APP_URL'];
   if (configuree) return new URL(configuree);
