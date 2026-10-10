@@ -13,7 +13,7 @@
     "dev:app": "turbo run dev --filter=@teamup/app",
     "dev:host": "turbo run dev:host",
     "build": "turbo run build",
-    "lint": "node scripts/check-tokens.mjs && eslint .",
+    "lint": "node scripts/check-tokens.mjs && pnpm --filter @teamup/app exec next typegen && eslint .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "db:start": "supabase start -x studio,imgproxy,mailpit,logflare,vector,edge-runtime,supavisor,postgres-meta",

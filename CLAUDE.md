@@ -85,7 +85,7 @@ Node 22.20 (`.nvmrc`) et pnpm 10.17. Toutes les commandes se lancent depuis la r
 | `pnpm dev`                          | Démarre les deux apps : vitrine sur `:4321`, app sur `:3000` |
 | `pnpm dev:site` / `pnpm dev:app`    | Une seule des deux                                           |
 | `pnpm dev:host`                     | Idem, exposé sur le réseau local (test sur téléphone)        |
-| `pnpm lint`                         | Garde-fou tokens (`scripts/check-tokens.mjs`) puis ESLint    |
+| `pnpm lint`                         | Garde-fou tokens, types de routes de l'app, puis ESLint      |
 | `pnpm typecheck`                    | `tsc` sur les paquets, `astro check` sur la vitrine          |
 | `pnpm test`                         | Vitest (`packages/game` et `apps/site`)                      |
 | `pnpm build`                        | Build des deux apps                                          |
