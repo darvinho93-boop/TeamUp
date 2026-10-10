@@ -31,13 +31,16 @@ jobs:
 
       - run: pnpm verify
 
-      # Parcours joueur dans Chromium : arrivée, coupure réseau, 150 joueurs simulés.
+      # Parcours critiques dans Chromium : téléphone, régie, écran commun, back-office.
       - run: pnpm --filter @teamup/app exec playwright install --with-deps chromium
 
       # Le serveur de l'app lit ses clés dans l'environnement : celles de la base locale.
+      # Les deux NEXT_PUBLIC_ servent à la régie et à l'écran (session de l'animateur, temps réel).
       - run: |
-          eval "$(pnpm exec supabase status -o env | grep -E '^(API_URL|SERVICE_ROLE_KEY)=')"
-          SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" pnpm test:e2e
+          eval "$(pnpm exec supabase status -o env | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=')"
+          SUPABASE_URL="$API_URL" SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" \
+            NEXT_PUBLIC_SUPABASE_URL="$API_URL" NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY" \
+            pnpm test:e2e
 
       - if: always()
         run: pnpm db:stop --no-backup
