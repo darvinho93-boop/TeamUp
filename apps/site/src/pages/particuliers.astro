@@ -22,7 +22,7 @@ const occasions = [
   },
   {
     title: 'Mariage',
-    body: "Les deux familles et les deux bandes d'amis dans les mêmes équipes, entre le dîner et l'ouverture du bal.",
+    body: "Les deux familles et les deux bandes d'amis dans les mêmes équipes, entre le dîner et l'ouverture du bal. Les mariés regardent leurs deux mondes n'en faire qu'un.",
   },
   {
     title: 'Anniversaire de mariage',
@@ -37,7 +37,7 @@ const occasions = [
 const raisons = [
   {
     title: "Des équipes mélangées d'office",
-    body: "En arrivant, chaque invité indique de quel côté il vient : famille, amis, collègues. Il rejoint l'équipe où les siens sont les moins nombreux.",
+    body: "En arrivant, chaque invité indique de quel côté il vient : famille, amis, collègues. Il rejoint l'équipe où les siens sont les moins nombreux. Vous n'avez personne à présenter : le jeu s'en charge.",
   },
   {
     title: 'Tout le monde debout, personne sur son écran',
@@ -46,6 +46,10 @@ const raisons = [
   {
     title: 'Les héros de la fête au centre',
     body: 'Ce sont eux qui désignent les plus belles photos de la soirée, devant tous leurs invités.',
+  },
+  {
+    title: 'Tout est prêt avant vos invités',
+    body: "Tout se prépare avec vous avant la soirée. Le jour venu, l'animateur arrive en avance, installe, teste, puis tient la salle jusqu'au podium.",
   },
 ];
 
@@ -63,7 +67,12 @@ const faq: FaqItem[] = [
   {
     question: "Pour combien d'invités ?",
     answer:
-      "De [MIN] à [MAX] invités. Le nombre d'équipes et le programme s'adaptent à votre liste.",
+      "Jusqu'à 150 invités, à partir de [MIN]. Le nombre d'équipes et le programme s'adaptent à votre liste, et toute la salle joue en même temps.",
+  },
+  {
+    question: "Qu'ai-je à faire le jour J ?",
+    answer:
+      "Accueillir vos invités. L'animateur arrive en avance, installe et teste l'écran, le son et le réseau, puis tient la salle du début à la fin.",
   },
   {
     question: "Combien de temps dure l'animation ?",
@@ -81,6 +90,11 @@ const faq: FaqItem[] = [
       "D'un vidéoprojecteur ou d'un grand écran, d'une sono avec micro, d'un peu d'espace au sol et d'une connexion Wi-Fi ou 4G. Nous apportons tout le reste : l'animation, les jeux et les accessoires.",
   },
   {
+    question: 'Et si le réseau tombe pendant la soirée ?',
+    answer:
+      "L'animation continue : la plupart des jeux se jouent dans la salle, sans les téléphones. Les photos en attente partent d'elles-mêmes dès le retour du réseau.",
+  },
+  {
     question: 'Quelles langues sont disponibles ?',
     answer:
       'Celles de vos invités. Indiquez-les dans votre demande : nous traduisons les contenus de la soirée et les relisons avec vous. Chaque invité choisit ensuite la sienne sur son téléphone.',
@@ -95,12 +109,12 @@ const faq: FaqItem[] = [
 
 <Base
   title="Anniversaire, mariage, fête de famille — Team Up!"
-  description="Mariage, anniversaire, fête de famille : un animateur Team Up! mélange vos invités en équipes et fait de votre soirée un souvenir partagé."
+  description="Mariage, anniversaire, fête de famille : un animateur fait jouer tous vos invités ensemble, jusqu'à 150. Vous profitez de votre fête, l'esprit libre."
 >
   <PageIntro
     eyebrow="Particuliers"
     title="Une fête où tout le monde finit par se parler."
-    lead="Mariage, anniversaire, fête de famille : nous transformons des tablées qui s'observent en équipes qui rient ensemble. Vous, vous profitez de vos invités."
+    lead="Mariage, anniversaire, fête de famille : nous transformons des tablées qui s'observent en équipes qui rient ensemble. Vous n'avez rien à animer : vous profitez de vos invités, l'esprit libre."
   >
     <p slot="footnote" class="intro-note">
       Devis gratuit et sans engagement · à partir de [PRIX] €
