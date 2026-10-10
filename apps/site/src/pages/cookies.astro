@@ -1,23 +1,72 @@
 ---
 import LegalLayout from '../components/layout/LegalLayout.astro';
+
+/* Projet de texte du 10 octobre 2026, à tenir à jour dès qu'un outil est ajouté au site. */
 ---
 
 <LegalLayout
   title="Cookies — Team Up!"
-  description="Les traceurs utilisés par le site Team Up! et la façon de les refuser."
+  description="Les traceurs utilisés par le site Team Up!, ceux de l'application de jeu, et la façon de changer d'avis."
   heading="Cookies"
+  miseAJour="10 octobre 2026"
 >
   <section>
     <p>
-      [TEXTE À RÉDIGER.] Cette page n'est pas maquettée ; son contenu dépend des outils réellement
-      installés. En l'état, le site ne dépose aucun traceur : les polices sont auto-hébergées et
-      aucune mesure d'audience n'est branchée. À mettre à jour dès qu'un outil de mesure est ajouté,
-      en précisant :
+      Ce site ne dépose aucun cookie. Le seul outil soumis à votre accord est la mesure de
+      fréquentation, décrite ci-dessous.
+    </p>
+  </section>
+
+  <section>
+    <h2>La mesure de fréquentation</h2>
+    <p>
+      À votre première visite, nous vous demandons si vous acceptez que nous mesurions la
+      fréquentation du site. Si vous acceptez, un outil fourni par notre hébergeur (Vercel Web
+      Analytics) compte les pages consultées, la provenance des visites et le type d'appareil. Il ne
+      dépose pas de cookie, ne vous identifie pas et ne sert à aucune publicité.
+    </p>
+    <p>
+      Si vous refusez, cet outil n'est pas chargé. Le site fonctionne exactement de la même façon.
+    </p>
+  </section>
+
+  <section>
+    <h2>Votre choix, et comment le modifier</h2>
+    <p>
+      Votre réponse est conservée six mois dans votre navigateur, pour ne pas vous reposer la
+      question à chaque visite. Ce n'est pas un cookie : rien n'est envoyé à nos serveurs.
+    </p>
+    <p>
+      <button type="button" class="tu-btn tu-btn--outline tu-btn--sm" data-tu-consentement-rouvrir>
+        Modifier mon choix
+      </button>
+    </p>
+  </section>
+
+  <section>
+    <h2>Dans l'application de jeu</h2>
+    <p>
+      L'application que vos invités ouvrent pendant la soirée utilise deux cookies, indispensables à
+      son fonctionnement et donc dispensés de consentement :
     </p>
     <ul>
-      <li>la liste des traceurs déposés, leur finalité et leur durée de vie ;</li>
-      <li>ceux qui sont exemptés de consentement et ceux qui ne le sont pas ;</li>
-      <li>la façon de donner, refuser et retirer son consentement.</li>
+      <li>
+        un cookie de session, qui permet à un invité de retrouver sa place dans la partie sans
+        ressaisir son prénom ; il expire au bout de 24 heures ;
+      </li>
+      <li>un cookie qui retient la langue choisie, pendant un an.</li>
     </ul>
+    <p>
+      L'espace réservé aux animateurs utilise en plus un cookie de connexion. Aucun de ces cookies
+      ne sert à vous suivre d'un site à l'autre.
+    </p>
+  </section>
+
+  <section>
+    <h2>En savoir plus</h2>
+    <p>
+      L'ensemble des données que nous traitons est décrit dans notre
+      <a href="/confidentialite">politique de confidentialité</a>.
+    </p>
   </section>
 </LegalLayout>

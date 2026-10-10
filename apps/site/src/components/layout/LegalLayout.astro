@@ -5,14 +5,15 @@ type Props = {
   title: string;
   description: string;
   heading: string;
+  /** Date de la dernière mise à jour du texte, en toutes lettres. */
+  miseAJour: string;
 };
 
-const { title, description, heading } = Astro.props;
+const { title, description, heading, miseAJour } = Astro.props;
 
+// Les mentions légales et les CGV reviennent ici quand la société sera créée (pages masquées).
 const pages = [
-  { href: '/mentions-legales', label: 'Mentions légales' },
   { href: '/confidentialite', label: 'Politique de confidentialité' },
-  { href: '/cgv', label: 'CGV' },
   { href: '/cookies', label: 'Cookies' },
 ];
 
@@ -36,7 +37,7 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     <article class="legal__article">
       <header class="legal__header">
         <h1 class="legal__title">{heading}</h1>
-        <p class="legal__updated">Dernière mise à jour : [DATE]</p>
+        <p class="legal__updated">Dernière mise à jour : {miseAJour}</p>
       </header>
       <slot />
     </article>

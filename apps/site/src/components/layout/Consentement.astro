@@ -1,0 +1,161 @@
+---
+/**
+ * La demande de consentement, à la première visite. Le site ne dépose aucun cookie ; le seul
+ * outil soumis au choix du visiteur est la mesure d'audience (Vercel Web Analytics), qui n'est
+ * chargée qu'après un « Accepter ». Refuser est aussi simple qu'accepter : deux boutons égaux.
+ * Le choix est gardé six mois dans le navigateur (stockage local, pas un cookie), et se
+ * modifie depuis la page Cookies (`data-tu-consentement-rouvrir`).
+ */
+---
+
+<div
+  class="consentement"
+  role="region"
+  aria-label="Mesure d'audience : votre choix"
+  data-tu-consentement
+  hidden
+>
+  <p class="consentement__texte">
+    Nous aimerions mesurer la fréquentation de ce site, de façon anonyme, sans cookie et sans
+    publicité. C'est vous qui décidez. <a href="/cookies">En savoir plus</a>
+  </p>
+  <div class="consentement__actions">
+    <button
+      type="button"
+      class="tu-btn tu-btn--outline tu-btn--sm"
+      data-tu-consentement-choix="non"
+    >
+      Refuser
+    </button>
+    <button
+      type="button"
+      class="tu-btn tu-btn--outline tu-btn--sm"
+      data-tu-consentement-choix="oui"
+    >
+      Accepter
+    </button>
+  </div>
+</div>
+
+<script>
+  const CLE = 'tu-consentement';
+  const SIX_MOIS_MS = 182 * 24 * 60 * 60 * 1000;
+
+  type Fenetre = Window & {
+    va?: (...args: unknown[]) => void;
+    vaq?: unknown[];
+    __tuMesure?: boolean;
+  };
+  const fenetre = window as Fenetre;
+
+  /** Le choix déjà fait, s'il a moins de six mois ; `null` s'il faut le demander. */
+  function choixConnu(): boolean | null {
+    try {
+      const garde = JSON.parse(localStorage.getItem(CLE) ?? 'null') as {
+        mesure?: unknown;
+        date?: unknown;
+      } | null;
+      if (
+        garde &&
+        typeof garde.mesure === 'boolean' &&
+        typeof garde.date === 'number' &&
+        Date.now() - garde.date < SIX_MOIS_MS
+      ) {
+        return garde.mesure;
+      }
+    } catch {
+      // Stockage indisponible (navigation privée) : on redemandera.
+    }
+    return null;
+  }
+
+  /** Charge la mesure d'audience, une seule fois. Le script est servi par le site lui-même. */
+  function mesurer() {
+    if (fenetre.__tuMesure) return;
+    fenetre.__tuMesure = true;
+    fenetre.va =
+      fenetre.va ??
+      ((...args: unknown[]) => {
+        (fenetre.vaq = fenetre.vaq ?? []).push(args);
+      });
+    const script = document.createElement('script');
+    script.defer = true;
+    script.src = '/_vercel/insights/script.js';
+    document.head.appendChild(script);
+  }
+
+  const bandeau = document.querySelector<HTMLElement>('[data-tu-consentement]');
+  const choix = choixConnu();
+  if (choix === true) mesurer();
+  if (choix === null && bandeau) bandeau.hidden = false;
+
+  document.addEventListener('click', (evenement) => {
+    const cible = evenement.target instanceof Element ? evenement.target : null;
+    if (!cible || !bandeau) return;
+
+    if (cible.closest('[data-tu-consentement-rouvrir]')) {
+      bandeau.hidden = false;
+      bandeau.querySelector<HTMLElement>('button')?.focus();
+      return;
+    }
+
+    const bouton = cible.closest<HTMLElement>('[data-tu-consentement-choix]');
+    if (!bouton) return;
+    const accepte = bouton.dataset.tuConsentementChoix === 'oui';
+    try {
+      localStorage.setItem(CLE, JSON.stringify({ mesure: accepte, date: Date.now() }));
+    } catch {
+      // Sans stockage, le choix vaut pour cette page seulement.
+    }
+    bandeau.hidden = true;
+    // Un refus après une acceptation prend effet au prochain chargement de page.
+    if (accepte) mesurer();
+  });
+</script>
+
+<style>
+  .consentement {
+    position: fixed;
+    inset-inline: var(--tu-space-4);
+    bottom: var(--tu-space-4);
+    z-index: var(--tu-z-consentement);
+    display: flex;
+    align-items: center;
+    gap: var(--tu-space-5);
+    max-width: 45rem;
+    margin-inline: auto;
+    padding: var(--tu-space-4) var(--tu-space-5);
+    border: var(--tu-border-width) solid var(--tu-border);
+    border-radius: var(--tu-radius-lg);
+    background: var(--tu-surface);
+    box-shadow: var(--tu-shadow-lift);
+  }
+
+  .consentement[hidden] {
+    display: none;
+  }
+
+  .consentement__texte {
+    flex: 1;
+    font-size: var(--tu-size-sm);
+    line-height: var(--tu-leading-normal);
+  }
+
+  .consentement__actions {
+    flex: none;
+    display: flex;
+    gap: var(--tu-space-2);
+  }
+
+  @media (max-width: 60rem) {
+    .consentement {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--tu-space-3);
+    }
+
+    .consentement__actions > * {
+      flex: 1;
+    }
+  }
+</style>

@@ -1,42 +1,163 @@
 ---
 import LegalLayout from '../components/layout/LegalLayout.astro';
+import { CONTACT } from '../data/contact';
+
+/* Projet de texte du 10 octobre 2026, à faire relire par un conseil avant l'ouverture du site.
+   La société n'est pas encore créée : sa raison sociale, sa forme et son adresse sont à ajouter
+   dans « Qui est responsable de vos données » dès qu'elles existent. */
 ---
 
 <LegalLayout
   title="Politique de confidentialité — Team Up!"
   description="Quelles données Team Up! collecte, pourquoi, combien de temps, et comment exercer vos droits."
   heading="Politique de confidentialité"
+  miseAJour="10 octobre 2026"
 >
   <section>
     <p>
-      [TEXTE À RÉDIGER.] Cette page n'est pas maquettée ; son contenu reste à écrire, si possible
-      avec un conseil juridique. D'après le cahier des charges, elle doit au minimum couvrir :
+      Team Up! collecte le moins de données possible, et seulement pour répondre à votre demande et
+      animer votre soirée. Cette page dit lesquelles, pourquoi, pendant combien de temps, et comment
+      exercer vos droits.
     </p>
+  </section>
+
+  <section>
+    <h2>Qui est responsable de vos données</h2>
+    <p>
+      Vos données sont traitées par Team Up!. Pour toute question à leur sujet :{' '}
+      <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> ou{' '}
+      <a href={`tel:${CONTACT.telephoneLien}`}>{CONTACT.telephone}</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Quand vous demandez un devis</h2>
+    <p>Le formulaire de devis recueille :</p>
     <ul>
+      <li>votre nom et votre prénom, votre téléphone, votre adresse e-mail ;</li>
+      <li>le nom de votre société, si vous êtes une entreprise ;</li>
       <li>
-        les données des prospects collectées par le formulaire de devis, leur finalité et leur durée
-        de conservation ;
-      </li>
-      <li>
-        les données des invités pendant une partie : prénom seul, aucune donnée de contact, aucun
-        compte ;
-      </li>
-      <li>
-        les photos prises pendant la soirée, leur durée de conservation et le droit à l'image ;
-      </li>
-      <li>
-        le responsable de traitement, le sous-traitant d'hébergement et la région de stockage ;
-      </li>
-      <li>
-        le sous-traitant d'envoi des e-mails de devis (Resend) et le fait qu'une demande n'est pas
-        stockée en base : elle part par e-mail à Team Up! et au demandeur ;
-      </li>
-      <li>
-        les droits d'accès, de rectification, d'effacement et d'opposition, et comment les exercer ;
-      </li>
-      <li>
-        la mesure d'audience éventuelle et le lien vers la page <a href="/cookies">Cookies</a>.
+        la description de votre événement : occasion, date, lieu, nombre d'invités, et les
+        précisions que vous choisissez de donner (langues, groupes à mélanger, équipement de la
+        salle, message libre).
       </li>
     </ul>
+    <p>
+      Ces informations servent uniquement à vous recontacter, à établir votre devis et à préparer
+      votre événement. Nous les traitons parce que vous nous le demandez, en vue d'un contrat. Votre
+      demande n'est pas enregistrée dans une base de données : elle nous est transmise par e-mail,
+      et une copie vous est envoyée.
+    </p>
+  </section>
+
+  <section>
+    <h2>Quand vous devenez client</h2>
+    <p>
+      Nous conservons les informations nécessaires à l'exécution de la prestation et à sa
+      facturation : vos coordonnées, le devis, la facture et nos échanges. Ce traitement repose sur
+      le contrat qui nous lie et sur nos obligations comptables.
+    </p>
+  </section>
+
+  <section>
+    <h2>Quand vos invités jouent</h2>
+    <p>
+      Pendant la soirée, vos invités rejoignent la partie depuis leur téléphone. Nous ne leur
+      demandons qu'un prénom : ni compte, ni adresse e-mail, ni numéro de téléphone. Nous
+      enregistrons leur prénom, leur équipe, leurs réponses aux jeux et les scores, le temps de
+      faire fonctionner la partie.
+    </p>
+    <p>
+      Le groupe qu'un invité indique à son arrivée (famille, amis, service…) ne sert qu'à répartir
+      les équipes : il n'est pas conservé avec son prénom.
+    </p>
+  </section>
+
+  <section>
+    <h2>Les photos de la soirée</h2>
+    <p>
+      Les photos du Photo challenge sont prises par les invités eux-mêmes et envoyées par le
+      capitaine de chaque équipe. Elles sont projetées pendant la soirée, puis remises à
+      l'organisateur. Elles sont supprimées de nos serveurs 30 jours après la soirée.
+    </p>
+    <p>
+      Toute personne qui apparaît sur une photo peut nous demander de la retirer, à l'adresse
+      ci-dessus.
+    </p>
+  </section>
+
+  <section>
+    <h2>La mesure de fréquentation du site</h2>
+    <p>
+      Si vous l'acceptez, nous mesurons la fréquentation de ce site : pages consultées, provenance,
+      type d'appareil. Cette mesure est anonyme, ne dépose aucun cookie et ne sert à aucune
+      publicité. Sans votre accord, elle n'est pas activée. Le détail et le moyen de changer d'avis
+      sont sur la page <a href="/cookies">Cookies</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Combien de temps nous gardons vos données</h2>
+    <ul>
+      <li>Demandes de devis restées sans suite : trois ans après notre dernier échange.</li>
+      <li>
+        Données de nos clients : le temps de notre relation, puis dix ans pour les factures et les
+        pièces comptables, comme la loi l'exige.
+      </li>
+      <li>Photos : 30 jours après la soirée.</li>
+      <li>
+        Prénoms, équipes et scores d'une soirée : conservés avec l'historique de l'événement, et
+        effacés sur simple demande.
+      </li>
+      <li>Votre choix sur la mesure de fréquentation : six mois, dans votre navigateur.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Qui a accès à vos données</h2>
+    <p>
+      Seule l'équipe de Team Up! y accède, ainsi que les prestataires techniques qui hébergent nos
+      services, sur nos instructions :
+    </p>
+    <ul>
+      <li>Vercel, pour l'hébergement du site et de l'application de jeu ;</li>
+      <li>
+        Supabase, pour la base de données et les photos de l'application, sur des serveurs situés
+        dans l'Union européenne ;
+      </li>
+      <li>Resend, pour l'envoi des e-mails de devis.</li>
+    </ul>
+    <p>
+      Certains de ces prestataires sont établis aux États-Unis. Les transferts de données hors de
+      l'Union européenne sont encadrés par les clauses contractuelles types de la Commission
+      européenne. Vos données ne sont ni vendues, ni louées, ni utilisées à des fins publicitaires.
+    </p>
+  </section>
+
+  <section>
+    <h2>Vos droits</h2>
+    <p>
+      Vous pouvez demander à consulter vos données, à les faire corriger ou effacer, à en limiter
+      l'usage, à vous y opposer ou à les récupérer. Vous pouvez aussi retirer à tout moment un
+      consentement que vous avez donné. Écrivez-nous à{' '}
+      <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> : nous vous répondons dans un délai
+      d'un mois.
+    </p>
+    <p>
+      Si notre réponse ne vous satisfait pas, vous pouvez saisir la Commission nationale de
+      l'informatique et des libertés (CNIL), sur{' '}
+      <a href="https://www.cnil.fr" rel="noopener">
+        cnil.fr
+      </a>
+      .
+    </p>
+  </section>
+
+  <section>
+    <h2>Évolution de cette politique</h2>
+    <p>
+      Cette page est mise à jour quand nos outils ou nos pratiques changent. La date en tête de page
+      indique sa dernière version.
+    </p>
   </section>
 </LegalLayout>

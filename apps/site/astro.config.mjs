@@ -4,12 +4,13 @@ import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 
 export default defineConfig({
-  site: 'https://teamup.fr',
+  site: 'https://teamup-game.fr',
   // Tout reste pré-rendu, sauf /devis, qui traite l'envoi du formulaire.
   output: 'static',
   // Mesure d'audience sans cookie (lot 10) : conversion = vues de /confirmation ÷ visiteurs,
-  // lue dans Vercel. Script servi par le site lui-même (/_vercel/insights), aucun tiers.
-  adapter: vercel({ webAnalytics: { enabled: true } }),
+  // lue dans Vercel. Le script (/_vercel/insights, servi par le site) n'est plus posé d'office :
+  // `Consentement.astro` le charge une fois la mesure acceptée par le visiteur.
+  adapter: vercel({ webAnalytics: { enabled: false } }),
   env: {
     schema: {
       // Absente : les e-mails de devis sont écrits dans la console au lieu d'être envoyés.
@@ -20,8 +21,9 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      // Ni la page de démonstration des composants, ni la page de remerciement.
-      filter: (page) => !page.includes('/kit-ui') && !page.includes('/confirmation'),
+      // Ni la page de démonstration des composants, ni la page de remerciement, ni la page 404.
+      filter: (page) =>
+        !page.includes('/kit-ui') && !page.includes('/confirmation') && !page.includes('/404'),
     }),
   ],
 });

@@ -7,6 +7,7 @@ import Base from '../layouts/Base.astro';
 import TextField from '@teamup/ui/astro/TextField.astro';
 import Button from '@teamup/ui/astro/Button.astro';
 import { CHAMP_OUVERTURE, CHAMP_PIEGE } from '../lib/devis/antispam';
+import { CONTACT } from '../data/contact';
 import {
   CRENEAUX,
   EQUIPEMENTS,
@@ -61,7 +62,7 @@ const recapitulatif = (Object.keys(cibles) as Champ[])
   .map((champ) => ({ cible: cibles[champ], message: erreurs[champ] }));
 
 const suites = [
-  { title: 'Nous vous rappelons', body: 'Sous [DÉLAI], pour faire connaissance.' },
+  { title: 'Nous vous rappelons', body: 'Sous 48 heures, pour faire connaissance.' },
   { title: 'Vous recevez votre devis', body: 'Avec un programme pensé pour votre soirée.' },
   { title: 'Nous préparons tout avec vous', body: "Un seul interlocuteur, jusqu'au jour J." },
 ];
@@ -69,7 +70,7 @@ const suites = [
 
 <Base
   title={`${recapitulatif.length > 0 || echec ? 'Erreur : ' : ''}Demander un devis — Team Up!`}
-  description="Deux minutes pour décrire votre événement. Devis gratuit et sans engagement, réponse sous [DÉLAI]."
+  description="Deux minutes pour décrire votre événement. Devis gratuit et sans engagement, réponse sous 48 heures."
   actionBar={false}
 >
   <div class="tu-container devis">
@@ -94,8 +95,8 @@ const suites = [
           <div class="devis__alert" role="alert" tabindex="-1" autofocus data-tu-devis-alerte>
             {echec ? (
               <p class="devis__alert-title">
-                Votre demande n'a pas pu partir. Réessayez dans un instant, ou appelez-nous au
-                [TÉLÉPHONE].
+                Votre demande n'a pas pu partir. Réessayez dans un instant, ou appelez-nous au{' '}
+                <a href={`tel:${CONTACT.telephoneLien}`}>{CONTACT.telephone}</a>.
               </p>
             ) : (
               <>
@@ -420,12 +421,19 @@ const suites = [
               </li>
             ))}
           </ol>
-          <p class="devis__contact devis__contact--inline">Vous préférez en parler ? [TÉLÉPHONE]</p>
+          <p class="devis__contact devis__contact--inline">
+            Vous préférez en parler ?{' '}
+            <a href={`tel:${CONTACT.telephoneLien}`}>{CONTACT.telephone}</a>
+          </p>
         </div>
 
         <div class="tu-panel devis__card devis__card--contact">
           <span class="devis__card-title">Vous préférez en parler ?</span>
-          <p class="devis__contact">[TÉLÉPHONE] · [EMAIL]</p>
+          <p class="devis__contact">
+            Mail : <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+            <br />
+            Téléphone : <a href={`tel:${CONTACT.telephoneLien}`}>{CONTACT.telephone}</a>
+          </p>
         </div>
       </aside>
     </div>

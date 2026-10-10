@@ -1,8 +1,11 @@
 ---
 import '@teamup/ui/styles.css';
+import '@teamup/ui/site-motion.css';
 import SiteHeader from '@teamup/ui/astro/SiteHeader.astro';
 import SiteFooter from '@teamup/ui/astro/SiteFooter.astro';
 import { APP_URL } from '../lib/app';
+import { CONTACT } from '../data/contact';
+import Consentement from '../components/layout/Consentement.astro';
 import SiteActionBar from '@teamup/ui/astro/SiteActionBar.astro';
 import favicon32 from '@teamup/brand/icons/favicon32.png';
 import favicon16 from '@teamup/brand/icons/favicon16.png';
@@ -34,7 +37,7 @@ const canonical = new URL(currentPath, Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content={tokens.color.brand.navy.value} />
+    <meta name="theme-color" content={tokens.color.semantic.bg} />
     <link rel="canonical" href={canonical} />
 
     <meta property="og:type" content="website" />
@@ -49,6 +52,38 @@ const canonical = new URL(currentPath, Astro.site);
     <link rel="icon" type="image/png" sizes="32x32" href={favicon32.src} />
     <link rel="icon" type="image/png" sizes="16x16" href={favicon16.src} />
     <link rel="apple-touch-icon" href={appleTouchIcon.src} />
+
+    <!-- Apparitions au défilement. En ligne et dans l'en-tête : la classe est posée avant le
+         premier affichage (rien ne clignote), et sans script aucun bloc n'est caché. -->
+    <script is:inline>
+      (() => {
+        if (
+          !('IntersectionObserver' in window) ||
+          !matchMedia('(prefers-reduced-motion: no-preference)').matches
+        ) {
+          return;
+        }
+        document.documentElement.classList.add('tu-anime');
+        document.addEventListener('DOMContentLoaded', () => {
+          const observateur = new IntersectionObserver(
+            (entrees) => {
+              // Les blocs qui entrent ensemble arrivent en cascade.
+              let rang = 0;
+              for (const entree of entrees) {
+                if (!entree.isIntersecting) continue;
+                entree.target.style.setProperty('--tu-apparait-rang', String(rang++));
+                entree.target.classList.add('tu-apparu');
+                observateur.unobserve(entree.target);
+              }
+            },
+            { rootMargin: '0px 0px -8% 0px', threshold: 0.1 },
+          );
+          for (const bloc of document.querySelectorAll('[data-tu-apparait]')) {
+            observateur.observe(bloc);
+          }
+        });
+      })();
+    </script>
   </head>
   <body>
     <a class="tu-visually-hidden" href="#contenu">
@@ -58,7 +93,13 @@ const canonical = new URL(currentPath, Astro.site);
     <main id="contenu" data-accent={accent}>
       <slot />
     </main>
-    <SiteFooter regieUrl={`${APP_URL}/regie`} />
+    <SiteFooter
+      regieUrl={`${APP_URL}/regie`}
+      email={CONTACT.email}
+      telephone={CONTACT.telephone}
+      telephoneLien={CONTACT.telephoneLien}
+    />
     {actionBar && <SiteActionBar />}
+    <Consentement />
   </body>
 </html>

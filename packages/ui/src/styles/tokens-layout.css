@@ -33,6 +33,7 @@
   --tu-picto-xl: 11rem;
   --tu-chargement-barre: 11rem;
   --tu-z-chargement: 50;
+  --tu-z-consentement: 30; /* la demande de consentement de la vitrine, au-dessus de la barre d'action */
   /* Place du logo en haut à droite de l'écran commun : ce qu'un en-tête pleine largeur lui laisse. */
   --tu-stage-marque: 21rem;
 
