@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '@teamup/ui/astro/Button.astro';
+import PageIntro from '../components/layout/PageIntro.astro';
+---
+
+<Base
+  title="Page introuvable — Team Up!"
+  description="Cette page n'existe pas ou a changé d'adresse."
+  noindex
+>
+  <PageIntro
+    wide
+    eyebrow="Erreur 404"
+    title="Cette page n'existe pas."
+    lead="L'adresse a peut-être changé, ou le lien est incomplet. Voici de quoi repartir."
+  >
+    <Fragment slot="actions">
+      <Button href="/" variant="primary" size="cta">
+        Retour à l'accueil
+      </Button>
+      <Button href="/les-jeux" variant="outline" size="cta">
+        Voir les jeux
+      </Button>
+    </Fragment>
+  </PageIntro>
+</Base>

@@ -1,6 +1,5 @@
 ---
-import { Image } from 'astro:assets';
-import logo from '@teamup/brand/logo/teamup-mark-transparent.png';
+import Pictogramme from './Pictogramme.astro';
 import Button from './Button.astro';
 
 type Props = {
@@ -23,15 +22,7 @@ const isCurrent = (href: string) => currentPath === href;
 <header class="tu-site-header">
   <div class="tu-container tu-site-header__inner">
     <a class="tu-site-header__brand" href="/" aria-label="Team Up! — accueil">
-      <Image
-        class="tu-site-header__logo"
-        src={logo}
-        width={96}
-        height={96}
-        densities={[1, 2]}
-        alt=""
-        loading="eager"
-      />
+      <Pictogramme class="tu-site-header__logo" />
       <span class="tu-wordmark" aria-hidden="true">
         Team <span class="tu-wordmark__up">Up</span>
         <span class="tu-wordmark__bang">!</span>

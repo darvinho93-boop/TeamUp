@@ -27,8 +27,7 @@
 }
 
 .tu-site-header__logo {
-  height: var(--tu-space-12);
-  width: auto;
+  --tu-picto-taille: var(--tu-space-12);
 }
 
 .tu-site-header__nav {
@@ -86,7 +85,7 @@
   }
 
   .tu-site-header__logo {
-    height: var(--tu-logo-mobile);
+    --tu-picto-taille: var(--tu-logo-mobile);
   }
 
   .tu-site-header__nav {

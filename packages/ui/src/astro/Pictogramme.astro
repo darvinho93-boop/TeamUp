@@ -1,0 +1,38 @@
+---
+import navy from '@teamup/brand/logo/calques/navy.png';
+import corail from '@teamup/brand/logo/calques/corail.png';
+import sable from '@teamup/brand/logo/calques/sable.png';
+import vert from '@teamup/brand/logo/calques/vert.png';
+
+/**
+ * Le pictogramme de Team Up! pour la vitrine : les quatre calques du dernier logo, empilés
+ * comme dans l'app (`Pictogramme.tsx`), avec les mêmes classes. Décoratif : le nom est écrit
+ * à côté. Sans `taille`, la classe passée fixe `--tu-picto-taille`.
+ */
+type Props = {
+  taille?: 'sm' | 'coin' | 'lg' | 'xl';
+  class?: string;
+};
+
+const { taille, class: className } = Astro.props;
+
+const calques = [
+  { nom: 'navy', image: navy },
+  { nom: 'corail', image: corail },
+  { nom: 'sable', image: sable },
+  { nom: 'vert', image: vert },
+];
+---
+
+<span class:list={['tu-picto', taille && `tu-picto--${taille}`, className]} aria-hidden="true">
+  {calques.map((calque) => (
+    <img
+      class={`tu-picto__calque tu-picto__calque--${calque.nom}`}
+      src={calque.image.src}
+      width={calque.image.width}
+      height={calque.image.height}
+      alt=""
+      decoding="async"
+    />
+  ))}
+</span>

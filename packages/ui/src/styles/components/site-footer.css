@@ -25,11 +25,14 @@
 }
 
 .tu-site-footer__logo {
-  height: var(--tu-space-10);
-  width: auto;
+  --tu-picto-taille: var(--tu-space-10);
 }
 
+/* Le mail, puis le téléphone en dessous. */
 .tu-site-footer__contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-1);
   font-size: var(--tu-size-sm);
   color: var(--tu-text-muted);
 }
@@ -62,7 +65,7 @@
   color: var(--tu-text-muted);
 }
 
-/* Mobile : les deux colonnes s'entrelacent en une grille de deux, barre d'action comprise. */
+/* Mobile : les deux colonnes côte à côte, chacune avec ses liens, quel qu'en soit le nombre. */
 @media (max-width: 60rem) {
   .tu-site-footer {
     padding-block: var(--tu-space-10);
@@ -78,19 +81,16 @@
   }
 
   .tu-site-footer__logo {
-    height: var(--tu-space-9);
+    --tu-picto-taille: var(--tu-space-9);
   }
 
   .tu-site-footer__nav {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(4, auto);
-    grid-auto-flow: column;
     column-gap: var(--tu-space-6);
-    row-gap: var(--tu-space-3);
   }
 
   .tu-site-footer__column {
-    display: contents;
+    row-gap: var(--tu-space-3);
   }
 }

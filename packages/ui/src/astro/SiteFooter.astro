@@ -1,26 +1,29 @@
 ---
-import { Image } from 'astro:assets';
-import logo from '@teamup/brand/logo/teamup-mark-transparent.png';
+import Pictogramme from './Pictogramme.astro';
 
 type Props = {
   /** Lien discret vers la régie ; le sous-domaine réel est fixé au déploiement. */
   regieUrl?: string;
+  /** Coordonnées affichées sous le logo ; chaque site passe les siennes. */
+  email?: string;
+  telephone?: string;
+  /** Le numéro sans espaces, pour le lien `tel:`. */
+  telephoneLien?: string;
 };
 
-const { regieUrl = '/regie' } = Astro.props;
+const { regieUrl = '/regie', email, telephone, telephoneLien } = Astro.props;
 
 const pages = [
   { href: '/particuliers', label: 'Particuliers' },
   { href: '/entreprises', label: 'Entreprises' },
   { href: '/les-jeux', label: 'Les jeux' },
   { href: '/comment-ca-marche', label: 'Comment ça marche' },
-  { href: '/qui-sommes-nous', label: 'Qui sommes-nous' },
 ];
 
+// Les mentions légales et les CGV reviennent ici quand la société sera créée (pages masquées).
 const legal = [
-  { href: '/mentions-legales', label: 'Mentions légales' },
   { href: '/confidentialite', label: 'Confidentialité' },
-  { href: '/cgv', label: 'CGV' },
+  { href: '/cookies', label: 'Cookies' },
 ];
 ---
 
@@ -28,22 +31,27 @@ const legal = [
   <div class="tu-container tu-site-footer__inner">
     <div class="tu-site-footer__brand">
       <span class="tu-site-footer__wordmark">
-        <Image
-          class="tu-site-footer__logo"
-          src={logo}
-          width={64}
-          height={64}
-          densities={[1, 2]}
-          alt=""
-        />
+        <Pictogramme class="tu-site-footer__logo" />
         <span class="tu-visually-hidden">Team Up!</span>
         <span class="tu-wordmark" aria-hidden="true">
           Team <span class="tu-wordmark__up">Up</span>
           <span class="tu-wordmark__bang">!</span>
         </span>
       </span>
-      <!-- Contenus à fournir : laissés en placeholder, rien n'est inventé. -->
-      <p class="tu-site-footer__contact">[EMAIL] · [TÉLÉPHONE]</p>
+      {(email || telephone) && (
+        <p class="tu-site-footer__contact">
+          {email && (
+            <span>
+              Mail : <a href={`mailto:${email}`}>{email}</a>
+            </span>
+          )}
+          {telephone && (
+            <span>
+              Téléphone : <a href={`tel:${telephoneLien ?? telephone}`}>{telephone}</a>
+            </span>
+          )}
+        </p>
+      )}
     </div>
 
     <nav class="tu-site-footer__nav" aria-label="Pied de page">
