@@ -35,11 +35,27 @@ const benefices = [
   },
   {
     title: 'Tout le monde participe',
-    body: 'Pas de spectateurs rivés à leur téléphone : on se lève, on mime, on négocie à voix haute. Du stagiaire au comité de direction.',
+    body: "Jusqu'à 150 participants, et pas un spectateur : on se lève, on mime, on négocie à voix haute. Du stagiaire au comité de direction.",
   },
   {
     title: 'Des contenus pensés pour le cadre pro',
     body: "Questions, mots et thèmes choisis pour un public professionnel, et adaptables à votre entreprise. Rien de gênant, rien d'intrusif.",
+  },
+];
+
+/* Ce que gagne celui qui organise : un interlocuteur, rien à installer, tout prêt avant le début. */
+const organisation = [
+  {
+    title: 'Un seul interlocuteur',
+    body: "Du devis au podium, vous parlez à la même personne. Le programme, les équipes et les contenus se décident avec vous, avant l'événement.",
+  },
+  {
+    title: 'Rien à installer, rien à faire valider',
+    body: 'Ni application, ni compte : les participants scannent un QR code et jouent sous leur seul prénom. Aucune adresse e-mail, aucun numéro de téléphone collecté.',
+  },
+  {
+    title: 'Tout est prêt avant le début',
+    body: "L'animateur arrive en avance, branche l'écran, teste le son et le réseau. Quand vos équipes entrent dans la salle, tout fonctionne déjà.",
   },
 ];
 
@@ -53,7 +69,7 @@ const faq: FaqItem[] = [
   {
     question: 'Pour combien de participants ?',
     answer:
-      "De [MIN] à [MAX] participants. Le nombre d'équipes et le programme s'adaptent à votre effectif.",
+      "Jusqu'à 150 participants, à partir de [MIN]. Le nombre d'équipes et le programme s'adaptent à votre effectif.",
   },
   {
     question: 'Peut-on adapter les contenus à notre entreprise ?',
@@ -75,13 +91,13 @@ const faq: FaqItem[] = [
 
 <Base
   title="Team building, séminaire, intégration — Team Up!"
-  description="Team building, séminaire, intégration : un temps fort animé de bout en bout, qui fait jouer ensemble des équipes qui ne se croisent jamais. Rien à installer."
+  description="Team building, séminaire, intégration : un temps fort animé de bout en bout, jusqu'à 150 participants. Rien à installer, un seul interlocuteur."
   accent="entreprises"
 >
   <PageIntro
     eyebrow="Entreprises"
     title="Faites se parler des équipes qui ne se croisent jamais."
-    lead="Team building, séminaire, intégration : un temps fort animé par Team Up!, où les services jouent ensemble au lieu de rester entre eux. Et le lendemain, on en parle encore."
+    lead="Team building, séminaire, intégration : un temps fort animé de bout en bout, où les services jouent ensemble au lieu de rester entre eux. Vous n'avez rien à animer, et personne ne reste spectateur."
   >
     <p slot="footnote" class="intro-note">
       Devis gratuit et sans engagement · à partir de [PRIX] € HT
@@ -121,8 +137,8 @@ const faq: FaqItem[] = [
         <article class="tu-panel tu-panel--dark creneau" data-theme="stage">
           <h3 class="creneau__name">Le Grand format</h3>
           <p class="creneau__body">
-            Les cinq jeux au complet pour les grands groupes, jusqu'à huit équipes, et des duels en
-            un contre un pour relancer la salle.
+            Les cinq jeux au complet pour les grands groupes, jusqu'à huit équipes et 150
+            participants.
           </p>
           <p class="creneau__price">À partir de [PRIX] € HT</p>
         </article>
@@ -142,6 +158,17 @@ const faq: FaqItem[] = [
       </div>
     </div>
   </section>
+
+  <Section title="Pour vous qui organisez.">
+    <div class="formats">
+      {organisation.map((point) => (
+        <article class="tu-panel format">
+          <h3 class="format__title">{point.title}</h3>
+          <p class="format__body">{point.body}</p>
+        </article>
+      ))}
+    </div>
+  </Section>
 
   <section class="equipment-section">
     <div class="tu-container">
