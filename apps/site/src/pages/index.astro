@@ -3,42 +3,74 @@ import Base from '../layouts/Base.astro';
 import Button from '@teamup/ui/astro/Button.astro';
 import PageIntro from '../components/layout/PageIntro.astro';
 import Section from '../components/layout/Section.astro';
-import StepList from '../components/layout/StepList.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
-import GameCard from '../components/jeux/GameCard.astro';
 import Icon from '../components/Icon.astro';
 import Stage from '../components/visuels/Stage.astro';
 import ScreenQuiz from '../components/visuels/ScreenQuiz.astro';
-import ScreenPodium from '../components/visuels/ScreenPodium.astro';
-import ScreenJoin from '../components/visuels/ScreenJoin.astro';
 import PhoneWaiting from '../components/visuels/PhoneWaiting.astro';
-import { games } from '../data/jeux';
 
-const steps = [
+const apports = [
   {
-    title: 'Vous nous parlez de votre événement',
-    body: "L'occasion, vos invités, l'ambiance que vous imaginez. Nous revenons vers vous avec une proposition sur mesure.",
+    axe: "L'émotion",
+    title: 'Une émotion qui se partage',
+    body: "Des inconnus qui rient ensemble, plusieurs générations dans la même équipe, des photos que l'on garde. Vos invités repartent avec une soirée en commun, et vous avec la fierté de les avoir réunis.",
   },
   {
-    title: 'Nous préparons tout avec vous',
-    body: 'Groupes à mélanger, jeux, contenus et langues : chaque détail est pensé pour vos invités.',
+    axe: 'La sérénité',
+    title: 'Tout est prêt avant vos invités',
+    body: "Un seul interlocuteur, du premier échange au podium. Tout se prépare avec vous avant la soirée ; le jour venu, l'animateur arrive en avance, installe et teste. Il ne vous reste qu'à accueillir.",
   },
   {
-    title: 'Le jour J, vous profitez',
-    body: "Notre animateur fait jouer toute la salle. Vos invités rejoignent la partie d'un simple scan, sans rien installer.",
+    axe: 'Le nombre',
+    title: "Toute la salle, jusqu'à 150 invités",
+    body: "Personne ne reste à sa table. Les équipes se forment dès l'arrivée, et tout le monde joue en même temps, debout, dans la salle. L'animateur tient le rythme du début à la fin.",
   },
 ];
+
+const portes = [
+  {
+    icon: 'mime',
+    tone: 'sage',
+    title: 'Les jeux',
+    body: 'Cinq jeux où toute la salle se lève, se mélange et rit, quelle que soit la langue de chacun.',
+    liens: [{ href: '/les-jeux', label: 'Voir les jeux' }],
+  },
+  {
+    icon: 'screen',
+    tone: 'amber',
+    title: 'Comment ça marche',
+    body: "De votre demande au podium : ce que nous préparons avec vous, et tout ce dont vous n'aurez pas à vous occuper.",
+    liens: [{ href: '/comment-ca-marche', label: 'Voir le déroulé' }],
+  },
+  {
+    icon: 'checkCircle',
+    tone: 'stone',
+    title: 'Offres et devis',
+    body: 'Une proposition sur mesure, pour une fête de famille comme pour un séminaire. Devis gratuit, sans engagement.',
+    liens: [
+      { href: '/particuliers', label: 'Offre particuliers' },
+      { href: '/entreprises', label: 'Offre entreprises' },
+    ],
+  },
+  {
+    icon: 'users',
+    tone: 'navy',
+    title: 'Qui sommes-nous',
+    body: "L'équipe derrière Team Up!, et ce qui nous a donné envie de faire jouer vos invités ensemble.",
+    liens: [{ href: '/qui-sommes-nous', label: 'Nous découvrir' }],
+  },
+] as const;
 ---
 
 <Base
   title="Team Up! — On joue. On se rencontre. On crée du lien."
-  description="L'animation de soirée qui transforme vos invités en équipes : des rires, des jeux et de vraies rencontres. Mariages, anniversaires, séminaires, team building."
+  description="Animation de soirée pour mariages, anniversaires et séminaires : un animateur fait jouer toute votre salle. Des rires, des rencontres, et vous l'esprit libre."
 >
   <PageIntro
     size="display"
     eyebrow="Animation de soirée sur mesure"
-    title="Vos invités arrivent en groupes. Ils repartent en équipe."
-    lead="Un animateur Team Up! prend votre salle en main. Les tablées se mélangent, les rires fusent, et vos invités repartent en ayant vraiment fait connaissance. Vous, vous n'avez qu'à profiter."
+    title="La soirée où toute la salle rit ensemble."
+    lead="Team Up! est une animation de soirée : un animateur fait jouer toute votre salle, en équipes mélangées, jusqu'à 150 invités. Vous n'avez rien à animer ni à surveiller : vous profitez de vos invités."
   >
     <Fragment slot="actions">
       <Button href="/devis" variant="accent" size="cta">
@@ -65,79 +97,41 @@ const steps = [
     </Stage>
   </PageIntro>
 
-  <section class="doors-section">
-    <div class="tu-container doors">
-      <article class="tu-panel door">
-        <ScreenPodium flat class="door__visual" />
-        <div class="door__text">
-          <p class="tu-eyebrow tu-eyebrow--sage">Particuliers</p>
-          <h2 class="tu-subtitle">
-            Les deux familles ne se connaissent pas ? Elles vont jouer ensemble.
-          </h2>
-          <p class="tu-body-lg">
-            Mariage, anniversaire, fête de famille : on fait jouer ensemble ceux qui ne se
-            connaissaient pas, quelle que soit la langue qu'ils parlent.
-          </p>
-          <a class="tu-arrow-link" href="/particuliers">
-            Découvrir l'offre particuliers
-            <Icon name="arrow" size="sm" />
-          </a>
-        </div>
-      </article>
-
-      <article class="tu-panel door">
-        <ScreenJoin flat connected="38 joueurs connectés" class="door__visual" />
-        <div class="door__text">
-          <p class="tu-eyebrow tu-eyebrow--navy">Entreprises</p>
-          <h2 class="tu-subtitle">Des services qui ne se croisent jamais, dans la même équipe.</h2>
-          <p class="tu-body-lg">
-            Team building, séminaire, intégration : un temps fort animé de bout en bout, qui crée
-            des liens qu'aucune réunion ne crée. Rien à installer, rien à gérer.
-          </p>
-          <a class="tu-arrow-link" href="/entreprises">
-            Découvrir l'offre entreprises
-            <Icon name="arrow" size="sm" />
-          </a>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <Section eyebrow="Les jeux" title="Cinq jeux. Toute la salle debout.">
-    <a slot="action" class="tu-arrow-link" href="/les-jeux">
-      Voir le détail des jeux
-      <Icon name="arrow" size="sm" />
-    </a>
-    <div class="games">
-      {games.map((game) => (
-        <GameCard icon={game.icon} tone={game.tone} title={game.title} body={game.body} />
+  <Section
+    class="apports-section"
+    title="Des rires pour vos invités. L'esprit libre pour vous."
+    tone="dark"
+  >
+    <div class="apports">
+      {apports.map((apport) => (
+        <article class="apport">
+          <p class="tu-eyebrow">{apport.axe}</p>
+          <h3 class="apport__title">{apport.title}</h3>
+          <p class="apport__body">{apport.body}</p>
+        </article>
       ))}
     </div>
   </Section>
 
-  <Section eyebrow="Comment ça marche" title="Vous recevez. On s'occupe du reste." tone="dark">
-    <StepList steps={steps} variant="numerals" />
-  </Section>
-
-  <section class="langs-section">
-    <div class="tu-container langs">
-      <div class="langs__text">
-        <p class="tu-eyebrow">Multilingue</p>
-        <h2 class="tu-title">Une soirée, toutes les langues de vos invités.</h2>
-        <p class="langs__body">
-          Chaque invité joue dans sa langue, sur son téléphone : les contenus sont traduits pour
-          votre soirée et relus avec vous. Et les jeux passent la barrière de la langue : on mime,
-          on se lève, on montre.
-        </p>
-      </div>
-      <ul class="tu-panel langs__list">
-        <li class="langs__line" lang="fr">
-          On joue. On se rencontre. On crée du lien.
-        </li>
-        <li class="langs__line" lang="en">
-          Play together. Meet people. Make it stick.
-        </li>
-      </ul>
+  <section class="portes-section" aria-label="Découvrir Team Up!">
+    <div class="tu-container portes">
+      {portes.map((porte) => (
+        <article class:list={['tu-panel', 'porte', porte.liens.length === 1 && 'porte--lien']}>
+          <span class:list={['porte__icon', `porte__icon--${porte.tone}`]}>
+            <Icon name={porte.icon} size="md" />
+          </span>
+          <h2 class="porte__title">{porte.title}</h2>
+          <p class="porte__body">{porte.body}</p>
+          <div class="porte__liens">
+            {porte.liens.map((lien) => (
+              <a class="tu-arrow-link" href={lien.href}>
+                {lien.label}
+                <Icon name="arrow" size="sm" />
+              </a>
+            ))}
+          </div>
+        </article>
+      ))}
     </div>
   </section>
 
@@ -163,78 +157,102 @@ const steps = [
     color: var(--tu-text-muted);
   }
 
-  /* Les deux portes d'entrée : particuliers et entreprises, côte à côte. */
-  .doors-section {
-    padding-bottom: var(--tu-section-space);
+  /* Les trois apports : l'émotion, la sérénité, le nombre. Titre en deux lignes égales. */
+  .apports-section :global(.tu-title) {
+    text-wrap: balance;
   }
 
-  .doors {
+  .apports {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--tu-space-8);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--tu-space-10);
   }
 
-  .door {
+  .apport {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    gap: var(--tu-space-3);
   }
 
-  .door :global(.door__visual) {
-    height: var(--tu-door-visual-height);
+  .apport__title {
+    font-size: var(--tu-type-card);
   }
 
-  .door :global(.door__visual .screen) {
-    padding-inline: var(--tu-space-10);
-  }
-
-  .door__text {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tu-space-4);
-    padding: var(--tu-space-9);
-  }
-
-  .games {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: var(--tu-space-5);
-  }
-
-  .langs-section {
-    padding-bottom: var(--tu-section-space);
-  }
-
-  .langs {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--tu-space-16);
-    align-items: center;
-  }
-
-  .langs__text {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tu-space-5);
-  }
-
-  .langs__body {
-    font-size: 1.125rem;
+  .apport__body {
+    line-height: var(--tu-leading-normal);
     color: var(--tu-text-muted);
   }
 
-  .langs__list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tu-space-5);
-    padding: var(--tu-space-10);
+  /* Les quatre portes : l'accueil résume, les pages intérieures détaillent. */
+  .portes-section {
+    padding-bottom: var(--tu-section-space);
   }
 
-  .langs__line {
-    font-family: var(--tu-font-display);
-    font-size: 1.625rem;
-    font-weight: 600;
-    line-height: 1.35;
+  .portes {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--tu-space-5);
+  }
+
+  .porte {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+    padding: var(--tu-space-7);
+  }
+
+  .porte__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    width: var(--tu-space-14);
+    height: var(--tu-space-14);
+    margin-bottom: var(--tu-space-1);
+    border-radius: var(--tu-radius-md);
+    color: var(--tu-primary);
+  }
+
+  .porte__icon--navy {
+    background: var(--tu-navy-50);
+  }
+
+  .porte__icon--sage {
+    background: var(--tu-sage-50);
+    color: var(--tu-success-text);
+  }
+
+  .porte__icon--amber {
+    background: var(--tu-amber-50);
+    color: var(--tu-warning-text);
+  }
+
+  .porte__icon--stone {
+    background: var(--tu-stone-200);
+  }
+
+  .porte__title {
+    font-size: var(--tu-type-card);
+  }
+
+  .porte__body {
+    flex: 1;
+    line-height: var(--tu-leading-normal);
+    color: var(--tu-text-muted);
+  }
+
+  .porte__liens {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Une seule destination : toute la carte se clique. */
+  .porte--lien .tu-arrow-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--tu-radius-lg);
   }
 
   .quotes {
@@ -263,44 +281,44 @@ const steps = [
   }
 
   @media (max-width: 75rem) {
-    .games {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .portes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 60rem) {
-    .doors,
-    .langs,
+    .apports,
+    .portes,
     .quotes {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .apports {
+      gap: var(--tu-space-7);
+    }
+
+    .portes {
+      gap: var(--tu-space-3);
+    }
+
+    .quotes {
       gap: var(--tu-space-5);
     }
 
-    .door :global(.door__visual .screen) {
-      padding-inline: var(--tu-space-5);
+    /* Mobile : pictogramme à gauche, texte à droite, comme les cartes de jeu. */
+    .porte {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: var(--tu-space-4);
+      row-gap: var(--tu-space-1);
+      padding: var(--tu-space-5);
     }
 
-    .door__text {
-      gap: var(--tu-space-3);
-      padding: var(--tu-space-6) 1.375rem var(--tu-space-7);
-    }
-
-    .games {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-3);
-    }
-
-    .langs__body {
-      font-size: var(--tu-size-base);
-    }
-
-    .langs__list {
-      gap: var(--tu-space-4);
-      padding: 1.625rem 1.375rem;
-    }
-
-    .langs__line {
-      font-size: 1.1875rem;
+    .porte__icon {
+      grid-row: span 3;
+      width: var(--tu-space-12);
+      height: var(--tu-space-12);
+      margin-bottom: 0;
     }
 
     .quote {
