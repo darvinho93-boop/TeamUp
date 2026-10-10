@@ -15,7 +15,7 @@ const { id, number, title, lead, steps, facts, reversed = false } = Astro.props;
 
 <section class:list={['game', reversed && 'game--reversed']} id={id}>
   <div class="tu-container game__inner">
-    <div class="game__text">
+    <div class="game__text" data-tu-apparait>
       <span class="game__number" aria-hidden="true">
         {number}
       </span>

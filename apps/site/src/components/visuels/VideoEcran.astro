@@ -1,0 +1,71 @@
+---
+/**
+ * « L'écran de la salle » qui joue une vidéo : la boucle de motion design du haut de l'accueil,
+ * composée avec Remotion (`video/src/site/BoucleAccueil.tsx`) et déposée dans `public/videos/`.
+ * Muette, en boucle. Elle ne démarre que quand l'écran est visible, et jamais pour un visiteur
+ * qui a demandé moins d'animations : l'affiche, une image de la vidéo, reste alors seule.
+ */
+type Props = {
+  src: string;
+  /** L'image affichée avant la lecture, et à la place de la vidéo sans animation. */
+  affiche: string;
+  caption: string;
+  class?: string;
+};
+
+const { src, affiche, caption, class: className } = Astro.props;
+---
+
+<figure class:list={['video-ecran', className]} data-theme="stage">
+  <video
+    class="video-ecran__video"
+    muted
+    loop
+    playsinline
+    preload="none"
+    poster={affiche}
+    aria-hidden="true"
+    data-tu-video
+  >
+    <source src={src} type="video/mp4" />
+  </video>
+  <figcaption class="tu-visually-hidden">{caption}</figcaption>
+</figure>
+
+<script>
+  // La vidéo joue tant qu'elle est à l'écran, et s'arrête dès qu'elle en sort.
+  const videos = document.querySelectorAll<HTMLVideoElement>('video[data-tu-video]');
+  if (videos.length > 0 && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const observateur = new IntersectionObserver(
+      (entrees) => {
+        for (const entree of entrees) {
+          const video = entree.target as HTMLVideoElement;
+          if (entree.isIntersecting) void video.play().catch(() => undefined);
+          else video.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    videos.forEach((video) => observateur.observe(video));
+  }
+</script>
+
+<style>
+  .video-ecran {
+    display: flex;
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--tu-screen-radius);
+    background: var(--tu-bg);
+    box-shadow: var(--tu-shadow-lift);
+  }
+
+  .video-ecran__video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+</style>

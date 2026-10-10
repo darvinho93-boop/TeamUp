@@ -1,0 +1,78 @@
+/*
+ * Le mouvement de la vitrine : transitions entre les pages, blocs qui apparaissent au
+ * défilement, réactions au survol. Importé par la vitrine seule (`Base.astro`), pas par l'app,
+ * qui a ses propres fondus. Tout est sous `prefers-reduced-motion: no-preference` : un
+ * visiteur qui a demandé moins d'animations voit le site immobile, complet.
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ---- D'une page à l'autre : fondu natif du navigateur, l'en-tête reste en place ---- */
+  @view-transition {
+    navigation: auto;
+  }
+
+  .tu-site-header {
+    view-transition-name: tu-site-header;
+  }
+
+  .tu-site-action-bar {
+    view-transition-name: tu-site-action-bar;
+  }
+
+  ::view-transition-old(root) {
+    animation: tu-page-sort var(--tu-dur-base) var(--tu-ease) both;
+  }
+
+  ::view-transition-new(root) {
+    animation: tu-page-entre var(--tu-dur-reveal) var(--tu-ease) both;
+  }
+
+  /*
+   * ---- Au défilement : un bloc marqué `data-tu-apparait` monte et s'éclaircit en entrant ----
+   * La classe `tu-anime` est posée sur <html> par le script de `Base.astro`, avant le premier
+   * affichage : sans script, rien n'est caché. Le rang donne la cascade entre blocs voisins.
+   */
+  .tu-anime [data-tu-apparait] {
+    opacity: 0;
+    translate: 0 var(--tu-space-6);
+    transition:
+      opacity var(--tu-dur-reveal) var(--tu-ease),
+      translate var(--tu-dur-reveal) var(--tu-ease);
+    transition-delay: calc(var(--tu-apparait-rang, 0) * var(--tu-dur-cascade));
+  }
+
+  .tu-anime [data-tu-apparait].tu-apparu {
+    opacity: 1;
+    translate: none;
+  }
+
+  /* ---- Au survol : la flèche d'un lien avance d'un cran ---- */
+  .tu-arrow-link > svg {
+    transition: translate var(--tu-dur-base) var(--tu-ease);
+  }
+
+  .tu-arrow-link:hover > svg {
+    translate: var(--tu-space-1) 0;
+  }
+}
+
+@keyframes tu-page-sort {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes tu-page-entre {
+  from {
+    opacity: 0;
+    translate: 0 var(--tu-space-4);
+  }
+}
+
+/* Entrée d'un élément au chargement de la page (haut de page). */
+@keyframes tu-entree {
+  from {
+    opacity: 0;
+    translate: 0 var(--tu-space-5);
+  }
+}

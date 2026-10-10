@@ -41,7 +41,7 @@ const dark = tone === 'dark';
       data-theme={dark ? 'stage' : undefined}
     >
       {hasHeader && (
-        <div class="section__head">
+        <div class="section__head" data-tu-apparait>
           <header class="section__header">
             {eyebrow && <p class="tu-eyebrow">{eyebrow}</p>}
             {title && <Heading class="tu-title">{title}</Heading>}

@@ -14,7 +14,7 @@ type Props = {
 const { items } = Astro.props;
 ---
 
-<div class="faq">
+<div class="faq" data-tu-apparait>
   {items.map((item, index) => (
     <details class="faq__item" open={index === 0}>
       <summary class="faq__question">

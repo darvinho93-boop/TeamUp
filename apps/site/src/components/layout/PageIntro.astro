@@ -39,6 +39,35 @@ const hasVisual = Astro.slots.has('visual');
     padding-block: var(--tu-intro-space-top) var(--tu-section-space);
   }
 
+  /* Au chargement, le texte puis le visuel entrent en cascade. */
+  @media (prefers-reduced-motion: no-preference) {
+    .intro__text > :global(*),
+    .intro__visual {
+      animation: tu-entree var(--tu-dur-reveal) var(--tu-ease) both;
+      animation-delay: calc(var(--intro-rang, 0) * var(--tu-dur-cascade));
+    }
+
+    .intro__text > :global(:nth-child(2)) {
+      --intro-rang: 1;
+    }
+
+    .intro__text > :global(:nth-child(3)) {
+      --intro-rang: 2;
+    }
+
+    .intro__text > :global(:nth-child(4)) {
+      --intro-rang: 3;
+    }
+
+    .intro__text > :global(:nth-child(n + 5)) {
+      --intro-rang: 4;
+    }
+
+    .intro__visual {
+      --intro-rang: 3;
+    }
+  }
+
   .intro__inner {
     display: grid;
     gap: var(--tu-space-16);

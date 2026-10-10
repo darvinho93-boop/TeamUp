@@ -17,7 +17,7 @@ type Props = { items: TimelineItem[] };
 const { items } = Astro.props;
 ---
 
-<div class="timeline">
+<div class="timeline" data-tu-apparait>
   <div class="timeline__bar" aria-hidden="true">
     {items.map((item) => (
       <span

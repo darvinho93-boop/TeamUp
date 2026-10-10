@@ -21,7 +21,7 @@ const Heading = headingLevel;
 
 <ol class:list={['steps', `steps--${variant}`]} style={`--steps-count:${steps.length}`}>
   {steps.map((step, index) => (
-    <li class:list={['steps__item', variant === 'cards' && 'tu-panel']}>
+    <li class:list={['steps__item', variant === 'cards' && 'tu-panel']} data-tu-apparait>
       <span class="steps__number" aria-hidden="true">
         {index + 1}
       </span>

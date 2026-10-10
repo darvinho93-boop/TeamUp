@@ -115,6 +115,7 @@
   --tu-dur-logo-court: 900ms;  /* le même mouvement, dans l'interlude entre deux jeux */
   --tu-dur-interlude: 1600ms;  /* le logo entre deux jeux, à l'écran commun : le temps d'un roulement de tambour */
   --tu-dur-barre: 1400ms;      /* un aller de la barre de chargement */
+  --tu-dur-cascade: 90ms;      /* écart entre deux blocs qui apparaissent l'un après l'autre (vitrine) */
 }
 
 /* ---- Thème sombre : blocs marine de la vitrine. L'app n'en a plus (fond beige partout, 2026-10-09). ---- */
@@ -146,5 +147,6 @@
     --tu-dur-logo-court: 0ms;
     --tu-dur-interlude: 0ms;
     --tu-dur-barre: 0ms;
+    --tu-dur-cascade: 0ms;
   }
 }
