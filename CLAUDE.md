@@ -549,3 +549,52 @@ processeur bridé ; axe-core pour l'accessibilité) :
   l'en-tête collant.
 - Une rangée sans lien ni bouton devient focalisable tant qu'elle défile (script de
   `Base.astro`).
+- Aperçu des liens partagés (WhatsApp, iMessage, réseaux) : `public/apercu-partage.jpg`,
+  1 200 × 630, sur le beige : le pictogramme, dessous le nom, dessous le slogan en petit sur
+  une ligne (choix du 2026-10-11, préféré à une scène de la vidéo), annoncée par `og:image`
+  dans `Base.astro`
+  (avec ses dimensions, et `twitter:card` en grand format). Elle se refait par
+  `pnpm --filter @teamup/site apercu` (Playwright de l'app, logo pris sur le site en ligne) ;
+  à relancer si le logo ou le slogan changent. WhatsApp garde un aperçu en mémoire par
+  adresse : pour en voir un nouveau tout de suite, partager l'adresse avec `?v=2` au bout.
+
+## Conventions posées le 2026-10-11 (partage, contact, référencement, vidéos des jeux)
+
+Tranché le 2026-10-11 : Team Up! intervient **partout en France** ; Instagram
+`@teamup_officiel` et WhatsApp (même numéro) s'ajoutent au contact ; on garde la demande de
+consentement pour la mesure d'audience ; sur « Les jeux », **une vidéo par jeu à la place des
+écrans illustrés**.
+
+- Coordonnées, Instagram, WhatsApp et zone : toujours `apps/site/src/data/contact.ts`. Nom,
+  slogan et intitulé du service : `src/data/marque.ts`.
+- Où ils s'affichent, après les retraits demandés le 2026-10-11 : Instagram dans le pied de
+  page et sur la confirmation, **pas dans le menu** ; WhatsApp sur la page Devis et dans le
+  bloc de partage, **pas dans le pied de page**. Ne pas les y remettre.
+- Retirés le même jour, à ne pas reproposer : sur « Les jeux », les repères « Durée / Qui joue
+  / Téléphone » de chaque jeu ; sur « Entreprises », les formules « L'Essentiel » et « Le Grand
+  format » (jamais validées ; les vraies formules à l'année restent à définir).
+- Partage : `components/layout/Partage.astro`, en bas de page (jamais fixe à l'écran), posé
+  par `Base.astro` sauf `partage={false}` (devis, rejoindre, pages légales, 404, kit) ; la page
+  de confirmation en porte un, avec son propre titre. WhatsApp avec un message déjà écrit,
+  « Copier le lien », et le partage du téléphone là où le navigateur le propose.
+- Provenance des devis, **sans cookie ni stockage** (`lib/devis/provenance.ts`) : un lien
+  partagé porte `?via=whatsapp|instagram|lien|partage` ; le script de `Base.astro` recopie
+  `via` sur les liens internes et ajoute `depuis=<page>` aux liens vers le devis ; le
+  formulaire les renvoie en champs cachés, filtrés (minuscules, chiffres, tirets, 24 au plus).
+  Seul l'e-mail de l'équipe porte la ligne « Provenance », jamais l'accusé du prospect. C'est
+  ce qui compense une mesure d'audience partielle. Pour une nouvelle source (flyer, salon) :
+  un lien `https://teamup-game.fr/?via=<mot>`, rien à coder.
+- Référencement : données structurées dans `Base.astro` (organisation, site, service, zone
+  France, Instagram) et dans `Faq.astro` (les questions qui ont une réponse). **Pas de prix**
+  dans ces données tant que l'offre de lancement court. Les descriptions disent « partout en
+  France ». Search Console : à relier par l'utilisateur (compte Google, ligne DNS chez OVH).
+- Vidéos des jeux : `video/src/site/BoucleJeu.tsx`, cinq compositions `Jeu-<fichier>`
+  (4,8 s, même plateau que la boucle de l'accueil), rendues en 720 × 480
+  (`--muted --crf=28 --scale=0.75`, environ 400 Ko), affiche à l'image 84, déposées dans
+  `apps/site/public/videos/jeux/`. `les-jeux.astro` les joue avec `VideoEcran` ; les écrans
+  illustrés restent sur les autres pages. L'affiche de la vidéo de l'accueil est chargée en
+  priorité (`imagePrioritaire` de `Base.astro`).
+- Vercel : `apps/site/vercel.json` pose les en-têtes de protection (pas d'intégration dans une
+  autre page, types de fichiers stricts, référent limité, capteurs refusés). Pas de règle sur
+  les scripts : le site en a en ligne. La fonction du formulaire tourne à Paris (`cdg1`,
+  réglage du projet `teamup-site`).
