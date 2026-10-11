@@ -125,8 +125,8 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
 | `RESEND_API_KEY`     | Clé Resend. **Absente : mode à sec**, les e-mails de devis s'écrivent dans la console au lieu de partir. |
 | `DEVIS_DESTINATAIRE` | Adresse qui reçoit les demandes de devis.                                                                |
-| `DEVIS_EXPEDITEUR`   | Expéditeur sur un domaine vérifié chez Resend, ex. `Team Up! <devis@teamup-game.fr>`.                         |
-| `PUBLIC_APP_URL`     | Adresse de l'app (lien « Espace animateur », page Rejoindre). À défaut : `https://app.teamup-game.fr`.        |
+| `DEVIS_EXPEDITEUR`   | Expéditeur sur un domaine vérifié chez Resend, ex. `Team Up! <devis@teamup-game.fr>`.                    |
+| `PUBLIC_APP_URL`     | Adresse de l'app (lien « Espace animateur », page Rejoindre). À défaut : `https://app.teamup-game.fr`.   |
 
 À reporter dans les variables du projet Vercel de la vitrine avant la mise en ligne.
 
@@ -138,7 +138,7 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 | `SUPABASE_SERVICE_ROLE_KEY`     | Clé du rôle de service (`SERVICE_ROLE_KEY` de `pnpm db:start`). Jamais en `NEXT_PUBLIC_`.                                    |
 | `NEXT_PUBLIC_SUPABASE_URL`      | La même URL, pour la régie et l'écran (connexion, temps réel).                                                               |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (`ANON_KEY`) : publique par nature, elle n'ouvre aucun droit (lot 3).                                               |
-| `NEXT_PUBLIC_APP_URL`           | Facultative. Adresse du QR code de l'écran (`https://app.teamup-game.fr`) ; à défaut, l'hôte de la requête.                       |
+| `NEXT_PUBLIC_APP_URL`           | Facultative. Adresse du QR code de l'écran (`https://app.teamup-game.fr`) ; à défaut, l'hôte de la requête.                  |
 | `CRON_SECRET`                   | Secret de la purge quotidienne des photos (Vercel Cron l'envoie en `Authorization: Bearer`). Absente : la route refuse tout. |
 
 ## Conventions posées au lot 0
@@ -499,3 +499,53 @@ plus tard jusqu'au 31/12/2026, déplacement chiffré au devis ; entreprises **su
   la page Cookies (`data-tu-consentement-rouvrir`).
 - Le serveur de développement d'Astro garde parfois d'anciens styles quand un fichier est
   modifié par script : le redémarrer avant de juger un rendu.
+
+## Conventions posées le 2026-10-11 (vitrine sur téléphone)
+
+Tranché le 2026-10-11 : sur téléphone, la vitrine reprend **les blocs, les formes et l'ordre de
+la version ordinateur**, qui devient la référence des deux. Les maquettes `*-mobile.dc.html`
+ne font plus foi là où elles retiraient un visuel ou transformaient des cartes en liste.
+
+- Haut de page (`PageIntro.astro`) : surtitre, titre, **visuel**, chapeau, boutons, note. Le
+  balisage ne change pas : sous 60 rem le bloc de texte passe en `display: contents` et les
+  éléments se rangent par `order`. Même procédé pour « Pourquoi ça marche » et les bénéfices.
+  Les deux boutons sont côte à côte quand ils tiennent, pleine largeur chacun sinon.
+- Plus aucun `desktop-only` : le téléphone devant l'écran (`Stage.astro`) et les visuels
+  d'accompagnement s'affichent partout. L'écran du haut de page rétrécit comme le téléphone
+  (`--tu-visual-screen-zoom`), son contenu gardant la mise en page d'une pleine largeur.
+- Une rangée de cartes reste une rangée de cartes : classe `.tu-rail`
+  (`packages/ui/src/styles/site-rail.css`, vitrine seule). Sur ordinateur elle ne fait rien ;
+  sur téléphone les cartes glissent au doigt, la suivante dépasse (`--tu-rail-item`), accroche
+  carte par carte. Sélecteur triplé exprès, pour l'emporter sur la grille de chaque page.
+  Réglages par bloc : `--tu-rail-item`, `--tu-rail-gap`, `--tu-rail-bord` (dans un panneau).
+- Restent adaptés au petit écran, par lisibilité : les écrans de jeu illustrés (équipes en
+  carré, paliers abrégés, photos en carré), la frise d'une soirée, le tableau des durées.
+- **Plus de barre d'action fixe en bas d'écran** : essayée discrète (cachée quand un bouton de
+  devis était visible), l'utilisateur l'a fait retirer le 2026-10-11 (« elle amochit la
+  page »). Ne pas la reproposer. Cela s'écarte du cahier des charges §4 : sur téléphone,
+  « Rejoindre une partie » et « Demander un devis » sont dans le menu, et « Demander un
+  devis » reste en haut et en bas de chaque page.
+- Lien de la page courante : le site construit sert `/les-jeux/`, le serveur de développement
+  `/les-jeux` ; `SiteHeader.astro` compare sans la barre finale.
+- Contrôle : captures large et téléphone de chaque page, et comparaison point par point des
+  captures larges avec le site en ligne (seule la vidéo de l'accueil doit différer).
+
+Confort d'usage, mesuré le 2026-10-11 sur le site construit (téléphone 390 px, « 4G lente »,
+processeur bridé ; axe-core pour l'accessibilité) :
+
+- Vidéo de l'accueil : sous 60 rem, `VideoEcran.astro` sert `boucle-accueil-mobile.mp4`
+  (720 px de large, 1,1 Mo au lieu de 2,9), par `<source media>`. Elle se fabrique depuis la
+  grande, dans `video/`, avec `pnpm exec remotion ffmpeg` et les options
+  `-vf scale=720:480:flags=lanczos -crf 30 -preset slow -an -movflags +faststart`.
+  **À refaire si la grande change.** Aucune lecture, donc aucun téléchargement, pour un
+  visiteur en économie de données (`saveData`).
+- Police des titres préchargée (`@teamup/ui/astro/PoliceTitres.astro`, Poppins 700) : sans
+  cela le grand titre changeait de largeur à l'arrivée de la police et le haut de page sautait.
+- Sous le doigt : 44 px au moins (`--tu-tap-compact`) pour le logo de l'en-tête, les liens du
+  pied de page, le mail et le téléphone. Plus aucun texte sous 12 px.
+- Texte discret du pied de page : `--tu-text-muted-on-stone` ; `--tu-text-muted` y tombait à
+  4,2:1 sur la pierre. Seule alerte de contraste attendue : le logotype (lot 1).
+- Saut vers une ancre : `scroll-padding-top` sur `<html>`, le titre visé s'arrête sous
+  l'en-tête collant.
+- Une rangée sans lien ni bouton devient focalisable tant qu'elle défile (script de
+  `Base.astro`).
