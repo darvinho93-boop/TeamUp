@@ -16,7 +16,9 @@ const navItems = [
   { href: '/comment-ca-marche', label: 'Comment ça marche' },
 ];
 
-const isCurrent = (href: string) => currentPath === href;
+// Le site construit sert « /les-jeux/ », le serveur de développement « /les-jeux ».
+const chemin = (currentPath ?? '').replace(/\/+$/, '') || '/';
+const isCurrent = (href: string) => chemin === href;
 ---
 
 <header class="tu-site-header">
@@ -90,6 +92,14 @@ const isCurrent = (href: string) => currentPath === href;
         {item.label}
       </a>
     ))}
+    <div class="tu-site-header__drawer-actions">
+      <Button href="/rejoindre" variant="ghost" size="sm">
+        Rejoindre une partie
+      </Button>
+      <Button href="/devis" variant="accent" size="sm">
+        Demander un devis
+      </Button>
+    </div>
   </nav>
 </header>
 

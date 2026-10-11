@@ -1,6 +1,13 @@
 /* En-tête de la vitrine.
-   Cahier des charges §4 : sur mobile, « Rejoindre une partie » et « Demander un devis »
-   restent visibles hors du menu burger — le burger ne contient que les liens de navigation. */
+   Le cahier des charges (§4) voulait « Rejoindre une partie » et « Demander un devis » visibles
+   hors du menu burger, dans une barre fixe en bas d'écran. Cette barre est retirée (décision du
+   2026-10-11 : elle abîmait la page) : sur téléphone les deux actions sont dans le menu, sous
+   les liens de navigation, et « Demander un devis » reste en haut et en bas de chaque page. */
+
+/* Un saut vers une ancre (« Voir un exemple de soirée ») s'arrête sous l'en-tête collant, pas dessous. */
+html:has(.tu-site-header) {
+  scroll-padding-top: calc(var(--tu-header-height) + var(--tu-space-4));
+}
 
 .tu-site-header {
   position: sticky;
@@ -79,9 +86,22 @@
   display: flex;
 }
 
+.tu-site-header__drawer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tu-space-3);
+  padding-top: var(--tu-space-3);
+}
+
+.tu-site-header__drawer-actions .tu-btn {
+  flex: 1 1 auto;
+  min-height: var(--tu-tap-min);
+}
+
 @media (max-width: 60rem) {
   .tu-site-header__brand {
     gap: var(--tu-space-2);
+    min-height: var(--tu-tap-compact);
   }
 
   .tu-site-header__logo {
@@ -96,7 +116,7 @@
     display: inline-flex;
   }
 
-  /* Les deux appels à l'action descendent dans .tu-site-action-bar, à portée de pouce. */
+  /* Les deux appels à l'action passent dans le menu (.tu-site-header__drawer-actions). */
   .tu-site-header__actions {
     display: none;
   }

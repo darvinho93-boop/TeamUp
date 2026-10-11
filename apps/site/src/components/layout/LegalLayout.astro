@@ -20,7 +20,7 @@ const pages = [
 const current = Astro.url.pathname.replace(/\/$/, '');
 ---
 
-<Base title={title} description={description} actionBar={false}>
+<Base title={title} description={description}>
   <div class="tu-container legal">
     <nav class="legal__nav" aria-label="Pages légales">
       {pages.map((page) => (

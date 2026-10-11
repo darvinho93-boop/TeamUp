@@ -15,10 +15,6 @@
     view-transition-name: tu-site-header;
   }
 
-  .tu-site-action-bar {
-    view-transition-name: tu-site-action-bar;
-  }
-
   ::view-transition-old(root) {
     animation: tu-page-sort var(--tu-dur-base) var(--tu-ease) both;
   }

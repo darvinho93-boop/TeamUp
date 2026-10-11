@@ -69,7 +69,7 @@
   width: 100%;
 }
 
-/* Vitrine, en-tête desktop : plus compact, absent en mobile (barre d'action à la place). */
+/* Vitrine, en-tête desktop et menu du téléphone : plus compact. */
 .tu-btn--sm {
   min-height: var(--tu-space-12);
   padding-inline: var(--tu-space-6);
