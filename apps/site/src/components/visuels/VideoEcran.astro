@@ -3,17 +3,21 @@
  * « L'écran de la salle » qui joue une vidéo : la boucle de motion design du haut de l'accueil,
  * composée avec Remotion (`video/src/site/BoucleAccueil.tsx`) et déposée dans `public/videos/`.
  * Muette, en boucle. Elle ne démarre que quand l'écran est visible, et jamais pour un visiteur
- * qui a demandé moins d'animations : l'affiche, une image de la vidéo, reste alors seule.
+ * qui a demandé moins d'animations ou d'économiser ses données : l'affiche, une image de la
+ * vidéo, reste alors seule. Sur téléphone elle est en haut de page : une version allégée
+ * (`srcMobile`, 720 px de large) y remplace la grande.
  */
 type Props = {
   src: string;
+  /** La même vidéo, plus légère, servie sous 60 rem de large. */
+  srcMobile?: string;
   /** L'image affichée avant la lecture, et à la place de la vidéo sans animation. */
   affiche: string;
   caption: string;
   class?: string;
 };
 
-const { src, affiche, caption, class: className } = Astro.props;
+const { src, srcMobile, affiche, caption, class: className } = Astro.props;
 ---
 
 <figure class:list={['video-ecran', className]} data-theme="stage">
@@ -27,15 +31,24 @@ const { src, affiche, caption, class: className } = Astro.props;
     aria-hidden="true"
     data-tu-video
   >
+    {srcMobile && <source src={srcMobile} type="video/mp4" media="(max-width: 60rem)" />}
     <source src={src} type="video/mp4" />
   </video>
   <figcaption class="tu-visually-hidden">{caption}</figcaption>
 </figure>
 
 <script>
-  // La vidéo joue tant qu'elle est à l'écran, et s'arrête dès qu'elle en sort.
+  // La vidéo joue tant qu'elle est à l'écran, et s'arrête dès qu'elle en sort. Un visiteur qui
+  // a demandé à économiser ses données garde l'affiche : rien n'est téléchargé.
   const videos = document.querySelectorAll<HTMLVideoElement>('video[data-tu-video]');
-  if (videos.length > 0 && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  const econome =
+    (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData ===
+    true;
+  if (
+    videos.length > 0 &&
+    !econome &&
+    matchMedia('(prefers-reduced-motion: no-preference)').matches
+  ) {
     const observateur = new IntersectionObserver(
       (entrees) => {
         for (const entree of entrees) {

@@ -34,7 +34,7 @@
   flex-direction: column;
   gap: var(--tu-space-1);
   font-size: var(--tu-size-sm);
-  color: var(--tu-text-muted);
+  color: var(--tu-text-muted-on-stone);
 }
 
 .tu-site-footer__nav {
@@ -62,7 +62,7 @@
 
 /* Lien discret vers l'espace animateur : présent, jamais mis en avant. */
 .tu-site-footer__link--muted {
-  color: var(--tu-text-muted);
+  color: var(--tu-text-muted-on-stone);
 }
 
 /* Mobile : les deux colonnes côte à côte, chacune avec ses liens, quel qu'en soit le nombre. */
@@ -90,7 +90,24 @@
     column-gap: var(--tu-space-6);
   }
 
-  .tu-site-footer__column {
-    row-gap: var(--tu-space-3);
+  /* Sous le doigt : chaque lien, le mail et le téléphone font au moins 44 px de haut. */
+  .tu-site-footer__link {
+    min-height: var(--tu-tap-compact);
+  }
+
+  .tu-site-footer__contact {
+    gap: 0;
+  }
+
+  .tu-site-footer__contact > span {
+    display: flex;
+    align-items: center;
+    gap: var(--tu-space-1);
+  }
+
+  .tu-site-footer__contact a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tu-tap-compact);
   }
 }

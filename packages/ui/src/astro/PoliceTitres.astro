@@ -1,0 +1,11 @@
+---
+/**
+ * Précharge la police des titres (Poppins 700). Sans cela, le grand titre s'affiche d'abord
+ * dans la police de secours, plus étroite, puis change de largeur : le haut de page saute.
+ * À poser dans le `<head>`, avant les feuilles de style. Le fichier est celui que la feuille
+ * `@fontsource/poppins/latin-700.css` demande déjà : il n'est téléchargé qu'une fois.
+ */
+import poppinsTitres from '@fontsource/poppins/files/poppins-latin-700-normal.woff2?url';
+---
+
+<link rel="preload" as="font" type="font/woff2" href={poppinsTitres} crossorigin />
