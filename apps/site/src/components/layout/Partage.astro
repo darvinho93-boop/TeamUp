@@ -1,0 +1,153 @@
+---
+/**
+ * Un bloc de partage discret, en bas de page : envoyer le site sur WhatsApp, copier son lien,
+ * ou ouvrir le partage du téléphone. Jamais fixe à l'écran. Chaque lien partagé porte sa
+ * provenance (`?via=…`), que le formulaire de devis fait suivre jusqu'à l'e-mail de l'équipe
+ * (`lib/devis/provenance.ts`) : sans cookie ni stockage chez le visiteur.
+ */
+type Props = {
+  title?: string;
+  text?: string;
+};
+
+const {
+  title = 'Une fête se prépare autour de vous ?',
+  text = "Faites découvrir Team Up! à celui ou celle qui l'organise.",
+} = Astro.props;
+
+const lien = (via: string) => new URL(`/?via=${via}`, Astro.site).href;
+const message =
+  'Regarde, pour ta prochaine fête : Team Up!, une animation où toute la salle joue ensemble.';
+const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${message} ${lien('whatsapp')}`)}`;
+---
+
+<section class="partage" aria-labelledby="partage-titre">
+  <div class="tu-container">
+    <div class="partage__inner">
+      <div class="partage__text">
+        <h2 class="partage__title" id="partage-titre">
+          {title}
+        </h2>
+        <p class="partage__body">{text}</p>
+      </div>
+      <div class="partage__actions">
+        <a class="tu-btn tu-btn--outline tu-btn--sm" href={whatsapp} target="_blank" rel="noopener">
+          Envoyer sur WhatsApp
+        </a>
+        <button
+          class="tu-btn tu-btn--ghost tu-btn--sm"
+          type="button"
+          data-tu-partage-copier
+          data-lien={lien('lien')}
+        >
+          Copier le lien
+        </button>
+        <button
+          class="tu-btn tu-btn--ghost tu-btn--sm"
+          type="button"
+          data-tu-partage-natif
+          data-lien={lien('partage')}
+          data-texte={message}
+          hidden
+        >
+          Partager
+        </button>
+      </div>
+      <p class="tu-visually-hidden" role="status" data-tu-partage-etat></p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const etat = document.querySelector<HTMLElement>('[data-tu-partage-etat]');
+
+  // Copier le lien : le bouton le confirme deux secondes, puis reprend son libellé.
+  for (const bouton of document.querySelectorAll<HTMLButtonElement>('[data-tu-partage-copier]')) {
+    if (!navigator.clipboard) {
+      bouton.hidden = true;
+      continue;
+    }
+    const libelle = bouton.textContent ?? '';
+    bouton.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(bouton.dataset.lien ?? location.origin);
+        bouton.textContent = 'Lien copié';
+        if (etat) etat.textContent = 'Lien copié';
+        setTimeout(() => {
+          bouton.textContent = libelle;
+          if (etat) etat.textContent = '';
+        }, 2000);
+      } catch {
+        // Copie refusée par le navigateur : le bouton reste tel quel.
+      }
+    });
+  }
+
+  // Le partage du téléphone (Instagram, SMS…), là où le navigateur le propose.
+  for (const bouton of document.querySelectorAll<HTMLButtonElement>('[data-tu-partage-natif]')) {
+    if (typeof navigator.share !== 'function') continue;
+    bouton.hidden = false;
+    bouton.addEventListener('click', () => {
+      void navigator
+        .share({
+          title: 'Team Up!',
+          text: bouton.dataset.texte ?? '',
+          url: bouton.dataset.lien ?? location.origin,
+        })
+        .catch(() => undefined);
+    });
+  }
+</script>
+
+<style>
+  .partage {
+    padding-bottom: var(--tu-section-space);
+  }
+
+  .partage__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--tu-space-8);
+    padding-top: var(--tu-space-8);
+    border-top: var(--tu-border-width) solid var(--tu-border);
+  }
+
+  .partage__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-1);
+  }
+
+  .partage__title {
+    font-size: var(--tu-type-card);
+  }
+
+  .partage__body {
+    color: var(--tu-text-muted);
+  }
+
+  .partage__actions {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tu-space-3);
+  }
+
+  .partage__actions [hidden] {
+    display: none;
+  }
+
+  @media (max-width: 60rem) {
+    .partage__inner {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--tu-space-5);
+    }
+
+    .partage__actions > * {
+      flex: 1 1 auto;
+      min-height: var(--tu-tap-min);
+    }
+  }
+</style>

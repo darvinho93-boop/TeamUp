@@ -1,5 +1,6 @@
 import { CRENEAUX, EQUIPEMENTS, LANGUES, TYPE_LABELS } from './options';
 import type { Demande } from './schema';
+import { libelleProvenance, type Provenance } from './provenance';
 import { CONTACT } from '../../data/contact';
 
 export interface Email {
@@ -78,8 +79,12 @@ export function echapper(valeur: string): string {
 }
 
 /** Pour Team Up! : tout le détail, prêt à être rappelé. On y répond directement au prospect. */
-export function emailEquipe(demande: Demande): Email {
-  const lignes = recapitulatif(demande);
+export function emailEquipe(demande: Demande, provenance: Provenance = {}): Email {
+  // La provenance ne figure que dans cet e-mail : le prospect ne la retrouve pas dans son accusé.
+  const lignes: Ligne[] = [
+    ...recapitulatif(demande),
+    ['Provenance', libelleProvenance(provenance)],
+  ];
   const qui = demande.societe ? `${demande.nom} (${demande.societe})` : demande.nom;
   const subject = `Devis : ${demande.occasion}, ${dateLongue(demande.date)}, ${demande.invites} invités — ${qui}`;
 

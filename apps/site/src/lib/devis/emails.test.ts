@@ -56,6 +56,13 @@ describe('emailEquipe', () => {
   it("garde l'objet sur une seule ligne", () => {
     expect(emailEquipe({ ...demande, nom: 'Camille\r\nBcc: x@y.z' }).subject).not.toMatch(/[\r\n]/);
   });
+
+  it("dit d'où vient la demande quand on le sait", () => {
+    const { text } = emailEquipe(demande, { via: 'whatsapp', depuis: 'entreprises' });
+    expect(text).toContain('Provenance : lien partagé sur WhatsApp');
+    expect(text).toContain('« entreprises »');
+    expect(emailEquipe(demande).text).not.toContain('Provenance');
+  });
 });
 
 describe('emailAccuse', () => {

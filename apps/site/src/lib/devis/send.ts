@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { emailAccuse, emailEquipe, type Email } from './emails';
 import type { Demande } from './schema';
+import type { Provenance } from './provenance';
 
 export interface ConfigEnvoi {
   /** Absente : mode « à sec », les e-mails sont écrits dans la console (dev, CI). */
@@ -22,12 +23,20 @@ type Expedier = (message: Message) => Promise<void>;
  * Envoie la demande à Team Up!, puis l'accusé de réception au prospect.
  * Seul le premier envoi compte : si l'accusé échoue, la demande est quand même arrivée.
  */
-export async function envoyerDevis(demande: Demande, config: ConfigEnvoi): Promise<boolean> {
+export async function envoyerDevis(
+  demande: Demande,
+  config: ConfigEnvoi,
+  provenance: Provenance = {},
+): Promise<boolean> {
   const expedier = choisirExpedition(config);
   const destinataire = config.destinataire ?? '(DEVIS_DESTINATAIRE)';
 
   try {
-    await expedier({ ...emailEquipe(demande), to: destinataire, replyTo: demande.email });
+    await expedier({
+      ...emailEquipe(demande, provenance),
+      to: destinataire,
+      replyTo: demande.email,
+    });
   } catch (erreur) {
     console.error("[devis] échec de l'envoi à Team Up!", erreur);
     return false;
