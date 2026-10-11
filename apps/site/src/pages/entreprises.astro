@@ -113,13 +113,13 @@ const faq: FaqItem[] = [
     </Fragment>
     <Stage slot="visual" class="hero-stage">
       <ScreenRanking slot="screen" />
-      <PhoneJoin slot="phone" class="desktop-only" />
+      <PhoneJoin slot="phone" />
     </Stage>
   </PageIntro>
 
   <Section id="formats" eyebrow="Les formats" title="Un temps fort qui s'insère dans votre agenda.">
     <div class="offer">
-      <div class="formats">
+      <div class="formats tu-rail">
         {formats.map((format) => (
           <article class="tu-panel format" data-tu-apparait>
             <h3 class="format__title">{format.title}</h3>
@@ -127,7 +127,7 @@ const faq: FaqItem[] = [
           </article>
         ))}
       </div>
-      <div class="creneaux">
+      <div class="creneaux tu-rail">
         <article class="creneau creneau--light" data-tu-apparait>
           <h3 class="creneau__name">L'Essentiel</h3>
           <p class="creneau__body">
@@ -149,7 +149,7 @@ const faq: FaqItem[] = [
 
   <section class="benefits-section">
     <div class="tu-container benefits">
-      <ScreenPointsCommuns class="benefits__visual desktop-only" />
+      <ScreenPointsCommuns class="benefits__visual" />
       <div class="benefits__text">
         <div class="benefits__header">
           <p class="tu-eyebrow">Ce que vos équipes y gagnent</p>
@@ -161,7 +161,7 @@ const faq: FaqItem[] = [
   </section>
 
   <Section title="Pour vous qui organisez.">
-    <div class="formats">
+    <div class="formats tu-rail">
       {organisation.map((point) => (
         <article class="tu-panel format" data-tu-apparait>
           <h3 class="format__title">{point.title}</h3>
@@ -339,28 +339,9 @@ const faq: FaqItem[] = [
   }
 
   @media (max-width: 60rem) {
-    :global(.benefits .screen-figure.desktop-only),
-    :global(.stage.hero-stage .desktop-only) {
-      display: none;
-    }
-
-    :global(.stage.hero-stage) {
-      min-height: 0;
-    }
-
-    :global(.stage.hero-stage .stage__screen) {
-      position: static;
-      width: 100%;
-    }
-
+    /* Téléphone : mêmes visuels que sur ordinateur ; formats et formules glissent en rangée (.tu-rail). */
     .offer {
-      gap: var(--tu-space-3);
-    }
-
-    .formats,
-    .creneaux {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-3);
+      gap: var(--tu-space-5);
     }
 
     .format {
@@ -389,8 +370,19 @@ const faq: FaqItem[] = [
       grid-template-columns: minmax(0, 1fr);
     }
 
+    .benefits :global(.benefits__visual) {
+      order: 1;
+      height: auto;
+      min-height: var(--tu-game-visual-height);
+    }
+
+    /* Le titre, puis l'écran, puis les bénéfices : le bloc de texte s'efface pour les ranger. */
     .benefits__text {
-      gap: var(--tu-space-5);
+      display: contents;
+    }
+
+    .benefits :global(.steps) {
+      order: 2;
     }
 
     .logos {

@@ -115,4 +115,12 @@ const hasMetaSlot = Astro.slots.has('meta');
     flex-direction: column;
     gap: var(--tu-screen-gap);
   }
+
+  /* Téléphone : la mention de droite tient sur une ligne, c'est le libellé qui passe à la ligne. */
+  @media (max-width: 60rem) {
+    .screen__meta {
+      flex: none;
+      white-space: nowrap;
+    }
+  }
 </style>

@@ -69,7 +69,7 @@ const durees = [
     eyebrow="Pendant la soirée"
     title="Un animateur, un grand écran, et les téléphones dans les poches."
   >
-    <div class="surfaces">
+    <div class="surfaces tu-rail">
       <article class="surface" data-tu-apparait>
         <RegiePanel class="surface__visual" />
         <h3 class="surface__title">L'animateur</h3>
@@ -100,7 +100,7 @@ const durees = [
   </Section>
 
   <Section eyebrow="Le déroulé" title="Du QR code au podium." tone="dark">
-    <ol class="flow">
+    <ol class="flow tu-rail">
       {deroule.map((step, index) => (
         <li class="flow__step" data-tu-apparait>
           <span class="flow__head" aria-hidden="true">
@@ -303,59 +303,24 @@ const durees = [
   }
 
   @media (max-width: 60rem) {
-    .surfaces {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-8);
-    }
-
+    /* Téléphone : les trois vignettes gardent leur hauteur commune et glissent en rangée (.tu-rail). */
     .surface {
       gap: var(--tu-space-3);
-    }
-
-    .surface :global(.surface__visual) {
-      height: auto;
-      min-height: 12.5rem;
-    }
-
-    .surface :global(.surface__visual.peek-figure) {
-      min-height: 0;
     }
 
     .surface__title {
       font-size: var(--tu-size-lg);
     }
 
+    /* Les grands chiffres et leurs flèches, comme sur ordinateur : deux étapes et demie à l'écran. */
     .flow {
-      flex-direction: column;
-      gap: var(--tu-space-4);
-    }
-
-    .flow__step {
-      flex-direction: row;
-      align-items: center;
-      gap: var(--tu-space-4);
-    }
-
-    .flow__head :global(.flow__arrow) {
-      display: none;
-    }
-
-    .flow__number {
-      flex: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--tu-space-8);
-      height: var(--tu-space-8);
-      border-radius: var(--tu-radius-pill);
-      background: var(--tu-surface);
-      font-size: var(--tu-size-sm);
+      --tu-rail-item: var(--tu-rail-item-court);
+      --tu-rail-gap: var(--tu-space-5);
+      --tu-rail-bord: var(--tu-space-6);
     }
 
     .flow__label {
-      font-family: var(--tu-font-body);
       font-size: var(--tu-size-base);
-      font-weight: 500;
     }
 
     /* Sous 60 rem, chaque ligne devient une fiche : équipes à gauche, créneau à droite. */
@@ -395,7 +360,7 @@ const durees = [
 
     .durees__table .durees__jeu {
       grid-area: jeu;
-      font-size: var(--tu-type-caption);
+      font-size: var(--tu-size-xs);
       color: var(--tu-text-muted);
       text-align: end;
     }
@@ -406,7 +371,7 @@ const durees = [
 
     .durees__table .durees__programme {
       grid-area: programme;
-      font-size: var(--tu-type-caption);
+      font-size: var(--tu-size-xs);
     }
   }
 </style>

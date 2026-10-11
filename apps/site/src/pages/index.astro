@@ -79,6 +79,7 @@ const portes = [
     <VideoEcran
       slot="visual"
       src="/videos/boucle-accueil.mp4"
+      srcMobile="/videos/boucle-accueil-mobile.mp4"
       affiche="/videos/boucle-accueil.jpg"
       caption="Vidéo : sur un plateau de jeu télé, les cinq jeux de Team Up! sont rejoués tour à tour par de petits personnages, puis trois équipes montent sur le podium sous les confettis."
     />
@@ -100,27 +101,29 @@ const portes = [
   </Section>
 
   <section class="portes-section" aria-label="Découvrir Team Up!">
-    <div class="tu-container portes">
-      {portes.map((porte) => (
-        <article
-          class:list={['tu-panel', 'porte', porte.liens.length === 1 && 'porte--lien']}
-          data-tu-apparait
-        >
-          <span class:list={['porte__icon', `porte__icon--${porte.tone}`]}>
-            <Icon name={porte.icon} size="md" />
-          </span>
-          <h2 class="porte__title">{porte.title}</h2>
-          <p class="porte__body">{porte.body}</p>
-          <div class="porte__liens">
-            {porte.liens.map((lien) => (
-              <a class="tu-arrow-link" href={lien.href}>
-                {lien.label}
-                <Icon name="arrow" size="sm" />
-              </a>
-            ))}
-          </div>
-        </article>
-      ))}
+    <div class="tu-container">
+      <div class="portes tu-rail">
+        {portes.map((porte) => (
+          <article
+            class:list={['tu-panel', 'porte', porte.liens.length === 1 && 'porte--lien']}
+            data-tu-apparait
+          >
+            <span class:list={['porte__icon', `porte__icon--${porte.tone}`]}>
+              <Icon name={porte.icon} size="md" />
+            </span>
+            <h2 class="porte__title">{porte.title}</h2>
+            <p class="porte__body">{porte.body}</p>
+            <div class="porte__liens">
+              {porte.liens.map((lien) => (
+                <a class="tu-arrow-link" href={lien.href}>
+                  {lien.label}
+                  <Icon name="arrow" size="sm" />
+                </a>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -298,7 +301,6 @@ const portes = [
 
   @media (max-width: 60rem) {
     .apports,
-    .portes,
     .quotes {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -307,28 +309,13 @@ const portes = [
       gap: var(--tu-space-7);
     }
 
-    .portes {
-      gap: var(--tu-space-3);
-    }
-
     .quotes {
       gap: var(--tu-space-5);
     }
 
-    /* Mobile : pictogramme à gauche, texte à droite, comme les cartes de jeu. */
+    /* Téléphone : les mêmes cartes que sur ordinateur, en rangée à faire glisser (.tu-rail). */
     .porte {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      column-gap: var(--tu-space-4);
-      row-gap: var(--tu-space-1);
-      padding: var(--tu-space-5);
-    }
-
-    .porte__icon {
-      grid-row: span 3;
-      width: var(--tu-space-12);
-      height: var(--tu-space-12);
-      margin-bottom: 0;
+      padding: var(--tu-space-6);
     }
 
     .quote {

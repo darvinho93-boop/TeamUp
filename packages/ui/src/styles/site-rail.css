@@ -1,0 +1,41 @@
+/*
+ * Rangée à faire glisser, sur la vitrine seulement (`Base.astro`).
+ * Sur ordinateur la classe ne fait rien : chaque page garde sa grille. Sur téléphone, les cartes
+ * restent des cartes, côte à côte ; la suivante dépasse à droite pour dire qu'il y en a d'autres,
+ * et la rangée s'accroche carte par carte. C'est la version ordinateur qui fait référence :
+ * une rangée de cartes ne redevient pas une liste.
+ *
+ * Le sélecteur est triplé exprès : il doit l'emporter sur la grille que chaque page pose avec
+ * sa classe et son attribut de portée Astro.
+ */
+
+@media (max-width: 60rem) {
+  .tu-rail.tu-rail.tu-rail {
+    --tu-rail-marge: var(--tu-rail-bord, var(--tu-container-gutter));
+
+    display: flex;
+    align-items: stretch;
+    gap: var(--tu-rail-gap, var(--tu-space-3));
+    /* Bord à bord avec l'écran ; la marge intérieure rend à la première carte son alignement. */
+    margin-inline: calc(var(--tu-rail-marge) * -1);
+    padding-inline: var(--tu-rail-marge);
+    /* La place de l'ombre des cartes, que le défilement rognerait. */
+    margin-block: calc(var(--tu-space-2) * -1) calc(var(--tu-space-5) * -1);
+    padding-block: var(--tu-space-2) var(--tu-space-5);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--tu-rail-marge);
+    scrollbar-width: none;
+  }
+
+  .tu-rail.tu-rail.tu-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tu-rail.tu-rail.tu-rail > * {
+    flex: 0 0 var(--tu-rail-item);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+}

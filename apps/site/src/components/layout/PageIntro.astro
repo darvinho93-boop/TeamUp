@@ -129,9 +129,30 @@ const hasVisual = Astro.slots.has('visual');
   }
 
   @media (max-width: 60rem) {
+    /* Téléphone : même premier regard que sur ordinateur, le titre puis l'image. */
     .intro--split .intro__inner {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-8);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--tu-space-5);
+    }
+
+    /* Le bloc de texte s'efface : ses éléments se rangent autour du visuel, sans toucher au balisage. */
+    .intro--split .intro__text {
+      display: contents;
+    }
+
+    .intro--split .intro__text > :global(*) {
+      order: 2;
+    }
+
+    .intro--split .intro__text > :global(.tu-eyebrow),
+    .intro--split .intro__title {
+      order: 0;
+    }
+
+    .intro--split .intro__visual {
+      order: 1;
     }
 
     .intro__text {
@@ -144,12 +165,13 @@ const hasVisual = Astro.slots.has('visual');
     }
 
     .intro__actions {
-      flex-direction: column;
       gap: var(--tu-space-3);
     }
 
+    /* Côte à côte quand ils tiennent sur la ligne, pleine largeur chacun sinon. */
     .intro__actions > :global(.tu-btn) {
-      width: 100%;
+      flex: 1 1 auto;
+      padding-inline: var(--tu-space-4);
     }
   }
 </style>

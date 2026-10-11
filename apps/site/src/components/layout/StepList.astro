@@ -8,8 +8,9 @@ type Props = {
   steps: Step[];
   /**
    * `numerals` : grands chiffres sauge, en colonnes (bloc marine de l'accueil).
-   * `cards` : une carte blanche numérotée par étape (Comment ça marche).
-   * `plain` : titres et textes empilés, numérotés en mobile seulement (Particuliers).
+   * `cards` : une carte blanche numérotée par étape (Comment ça marche) ; sur téléphone, les
+   * cartes glissent en rangée.
+   * `plain` : titres et textes empilés, sans numéro (Particuliers).
    */
   variant?: 'numerals' | 'cards' | 'plain';
   headingLevel?: 'h3' | 'h4';
@@ -19,7 +20,10 @@ const { steps, variant = 'numerals', headingLevel = 'h3' } = Astro.props;
 const Heading = headingLevel;
 ---
 
-<ol class:list={['steps', `steps--${variant}`]} style={`--steps-count:${steps.length}`}>
+<ol
+  class:list={['steps', `steps--${variant}`, variant === 'cards' && 'tu-rail']}
+  style={`--steps-count:${steps.length}`}
+>
   {steps.map((step, index) => (
     <li class:list={['steps__item', variant === 'cards' && 'tu-panel']} data-tu-apparait>
       <span class="steps__number" aria-hidden="true">
@@ -142,50 +146,19 @@ const Heading = headingLevel;
       font-size: var(--tu-btn-sm-font);
     }
 
-    .steps--cards {
-      gap: var(--tu-space-3);
-    }
-
-    /* En mobile, les cartes numérotées redeviennent une liste, comme dans la maquette. */
+    /* Téléphone : les cartes numérotées restent des cartes, en rangée à faire glisser (.tu-rail). */
     .steps--cards .steps__item {
-      padding: 0;
-      border: none;
-      background: none;
+      padding: var(--tu-space-6);
     }
 
-    .steps--cards,
     .steps--plain {
       gap: var(--tu-space-5);
     }
 
-    .steps--cards .steps__item,
-    .steps--plain .steps__item {
-      flex-direction: row;
-      gap: var(--tu-space-3);
-    }
-
-    .steps--cards .steps__number,
-    .steps--plain .steps__number {
-      flex: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--tu-space-8);
-      height: var(--tu-space-8);
-      border-radius: var(--tu-radius-pill);
-      background: var(--tu-sage-50);
-      color: var(--tu-success-text);
-      font-family: var(--tu-font-display);
-      font-size: var(--tu-size-sm);
-      font-weight: 700;
-    }
-
-    .steps--cards .steps__body,
     .steps--plain .steps__body {
       gap: var(--tu-space-1);
     }
 
-    .steps--cards .steps__text,
     .steps--plain .steps__text {
       font-size: var(--tu-btn-sm-font);
     }
@@ -194,7 +167,10 @@ const Heading = headingLevel;
       font-size: var(--tu-size-base);
     }
 
-    .steps--cards .steps__title,
+    .steps--cards .steps__title {
+      font-size: var(--tu-size-lg);
+    }
+
     .steps--plain .steps__title {
       font-size: var(--tu-type-body-lg);
     }

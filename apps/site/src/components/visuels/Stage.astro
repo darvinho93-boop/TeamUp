@@ -43,9 +43,11 @@ const { class: className } = Astro.props;
   }
 
   @media (max-width: 60rem) {
+    /* L'écran rétrécit comme le téléphone : son contenu garde la mise en page d'une pleine largeur. */
     .stage__screen {
       top: 0;
-      width: min(var(--tu-visual-screen-width), 85%);
+      width: min(calc(var(--tu-visual-screen-width) / var(--tu-visual-screen-zoom)), 85%);
+      zoom: var(--tu-visual-screen-zoom);
     }
 
     .stage__phone {

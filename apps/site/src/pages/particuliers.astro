@@ -130,12 +130,12 @@ const faq: FaqItem[] = [
     </Fragment>
     <Stage slot="visual" class="hero-stage">
       <ScreenTeams slot="screen" />
-      <PhoneSecret slot="phone" class="desktop-only" />
+      <PhoneSecret slot="phone" />
     </Stage>
   </PageIntro>
 
   <Section eyebrow="Les occasions" title="Dès que plusieurs cercles se retrouvent.">
-    <div class="occasions">
+    <div class="occasions tu-rail">
       {occasions.map((occasion) => (
         <article class="tu-panel occasion" data-tu-apparait>
           <h3 class="occasion__title">{occasion.title}</h3>
@@ -147,7 +147,7 @@ const faq: FaqItem[] = [
 
   <section class="why-section">
     <div class="tu-container why">
-      <div class="why__visual desktop-only">
+      <div class="why__visual">
         <PhonePhoto />
       </div>
       <div class="why__text">
@@ -277,26 +277,7 @@ const faq: FaqItem[] = [
   }
 
   @media (max-width: 60rem) {
-    /* Mobile : écran des équipes seul, et pas de téléphone à côté de « Pourquoi ça marche ». */
-    .desktop-only,
-    :global(.stage.hero-stage .desktop-only) {
-      display: none;
-    }
-
-    :global(.stage.hero-stage) {
-      min-height: 0;
-    }
-
-    :global(.stage.hero-stage .stage__screen) {
-      position: static;
-      width: 100%;
-    }
-
-    .occasions {
-      grid-template-columns: minmax(0, 1fr);
-      gap: var(--tu-space-3);
-    }
-
+    /* Téléphone : mêmes visuels que sur ordinateur ; les occasions glissent en rangée (.tu-rail). */
     .occasion {
       gap: var(--tu-space-2);
       padding: var(--tu-space-6) 1.375rem;
@@ -312,8 +293,17 @@ const faq: FaqItem[] = [
       gap: var(--tu-space-6);
     }
 
+    /* Le titre, puis le téléphone, puis les raisons : le bloc de texte s'efface pour les ranger. */
     .why__text {
-      gap: var(--tu-space-5);
+      display: contents;
+    }
+
+    .why__visual {
+      order: 1;
+    }
+
+    .why :global(.steps) {
+      order: 2;
     }
 
     .multi__body {

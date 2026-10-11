@@ -12,7 +12,8 @@
     "./react": "./src/react/index.ts",
     "./astro/*": "./src/astro/*",
     "./fonts-tamil.css": "./src/styles/fonts-tamil.css",
-    "./site-motion.css": "./src/styles/site-motion.css"
+    "./site-motion.css": "./src/styles/site-motion.css",
+    "./site-rail.css": "./src/styles/site-rail.css"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"
