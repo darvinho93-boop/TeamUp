@@ -73,6 +73,11 @@ const faq: FaqItem[] = [
       "Jusqu'à 150 participants. Le nombre d'équipes et le programme s'adaptent à votre effectif.",
   },
   {
+    question: 'Où intervenez-vous ?',
+    answer:
+      'Partout en France. Le déplacement est chiffré dans le devis, selon le lieu de votre événement.',
+  },
+  {
     question: 'Peut-on adapter les contenus à notre entreprise ?',
     answer:
       "Oui. Nous partons de nos questions, mots et thèmes pensés pour le cadre professionnel, et pouvons y ajouter des contenus à votre image : votre secteur, vos valeurs, vos clins d'œil internes. Nous les validons avec vous avant l'événement.",
@@ -92,7 +97,7 @@ const faq: FaqItem[] = [
 
 <Base
   title="Team building, séminaire, intégration — Team Up!"
-  description="Team building, séminaire, intégration : un temps fort animé de bout en bout, jusqu'à 150 participants. Rien à installer, un seul interlocuteur."
+  description="Team building, séminaire, intégration : un temps fort animé de bout en bout, jusqu'à 150 participants, partout en France. Un seul interlocuteur."
   accent="entreprises"
 >
   <PageIntro
@@ -118,32 +123,13 @@ const faq: FaqItem[] = [
   </PageIntro>
 
   <Section id="formats" eyebrow="Les formats" title="Un temps fort qui s'insère dans votre agenda.">
-    <div class="offer">
-      <div class="formats tu-rail">
-        {formats.map((format) => (
-          <article class="tu-panel format" data-tu-apparait>
-            <h3 class="format__title">{format.title}</h3>
-            <p class="format__body">{format.body}</p>
-          </article>
-        ))}
-      </div>
-      <div class="creneaux tu-rail">
-        <article class="creneau creneau--light" data-tu-apparait>
-          <h3 class="creneau__name">L'Essentiel</h3>
-          <p class="creneau__body">
-            Les cinq jeux et le final en photos, pour des groupes jusqu'à cinq équipes.
-          </p>
-          <p class="creneau__price">Sur devis</p>
+    <div class="formats tu-rail">
+      {formats.map((format) => (
+        <article class="tu-panel format" data-tu-apparait>
+          <h3 class="format__title">{format.title}</h3>
+          <p class="format__body">{format.body}</p>
         </article>
-        <article class="tu-panel tu-panel--dark creneau" data-theme="stage" data-tu-apparait>
-          <h3 class="creneau__name">Le Grand format</h3>
-          <p class="creneau__body">
-            Les cinq jeux au complet pour les grands groupes, jusqu'à huit équipes et 150
-            participants.
-          </p>
-          <p class="creneau__price">Sur devis</p>
-        </article>
-      </div>
+      ))}
     </div>
   </Section>
 
@@ -205,12 +191,6 @@ const faq: FaqItem[] = [
     color: var(--tu-text-muted);
   }
 
-  .offer {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tu-space-5);
-  }
-
   .formats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -230,48 +210,6 @@ const faq: FaqItem[] = [
 
   .format__body {
     color: var(--tu-text-muted);
-  }
-
-  .creneaux {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--tu-space-5);
-  }
-
-  .creneau {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tu-space-4);
-    padding: var(--tu-space-10);
-    border-radius: var(--tu-radius-lg);
-  }
-
-  .creneau--light {
-    background: var(--tu-navy-50);
-  }
-
-  .creneau__name {
-    font-size: var(--tu-size-3xl);
-    line-height: 1.1;
-  }
-
-  .tu-panel--dark .creneau__name {
-    color: var(--tu-primary);
-  }
-
-  .creneau__price {
-    margin-top: auto;
-    font-family: var(--tu-font-display);
-    font-size: var(--tu-size-lg);
-    font-weight: 600;
-  }
-
-  .creneau__body {
-    font-size: var(--tu-type-body-lg);
-  }
-
-  .tu-panel--dark .creneau__body {
-    color: var(--tu-navy-200);
   }
 
   .benefits-section,
@@ -339,11 +277,7 @@ const faq: FaqItem[] = [
   }
 
   @media (max-width: 60rem) {
-    /* Téléphone : mêmes visuels que sur ordinateur ; formats et formules glissent en rangée (.tu-rail). */
-    .offer {
-      gap: var(--tu-space-5);
-    }
-
+    /* Téléphone : mêmes visuels que sur ordinateur ; les formats glissent en rangée (.tu-rail). */
     .format {
       gap: var(--tu-space-2);
       padding: var(--tu-space-6) 1.375rem;
@@ -351,19 +285,6 @@ const faq: FaqItem[] = [
 
     .format__title {
       font-size: var(--tu-size-lg);
-    }
-
-    .creneau {
-      gap: var(--tu-space-2);
-      padding: var(--tu-space-6);
-    }
-
-    .creneau__name {
-      font-size: var(--tu-size-xl);
-    }
-
-    .creneau__price {
-      font-size: var(--tu-size-base);
     }
 
     .benefits {

@@ -3,19 +3,21 @@ import Base from '../layouts/Base.astro';
 import PageIntro from '../components/layout/PageIntro.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
 import GameDetail from '../components/jeux/GameDetail.astro';
-import ScreenPointsCommuns from '../components/visuels/ScreenPointsCommuns.astro';
-import ScreenQuiz from '../components/visuels/ScreenQuiz.astro';
-import ScreenSurenchere from '../components/visuels/ScreenSurenchere.astro';
-import ScreenMime from '../components/visuels/ScreenMime.astro';
-import ScreenPhoto from '../components/visuels/ScreenPhoto.astro';
+import VideoEcran from '../components/visuels/VideoEcran.astro';
 import { duels, games } from '../data/jeux';
 
 /** L'accroche de chaque jeu est celle de l'accueil : une seule source. */
 const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '';
+
+/** Une courte boucle par jeu (`video/src/site/BoucleJeu.tsx`), dans le décor de celle de l'accueil. */
+const video = (fichier: string) => ({
+  src: `/videos/jeux/${fichier}.mp4`,
+  affiche: `/videos/jeux/${fichier}.jpg`,
+});
 ---
 
 <Base
-  title="Les cinq jeux — Team Up!"
+  title="Cinq jeux d'animation de soirée pour toute la salle — Team Up!"
   description="Points communs, Quiz, Surenchère, Mime, Photo challenge : cinq jeux qui se jouent debout, ensemble, et s'expliquent en une phrase."
 >
   <PageIntro
@@ -43,14 +45,12 @@ const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '
       "Les invités concernés se lèvent : à l'équipe de deviner ce qui les rassemble, chrono lancé.",
       'Plus elle trouve vite, plus elle marque. Si elle sèche, un indice vient à son secours.',
     ]}
-    facts={[
-      { label: 'Durée', value: 'Un peu plus de 2 minutes par équipe' },
-      { label: 'Qui joue', value: 'Une équipe, la salle participe' },
-      { label: 'Téléphone', value: 'Non' },
-    ]}
     reversed
   >
-    <ScreenPointsCommuns variant="consigne" />
+    <VideoEcran
+      {...video('points-communs')}
+      caption="Vidéo : sur un plateau de jeu télé, des invités se lèvent devant une équipe qui cherche ce qui les rassemble."
+    />
   </GameDetail>
 
   <GameDetail
@@ -63,13 +63,11 @@ const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '
       'Chacun file dans le coin de la salle qui correspond à la sienne, marqué au sol.',
       'Les bonnes réponses restent en jeu. Chaque joueur encore debout à la fin rapporte des points à son équipe.',
     ]}
-    facts={[
-      { label: 'Durée', value: 'Une trentaine de secondes par question' },
-      { label: 'Qui joue', value: 'Tout le monde' },
-      { label: 'Téléphone', value: 'Seulement si la salle manque de place' },
-    ]}
   >
-    <ScreenQuiz label="Écran de la salle · Quiz" />
+    <VideoEcran
+      {...video('quiz')}
+      caption="Vidéo : sur un plateau de jeu télé, quatre coins A, B, C et D ; les invités du bon coin lèvent les bras."
+    />
   </GameDetail>
 
   <GameDetail
@@ -82,14 +80,12 @@ const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '
       "Les champions s'avancent, le sujet précis n'est dévoilé qu'au dernier moment.",
       'Chacun surenchérit à voix haute. Le plus audacieux doit tenir parole, chrono en main, devant toute la salle.',
     ]}
-    facts={[
-      { label: 'Durée', value: 'Environ 2 minutes par thème' },
-      { label: 'Qui joue', value: 'Un champion par équipe' },
-      { label: 'Téléphone', value: 'Non' },
-    ]}
     reversed
   >
-    <ScreenSurenchere />
+    <VideoEcran
+      {...video('surenchere')}
+      caption="Vidéo : sur un plateau de jeu télé, deux champions font monter l'enchère, jusqu'à « Adjugé ! »."
+    />
   </GameDetail>
 
   <GameDetail
@@ -102,13 +98,11 @@ const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '
       'Il le mime au suivant, qui le chuchote au suivant, et ainsi de suite.',
       "Le dernier annonce sa réponse, puis l'écran révèle le mot : vert s'il est trouvé, rouge sinon.",
     ]}
-    facts={[
-      { label: 'Durée', value: 'Environ 2 minutes et demie par équipe' },
-      { label: 'Qui joue', value: 'Une équipe, en file' },
-      { label: 'Téléphone', value: 'Non' },
-    ]}
   >
-    <ScreenMime />
+    <VideoEcran
+      {...video('mime')}
+      caption="Vidéo : sur un plateau de jeu télé, trois invités en file se passent un mime."
+    />
   </GameDetail>
 
   <GameDetail
@@ -121,14 +115,12 @@ const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '
       'Entre deux jeux, au bar ou dehors, chaque équipe met en scène ses photos ; le capitaine les envoie.',
       'En final, les photos sont dévoilées thème par thème, et les héros de la fête désignent leur préférée.',
     ]}
-    facts={[
-      { label: 'Durée', value: 'Toute la soirée, puis 5 minutes de final' },
-      { label: 'Qui joue', value: 'Une équipe entière' },
-      { label: 'Téléphone', value: 'Celui du capitaine' },
-    ]}
     reversed
   >
-    <ScreenPhoto />
+    <VideoEcran
+      {...video('photo-challenge')}
+      caption="Vidéo : sur un plateau de jeu télé, une équipe prend la pose pour sa photo."
+    />
   </GameDetail>
 
   <section class="duels-section">
@@ -158,6 +150,11 @@ const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '
     display: flex;
     flex-wrap: wrap;
     gap: var(--tu-space-3);
+  }
+
+  /* La vidéo d'un jeu garde ses proportions : elle ne s'étire pas à la hauteur réservée aux écrans. */
+  :global(.game__visual > .video-ecran) {
+    flex: none;
   }
 
   .toc__link {
