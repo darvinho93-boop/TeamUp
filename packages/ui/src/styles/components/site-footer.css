@@ -28,7 +28,12 @@
   --tu-picto-taille: var(--tu-space-10);
 }
 
-/* Le mail, puis le téléphone en dessous. */
+.tu-site-footer__signature {
+  font-size: var(--tu-size-sm);
+  color: var(--tu-text-muted-on-stone);
+}
+
+/* Le mail, puis le téléphone et Instagram en dessous. */
 .tu-site-footer__contact {
   display: flex;
   flex-direction: column;

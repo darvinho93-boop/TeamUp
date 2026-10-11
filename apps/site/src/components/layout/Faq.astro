@@ -1,5 +1,6 @@
 ---
 import Icon from '../Icon.astro';
+import { enJsonLd } from '../../data/marque';
 
 export type FaqItem = {
   question: string;
@@ -12,8 +13,22 @@ type Props = {
 };
 
 const { items } = Astro.props;
+
+// Les mêmes questions, lisibles par les moteurs de recherche ; seules celles qui ont une réponse.
+const donneesStructurees = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items
+    .filter((item) => item.answer)
+    .map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+};
 ---
 
+<script is:inline type="application/ld+json" set:html={enJsonLd(donneesStructurees)}></script>
 <div class="faq" data-tu-apparait>
   {items.map((item, index) => (
     <details class="faq__item" open={index === 0}>

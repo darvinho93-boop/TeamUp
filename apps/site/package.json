@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "icones": "node scripts/icones.mjs",
+    "apercu": "node scripts/apercu-partage.mjs",
     "dev:host": "astro dev --host"
   },
   "dependencies": {

@@ -2,12 +2,15 @@
 import Base from '../layouts/Base.astro';
 import Button from '@teamup/ui/astro/Button.astro';
 import Icon from '../components/Icon.astro';
+import Partage from '../components/layout/Partage.astro';
+import { CONTACT } from '../data/contact';
 ---
 
 <Base
   title="Demande envoyée — Team Up!"
   description="Votre demande de devis est bien partie. Nous vous rappelons sous 48 heures."
   noindex
+  partage={false}
 >
   <div class="tu-container merci">
     <span class="merci__mark">
@@ -27,7 +30,14 @@ import Icon from '../components/Icon.astro';
         Découvrir les jeux
       </Button>
     </div>
+    <p class="merci__suite">
+      En attendant, retrouvez-nous sur Instagram :{' '}
+      <a href={CONTACT.instagram} rel="me noopener">
+        {CONTACT.instagramNom}
+      </a>
+    </p>
   </div>
+  <Partage title="Vous connaissez quelqu'un qui prépare une fête ?" />
 </Base>
 
 <style>
@@ -74,6 +84,16 @@ import Icon from '../components/Icon.astro';
     justify-content: center;
     gap: var(--tu-space-4);
     margin-top: var(--tu-space-3);
+  }
+
+  .merci__suite {
+    color: var(--tu-text-muted);
+  }
+
+  /* Sous le doigt : le lien fait 44 px de haut, sans décaler la ligne. */
+  .merci__suite a {
+    display: inline-block;
+    padding-block: var(--tu-space-3);
   }
 
   /* Mobile : aligné à gauche, boutons pleine largeur, comme la maquette. */

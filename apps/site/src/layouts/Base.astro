@@ -6,26 +6,81 @@ import SiteHeader from '@teamup/ui/astro/SiteHeader.astro';
 import SiteFooter from '@teamup/ui/astro/SiteFooter.astro';
 import { APP_URL } from '../lib/app';
 import { CONTACT } from '../data/contact';
+import { MARQUE, enJsonLd } from '../data/marque';
 import Consentement from '../components/layout/Consentement.astro';
+import Partage from '../components/layout/Partage.astro';
 import PoliceTitres from '@teamup/ui/astro/PoliceTitres.astro';
 import favicon32 from '@teamup/brand/icons/favicon32.png';
 import favicon16 from '@teamup/brand/icons/favicon16.png';
 import appleTouchIcon from '@teamup/brand/icons/appletouchicon.png';
-import ogImage from '@teamup/brand/icons/iconmaskable512.png';
+import icone512 from '@teamup/brand/icons/icon512.png';
 import tokens from '@teamup/brand/tokens.json';
 
 type Props = {
   title: string;
   description: string;
   noindex?: boolean;
+  /** Le bloc de partage du bas de page : retiré des formulaires, des pages légales et de la 404. */
+  partage?: boolean;
   /** Teinte d'accent de la page : les maquettes Entreprises passent surtitres et bandeau en bleu. */
   accent?: 'particuliers' | 'entreprises';
+  /** Une image du haut de page à charger en priorité (l'affiche de la vidéo de l'accueil). */
+  imagePrioritaire?: string;
 };
 
-const { title, description, noindex = false, accent } = Astro.props;
+const {
+  title,
+  description,
+  noindex = false,
+  partage = true,
+  accent,
+  imagePrioritaire,
+} = Astro.props;
 
 const currentPath = Astro.url.pathname;
 const canonical = new URL(currentPath, Astro.site);
+// L'aperçu des liens partagés (WhatsApp, iMessage, réseaux) : `pnpm --filter @teamup/site apercu`.
+const apercu = new URL('/apercu-partage.jpg', Astro.site);
+
+// Ce que les moteurs de recherche peuvent lire sans deviner : qui, quoi, où, comment joindre.
+// Pas de prix ici tant que l'offre de lancement court : une donnée périmée serait pire que rien.
+const racine = new URL('/', Astro.site).href;
+const france = { '@type': 'Country', name: 'France' };
+const donneesStructurees = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${racine}#organisation`,
+      name: MARQUE.nom,
+      slogan: MARQUE.slogan,
+      url: racine,
+      logo: new URL(icone512.src, Astro.site).href,
+      email: CONTACT.email,
+      telephone: CONTACT.telephoneLien,
+      areaServed: france,
+      sameAs: [CONTACT.instagram],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${racine}#site`,
+      name: MARQUE.nom,
+      url: racine,
+      inLanguage: 'fr-FR',
+      publisher: { '@id': `${racine}#organisation` },
+    },
+    {
+      '@type': 'Service',
+      '@id': `${racine}#service`,
+      name: `${MARQUE.service} ${MARQUE.nom}`,
+      serviceType: MARQUE.service,
+      description:
+        "Un animateur fait jouer toute la salle en équipes mélangées, jusqu'à 150 invités : mariages, anniversaires, fêtes de famille, séminaires et team building.",
+      provider: { '@id': `${racine}#organisation` },
+      areaServed: france,
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -46,8 +101,17 @@ const canonical = new URL(currentPath, Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(ogImage.src, Astro.site)} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={apercu} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Team Up! — On joue. On se rencontre. On crée du lien." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={apercu} />
+    <script is:inline type="application/ld+json" set:html={enJsonLd(donneesStructurees)}></script>
+    {imagePrioritaire && (
+      <link rel="preload" as="image" href={imagePrioritaire} fetchpriority="high" />
+    )}
 
     <link rel="icon" type="image/png" sizes="32x32" href={favicon32.src} />
     <link rel="icon" type="image/png" sizes="16x16" href={favicon16.src} />
@@ -92,12 +156,16 @@ const canonical = new URL(currentPath, Astro.site);
     <SiteHeader currentPath={currentPath} />
     <main id="contenu" data-accent={accent}>
       <slot />
+      {partage && <Partage />}
     </main>
     <SiteFooter
       regieUrl={`${APP_URL}/regie`}
       email={CONTACT.email}
       telephone={CONTACT.telephone}
       telephoneLien={CONTACT.telephoneLien}
+      instagram={CONTACT.instagram}
+      instagramNom={CONTACT.instagramNom}
+      signature={`Animation de soirée, ${CONTACT.zone}.`}
     />
     <Consentement />
 
@@ -115,6 +183,23 @@ const canonical = new URL(currentPath, Astro.site);
       };
       regler();
       etroit.addEventListener('change', regler);
+
+      // Provenance des devis, sans cookie ni stockage : le mot `via` d'un lien partagé suit le
+      // visiteur de page en page dans l'adresse, et un lien vers le devis dit de quelle page il part.
+      const FORME = /^[a-z0-9-]{1,24}$/;
+      const via = new URLSearchParams(location.search).get('via') ?? '';
+      const page = location.pathname.replace(/^\/|\/$/g, '') || 'accueil';
+      for (const lien of document.querySelectorAll<HTMLAnchorElement>('a[href^="/"]')) {
+        const cible = new URL(lien.href);
+        if (cible.origin !== location.origin) continue;
+        const versDevis = cible.pathname.replace(/\/$/, '') === '/devis';
+        const suitLeLien = FORME.test(via);
+        const ditLaPage = versDevis && FORME.test(page);
+        if (!suitLeLien && !ditLaPage) continue;
+        if (suitLeLien) cible.searchParams.set('via', via);
+        if (ditLaPage) cible.searchParams.set('depuis', page);
+        lien.href = cible.pathname + cible.search + cible.hash;
+      }
     </script>
   </body>
 </html>

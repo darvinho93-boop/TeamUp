@@ -9,9 +9,22 @@ type Props = {
   telephone?: string;
   /** Le numéro sans espaces, pour le lien `tel:`. */
   telephoneLien?: string;
+  /** Compte Instagram, avec son nom affiché. */
+  instagram?: string;
+  instagramNom?: string;
+  /** Une ligne sous le logo : ce que fait la marque, et où. */
+  signature?: string;
 };
 
-const { regieUrl = '/regie', email, telephone, telephoneLien } = Astro.props;
+const {
+  regieUrl = '/regie',
+  email,
+  telephone,
+  telephoneLien,
+  instagram,
+  instagramNom,
+  signature,
+} = Astro.props;
 
 const pages = [
   { href: '/particuliers', label: 'Particuliers' },
@@ -38,6 +51,7 @@ const legal = [
           <span class="tu-wordmark__bang">!</span>
         </span>
       </span>
+      {signature && <p class="tu-site-footer__signature">{signature}</p>}
       {(email || telephone) && (
         <p class="tu-site-footer__contact">
           {email && (
@@ -48,6 +62,14 @@ const legal = [
           {telephone && (
             <span>
               Téléphone : <a href={`tel:${telephoneLien ?? telephone}`}>{telephone}</a>
+            </span>
+          )}
+          {instagram && (
+            <span>
+              Instagram :{' '}
+              <a href={instagram} rel="me noopener">
+                {instagramNom ?? 'Instagram'}
+              </a>
             </span>
           )}
         </p>
