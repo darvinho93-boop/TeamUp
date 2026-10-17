@@ -1,7 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { FormulaireInvite } from '@/regie/FormulaireInvite';
-import { LogoSoiree } from '@/regie/LogoSoiree';
 import { ModeMembres } from '@/regie/ModeMembres';
 import { RafraichirAuto } from '@/regie/RafraichirAuto';
 import { SalleEquipes } from '@/regie/SalleEquipes';
@@ -82,14 +81,6 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
       <p className="tu-regie__muted" role="status">
         {t('compte', { joueurs: (joueurs ?? []).length, connectes })}
       </p>
-      <LogoSoiree
-        code={evenement.code}
-        logo={
-          evenement.logo_initiales && evenement.logo_titre
-            ? { initiales: evenement.logo_initiales, titre: evenement.logo_titre }
-            : null
-        }
-      />
       <TirerCapitaines code={evenement.code} />
       <ModeMembres
         code={evenement.code}

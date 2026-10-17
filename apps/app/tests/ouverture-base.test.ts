@@ -21,7 +21,6 @@ afterAll(() => (baseDisponible ? supprimerEvenements([evenement.id]) : undefined
 
 interface Ecran {
   pilotage: { scene: string; version: string };
-  evenement: { logo: { initiales: string[]; titre: string } | null };
 }
 
 async function ecran() {
@@ -30,11 +29,6 @@ async function ecran() {
   });
   return data!;
 }
-
-const poser = async (
-  logo: { logo_initiales: string[] | null; logo_titre: string | null },
-  email = 'anna@teamup.test',
-) => (await clientAnimateur(email)).from('evenements').update(logo).eq('id', evenement.id);
 
 avecBase('la scène d’ouverture', () => {
   it('ouvre une soirée neuve', async () => {
@@ -78,48 +72,5 @@ avecBase('la scène d’ouverture', () => {
     );
     expect(erreur).toBeNull();
     expect((await ecran()).pilotage.scene).toBe('ouverture');
-  });
-});
-
-avecBase('le logo de la soirée', () => {
-  it('n’existe pas tant que la Salle ne l’a pas saisi', async () => {
-    expect((await ecran()).evenement.logo).toBeNull();
-  });
-
-  it('se saisit sous la session de l’animateur, et l’écran le reçoit', async () => {
-    const { error } = await poser({ logo_initiales: ['V', 'M'], logo_titre: 'Vinoyan & Mélanie' });
-    expect(error).toBeNull();
-    expect((await ecran()).evenement.logo).toEqual({
-      initiales: ['V', 'M'],
-      titre: 'Vinoyan & Mélanie',
-    });
-  });
-
-  it('reste intact pour un animateur d’une autre soirée', async () => {
-    await poser({ logo_initiales: ['X'], logo_titre: 'Intrus' }, 'brahim@teamup.test');
-    expect((await ecran()).evenement.logo?.titre).toBe('Vinoyan & Mélanie');
-  });
-
-  it('refuse un monogramme mal formé ou un logo incomplet', async () => {
-    expect(
-      (await poser({ logo_initiales: ['V', 'M', 'A', 'B'], logo_titre: 'Trop' })).error?.message,
-    ).toMatch(/logo_initiales_forme/);
-    expect(
-      (await poser({ logo_initiales: ['VMAB'], logo_titre: 'Trop long' })).error?.message,
-    ).toMatch(/logo_initiales_forme/);
-    expect((await poser({ logo_initiales: [], logo_titre: 'Vide' })).error?.message).toMatch(
-      /logo_initiales_forme/,
-    );
-    expect((await poser({ logo_initiales: ['V'], logo_titre: null })).error?.message).toMatch(
-      /logo_complet/,
-    );
-    expect(
-      (await poser({ logo_initiales: ['V'], logo_titre: 'x'.repeat(61) })).error?.message,
-    ).toMatch(/logo_titre_forme/);
-  });
-
-  it('se retire', async () => {
-    expect((await poser({ logo_initiales: null, logo_titre: null })).error).toBeNull();
-    expect((await ecran()).evenement.logo).toBeNull();
   });
 });

@@ -98,7 +98,7 @@ export function Salle({
               <Pictogramme taille="lg" anime />
             </div>
           )}
-          {enRevelation && <Revelation key={revelation} logo={etat.evenement.logo ?? null} />}
+          {enRevelation && <Revelation key={revelation} />}
           {sons.aActiver && (
             <button
               type="button"

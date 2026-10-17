@@ -5,7 +5,6 @@
 
 import type { GameCode, StatutManche, StatutPassage } from '@teamup/game';
 import type { Langue } from './partie';
-import type { LogoSoiree } from './logo-soiree';
 
 export type Scene =
   'ouverture' | 'accueil' | 'equipes' | 'programme' | 'intro' | 'jeu' | 'scores' | 'podium';
@@ -69,8 +68,6 @@ export interface EtatSalle {
     client_nom: string;
     creneau_minutes: number;
     photos_closes: boolean;
-    /** Le logo de la soirée (monogramme et titre) ; absent sans la migration du 2026-10-17. */
-    logo?: LogoSoiree | null;
   };
   pilotage: {
     scene: Scene;

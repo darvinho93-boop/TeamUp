@@ -26,7 +26,6 @@ import {
   indicesMsDe,
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
-import { Monogramme } from '@/marque/Monogramme';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Ronds } from '@/marque/Ronds';
 import {
@@ -99,30 +98,22 @@ function Ouverture() {
 
 function Accueil({ etat, qrSvg, adresse }: Props) {
   const t = useTranslations('ecran');
-  const logo = etat.evenement.logo ?? null;
   return (
-    <div className="tu-stage__body tu-stage-accueil-page" data-scene="accueil">
-      {logo && (
-        <header className="tu-stage-bandeau" data-testid="bandeau">
-          <Monogramme logo={logo} titreSeul />
-        </header>
-      )}
-      <div className="tu-stage-accueil">
-        <div className="tu-stage-qr" dangerouslySetInnerHTML={{ __html: qrSvg }} />
-        <div className="tu-stage-accueil__texte">
-          <span className="tu-marque">
-            <Pictogramme taille="coin" />
-            <Wordmark className="tu-stage-accueil__logo" />
-          </span>
-          <p className="tu-stage__l">{t('rejoindre')}</p>
-          <p className="tu-stage-code" data-testid="code">
-            {etat.evenement.code}
-          </p>
-          <p className="tu-stage__m tu-stage__muted">{t('adresse', { adresse })}</p>
-          <p className="tu-stage__m" data-testid="joueurs">
-            {t('joueurs', { n: etat.joueurs })}
-          </p>
-        </div>
+    <div className="tu-stage__body tu-stage-accueil" data-scene="accueil">
+      <div className="tu-stage-qr" dangerouslySetInnerHTML={{ __html: qrSvg }} />
+      <div className="tu-stage-accueil__texte">
+        <span className="tu-marque">
+          <Pictogramme taille="coin" />
+          <Wordmark className="tu-stage-accueil__logo" />
+        </span>
+        <p className="tu-stage__l">{t('rejoindre')}</p>
+        <p className="tu-stage-code" data-testid="code">
+          {etat.evenement.code}
+        </p>
+        <p className="tu-stage__m tu-stage__muted">{t('adresse', { adresse })}</p>
+        <p className="tu-stage__m" data-testid="joueurs">
+          {t('joueurs', { n: etat.joueurs })}
+        </p>
       </div>
     </div>
   );

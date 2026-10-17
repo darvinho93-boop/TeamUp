@@ -14,9 +14,7 @@ test.beforeAll(async () => {
 
 test.afterAll(() => supprimerEvenements([evenement.id]));
 
-test('le logo saisi à la Salle se révèle au passage de l’ouverture à l’accueil', async ({
-  browser,
-}) => {
+test('l’ouverture mène à la page du QR code par le logo Team Up!', async ({ browser }) => {
   test.setTimeout(120_000);
   const regie = await (
     await browser.newContext({ viewport: { width: 1440, height: 900 }, isMobile: false })
@@ -26,15 +24,6 @@ test('le logo saisi à la Salle se révèle au passage de l’ouverture à l’a
   await regie.getByLabel('Mot de passe').fill('motdepasse');
   await regie.getByRole('button', { name: 'Se connecter' }).click();
   await regie.waitForURL('**/regie');
-
-  // --- La Salle saisit le monogramme et le titre ; l'aperçu les montre.
-  await regie.goto(`/regie/${evenement.code}/salle`);
-  const logo = regie.getByTestId('logo-soiree');
-  await logo.getByLabel('Monogramme').fill('V | M');
-  await logo.getByLabel('Titre').fill('Vinoyan & Mélanie');
-  await expect(logo.getByRole('img', { name: 'Aperçu du logo' })).toContainText('V | M');
-  await logo.getByRole('button', { name: 'Enregistrer le logo' }).click();
-  await expect(logo.getByText('Logo enregistré.')).toBeVisible();
 
   // --- L'écran tourne sur l'ouverture : les quatre ronds.
   const ecran = await (
@@ -49,7 +38,7 @@ test('le logo saisi à la Salle se révèle au passage de l’ouverture à l’a
   await expect(ecran.locator('[data-scene="ouverture"] .tu-rond')).toHaveCount(4);
   await expect(ecran.locator('[data-en-direct="true"]')).toBeVisible({ timeout: 15_000 });
 
-  // --- « Accueil » au pilotage : la révélation passe, puis la page du QR avec son bandeau.
+  // --- « Accueil » au pilotage : le logo Team Up! une dernière fois, puis la page du QR.
   await regie.goto(`/regie/${evenement.code}/pilotage`);
   await expect(regie.getByRole('button', { name: 'Ouverture' })).toHaveAttribute(
     'aria-pressed',
@@ -59,10 +48,6 @@ test('le logo saisi à la Salle se révèle au passage de l’ouverture à l’a
 
   const revelation = ecran.getByTestId('revelation');
   await expect(revelation).toBeVisible({ timeout: 5000 });
-  await expect(revelation.locator('.tu-soiree__monogramme')).toHaveText('V|M');
-  await expect(revelation.getByTestId('titre-soiree')).toHaveText('Vinoyan & Mélanie');
   await expect(revelation).toHaveCount(0, { timeout: 15_000 });
-
-  await expect(ecran.getByTestId('bandeau')).toHaveText('Vinoyan & Mélanie');
   await expect(ecran.getByTestId('code')).toHaveText(evenement.code);
 });

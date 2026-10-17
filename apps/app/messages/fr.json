@@ -418,18 +418,7 @@
       "annuler": "Annuler",
       "figer": "Bloquer le nom",
       "defiger": "Débloquer le nom",
-      "nomFige": "nom bloqué",
-      "logoTitre": "Logo de la soirée",
-      "logoAide": "Il apparaît à l'écran quand vous passez de l'ouverture à l'accueil, puis en bandeau au-dessus du QR code.",
-      "monogramme": "Monogramme",
-      "monogrammeAide": "Initiales séparées par | (ex. V | M), trois au plus.",
-      "titreLogo": "Titre",
-      "titreLogoAide": "Ce que le monogramme devient (ex. Vinoyan & Mélanie).",
-      "apercuLogo": "Aperçu du logo",
-      "enregistrerLogo": "Enregistrer le logo",
-      "retirerLogo": "Retirer le logo",
-      "logoInvalide": "Monogramme : 1 à 3 parties de 3 caractères au plus, séparées par |. Titre : 60 caractères au plus.",
-      "logoEnregistre": "Logo enregistré."
+      "nomFige": "nom bloqué"
     },
     "scores": {
       "titre": "Scores",

@@ -418,18 +418,7 @@
       "annuler": "Cancel",
       "figer": "Lock the name",
       "defiger": "Unlock the name",
-      "nomFige": "name locked",
-      "logoTitre": "Event logo",
-      "logoAide": "It appears on screen when you go from the opening to the welcome page, then as a banner above the QR code.",
-      "monogramme": "Monogram",
-      "monogrammeAide": "Initials separated by | (e.g. V | M), three at most.",
-      "titreLogo": "Title",
-      "titreLogoAide": "What the monogram turns into (e.g. Vinoyan & Mélanie).",
-      "apercuLogo": "Logo preview",
-      "enregistrerLogo": "Save the logo",
-      "retirerLogo": "Remove the logo",
-      "logoInvalide": "Monogram: 1 to 3 parts of at most 3 characters, separated by |. Title: 60 characters at most.",
-      "logoEnregistre": "Logo saved."
+      "nomFige": "name locked"
     },
     "scores": {
       "titre": "Scores",
