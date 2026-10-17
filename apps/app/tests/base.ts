@@ -143,6 +143,12 @@ export async function creerEvenementJetable(
     const { error: e } = await service.from('equipes').insert(equipes);
     if (e) throw new Error(e.message);
   }
+  // Une soirée neuve naît sur l'ouverture (2026-10-17) ; les tests partent de l'accueil.
+  const { error: p } = await service
+    .from('pilotage')
+    .update({ scene: 'accueil' })
+    .eq('evenement_id', id);
+  if (p) throw new Error(p.message);
   return { id, code };
 }
 

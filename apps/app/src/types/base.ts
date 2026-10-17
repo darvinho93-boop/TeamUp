@@ -219,6 +219,8 @@ export type Database = {
           invites_attendus: number | null
           langues: Database["public"]["Enums"]["langue"][]
           lieu: string | null
+          logo_initiales: string[] | null
+          logo_titre: string | null
           occasion: string | null
           photos_closes_le: string | null
           statut: Database["public"]["Enums"]["statut_evenement"]
@@ -238,6 +240,8 @@ export type Database = {
           invites_attendus?: number | null
           langues?: Database["public"]["Enums"]["langue"][]
           lieu?: string | null
+          logo_initiales?: string[] | null
+          logo_titre?: string | null
           occasion?: string | null
           photos_closes_le?: string | null
           statut?: Database["public"]["Enums"]["statut_evenement"]
@@ -257,6 +261,8 @@ export type Database = {
           invites_attendus?: number | null
           langues?: Database["public"]["Enums"]["langue"][]
           lieu?: string | null
+          logo_initiales?: string[] | null
+          logo_titre?: string | null
           occasion?: string | null
           photos_closes_le?: string | null
           statut?: Database["public"]["Enums"]["statut_evenement"]
@@ -873,6 +879,7 @@ export type Database = {
       etat_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       evenement_public: { Args: { p_code: string }; Returns: Json }
       expiration_photo: { Args: { p_evenement: string }; Returns: string }
+      monogramme_valide: { Args: { p_initiales: string[] }; Returns: boolean }
       nouveau_code: { Args: never; Returns: string }
       ordonner_passages: {
         Args: { p_manche: string; p_passages: string[] }
@@ -954,6 +961,7 @@ export type Database = {
       langue: "fr" | "en" | "ta"
       role_animateur: "animateur" | "admin"
       scene:
+        | "ouverture"
         | "accueil"
         | "equipes"
         | "programme"
@@ -1097,6 +1105,7 @@ export const Constants = {
       langue: ["fr", "en", "ta"],
       role_animateur: ["animateur", "admin"],
       scene: [
+        "ouverture",
         "accueil",
         "equipes",
         "programme",
