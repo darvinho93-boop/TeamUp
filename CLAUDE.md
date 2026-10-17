@@ -657,3 +657,29 @@ la Salle choisit entre « **tous les noms** » (défaut) et « **carrousel** ».
   le cadre et entier, destitution et retrait suivis à l'écran, bascule en carrousel.
 - `e2e/partie.spec.ts` dépasse parfois son plafond de 1,5 s sur ce poste, avant comme après ces
   changements (A/B fait le 2026-10-17) : la CI fait foi.
+
+## Conventions posées le 2026-10-17 (capitaines et noms d'équipe)
+
+Tranché le 2026-10-17 : à l'arrivée, l'invité **se propose comme capitaine** ou non ; la régie
+**tire les capitaines** d'un bouton à la Salle (volontaires d'abord, sinon tout joueur qui a un
+téléphone ; une équipe qui a déjà son capitaine le garde) ; le capitaine **renomme son équipe**
+depuis son téléphone, tout de suite à l'écran, et la régie peut renommer et **bloquer** le nom.
+
+- **Écart assumé à la spec v3** (« deux principes ») : le téléphone y sert à trois choses ;
+  renommer l'équipe en est une quatrième, hors jeu, un téléphone par équipe. Le cahier des
+  charges (§ 2, « rôle attribué par la régie ») reste tenu : c'est la régie qui lance le tirage.
+- `joueurs.volontaire` (jamais vrai pour un invité sans téléphone), posé par
+  `rejoindre_evenement(…, p_volontaire)` via `placer_joueur`. L'étape « Capitaine ? » vient après
+  le prénom et le groupe ; le choix part avec l'arrivée (`volontaire` dans la route `rejoindre`).
+- `tirer_capitaines(p_evenement)` : security invoker (RLS de l'animateur), une requête
+  (`distinct on` par équipe, volontaires d'abord, puis au hasard), renvoie le nombre de
+  capitaines nommés ; se relance sans risque après de nouvelles arrivées.
+- `renommer_equipe(p_jeton_hash, p_nom)` : rôle de service ; refuse session inconnue, non-capitaine,
+  nom figé, nom vide ou de plus de 24 caractères (la carte de l'écran le loge en entier). La régie
+  écrit `equipes.nom` (60 au plus) et `equipes.nom_fige` sous sa session.
+- Un nom changé par un téléphone n'est couvert par aucun signal : `equipes` est dans la
+  publication temps réel et l'écran écoute ses `UPDATE` (rares). Les téléphones le voient à la
+  relecture suivante ; `etat_joueur.equipe.nom_fige` masque « Renommer l'équipe ».
+- `e2e/capitaines.spec.ts` : une volontaire et un non-volontaire, tirage, renommage vu à l'écran
+  sans touche de régie, nom bloqué puis renommé par la régie. Les parcours d'arrivée existants
+  passent l'étape « Capitaine ? » par « Non merci ».
