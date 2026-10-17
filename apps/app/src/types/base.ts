@@ -603,6 +603,7 @@ export type Database = {
           indices: number
           maj_le: string
           manche_id: string | null
+          membres_mode: string
           passage_id: string | null
           scene: Database["public"]["Enums"]["scene"]
           son_actif: boolean
@@ -616,6 +617,7 @@ export type Database = {
           indices?: number
           maj_le?: string
           manche_id?: string | null
+          membres_mode?: string
           passage_id?: string | null
           scene?: Database["public"]["Enums"]["scene"]
           son_actif?: boolean
@@ -629,6 +631,7 @@ export type Database = {
           indices?: number
           maj_le?: string
           manche_id?: string | null
+          membres_mode?: string
           passage_id?: string | null
           scene?: Database["public"]["Enums"]["scene"]
           son_actif?: boolean
@@ -895,6 +898,10 @@ export type Database = {
           equipe_id: string
           joueur_id: string
         }[]
+      }
+      regler_membres: {
+        Args: { p_evenement: string; p_mode: string }
+        Returns: undefined
       }
       regler_son: {
         Args: { p_actif: boolean; p_evenement: string; p_volume: number }
