@@ -677,9 +677,12 @@ depuis son téléphone, tout de suite à l'écran, et la régie peut renommer et
 - `renommer_equipe(p_jeton_hash, p_nom)` : rôle de service ; refuse session inconnue, non-capitaine,
   nom figé, nom vide ou de plus de 24 caractères (la carte de l'écran le loge en entier). La régie
   écrit `equipes.nom` (60 au plus) et `equipes.nom_fige` sous sa session.
-- Un nom changé par un téléphone n'est couvert par aucun signal : `equipes` est dans la
-  publication temps réel et l'écran écoute ses `UPDATE` (rares). Les téléphones le voient à la
-  relecture suivante ; `etat_joueur.equipe.nom_fige` masque « Renommer l'équipe ».
+- Un nom changé par un téléphone n'est couvert par aucun signal de la régie : après un
+  renommage réussi, **le serveur envoie lui-même le signal** `relire` sur `salle:<id>`
+  (`src/serveur/signal.ts`, API de diffusion de Supabase, au mieux). Écouter les `UPDATE` de
+  `equipes` (`postgres_changes`) avait été essayé : en CI, l'écran ne les recevait pas à temps.
+  `equipes` reste dans la publication temps réel (migration `20261017110000`), sans abonné.
+  `etat_joueur.equipe.nom_fige` masque « Renommer l'équipe » au téléphone.
 - `e2e/capitaines.spec.ts` : une volontaire et un non-volontaire, tirage, renommage vu à l'écran
   sans touche de régie, nom bloqué puis renommé par la régie. Les parcours d'arrivée existants
   passent l'étape « Capitaine ? » par « Non merci ».
