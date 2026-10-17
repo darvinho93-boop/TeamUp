@@ -26,6 +26,24 @@
     "aide": "To mix the teams. We don't keep it.",
     "sansReponse": "I'd rather not say"
   },
+  "capitaine": {
+    "titre": "Captain?",
+    "aide": "The captain picks the team name and takes the photos. We draw lots among the volunteers.",
+    "oui": "I volunteer",
+    "non": "No thanks"
+  },
+  "nomEquipe": {
+    "ouvrir": "Rename the team",
+    "titre": "Your team's name",
+    "aide": "It shows up right away on the screen in the room.",
+    "champ": "Team name",
+    "bouton": "Save",
+    "retour": "Back",
+    "vide": "Type a name.",
+    "fige": "The host has locked the team name.",
+    "capitaine": "You're no longer captain.",
+    "serveur": "That didn't work. Try again."
+  },
   "ajout": {
     "ouvrir": "Add a guest",
     "titre": "A guest without a phone",
@@ -57,7 +75,8 @@
     "prochain": "Next game: {jeu}",
     "regarde": "Watch the screen",
     "voirEquipe": "See my team",
-    "termine": "The game is over. Thanks for playing!"
+    "termine": "The game is over. Thanks for playing!",
+    "capitaine": "You're your team's captain."
   },
   "horsLigne": {
     "bandeau": "Connection lost. Retrying…"
@@ -388,7 +407,17 @@
       "retirerConfirmer": "Remove {prenom}? They can come back with the QR code",
       "modeTitre": "Names on screen",
       "modeTous": "All names",
-      "modeCarrousel": "Carousel"
+      "modeCarrousel": "Carousel",
+      "tirer": "Draw the captains",
+      "tires": "{n, plural, =0 {Every team already has a captain} one {# captain drawn} other {# captains drawn}}",
+      "volontaire": "volunteer",
+      "renommer": "Rename",
+      "nomEquipe": "Name of team {nom}",
+      "enregistrer": "Save",
+      "annuler": "Cancel",
+      "figer": "Lock the name",
+      "defiger": "Unlock the name",
+      "nomFige": "name locked"
     },
     "scores": {
       "titre": "Scores",

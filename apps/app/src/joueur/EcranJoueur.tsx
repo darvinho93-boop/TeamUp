@@ -6,12 +6,13 @@ import { Button, cx, teamModifier } from '@teamup/ui/react';
 import type { EtatJoueur, GroupePublic } from '@/lib/partie';
 import { AjoutInvite } from './AjoutInvite';
 import { Cadre } from './Cadre';
+import { NomEquipe } from './NomEquipe';
 import { Photos } from './Photos';
 import { Quiz } from './Quiz';
 import { useEtatJoueur } from './useEtatJoueur';
 import { useFilePhotos } from './useFilePhotos';
 
-type Vue = 'equipe' | 'attente' | 'photos' | 'ajout';
+type Vue = 'equipe' | 'attente' | 'photos' | 'ajout' | 'nom';
 
 /** Le joueur a rejoint : « Mon équipe », puis l'attente, tenus à jour en continu. */
 export function EcranJoueur({
@@ -84,6 +85,23 @@ export function EcranJoueur({
     );
   }
 
+  // Le capitaine renomme son équipe ; s'il perd le rôle ou que la régie fige le nom pendant la
+  // saisie, la vue se ferme d'elle-même.
+  const peutRenommer =
+    joueur.capitaine && !!equipe && !equipe.nom_fige && evenement.statut !== 'termine';
+  if (vue === 'nom' && peutRenommer) {
+    return (
+      <Cadre bandeau={bandeau}>
+        <NomEquipe
+          code={code}
+          nomActuel={equipe.nom}
+          remplacer={remplacer}
+          retour={() => setVue('attente')}
+        />
+      </Cadre>
+    );
+  }
+
   if (vue === 'photos' && photos) {
     return (
       <Cadre bandeau={bandeau}>
@@ -135,6 +153,11 @@ export function EcranJoueur({
         {evenement.statut !== 'termine' && (
           <div className="tu-player__actions">
             <p className="tu-wait-look">{t('attente.regarde')}</p>
+            {joueur.capitaine && equipe && (
+              <p className="tu-player__lead" data-testid="capitaine">
+                {t('attente.capitaine')}
+              </p>
+            )}
             {photos && equipe && (
               <Button
                 variant={joueur.capitaine && !photos.closes ? 'accent' : 'outline'}
@@ -146,6 +169,11 @@ export function EcranJoueur({
                   envoyees: photos.themes.filter((th) => th.envoyee_le !== null).length,
                   total: photos.themes.length,
                 })}
+              </Button>
+            )}
+            {peutRenommer && (
+              <Button variant="outline" size="lg" block onClick={() => setVue('nom')}>
+                {t('nomEquipe.ouvrir')}
               </Button>
             )}
             {joueur.peut_ajouter && (

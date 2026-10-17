@@ -17,6 +17,7 @@ test('invités sans téléphone : ajoutés par la régie et par un joueur autori
   await telephone.goto(`/${evenement.code}`);
   await telephone.getByLabel('Prénom').fill('Paul');
   await telephone.getByRole('button', { name: "C'est parti" }).click();
+  await telephone.getByRole('button', { name: 'Non merci' }).click();
   await telephone.getByRole('button', { name: 'Compris' }).click();
   await expect(telephone.getByText('Salut Paul !')).toBeVisible();
   await expect(telephone.getByRole('button', { name: 'Ajouter un invité' })).toHaveCount(0);

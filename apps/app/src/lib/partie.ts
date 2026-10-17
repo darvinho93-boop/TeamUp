@@ -83,7 +83,14 @@ export interface EtatJoueur {
     langues: Langue[];
     photos_closes: boolean;
   };
-  equipe: { id: string; numero: number; nom: string; points: number } | null;
+  equipe: {
+    id: string;
+    numero: number;
+    nom: string;
+    points: number;
+    /** La régie a bloqué le nom : le capitaine ne peut plus le changer. */
+    nom_fige?: boolean;
+  } | null;
   manche: { jeu: GameCode; ordre: number } | null;
   prochaine: { jeu: GameCode; ordre: number } | null;
   quiz: QuizJoueur | null;

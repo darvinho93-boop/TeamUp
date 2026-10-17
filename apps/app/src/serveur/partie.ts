@@ -39,6 +39,8 @@ export async function rejoindre(
   jeton: string,
   /** Le groupe ne sert qu'au tirage de l'équipe : la base ne le range pas sur le joueur. */
   groupe: string | null = null,
+  /** S'est proposé comme capitaine : prioritaire au tirage de la régie. */
+  volontaire = false,
 ): Promise<ResultatArrivee> {
   const { error } = await supabaseService().rpc('rejoindre_evenement', {
     p_code: code,
@@ -46,6 +48,7 @@ export async function rejoindre(
     p_langue: langue,
     p_jeton_hash: hacher(jeton),
     ...(groupe ? { p_groupe: groupe } : {}),
+    p_volontaire: volontaire,
   });
   if (!error) return { ok: true };
   if (/complet/.test(error.message)) return { ok: false, erreur: 'complet' };
@@ -117,6 +120,40 @@ export async function repondreQuiz(
             : /session/.test(error.message)
               ? 'session'
               : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
+}
+
+export type RefusNom = 'session' | 'capitaine' | 'fige' | 'nom';
+
+/**
+ * Le capitaine de ce cookie renomme son équipe. La base décide seule (capitaine, nom figé par
+ * la régie, 24 caractères au plus) ; renvoie l'état à jour pour l'afficher sans attendre.
+ */
+export async function renommerEquipe(
+  code: string,
+  nom: string,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusNom }> {
+  const jeton = await jetonDe(code);
+  const etat = jeton ? await etatPourJeton(code, jeton) : null;
+  if (!jeton || !etat) return { ok: false, refus: 'session' };
+
+  const { error } = await supabaseService().rpc('renommer_equipe', {
+    p_jeton_hash: hacher(jeton),
+    p_nom: nom,
+  });
+  if (error) {
+    const refus: RefusNom | null = /pas capitaine/.test(error.message)
+      ? 'capitaine'
+      : /figé/.test(error.message)
+        ? 'fige'
+        : /nom invalide/.test(error.message)
+          ? 'nom'
+          : /session/.test(error.message)
+            ? 'session'
+            : null;
     if (!refus) throw new Error(error.message);
     return { ok: false, refus };
   }

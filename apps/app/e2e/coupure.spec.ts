@@ -17,6 +17,7 @@ test('une coupure réseau puis son retour reprennent la session, sans ressaisie'
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill('Léo');
   await page.getByRole('button', { name: "C'est parti" }).click();
+  await page.getByRole('button', { name: 'Non merci' }).click();
   await page.getByRole('button', { name: 'Compris' }).click();
   await expect(page.getByRole('heading', { name: 'Salut Léo !' })).toBeVisible();
   await expect(page.getByTestId('points')).toHaveText('0 point');

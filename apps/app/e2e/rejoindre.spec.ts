@@ -25,6 +25,8 @@ test('du code tapé à la main jusqu’à l’attente, puis retour sans ressaisi
 
   await page.getByLabel('First name').fill('Asha');
   await page.getByRole('button', { name: "Let's go" }).click();
+  await expect(page.getByRole('heading', { name: 'Captain?' })).toBeVisible();
+  await page.getByRole('button', { name: 'No thanks' }).click();
   await expect(page.getByText('Your team')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Équipe 1' })).toBeVisible();
 

@@ -26,6 +26,24 @@
     "aide": "Pour mélanger les équipes. On ne le garde pas.",
     "sansReponse": "Je préfère ne pas répondre"
   },
+  "capitaine": {
+    "titre": "Capitaine ?",
+    "aide": "Le capitaine choisit le nom de l'équipe et prend les photos. On tire au sort parmi les volontaires.",
+    "oui": "Je me propose",
+    "non": "Non merci"
+  },
+  "nomEquipe": {
+    "ouvrir": "Renommer l'équipe",
+    "titre": "Le nom de ton équipe",
+    "aide": "Il s'affiche tout de suite sur l'écran de la salle.",
+    "champ": "Nom de l'équipe",
+    "bouton": "Enregistrer",
+    "retour": "Retour",
+    "vide": "Écris un nom.",
+    "fige": "L'animateur a bloqué le nom de l'équipe.",
+    "capitaine": "Tu n'es plus capitaine.",
+    "serveur": "Ça n'a pas marché. Réessaie."
+  },
   "ajout": {
     "ouvrir": "Ajouter un invité",
     "titre": "Un invité sans téléphone",
@@ -57,7 +75,8 @@
     "prochain": "Prochain jeu : {jeu}",
     "regarde": "Regarde l'écran",
     "voirEquipe": "Voir mon équipe",
-    "termine": "La partie est terminée. Merci d'avoir joué !"
+    "termine": "La partie est terminée. Merci d'avoir joué !",
+    "capitaine": "Tu es capitaine de ton équipe."
   },
   "horsLigne": {
     "bandeau": "Connexion perdue. On réessaie…"
@@ -388,7 +407,17 @@
       "retirerConfirmer": "Retirer {prenom} ? Il pourra revenir par le QR code",
       "modeTitre": "Prénoms à l'écran",
       "modeTous": "Tous les noms",
-      "modeCarrousel": "Carrousel"
+      "modeCarrousel": "Carrousel",
+      "tirer": "Tirer les capitaines",
+      "tires": "{n, plural, =0 {Toutes les équipes ont déjà un capitaine} one {# capitaine tiré} other {# capitaines tirés}}",
+      "volontaire": "volontaire",
+      "renommer": "Renommer",
+      "nomEquipe": "Nom de l'équipe {nom}",
+      "enregistrer": "Enregistrer",
+      "annuler": "Annuler",
+      "figer": "Bloquer le nom",
+      "defiger": "Débloquer le nom",
+      "nomFige": "nom bloqué"
     },
     "scores": {
       "titre": "Scores",

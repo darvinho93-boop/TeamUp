@@ -22,8 +22,9 @@ const TITRES: Record<Langue, string> = {
 type Erreur = 'vide' | 'complet' | 'codeInconnu' | 'serveur';
 
 /**
- * Langue, puis prénom, puis groupe si la soirée en a (lot 11), puis « Mon équipe ».
- * Le groupe ne part qu'avec l'arrivée : il sert au tirage de l'équipe, rien ne le garde.
+ * Langue, puis prénom, puis groupe si la soirée en a (lot 11), puis « Capitaine ? », puis
+ * « Mon équipe ». Le groupe et le volontariat ne partent qu'avec l'arrivée : le groupe sert au
+ * tirage de l'équipe (rien ne le garde), le volontariat au tirage des capitaines par la régie.
  */
 export function Arrivee({
   code,
@@ -39,6 +40,7 @@ export function Arrivee({
 }) {
   const t = useTranslations('prenom');
   const tGroupe = useTranslations('groupe');
+  const tCapitaine = useTranslations('capitaine');
   const router = useRouter();
   const [langue, setLangue] = useState<Langue | null>(
     // Une seule langue, déjà celle des textes : aucun choix à faire. Sinon on demande, même
@@ -47,6 +49,8 @@ export function Arrivee({
   );
   const [prenom, setPrenom] = useState('');
   const [etapeGroupe, setEtapeGroupe] = useState(false);
+  const [etapeCapitaine, setEtapeCapitaine] = useState(false);
+  const [groupe, setGroupe] = useState<string | null>(null);
   const [erreur, setErreur] = useState<Erreur>();
   const [envoi, setEnvoi] = useState(false);
   const [rejoint, setRejoint] = useState<EtatJoueur | null>(null);
@@ -63,17 +67,23 @@ export function Arrivee({
     if (!prenom.trim()) return setErreur('vide');
     setErreur(undefined);
     if (groupes.length > 0) return setEtapeGroupe(true);
-    void envoyer(null);
+    setEtapeCapitaine(true);
   };
 
-  const envoyer = async (groupe: string | null) => {
+  const choisirGroupe = (choisi: string | null) => {
+    setGroupe(choisi);
+    setEtapeGroupe(false);
+    setEtapeCapitaine(true);
+  };
+
+  const envoyer = async (volontaire: boolean) => {
     setEnvoi(true);
     setErreur(undefined);
     try {
       const reponse = await fetch(`/api/partie/${code}/rejoindre`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ prenom, langue, groupe }),
+        body: JSON.stringify({ prenom, langue, groupe, volontaire }),
       });
       if (reponse.ok) return setRejoint((await reponse.json()) as EtatJoueur);
       setErreur(
@@ -124,26 +134,49 @@ export function Arrivee({
           <ul className="tu-choices">
             {groupes.map((g) => (
               <li key={g.id}>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  block
-                  disabled={envoi}
-                  onClick={() => void envoyer(g.id)}
-                >
+                <Button variant="outline" size="lg" block onClick={() => choisirGroupe(g.id)}>
                   {g.nom}
                 </Button>
               </li>
             ))}
+            <li>
+              <Button variant="ghost" size="lg" block onClick={() => choisirGroupe(null)}>
+                {tGroupe('sansReponse')}
+              </Button>
+            </li>
+          </ul>
+        </div>
+      </Cadre>
+    );
+  }
+
+  if (etapeCapitaine) {
+    return (
+      <Cadre>
+        <div className="tu-player__body">
+          <h1 className="tu-player__title">{tCapitaine('titre')}</h1>
+          <p className="tu-player__lead">{tCapitaine('aide')}</p>
+          <ul className="tu-choices">
+            <li>
+              <Button
+                variant="outline"
+                size="lg"
+                block
+                disabled={envoi}
+                onClick={() => void envoyer(true)}
+              >
+                {tCapitaine('oui')}
+              </Button>
+            </li>
             <li>
               <Button
                 variant="ghost"
                 size="lg"
                 block
                 disabled={envoi}
-                onClick={() => void envoyer(null)}
+                onClick={() => void envoyer(false)}
               >
-                {tGroupe('sansReponse')}
+                {tCapitaine('non')}
               </Button>
             </li>
           </ul>
