@@ -123,14 +123,12 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
     etat.membres_mode ?? 'tous',
   );
   const { parPage, ajuste } = disposition;
-  // En mode « tous », la scène donne ses rangs et ses colonnes à la liste (des nombres) : la
-  // feuille de style en tire la taille des prénoms.
-  const reglage = ajuste
-    ? ({
-        '--tu-stage-membres-rangs': disposition.rangs,
-        '--tu-stage-membres-colonnes': disposition.colonnes,
-      } as CSSProperties)
-    : undefined;
+  // La scène donne ses rangs et ses colonnes à la liste (des nombres) ; en mode « tous », la
+  // feuille de style en tire aussi la taille des prénoms.
+  const reglage = {
+    '--tu-stage-membres-rangs': disposition.rangs,
+    '--tu-stage-membres-colonnes': disposition.colonnes,
+  } as CSSProperties;
   const equipes = etat.equipes.map((e) => ({
     ...e,
     pages: pagesDe(membresTries(e.prenoms, e.capitaine), parPage),
@@ -164,7 +162,7 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
                 key={page}
                 className={cx(
                   'tu-stage-membres tu-stage-reveal',
-                  ajuste ? 'tu-stage-membres--ajuste' : rangees === 1 && 'tu-stage-membres--haute',
+                  ajuste && 'tu-stage-membres--ajuste',
                 )}
                 style={reglage}
                 data-testid={`membres-${e.numero}`}

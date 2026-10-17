@@ -44,10 +44,10 @@
   --tu-stage-height: 67.5rem;
   --tu-stage-qr: 32rem;
   --tu-stage-team-min: 22rem;
-  /* Membres d'une équipe : hauteur d'un prénom, rangs par page (5, ou 13 jusqu'à 3 équipes), repère de page. */
+  /* Membres d'une équipe : hauteur d'un prénom en carrousel, rangs par défaut (la scène donne
+     les siens : 13, 7 ou 5 en carrousel, selon les cartes), repère de page. */
   --tu-stage-membre-h: 2.75rem;
   --tu-stage-membres-rangs: 5;
-  --tu-stage-membres-rangs-haute: 13;
   --tu-stage-point: 0.75rem;
   /* « Tous les noms » : le prénom occupe cette part de la hauteur de son rang, sans dépasser
      le plafond (peu de prénoms : grand texte, mais pas démesuré). */

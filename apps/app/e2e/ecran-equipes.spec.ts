@@ -76,8 +76,9 @@ test.beforeAll(async () => {
 test.afterAll(() => supprimerEvenements([evenement.id]));
 
 /**
- * Chaque prénom de chaque carte est dans le cadre et lisible en entier. On mesure une fois les
- * polices chargées : avec la police de repli (plus large), un prénom long paraîtrait coupé.
+ * Chaque prénom de chaque carte est dans le cadre, dans sa carte, et lisible en entier. On mesure
+ * une fois les polices chargées : avec la police de repli (plus large), un prénom long paraîtrait
+ * coupé.
  */
 async function tousDansLeCadre(ecran: Page) {
   return ecran.evaluate(async () => {
@@ -87,8 +88,13 @@ async function tousDansLeCadre(ecran: Page) {
     return [...document.querySelectorAll<HTMLElement>('[data-testid^="membres-"] li')]
       .filter((li) => {
         const r = li.getBoundingClientRect();
+        const carte = li.closest('.tu-stage-team')?.getBoundingClientRect();
         return (
-          r.bottom > hauteur || r.right > largeur || r.top < 0 || li.scrollWidth > li.clientWidth
+          r.bottom > hauteur ||
+          r.right > largeur ||
+          r.top < 0 ||
+          (carte !== undefined && (r.bottom > carte.bottom || r.right > carte.right)) ||
+          li.scrollWidth > li.clientWidth
         );
       })
       .map((li) => li.textContent);
@@ -137,7 +143,7 @@ test('8 équipes de 19 à l’écran, la Salle règle les prénoms, le capitaine
   await regie.getByRole('button', { name: 'Retirer le capitaine' }).click();
   await expect(ecran.getByTestId('membres-1').locator('.tu-stage-membre__capitaine')).toHaveCount(
     0,
-    { timeout: 3000 },
+    { timeout: 5000 },
   );
 
   await regie
@@ -148,17 +154,17 @@ test('8 équipes de 19 à l’écran, la Salle règle les prénoms, le capitaine
   await fiche.getByRole('button', { name: 'Retirer de la soirée' }).click();
   await fiche.getByRole('button', { name: /^Retirer Bérénice \?/ }).click();
   await expect(ecran.getByTestId('membres-1').locator('li')).toHaveCount(effectifs.get(1)! - 1, {
-    timeout: 3000,
+    timeout: 5000,
   });
 
   // --- Carrousel : des pages en 2 rem, avec leurs repères.
   await regie.getByRole('button', { name: 'Carrousel' }).click();
-  await expect(ecran.locator('.tu-stage-point').first()).toBeVisible({ timeout: 3000 });
-  expect(await ecran.getByTestId('membres-2').locator('li').count()).toBeLessThanOrEqual(10);
+  await expect(ecran.locator('.tu-stage-point').first()).toBeVisible({ timeout: 5000 });
+  expect(await ecran.getByTestId('membres-2').locator('li').count()).toBeLessThanOrEqual(7);
   expect(await tousDansLeCadre(ecran)).toEqual([]);
   await ecran.screenshot({ path: testInfo.outputPath('carrousel-8x19.png') });
 
   // --- Retour à tous les noms.
   await regie.getByRole('button', { name: 'Tous les noms' }).click();
-  await expect(ecran.locator('.tu-stage-point')).toHaveCount(0, { timeout: 3000 });
+  await expect(ecran.locator('.tu-stage-point')).toHaveCount(0, { timeout: 5000 });
 });

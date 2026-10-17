@@ -77,10 +77,19 @@ describe('les pages de prénoms à l’écran', () => {
       colonnes: 2,
       ajuste: false,
     });
-    expect(dispositionDesMembres(grilleDesEquipes(8), 19, 'carrousel')).toEqual({
+    expect(dispositionDesMembres(grilleDesEquipes(6), 19, 'carrousel')).toEqual({
       parPage: 10,
       rangs: 5,
       colonnes: 2,
+      ajuste: false,
+    });
+  });
+
+  it('en carrousel à quatre cartes par rangée : une colonne de 7, pour ne couper aucun prénom', () => {
+    expect(dispositionDesMembres(grilleDesEquipes(8), 19, 'carrousel')).toEqual({
+      parPage: 7,
+      rangs: 7,
+      colonnes: 1,
       ajuste: false,
     });
   });

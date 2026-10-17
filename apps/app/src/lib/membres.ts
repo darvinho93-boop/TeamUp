@@ -55,7 +55,8 @@ const COLONNES_DE_PRENOMS: Record<number, number> = { 1: 4, 2: 3, 3: 2, 4: 2 };
 /**
  * Les prénoms d'une carte.
  * - « carrousel » : des pages de 13 rangs (une rangée de cartes) ou de 5 (deux), sur deux
- *   colonnes, en 2 rem ; la scène 16:9 n'en loge pas plus à cette taille.
+ *   colonnes, en 2 rem ; la scène 16:9 n'en loge pas plus à cette taille. Avec quatre cartes par
+ *   rangée, une seule colonne de 7 : deux colonnes y couperaient un prénom long à 2 rem.
  * - « tous » : jusqu'à 40 prénoms par carte sur une rangée, 20 sur deux, d'un coup ; au-delà,
  *   des pages équilibrées. Une carte large prend plus de colonnes, une équipe réduite une
  *   seule. Les rangs suivent la plus grande équipe, pour que toutes les cartes aient la même
@@ -68,6 +69,7 @@ export function dispositionDesMembres(
   mode: ModeMembres,
 ): { parPage: number; rangs: number; colonnes: number; ajuste: boolean } {
   if (mode === 'carrousel') {
+    if (grille.colonnes >= 4) return { parPage: 7, rangs: 7, colonnes: 1, ajuste: false };
     const rangs = grille.rangees === 1 ? 13 : 5;
     return { parPage: rangs * 2, rangs, colonnes: 2, ajuste: false };
   }
