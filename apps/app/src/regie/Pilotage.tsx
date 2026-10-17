@@ -61,6 +61,7 @@ const PILOTABLES: readonly GameCode[] = [
 const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
 const SCENES_LIBRES: Exclude<Scene, 'intro' | 'jeu'>[] = [
+  'ouverture',
   'accueil',
   'equipes',
   'programme',

@@ -187,6 +187,8 @@
   bottom: var(--tu-space-6);
   left: var(--tu-space-16);
   z-index: var(--tu-z-chargement);
+  /* Lisible aussi par-dessus le marine de la révélation d'une soirée. */
+  background: var(--tu-bg);
   font-size: var(--tu-size-lg);
 }
 

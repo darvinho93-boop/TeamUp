@@ -74,6 +74,11 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
     .eq('code', code)
     .single();
   evenementId = evenement!['id'] as string;
+  // Une soirée neuve s'ouvre sur l'ouverture (2026-10-17) ; ce parcours part de l'accueil.
+  await clientService()
+    .from('pilotage')
+    .update({ scene: 'accueil' })
+    .eq('evenement_id', evenementId);
 
   await regie.getByRole('button', { name: 'Ajouter Points communs' }).click();
   await expect(regie.getByText('1. Points communs')).toBeVisible({ timeout: 15_000 });

@@ -7,6 +7,7 @@ import favicon32 from '@teamup/brand/icons/favicon32.png';
 import appleTouchIcon from '@teamup/brand/icons/appletouchicon.png';
 import '@teamup/ui/styles.css';
 import '@teamup/ui/fonts-tamil.css';
+import '@teamup/ui/fonts-soiree.css';
 
 export const metadata: Metadata = {
   title: { default: 'Team Up!', template: '%s · Team Up!' },

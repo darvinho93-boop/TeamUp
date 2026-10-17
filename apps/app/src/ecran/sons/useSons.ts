@@ -1,7 +1,16 @@
 'use client';
 
 import { createContext, useCallback, useEffect, useRef, useState } from 'react';
-import { deroule, fondA, instantDe, reglageDe, sonsPour, type Instant, type Son } from '@/lib/sons';
+import {
+  deroule,
+  fondA,
+  instantDe,
+  reglageDe,
+  sonsDeLaRevelation,
+  sonsPour,
+  type Instant,
+  type Son,
+} from '@/lib/sons';
 import type { EtatSalle } from '@/lib/salle';
 import { creerLecteur, type Lecteur } from './lecteur';
 
@@ -66,6 +75,8 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
       const sansMouvement = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       for (const son of sonsPour(avant, apres))
         for (const pas of deroule(son, sansMouvement)) lecteur.jouer(pas.son, pas.apresMs);
+      for (const pas of sonsDeLaRevelation(avant, apres, sansMouvement))
+        lecteur.jouer(pas.son, pas.apresMs);
     }
   }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs]);
 

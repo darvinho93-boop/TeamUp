@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { cx, Wordmark } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
+import { REVELATION_MS } from '@/lib/logo-soiree';
 import type { EtatSalle } from '@/lib/salle';
 import { INTERLUDE_MS } from '@/lib/sons';
 import { Pictogramme } from '@/marque/Pictogramme';
+import { Revelation } from './Revelation';
 import { Scene } from './Scenes';
 import { SonsContexte, useSons } from './sons/useSons';
 
@@ -47,6 +49,25 @@ export function Salle({
     return () => clearTimeout(fin);
   }, [interlude]);
 
+  // De l'ouverture à l'accueil, la révélation du logo de la soirée passe par-dessus la page du QR
+  // code. Seulement si cet écran a vu le passage : ni au chargement, ni dans l'aperçu, ni sans
+  // mouvement (on arrive alors directement sur la page).
+  const [sceneVue, setSceneVue] = useState(scene);
+  const [revelation, setRevelation] = useState(0);
+  const [revelee, setRevelee] = useState(0);
+  if (scene !== sceneVue) {
+    setSceneVue(scene);
+    const sansMouvement = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (sceneVue === 'ouverture' && scene === 'accueil' && !apercu && !sansMouvement)
+      setRevelation((n) => n + 1);
+  }
+  const enRevelation = revelation > revelee;
+  useEffect(() => {
+    if (!revelation) return;
+    const fin = setTimeout(() => setRevelee(revelation), REVELATION_MS);
+    return () => clearTimeout(fin);
+  }, [revelation]);
+
   // Le son ne sort que de l'écran commun : l'aperçu de la régie reste muet.
   const sons = useSons(etat, apercu, decalageMs);
 
@@ -66,7 +87,7 @@ export function Salle({
             qrSvg={qrSvg}
             adresse={adresse}
           />
-          {scene !== 'accueil' && (
+          {scene !== 'accueil' && scene !== 'ouverture' && (
             <span className="tu-marque tu-stage__picto">
               <Pictogramme taille="coin" />
               <Wordmark className="tu-stage__nom" />
@@ -77,6 +98,7 @@ export function Salle({
               <Pictogramme taille="lg" anime />
             </div>
           )}
+          {enRevelation && <Revelation key={revelation} logo={etat.evenement.logo ?? null} />}
           {sons.aActiver && (
             <button
               type="button"

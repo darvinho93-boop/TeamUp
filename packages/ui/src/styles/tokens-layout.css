@@ -63,6 +63,30 @@
   /* Ouverture et révélation du logo de la soirée (2026-10-17). La durée est égale à
      REVELATION_MS (src/lib/logo-soiree.ts), testé. */
   --tu-dur-revelation: 8800ms;
+  /* Les quatre ronds de l'ouverture : un cycle, la taille d'un rond, le rayon de la ronde, l'écart
+     de la dispersion. Le sable du logo, un peu foncé pour se voir sur le beige. */
+  --tu-dur-ronds-cycle: 9s;
+  --tu-rond: 3.25rem;
+  --tu-ronds-ronde: 9rem;
+  --tu-ronds-loin-x: 34vw;
+  --tu-ronds-loin-y: 30vh;
+  --tu-ronds-sable: #d9c9af;
+  /* Habillage d'une soirée, celui de son faire-part (or sur marine) : écart assumé à la charte le
+     2026-10-17, pendant la révélation et dans le bandeau de la page du QR code seulement. */
+  --tu-faire-part-fond: #0b1a33;
+  --tu-faire-part-or: #cba65e;
+  --tu-font-monogramme: 'Cinzel', Georgia, serif;
+  --tu-font-manuscrite: 'Great Vibes', 'Segoe Script', cursive;
+  --tu-monogramme-taille: 13rem;
+  --tu-titre-soiree-grand: 10rem;
+  --tu-titre-soiree-bandeau: 5.5rem;
+  --tu-stage-bandeau-h: 11rem;
+  /* Ce que le reste d'un mot (« inoyan ») peut occuper quand il s'écrit : assez pour un long mot. */
+  --tu-titre-soiree-mot-max: 9em;
+  --tu-titre-soiree-debord: 0.3em;
+  /* L'aperçu du logo à la Salle. */
+  --tu-regie-logo-monogramme: 3rem;
+  --tu-regie-logo-titre: 2.75rem;
 
   /* Explications animées (lot 12) : hauteur du décor, silhouette, écran, quadrant, phrase. */
   --tu-expl-visuel-h: 28rem;

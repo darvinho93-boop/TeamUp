@@ -117,7 +117,8 @@ avecBase('le pilotage', () => {
       .select('scene')
       .eq('evenement_id', data!['id'] as string)
       .single();
-    expect(pilotage).toEqual({ scene: 'accueil' });
+    // Une soirée neuve s'ouvre sur l'ouverture (2026-10-17), avant la page du QR code.
+    expect(pilotage).toEqual({ scene: 'ouverture' });
     await supprimerEvenements([data!['id'] as string]);
   });
 

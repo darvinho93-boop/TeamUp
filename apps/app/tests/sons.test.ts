@@ -8,13 +8,16 @@ import {
   fondA,
   FOND_SOUS_UN_SON,
   INTERLUDE_MS,
+  JINGLE_APRES_CYMBALE_MS,
   NIVEAUX,
   reglageDe,
   SONS,
   sonDuChrono,
+  sonsDeLaRevelation,
   sonsPour,
   type Instant,
 } from '../src/lib/sons';
+import { REVELATION } from '../src/lib/logo-soiree';
 
 const instant = (extra: Partial<Instant> = {}): Instant => ({
   scene: 'accueil',
@@ -114,7 +117,8 @@ describe('le son d’un changement d’état', () => {
 });
 
 describe('la musique de fond', () => {
-  it('est l’ambiance à l’accueil, et rien pendant les jeux', () => {
+  it('est l’ambiance à l’ouverture et à l’accueil, et rien pendant les jeux', () => {
+    expect(fondA(instant({ scene: 'ouverture' }))).toBe('ambiance');
     expect(fondA(instant())).toBe('ambiance');
     expect(fondA(instant({ scene: 'equipes' }))).toBeNull();
     expect(fondA(enJeu('qcm2', 'question'))).toBeNull();
@@ -126,6 +130,24 @@ describe('la musique de fond', () => {
     expect(fondA({ ...intro, etape: 'explication' })).toBe('explication');
     expect(fondA({ ...intro, etape: 'explication-telephone' })).toBe('explication');
     expect(fondA({ ...intro, etape: 'tirage-ordre' })).toBeNull();
+  });
+});
+
+describe('la révélation du logo de la soirée', () => {
+  const ouverture = instant({ scene: 'ouverture' });
+
+  it('roule sous les ronds et le monogramme, puis le jingle suit la cymbale', () => {
+    expect(sonsDeLaRevelation(ouverture, instant(), false)).toEqual([
+      { son: 'roulement', apresMs: 0 },
+      { son: 'jingle', apresMs: REVELATION.deploiement + JINGLE_APRES_CYMBALE_MS },
+    ]);
+  });
+
+  it('sans mouvement, le jingle seul ; ailleurs qu’à ce passage, rien', () => {
+    expect(sonsDeLaRevelation(ouverture, instant(), true)).toEqual([{ son: 'jingle', apresMs: 0 }]);
+    expect(sonsDeLaRevelation(instant(), instant(), false)).toEqual([]);
+    expect(sonsDeLaRevelation(ouverture, instant({ scene: 'equipes' }), false)).toEqual([]);
+    expect(sonsPour(ouverture, instant())).toEqual([]);
   });
 });
 

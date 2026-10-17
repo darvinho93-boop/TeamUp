@@ -1,0 +1,476 @@
+/* Ouverture, révélation du logo de la soirée et bandeau de la page du QR code (2026-10-17).
+   Les quatre ronds reprennent le teaser : ils apparaissent, se rejoignent en tournant, forment le
+   pictogramme, se remettent en cercle et se dispersent. Le marine et l'or du faire-part ne
+   servent qu'ici (écart assumé à la charte). Sous prefers-reduced-motion, rien ne bouge : le
+   pictogramme s'affiche, la révélation n'a pas lieu (Salle.tsx). */
+
+/* ---------------------------------------------------------------- Les quatre ronds */
+
+.tu-ronds {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.tu-ronds > * {
+  grid-area: 1 / 1;
+}
+
+.tu-ronds__ronde {
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+.tu-rond {
+  position: absolute;
+  top: calc(var(--tu-rond) / -2);
+  left: calc(var(--tu-rond) / -2);
+  width: var(--tu-rond);
+  height: var(--tu-rond);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-rond-teinte);
+  opacity: 0;
+}
+
+/* Chacun à sa place dans la ronde (celle de sa tête dans le pictogramme : marine en haut, corail
+   à droite, sable en bas, sauge à gauche) et dans la dispersion, comme dans le teaser. */
+.tu-rond--navy {
+  --tu-rond-teinte: var(--tu-navy-700);
+  --tu-rond-cx: 0rem;
+  --tu-rond-cy: calc(var(--tu-ronds-ronde) * -1);
+  --tu-rond-dx: calc(var(--tu-ronds-loin-x) * 0.35);
+  --tu-rond-dy: calc(var(--tu-ronds-loin-y) * -1);
+}
+
+.tu-rond--corail {
+  --tu-rond-teinte: var(--tu-coral-500);
+  --tu-rond-cx: var(--tu-ronds-ronde);
+  --tu-rond-cy: 0rem;
+  --tu-rond-dx: var(--tu-ronds-loin-x);
+  --tu-rond-dy: calc(var(--tu-ronds-loin-y) * -0.35);
+}
+
+.tu-rond--sable {
+  --tu-rond-teinte: var(--tu-ronds-sable);
+  --tu-rond-cx: 0rem;
+  --tu-rond-cy: var(--tu-ronds-ronde);
+  --tu-rond-dx: calc(var(--tu-ronds-loin-x) * -0.45);
+  --tu-rond-dy: var(--tu-ronds-loin-y);
+}
+
+.tu-rond--vert {
+  --tu-rond-teinte: var(--tu-sage-500);
+  --tu-rond-cx: calc(var(--tu-ronds-ronde) * -1);
+  --tu-rond-cy: 0rem;
+  --tu-rond-dx: calc(var(--tu-ronds-loin-x) * -1);
+  --tu-rond-dy: calc(var(--tu-ronds-loin-y) * -0.2);
+}
+
+.tu-ronds__logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-6);
+}
+
+.tu-ronds__nom {
+  --tu-wordmark-size: var(--tu-size-5xl);
+  color: var(--tu-text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* En boucle, sur la scène d'ouverture. */
+  .tu-ronds--boucle .tu-rond {
+    animation: tu-rond-boucle var(--tu-dur-ronds-cycle) var(--tu-ease) infinite;
+  }
+
+  .tu-ronds--boucle .tu-ronds__ronde {
+    animation: tu-ronde-boucle var(--tu-dur-ronds-cycle) var(--tu-ease) infinite;
+  }
+
+  .tu-ronds--boucle .tu-ronds__logo {
+    animation: tu-ronds-logo-boucle var(--tu-dur-ronds-cycle) var(--tu-ease) infinite;
+  }
+
+  /* Une fois, en tête de la révélation : les ronds forment le logo, et le nom se pose dessous. */
+  .tu-ronds--forme .tu-rond {
+    animation: tu-rond-forme var(--tu-ronds-duree) var(--tu-ease) both;
+  }
+
+  .tu-ronds--forme .tu-ronds__ronde {
+    animation: tu-ronde-forme var(--tu-ronds-duree) var(--tu-ease) both;
+  }
+
+  .tu-ronds--forme .tu-ronds__logo {
+    animation: tu-ronds-logo-forme var(--tu-ronds-duree) var(--tu-ease) both;
+  }
+}
+
+@keyframes tu-rond-boucle {
+  0% {
+    opacity: 0;
+    transform: translate(var(--tu-rond-dx), var(--tu-rond-dy)) scale(0);
+  }
+
+  8% {
+    opacity: 1;
+    transform: translate(var(--tu-rond-dx), var(--tu-rond-dy)) scale(1);
+  }
+
+  26% {
+    opacity: 1;
+    transform: translate(calc(var(--tu-rond-dx) * 0.75), calc(var(--tu-rond-dy) * 0.75));
+  }
+
+  38%,
+  50% {
+    opacity: 1;
+    transform: translate(var(--tu-rond-cx), var(--tu-rond-cy));
+  }
+
+  56%,
+  72% {
+    opacity: 0;
+    transform: translate(calc(var(--tu-rond-cx) * 0.4), calc(var(--tu-rond-cy) * 0.4)) scale(0.6);
+  }
+
+  78%,
+  86% {
+    opacity: 1;
+    transform: translate(var(--tu-rond-cx), var(--tu-rond-cy));
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--tu-rond-dx) * 1.3), calc(var(--tu-rond-dy) * 1.3)) scale(0.4);
+  }
+}
+
+@keyframes tu-ronde-boucle {
+  0%,
+  36% {
+    transform: rotate(0deg);
+  }
+
+  50%,
+  76% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(540deg);
+  }
+}
+
+@keyframes tu-ronds-logo-boucle {
+  0%,
+  52% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  58%,
+  70% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  76%,
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes tu-rond-forme {
+  0% {
+    opacity: 0;
+    transform: translate(var(--tu-rond-dx), var(--tu-rond-dy)) scale(0);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translate(var(--tu-rond-dx), var(--tu-rond-dy)) scale(1);
+  }
+
+  50%,
+  68% {
+    opacity: 1;
+    transform: translate(var(--tu-rond-cx), var(--tu-rond-cy));
+  }
+
+  82%,
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--tu-rond-cx) * 0.4), calc(var(--tu-rond-cy) * 0.4)) scale(0.6);
+  }
+}
+
+@keyframes tu-ronde-forme {
+  0%,
+  45% {
+    transform: rotate(0deg);
+  }
+
+  75%,
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes tu-ronds-logo-forme {
+  0%,
+  72% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  86%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------- La scène d'ouverture */
+
+.tu-stage-ouverture {
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------------------------------------------------------------- La révélation */
+
+/* Par-dessus la scène, comme l'interlude ; absente sans mouvement. Ses instants (--tu-rev-*)
+   viennent de REVELATION (src/lib/logo-soiree.ts), posés par le composant. */
+.tu-revelation {
+  position: absolute;
+  inset: 0;
+  z-index: var(--tu-z-chargement);
+  display: none;
+  overflow: hidden;
+  background: var(--tu-bg);
+  pointer-events: none;
+}
+
+.tu-revelation__marque {
+  position: absolute;
+  inset: 0;
+}
+
+.tu-revelation__panneau {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--tu-faire-part-fond);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-revelation {
+    display: block;
+  }
+
+  .tu-revelation__marque {
+    animation: tu-sortie var(--tu-dur-reveal) var(--tu-ease) var(--tu-rev-fond) both;
+  }
+
+  /* Le panneau marine arrive, puis se replie à la hauteur du bandeau de la page du QR code. */
+  .tu-revelation__panneau {
+    animation:
+      tu-entree var(--tu-dur-reveal) var(--tu-ease) var(--tu-rev-fond) both,
+      tu-panneau-pose calc(var(--tu-rev-fin) - var(--tu-rev-pose)) var(--tu-ease) var(--tu-rev-pose)
+        both;
+  }
+
+  /* Sans logo, la révélation n'a que le logo Team Up! : elle s'efface avant la page du QR. */
+  .tu-revelation--sans-logo {
+    animation: tu-sortie var(--tu-dur-reveal) var(--tu-ease) var(--tu-rev-fond) both;
+  }
+}
+
+@keyframes tu-entree {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tu-sortie {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes tu-panneau-pose {
+  from {
+    height: 100%;
+  }
+
+  to {
+    height: var(--tu-stage-bandeau-h);
+  }
+}
+
+/* ---------------------------------------------------------------- Monogramme et titre */
+
+.tu-soiree {
+  display: grid;
+  place-items: center;
+  color: var(--tu-faire-part-or);
+  text-align: center;
+}
+
+.tu-soiree > * {
+  grid-area: 1 / 1;
+  margin: 0;
+}
+
+.tu-soiree__monogramme {
+  font-family: var(--tu-font-monogramme);
+  font-size: var(--tu-monogramme-taille);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tu-soiree__trait {
+  margin-inline: 0.25em;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.tu-soiree__titre {
+  font-family: var(--tu-font-manuscrite);
+  font-size: var(--tu-titre-soiree-bandeau);
+  font-weight: 400;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.tu-soiree__reste {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Une écriture manuscrite déborde de sa boîte (boucle du « e » final) : de la marge pour ne
+     pas la couper, rendue aussitôt pour ne rien décaler. */
+  padding-inline-end: var(--tu-titre-soiree-debord);
+  margin-inline-end: calc(var(--tu-titre-soiree-debord) * -1);
+}
+
+/* Dans la révélation : le monogramme paraît, puis le titre le remplace, chaque initiale se
+   déployant en son mot (le reste s'écrit) ; enfin le titre se réduit à la taille du bandeau. */
+@media (prefers-reduced-motion: no-preference) {
+  .tu-revelation .tu-soiree__monogramme {
+    animation:
+      tu-monogramme var(--tu-dur-logo) var(--tu-ease) var(--tu-rev-monogramme) both,
+      tu-sortie var(--tu-dur-reveal) var(--tu-ease) var(--tu-rev-deploiement) forwards;
+  }
+
+  .tu-revelation .tu-soiree__titre {
+    animation:
+      tu-entree var(--tu-dur-reveal) var(--tu-ease) var(--tu-rev-deploiement) both,
+      tu-titre-pose calc(var(--tu-rev-fin) - var(--tu-rev-pose)) var(--tu-ease) var(--tu-rev-pose)
+        both;
+  }
+
+  .tu-revelation .tu-soiree__reste {
+    animation: tu-reste calc(var(--tu-rev-pose) - var(--tu-rev-deploiement)) var(--tu-ease-logo)
+      var(--tu-rev-deploiement) both;
+  }
+
+  .tu-revelation .tu-soiree__liant {
+    animation: tu-entree var(--tu-dur-logo) var(--tu-ease) var(--tu-rev-deploiement) both;
+  }
+}
+
+@keyframes tu-monogramme {
+  from {
+    opacity: 0;
+    filter: blur(0.15em);
+    transform: scale(0.8);
+  }
+}
+
+@keyframes tu-titre-pose {
+  from {
+    font-size: var(--tu-titre-soiree-grand);
+  }
+
+  to {
+    font-size: var(--tu-titre-soiree-bandeau);
+  }
+}
+
+@keyframes tu-reste {
+  from {
+    max-width: 0;
+    opacity: 0;
+  }
+
+  to {
+    max-width: var(--tu-titre-soiree-mot-max);
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------- Le bandeau de la page du QR */
+
+/* Pleine largeur en haut de la scène, aux mêmes cotes que le panneau replié de la révélation :
+   le passage de l'une à l'autre ne se voit pas. */
+.tu-stage-bandeau {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  height: var(--tu-stage-bandeau-h);
+  margin: calc(var(--tu-space-12) * -1) calc(var(--tu-space-16) * -1) 0;
+  background: var(--tu-faire-part-fond);
+}
+
+.tu-stage-accueil-page {
+  align-items: stretch;
+}
+
+.tu-stage-accueil-page > .tu-stage-accueil {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------------- L'aperçu, à la Salle */
+
+.tu-regie-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-2);
+  padding: var(--tu-space-6);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-faire-part-fond);
+  color: var(--tu-faire-part-or);
+}
+
+.tu-regie-logo p {
+  margin: 0;
+}
+
+.tu-regie-logo .tu-soiree__monogramme {
+  font-size: var(--tu-regie-logo-monogramme);
+}
+
+.tu-regie-logo .tu-soiree__titre {
+  font-size: var(--tu-regie-logo-titre);
+}

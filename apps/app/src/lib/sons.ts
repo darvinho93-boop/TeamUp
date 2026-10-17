@@ -1,4 +1,5 @@
 import type { GameCode } from '@teamup/game';
+import { REVELATION } from './logo-soiree';
 import { ETAPE_TIRAGE_ORDRE } from './pilotage';
 import { mancheCourante, type EtatSalle } from './salle';
 
@@ -159,11 +160,33 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
 }
 
 /**
- * La musique de fond du moment : l'ambiance à l'accueil, pendant que les invités scannent le QR
- * code ; une musique légère sous l'explication animée d'un jeu ; rien ailleurs.
+ * La révélation du logo de la soirée, quand l'écran passe de l'ouverture à l'accueil : le
+ * roulement de tambour sous les ronds et le monogramme (sa cymbale tombe sur le déploiement),
+ * puis le jingle quand le titre s'écrit. Sans mouvement, pas de révélation : le jingle seul.
+ */
+export function sonsDeLaRevelation(
+  avant: Instant,
+  apres: Instant,
+  sansMouvement: boolean,
+): { son: Son; apresMs: number }[] {
+  if (avant.scene !== 'ouverture' || apres.scene !== 'accueil') return [];
+  if (sansMouvement) return [{ son: 'jingle', apresMs: 0 }];
+  return [
+    { son: 'roulement', apresMs: REVELATION.ronds },
+    { son: 'jingle', apresMs: REVELATION.deploiement + JINGLE_APRES_CYMBALE_MS },
+  ];
+}
+
+/** Le jingle laisse sonner la cymbale un instant avant de la couper (un son à la fois). */
+export const JINGLE_APRES_CYMBALE_MS = 600;
+
+/**
+ * La musique de fond du moment : l'ambiance à l'ouverture et à l'accueil, pendant que les invités
+ * arrivent et scannent le QR code ; une musique légère sous l'explication animée d'un jeu ; rien
+ * ailleurs.
  */
 export function fondA(instant: Instant): Fond | null {
-  if (instant.scene === 'accueil') return 'ambiance';
+  if (instant.scene === 'ouverture' || instant.scene === 'accueil') return 'ambiance';
   if (instant.scene === 'intro' && instant.etape?.startsWith('explication')) return 'explication';
   return null;
 }
