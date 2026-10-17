@@ -75,9 +75,13 @@ test.beforeAll(async () => {
 
 test.afterAll(() => supprimerEvenements([evenement.id]));
 
-/** Chaque prénom de chaque carte est dans le cadre et lisible en entier. */
+/**
+ * Chaque prénom de chaque carte est dans le cadre et lisible en entier. On mesure une fois les
+ * polices chargées : avec la police de repli (plus large), un prénom long paraîtrait coupé.
+ */
 async function tousDansLeCadre(ecran: Page) {
-  return ecran.evaluate(() => {
+  return ecran.evaluate(async () => {
+    await document.fonts.ready;
     const largeur = window.innerWidth;
     const hauteur = window.innerHeight;
     return [...document.querySelectorAll<HTMLElement>('[data-testid^="membres-"] li')]
