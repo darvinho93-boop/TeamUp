@@ -5,6 +5,7 @@ import { ModeMembres } from '@/regie/ModeMembres';
 import { RafraichirAuto } from '@/regie/RafraichirAuto';
 import { SalleEquipes } from '@/regie/SalleEquipes';
 import { SignalSalle } from '@/regie/SignalSalle';
+import { TirerCapitaines } from '@/regie/TirerCapitaines';
 
 export async function generateMetadata() {
   return { title: (await getTranslations('regie.nav'))('salle') };
@@ -30,12 +31,14 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
   ] = await Promise.all([
     supabase
       .from('equipes')
-      .select('id, numero, nom')
+      .select('id, numero, nom, nom_fige')
       .eq('evenement_id', evenement.id)
       .order('numero'),
     supabase
       .from('joueurs')
-      .select('id, prenom, langue, capitaine, equipe_id, vu_le, sans_telephone, peut_ajouter')
+      .select(
+        'id, prenom, langue, capitaine, equipe_id, vu_le, sans_telephone, peut_ajouter, volontaire',
+      )
       .eq('evenement_id', evenement.id)
       .order('rejoint_le'),
     supabase.from('groupes').select('id, nom').eq('evenement_id', evenement.id).order('ordre'),
@@ -78,6 +81,7 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
       <p className="tu-regie__muted" role="status">
         {t('compte', { joueurs: (joueurs ?? []).length, connectes })}
       </p>
+      <TirerCapitaines code={evenement.code} />
       <ModeMembres
         code={evenement.code}
         mode={pilotage?.membres_mode === 'carrousel' ? 'carrousel' : 'tous'}
@@ -85,7 +89,13 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
       <FormulaireInvite code={evenement.code} groupes={groupes ?? []} />
       <SalleEquipes
         code={evenement.code}
-        equipes={(equipes ?? []).map((e) => ({ ...e, groupes: detailGroupes(e.id) }))}
+        equipes={(equipes ?? []).map((e) => ({
+          id: e.id,
+          numero: e.numero,
+          nom: e.nom,
+          nomFige: e.nom_fige,
+          groupes: detailGroupes(e.id),
+        }))}
         joueurs={(joueurs ?? []).map((j) => ({
           id: j.id,
           prenom: j.prenom,
@@ -94,6 +104,7 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
           enLigne: enLigne(j),
           sansTelephone: j.sans_telephone === true,
           peutAjouter: j.peut_ajouter,
+          volontaire: j.volontaire,
         }))}
       />
     </SignalSalle>

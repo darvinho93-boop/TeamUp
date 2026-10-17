@@ -6,6 +6,8 @@ import { cx, teamModifier } from '@teamup/ui/react';
 import {
   autoriserAjout,
   designerCapitaine,
+  figerNom,
+  renommerEquipe,
   retirerCapitaine,
   retirerJoueur,
 } from '@/app/regie/[code]/salle/actions';
@@ -24,6 +26,8 @@ export interface JoueurDeLaSalle {
   sansTelephone: boolean;
   /** Autorisé à ajouter des invités sans téléphone depuis le sien. */
   peutAjouter: boolean;
+  /** S'est proposé comme capitaine à l'arrivée. */
+  volontaire: boolean;
 }
 
 export interface EquipeDeLaSalle {
@@ -32,13 +36,16 @@ export interface EquipeDeLaSalle {
   nom: string;
   /** Répartition des groupes à l'arrivée (lot 11), déjà mise en forme ; vide sans groupes. */
   groupes: string;
+  /** Nom bloqué par la régie : le capitaine ne peut plus le changer. */
+  nomFige: boolean;
 }
 
 /**
  * Toute la salle d'un coup d'œil : une carte par équipe, ses membres en étiquettes (capitaine en
  * tête, puis ordre alphabétique). La recherche estompe ceux qui ne correspondent pas ; les
  * commandes d'un invité (changer d'équipe, capitaine, autorisation d'ajouter, retrait) ne
- * s'ouvrent qu'au clic sur son prénom. Chacune prévient l'écran commun aussitôt faite.
+ * s'ouvrent qu'au clic sur son prénom. Chaque carte se renomme sur place, et son nom peut être
+ * bloqué (le capitaine ne le change plus). Chaque commande prévient l'écran commun aussitôt.
  */
 export function SalleEquipes({
   code,
@@ -52,6 +59,8 @@ export function SalleEquipes({
   const t = useTranslations('regie.salle');
   const [recherche, setRecherche] = useState('');
   const [ouvert, setOuvert] = useState<string | null>(null);
+  const [renomme, setRenomme] = useState<string | null>(null);
+  const [nouveauNom, setNouveauNom] = useState('');
   const [enCours, demarrer] = useTransition();
   const signaler = useSignalSalle();
   /** Une commande de la fiche, puis le signal à l'écran. */
@@ -77,7 +86,59 @@ export function SalleEquipes({
       >
         <h2 className="tu-regie__section-title">
           {equipe ? `${equipe.nom} · ${membres.length}` : t('sansEquipe')}
+          {equipe?.nomFige && <span className="tu-regie__muted"> · {t('nomFige')}</span>}
         </h2>
+        {equipe &&
+          (renomme === equipe.id ? (
+            <form
+              className="tu-cluster"
+              onSubmit={(e) => {
+                e.preventDefault();
+                agir(() => renommerEquipe(code, equipe.id, nouveauNom));
+                setRenomme(null);
+              }}
+            >
+              <input
+                className="tu-field__control"
+                aria-label={t('nomEquipe', { nom: equipe.nom })}
+                value={nouveauNom}
+                maxLength={60}
+                required
+                onChange={(e) => setNouveauNom(e.target.value)}
+              />
+              <button type="submit" className="tu-btn tu-btn--primary" disabled={enCours}>
+                {t('enregistrer')}
+              </button>
+              <button
+                type="button"
+                className="tu-btn tu-btn--ghost"
+                onClick={() => setRenomme(null)}
+              >
+                {t('annuler')}
+              </button>
+            </form>
+          ) : (
+            <div className="tu-cluster">
+              <button
+                type="button"
+                className="tu-btn tu-btn--ghost"
+                onClick={() => {
+                  setNouveauNom(equipe.nom);
+                  setRenomme(equipe.id);
+                }}
+              >
+                {t('renommer')}
+              </button>
+              <button
+                type="button"
+                className="tu-btn tu-btn--ghost"
+                disabled={enCours}
+                onClick={() => agir(() => figerNom(code, equipe.id, !equipe.nomFige))}
+              >
+                {equipe.nomFige ? t('defiger') : t('figer')}
+              </button>
+            </div>
+          ))}
         {equipe?.groupes && (
           <p className="tu-regie__muted" data-testid="groupes">
             {t('groupes', { detail: equipe.groupes })}
@@ -120,6 +181,7 @@ export function SalleEquipes({
             <p className="tu-regie-fiche__nom">
               {choisi.prenom}
               {choisi.capitaine && ` · ${t('capitaine')}`}
+              {choisi.volontaire && ` · ${t('volontaire')}`}
               <span
                 className={cx(
                   'tu-regie-player__state',

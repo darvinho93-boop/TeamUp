@@ -116,3 +116,40 @@ export async function reglerMembres(code: string, mode: 'tous' | 'carrousel') {
   await supabase.rpc('regler_membres', { p_evenement: evenement.id, p_mode: mode });
   revalidatePath(`/regie/${evenement.code}/salle`);
 }
+
+/**
+ * Tire un capitaine dans chaque équipe qui n'en a pas : un volontaire au hasard, sinon un joueur
+ * qui a un téléphone (`tirer_capitaines`). Renvoie le nombre de capitaines nommés.
+ */
+export async function tirerCapitaines(code: string): Promise<number> {
+  const { supabase, evenement } = await evenementDeLaRegie(code);
+  const { data } = await supabase.rpc('tirer_capitaines', { p_evenement: evenement.id });
+  revalidatePath(`/regie/${evenement.code}/salle`);
+  return data ?? 0;
+}
+
+const NomEquipe = z.string().trim().min(1).max(60);
+
+/** L'animateur renomme une équipe (60 caractères, comme la base), figée ou non. */
+export async function renommerEquipe(code: string, equipeId: string, nom: string) {
+  const saisie = NomEquipe.safeParse(nom);
+  if (!saisie.success) return;
+  const { supabase, evenement } = await evenementDeLaRegie(code);
+  await supabase
+    .from('equipes')
+    .update({ nom: saisie.data })
+    .eq('id', equipeId)
+    .eq('evenement_id', evenement.id);
+  revalidatePath(`/regie/${evenement.code}/salle`);
+}
+
+/** Bloque (ou débloque) le nom d'une équipe : son capitaine ne peut plus le changer. */
+export async function figerNom(code: string, equipeId: string, oui: boolean) {
+  const { supabase, evenement } = await evenementDeLaRegie(code);
+  await supabase
+    .from('equipes')
+    .update({ nom_fige: oui })
+    .eq('id', equipeId)
+    .eq('evenement_id', evenement.id);
+  revalidatePath(`/regie/${evenement.code}/salle`);
+}
