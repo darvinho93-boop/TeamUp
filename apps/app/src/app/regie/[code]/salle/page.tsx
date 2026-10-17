@@ -1,8 +1,10 @@
 import { getTranslations } from 'next-intl/server';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { FormulaireInvite } from '@/regie/FormulaireInvite';
+import { ModeMembres } from '@/regie/ModeMembres';
 import { RafraichirAuto } from '@/regie/RafraichirAuto';
 import { SalleEquipes } from '@/regie/SalleEquipes';
+import { SignalSalle } from '@/regie/SignalSalle';
 
 export async function generateMetadata() {
   return { title: (await getTranslations('regie.nav'))('salle') };
@@ -19,24 +21,30 @@ function instantDuRendu(): number {
 export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>) {
   const { supabase, evenement } = await evenementDeLaRegie((await params).code);
   const t = await getTranslations('regie.salle');
-  const [{ data: equipes }, { data: joueurs }, { data: groupes }, { data: repartition }] =
-    await Promise.all([
-      supabase
-        .from('equipes')
-        .select('id, numero, nom')
-        .eq('evenement_id', evenement.id)
-        .order('numero'),
-      supabase
-        .from('joueurs')
-        .select('id, prenom, langue, capitaine, equipe_id, vu_le, sans_telephone, peut_ajouter')
-        .eq('evenement_id', evenement.id)
-        .order('rejoint_le'),
-      supabase.from('groupes').select('id, nom').eq('evenement_id', evenement.id).order('ordre'),
-      supabase
-        .from('equipes_groupes')
-        .select('equipe_id, groupe_id, effectif')
-        .eq('evenement_id', evenement.id),
-    ]);
+  const [
+    { data: equipes },
+    { data: joueurs },
+    { data: groupes },
+    { data: repartition },
+    { data: pilotage },
+  ] = await Promise.all([
+    supabase
+      .from('equipes')
+      .select('id, numero, nom')
+      .eq('evenement_id', evenement.id)
+      .order('numero'),
+    supabase
+      .from('joueurs')
+      .select('id, prenom, langue, capitaine, equipe_id, vu_le, sans_telephone, peut_ajouter')
+      .eq('evenement_id', evenement.id)
+      .order('rejoint_le'),
+    supabase.from('groupes').select('id, nom').eq('evenement_id', evenement.id).order('ordre'),
+    supabase
+      .from('equipes_groupes')
+      .select('equipe_id, groupe_id, effectif')
+      .eq('evenement_id', evenement.id),
+    supabase.from('pilotage').select('membres_mode').eq('evenement_id', evenement.id).maybeSingle(),
+  ]);
   // Répartition comptée à l'arrivée (lot 11) : un déplacement à la régie ne la change pas,
   // on ne sait pas de quel groupe est le joueur, et c'est voulu.
   const detailGroupes = (equipeId: string) =>
@@ -54,7 +62,7 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
     !j.sans_telephone && maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS;
   const connectes = (joueurs ?? []).filter(enLigne).length;
   return (
-    <>
+    <SignalSalle evenementId={evenement.id}>
       <RafraichirAuto intervalleMs={5000} />
       <div className="tu-cluster">
         <h1 className="tu-regie__title">{t('titre')}</h1>
@@ -70,6 +78,10 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
       <p className="tu-regie__muted" role="status">
         {t('compte', { joueurs: (joueurs ?? []).length, connectes })}
       </p>
+      <ModeMembres
+        code={evenement.code}
+        mode={pilotage?.membres_mode === 'carrousel' ? 'carrousel' : 'tous'}
+      />
       <FormulaireInvite code={evenement.code} groupes={groupes ?? []} />
       <SalleEquipes
         code={evenement.code}
@@ -84,6 +96,6 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
           peutAjouter: j.peut_ajouter,
         }))}
       />
-    </>
+    </SignalSalle>
   );
 }

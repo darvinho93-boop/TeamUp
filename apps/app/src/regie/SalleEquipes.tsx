@@ -1,11 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
-import { autoriserAjout, designerCapitaine } from '@/app/regie/[code]/salle/actions';
+import {
+  autoriserAjout,
+  designerCapitaine,
+  retirerCapitaine,
+  retirerJoueur,
+} from '@/app/regie/[code]/salle/actions';
 import { correspond, trierMembres } from '@/lib/membres';
+import { BoutonConfirme } from './BoutonConfirme';
 import { ChoixEquipe } from './ChoixEquipe';
+import { useSignalSalle } from './SignalSalle';
 
 export interface JoueurDeLaSalle {
   id: string;
@@ -30,8 +37,8 @@ export interface EquipeDeLaSalle {
 /**
  * Toute la salle d'un coup d'œil : une carte par équipe, ses membres en étiquettes (capitaine en
  * tête, puis ordre alphabétique). La recherche estompe ceux qui ne correspondent pas ; les
- * commandes d'un invité (changer d'équipe, capitaine, autorisation d'ajouter) ne s'ouvrent qu'au
- * clic sur son prénom.
+ * commandes d'un invité (changer d'équipe, capitaine, autorisation d'ajouter, retrait) ne
+ * s'ouvrent qu'au clic sur son prénom. Chacune prévient l'écran commun aussitôt faite.
  */
 export function SalleEquipes({
   code,
@@ -45,6 +52,15 @@ export function SalleEquipes({
   const t = useTranslations('regie.salle');
   const [recherche, setRecherche] = useState('');
   const [ouvert, setOuvert] = useState<string | null>(null);
+  const [enCours, demarrer] = useTransition();
+  const signaler = useSignalSalle();
+  /** Une commande de la fiche, puis le signal à l'écran. */
+  const agir = (action: () => Promise<void>, fermer = false) =>
+    demarrer(async () => {
+      await action();
+      signaler();
+      if (fermer) setOuvert(null);
+    });
   const cherche = recherche.trim() !== '';
   const trouves = cherche ? joueurs.filter((j) => correspond(j.prenom, recherche)).length : 0;
   const etatDe = (j: JoueurDeLaSalle) =>
@@ -121,20 +137,46 @@ export function SalleEquipes({
               equipes={equipes.map((e) => ({ id: e.id, nom: e.nom }))}
               libelle={t('deplacer', { prenom: choisi.prenom })}
             />
-            {choisi.equipe_id && !choisi.capitaine && !choisi.sansTelephone && (
-              <form action={designerCapitaine.bind(null, code, choisi.id)}>
-                <button type="submit" className="tu-btn tu-btn--ghost">
+            {choisi.capitaine ? (
+              <button
+                type="button"
+                className="tu-btn tu-btn--ghost"
+                disabled={enCours}
+                onClick={() => agir(() => retirerCapitaine(code, choisi.id))}
+              >
+                {t('retirerCapitaine')}
+              </button>
+            ) : (
+              choisi.equipe_id &&
+              !choisi.sansTelephone && (
+                <button
+                  type="button"
+                  className="tu-btn tu-btn--ghost"
+                  disabled={enCours}
+                  onClick={() => agir(() => designerCapitaine(code, choisi.id))}
+                >
                   {t('nommerCapitaine')}
                 </button>
-              </form>
+              )
             )}
             {!choisi.sansTelephone && (
-              <form action={autoriserAjout.bind(null, code, choisi.id, !choisi.peutAjouter)}>
-                <button type="submit" className="tu-btn tu-btn--ghost">
-                  {choisi.peutAjouter ? t('retirerAjout') : t('autoriserAjout')}
-                </button>
-              </form>
+              <button
+                type="button"
+                className="tu-btn tu-btn--ghost"
+                disabled={enCours}
+                onClick={() => agir(() => autoriserAjout(code, choisi.id, !choisi.peutAjouter))}
+              >
+                {choisi.peutAjouter ? t('retirerAjout') : t('autoriserAjout')}
+              </button>
             )}
+            <BoutonConfirme
+              variant="ghost"
+              disabled={enCours}
+              confirmation={t('retirerConfirmer', { prenom: choisi.prenom })}
+              onConfirm={() => agir(() => retirerJoueur(code, choisi.id), true)}
+            >
+              {t('retirer')}
+            </BoutonConfirme>
             <button type="button" className="tu-btn tu-btn--ghost" onClick={() => setOuvert(null)}>
               {t('fermer')}
             </button>

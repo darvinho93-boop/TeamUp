@@ -37,7 +37,7 @@ const TABLES_REGIE = [
 /** Les changements de la base arrivent en rafale (150 arrivées, une étape = plusieurs lignes) :
  * on les regroupe, le signal de la régie assurant déjà la réactivité. */
 const REGROUPEMENT_MS = 250;
-const SIGNAL = 'relire';
+export const SIGNAL = 'relire';
 
 /**
  * L'état de la salle, tenu à jour en temps réel pour l'écran commun et la régie.

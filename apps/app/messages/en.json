@@ -382,7 +382,13 @@
       "sansTelephone": "no phone",
       "peutAjouter": "can add guests",
       "autoriserAjout": "Allow to add guests",
-      "retirerAjout": "Remove permission to add"
+      "retirerAjout": "Remove permission to add",
+      "retirerCapitaine": "Remove as captain",
+      "retirer": "Remove from the event",
+      "retirerConfirmer": "Remove {prenom}? They can come back with the QR code",
+      "modeTitre": "Names on screen",
+      "modeTous": "All names",
+      "modeCarrousel": "Carousel"
     },
     "scores": {
       "titre": "Scores",

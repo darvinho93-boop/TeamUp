@@ -382,7 +382,13 @@
       "sansTelephone": "sans téléphone",
       "peutAjouter": "peut ajouter des invités",
       "autoriserAjout": "Autoriser à ajouter des invités",
-      "retirerAjout": "Retirer l'autorisation d'ajouter"
+      "retirerAjout": "Retirer l'autorisation d'ajouter",
+      "retirerCapitaine": "Retirer le capitaine",
+      "retirer": "Retirer de la soirée",
+      "retirerConfirmer": "Retirer {prenom} ? Il pourra revenir par le QR code",
+      "modeTitre": "Prénoms à l'écran",
+      "modeTous": "Tous les noms",
+      "modeCarrousel": "Carrousel"
     },
     "scores": {
       "titre": "Scores",

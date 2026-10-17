@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react';
 import { deplacerJoueur } from '@/app/regie/[code]/salle/actions';
+import { useSignalSalle } from './SignalSalle';
 
 /** Change l'équipe d'un joueur dès que le choix change. */
 export function ChoixEquipe({
@@ -18,6 +19,7 @@ export function ChoixEquipe({
   libelle: string;
 }) {
   const [enCours, demarrer] = useTransition();
+  const signaler = useSignalSalle();
   return (
     <select
       aria-label={libelle}
@@ -25,7 +27,11 @@ export function ChoixEquipe({
       disabled={enCours}
       onChange={(e) => {
         const cible = e.target.value;
-        if (cible) demarrer(() => deplacerJoueur(code, joueurId, cible));
+        if (cible)
+          demarrer(async () => {
+            await deplacerJoueur(code, joueurId, cible);
+            signaler();
+          });
       }}
     >
       {!equipeId && <option value="">—</option>}

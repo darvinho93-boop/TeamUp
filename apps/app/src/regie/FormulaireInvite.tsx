@@ -3,7 +3,8 @@
 import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, TextField } from '@teamup/ui/react';
-import { ajouterInvite } from '@/app/regie/[code]/salle/actions';
+import { ajouterInvite, type EtatAjoutInvite } from '@/app/regie/[code]/salle/actions';
+import { useSignalSalle } from './SignalSalle';
 
 /**
  * Ajouter un invité sans téléphone : un prénom, et son groupe si la soirée en a. L'équipe se
@@ -17,7 +18,15 @@ export function FormulaireInvite({
   groupes: { id: string; nom: string }[];
 }) {
   const t = useTranslations('regie.salle');
-  const [etat, action, envoi] = useActionState(ajouterInvite.bind(null, code), undefined);
+  const signaler = useSignalSalle();
+  const [etat, action, envoi] = useActionState(
+    async (precedent: EtatAjoutInvite, donnees: FormData) => {
+      const resultat = await ajouterInvite(code, precedent, donnees);
+      if (resultat?.ok) signaler();
+      return resultat;
+    },
+    undefined,
+  );
   return (
     <form action={action} className="tu-regie__section" data-testid="ajout-invite">
       <h2 className="tu-regie__section-title">{t('ajoutTitre')}</h2>

@@ -88,3 +88,31 @@ export async function autoriserAjout(code: string, joueurId: string, oui: boolea
     .eq('sans_telephone', false);
   revalidatePath(`/regie/${evenement.code}/salle`);
 }
+
+/** Destitue le capitaine sans en nommer d'autre : l'équipe reste sans capitaine. */
+export async function retirerCapitaine(code: string, joueurId: string) {
+  const { supabase, evenement } = await evenementDeLaRegie(code);
+  await supabase
+    .from('joueurs')
+    .update({ capitaine: false })
+    .eq('id', joueurId)
+    .eq('evenement_id', evenement.id);
+  revalidatePath(`/regie/${evenement.code}/salle`);
+}
+
+/**
+ * Retire un joueur de la soirée. Ses réponses au quiz partent avec lui (cascade) ; s'il avait
+ * un téléphone, celui-ci revient à l'arrivée et peut rejoindre de nouveau par le QR code.
+ */
+export async function retirerJoueur(code: string, joueurId: string) {
+  const { supabase, evenement } = await evenementDeLaRegie(code);
+  await supabase.from('joueurs').delete().eq('id', joueurId).eq('evenement_id', evenement.id);
+  revalidatePath(`/regie/${evenement.code}/salle`);
+}
+
+/** Les membres à l'écran : tous les prénoms d'un coup, ou des pages qui tournent. */
+export async function reglerMembres(code: string, mode: 'tous' | 'carrousel') {
+  const { supabase, evenement } = await evenementDeLaRegie(code);
+  await supabase.rpc('regler_membres', { p_evenement: evenement.id, p_mode: mode });
+  revalidatePath(`/regie/${evenement.code}/salle`);
+}
