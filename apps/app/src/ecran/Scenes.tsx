@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useRef, useSyncExternalStore } from 'react';
+import { useContext, useEffect, useRef, useSyncExternalStore, type CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier, Wordmark } from '@teamup/ui/react';
 import {
@@ -27,7 +27,13 @@ import {
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
 import { Pictogramme } from '@/marque/Pictogramme';
-import { grilleDesEquipes, membresTries, pageA, pagesDe } from '@/lib/membres';
+import {
+  dispositionDesMembres,
+  grilleDesEquipes,
+  membresTries,
+  pageA,
+  pagesDe,
+} from '@/lib/membres';
 import { Chrono, useMaintenant } from './Chrono';
 import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
@@ -102,13 +108,29 @@ function Accueil({ etat, qrSvg, adresse }: Props) {
 }
 
 /**
- * Toutes les équipes et tous leurs membres, capitaine en tête. Une équipe trop nombreuse pour
- * sa carte passe par pages, qui tournent seules et toutes ensemble : la page se déduit de
- * l'heure de la base, donc deux écrans montrent la même.
+ * Toutes les équipes et tous leurs membres, capitaine en tête. Selon le réglage de la Salle,
+ * tous les prénoms d'un coup (la police s'ajuste à la plus grande équipe), ou des pages en 2 rem.
+ * Les pages tournent seules et toutes ensemble : la page se déduit de l'heure de la base, donc
+ * deux écrans montrent la même.
  */
 function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   const t = useTranslations('ecran');
-  const { colonnes, parPage } = grilleDesEquipes(etat.equipes.length);
+  const grille = grilleDesEquipes(etat.equipes.length);
+  const { colonnes, rangees } = grille;
+  const disposition = dispositionDesMembres(
+    grille,
+    Math.max(0, ...etat.equipes.map((e) => e.prenoms.length)),
+    etat.membres_mode ?? 'tous',
+  );
+  const { parPage, ajuste } = disposition;
+  // En mode « tous », la scène donne ses rangs et ses colonnes à la liste (des nombres) : la
+  // feuille de style en tire la taille des prénoms.
+  const reglage = ajuste
+    ? ({
+        '--tu-stage-membres-rangs': disposition.rangs,
+        '--tu-stage-membres-colonnes': disposition.colonnes,
+      } as CSSProperties)
+    : undefined;
   const equipes = etat.equipes.map((e) => ({
     ...e,
     pages: pagesDe(membresTries(e.prenoms, e.capitaine), parPage),
@@ -123,19 +145,28 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
   return (
     <div className="tu-stage__body" data-scene="equipes">
       <h1 className="tu-stage__xl">{t('equipes')}</h1>
-      <ul className={cx('tu-stage-teams', `tu-stage-teams--${colonnes}`)}>
+      <ul
+        className={cx(
+          'tu-stage-teams tu-stage-teams--scene',
+          `tu-stage-teams--${colonnes}`,
+          rangees === 2 && 'tu-stage-teams--2-rangees',
+        )}
+      >
         {equipes.map((e) => {
           const page = monte ? pageA(maintenant, e.pages.length) : 0;
           return (
             <li key={e.id} className={cx('tu-stage-team', teamModifier(e.numero))}>
-              <span className="tu-stage-team__nom">{e.nom}</span>
-              <span className="tu-stage-team__nombre">{t('joueurs', { n: e.joueurs })}</span>
+              <span className="tu-stage-team__tete">
+                <span className="tu-stage-team__nom">{e.nom}</span>
+                <span className="tu-stage-team__nombre">{t('joueurs', { n: e.joueurs })}</span>
+              </span>
               <ul
                 key={page}
                 className={cx(
                   'tu-stage-membres tu-stage-reveal',
-                  parPage > 10 && 'tu-stage-membres--haute',
+                  ajuste ? 'tu-stage-membres--ajuste' : rangees === 1 && 'tu-stage-membres--haute',
                 )}
+                style={reglage}
                 data-testid={`membres-${e.numero}`}
                 data-page={page}
               >

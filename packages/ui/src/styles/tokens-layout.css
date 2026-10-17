@@ -49,6 +49,12 @@
   --tu-stage-membres-rangs: 5;
   --tu-stage-membres-rangs-haute: 13;
   --tu-stage-point: 0.75rem;
+  /* « Tous les noms » : le prénom occupe cette part de la hauteur de son rang, sans dépasser
+     le plafond (peu de prénoms : grand texte, mais pas démesuré). */
+  --tu-stage-membre-ratio: 0.74;
+  /* … et une colonne loge un prénom d'une douzaine de lettres sans le couper (1 / 8 em). */
+  --tu-stage-membre-largeur: 0.125;
+  --tu-stage-membre-max: var(--tu-size-3xl);
   --tu-stage-podium-1: 20rem;
   --tu-stage-podium-2: 14rem;
   --tu-stage-podium-3: 10rem;

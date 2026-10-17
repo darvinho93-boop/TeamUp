@@ -33,14 +33,54 @@ export function membresTries(prenoms: readonly string[], capitaine?: string | nu
   return rang >= 0 && capitaine ? [{ prenom: capitaine, capitaine: true }, ...membres] : membres;
 }
 
+/** Comment l'écran montre les membres : tous d'un coup (police ajustée), ou par pages. */
+export type ModeMembres = 'tous' | 'carrousel';
+
 /**
  * La scène « Équipes » : jusqu'à trois équipes, une seule rangée de cartes hautes ; au-delà,
- * deux rangées (2 × 2, puis 3 × 2). Les prénoms d'une carte tiennent sur deux colonnes, de 13
- * ou de 5 rangs (`--tu-stage-membres-rangs*`) : la scène 16:9 n'en loge pas plus sans déborder.
+ * deux rangées (2 × 2, 3 × 2, puis 4 × 2). Les huit équipes possibles tiennent donc toujours
+ * dans la scène.
  */
-export function grilleDesEquipes(equipes: number): { colonnes: number; parPage: number } {
-  if (equipes <= 3) return { colonnes: Math.max(1, equipes), parPage: 26 };
-  return { colonnes: equipes === 4 ? 2 : 3, parPage: 10 };
+export function grilleDesEquipes(equipes: number): { colonnes: number; rangees: 1 | 2 } {
+  if (equipes <= 3) return { colonnes: Math.max(1, equipes), rangees: 1 };
+  return { colonnes: Math.ceil(equipes / 2), rangees: 2 };
+}
+
+/** Rangs d'une carte en mode « tous » : en dessous, les prénoms grandiraient sans fin. */
+const RANGS_MIN = 5;
+
+/** Colonnes de prénoms qu'une carte loge au plus, selon le nombre de cartes par rangée. */
+const COLONNES_DE_PRENOMS: Record<number, number> = { 1: 4, 2: 3, 3: 2, 4: 2 };
+
+/**
+ * Les prénoms d'une carte.
+ * - « carrousel » : des pages de 13 rangs (une rangée de cartes) ou de 5 (deux), sur deux
+ *   colonnes, en 2 rem ; la scène 16:9 n'en loge pas plus à cette taille.
+ * - « tous » : jusqu'à 40 prénoms par carte sur une rangée, 20 sur deux, d'un coup ; au-delà,
+ *   des pages équilibrées. Une carte large prend plus de colonnes, une équipe réduite une
+ *   seule. Les rangs suivent la plus grande équipe, pour que toutes les cartes aient la même
+ *   taille de texte ; la police remplit le rang, bornée par la largeur d'une colonne et par
+ *   un plafond (`--tu-stage-membre-*`).
+ */
+export function dispositionDesMembres(
+  grille: { colonnes: number; rangees: 1 | 2 },
+  plusGrandeEquipe: number,
+  mode: ModeMembres,
+): { parPage: number; rangs: number; colonnes: number; ajuste: boolean } {
+  if (mode === 'carrousel') {
+    const rangs = grille.rangees === 1 ? 13 : 5;
+    return { parPage: rangs * 2, rangs, colonnes: 2, ajuste: false };
+  }
+  const parPage = grille.rangees === 1 ? 40 : 20;
+  // La plus grande page réellement montrée : `pagesDe` équilibre les pages.
+  const pages = Math.max(1, Math.ceil(plusGrandeEquipe / parPage));
+  const page = Math.ceil(plusGrandeEquipe / pages);
+  const colonnes = Math.max(
+    1,
+    Math.min(COLONNES_DE_PRENOMS[grille.colonnes] ?? 2, Math.ceil(page / RANGS_MIN)),
+  );
+  const rangs = Math.max(RANGS_MIN, Math.ceil(page / colonnes));
+  return { parPage, rangs, colonnes, ajuste: true };
 }
 
 /** Des pages de taille voisine : pas de dernière page réduite à un seul prénom. */

@@ -161,7 +161,18 @@
   list-style: none;
 }
 
-/* La scène « Équipes » fixe ses colonnes : une rangée jusqu'à trois équipes, deux au-delà. */
+/* La scène « Équipes » fixe ses colonnes : une rangée jusqu'à trois équipes, deux au-delà
+   (jusqu'à 4 × 2). Ses rangées se partagent la hauteur de la scène : rien ne sort du cadre. */
+.tu-stage-teams--scene {
+  flex: 1;
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+}
+
+.tu-stage-teams--2-rangees {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
 .tu-stage-teams--1 {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -174,19 +185,38 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.tu-stage-teams--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .tu-stage-team {
   display: flex;
   flex-direction: column;
   gap: var(--tu-space-2);
+  min-height: 0;
   padding: var(--tu-space-6);
   border-top: var(--tu-space-3) solid var(--tu-team-color);
   border-radius: var(--tu-radius-lg);
   background: var(--tu-surface);
 }
 
+/* Scène « Équipes » : le nom et l'effectif sur une ligne, pour laisser la hauteur aux prénoms. */
+.tu-stage-team__tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: var(--tu-space-4);
+  min-width: 0;
+}
+
 .tu-stage-team__nom {
+  min-width: 0;
+  overflow: hidden;
   font-size: var(--tu-size-3xl);
   font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Membres : deux colonnes lues de haut en bas, une page à la fois. La hauteur est fixe, pour
@@ -204,6 +234,27 @@
 
 .tu-stage-membres--haute {
   grid-template-rows: repeat(var(--tu-stage-membres-rangs-haute), var(--tu-stage-membre-h));
+}
+
+/* « Tous les noms » : la liste prend la hauteur qui reste dans la carte, ses rangs et ses
+   colonnes (donnés par la scène, d'après la plus grande équipe et la largeur des cartes) se la
+   partagent, et le prénom remplit son rang, borné par la largeur d'une colonne et un plafond.
+   Sous 2 rem si besoin : écart au cahier des charges assumé le 2026-10-17. */
+.tu-stage-membres--ajuste {
+  flex: 1;
+  grid-template-rows: repeat(var(--tu-stage-membres-rangs), minmax(0, 1fr));
+  grid-template-columns: repeat(var(--tu-stage-membres-colonnes), minmax(0, 1fr));
+  min-height: 0;
+  container-type: size;
+}
+
+.tu-stage-membres--ajuste .tu-stage-membre {
+  font-size: min(
+    var(--tu-stage-membre-max),
+    100cqh / var(--tu-stage-membres-rangs) * var(--tu-stage-membre-ratio),
+    100cqi / var(--tu-stage-membres-colonnes) * var(--tu-stage-membre-largeur)
+  );
+  line-height: calc(100cqh / var(--tu-stage-membres-rangs));
 }
 
 .tu-stage-membre {

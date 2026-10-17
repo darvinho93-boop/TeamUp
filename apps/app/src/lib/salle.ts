@@ -80,6 +80,8 @@ export interface EtatSalle {
   };
   /** Réglage du son de la salle ; absent tant que la base n'a pas la migration du 2026-10-10. */
   son?: { actif: boolean; volume: number };
+  /** Membres des équipes à l'écran ; absent sans la migration du 2026-10-17 (« tous »). */
+  membres_mode?: 'tous' | 'carrousel';
   equipes: EquipeSalle[];
   joueurs: number;
   connectes: number;
