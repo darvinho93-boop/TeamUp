@@ -94,7 +94,8 @@ test('un volontaire tiré capitaine renomme son équipe ; la régie peut bloquer
   // --- Et la renomme elle-même, nom bloqué ou pas.
   await regie.getByRole('button', { name: 'Renommer' }).click();
   await regie.getByLabel(/^Nom de l'équipe/).fill('Les Étoiles');
-  await regie.getByRole('button', { name: 'Enregistrer' }).click();
+  // « Enregistrer le logo » est sur la même page : le nom exact.
+  await regie.getByRole('button', { name: 'Enregistrer', exact: true }).click();
   await expect(ecran.locator('.tu-stage-team__nom')).toHaveText('Les Étoiles', {
     timeout: 3000,
   });
