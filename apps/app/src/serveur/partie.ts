@@ -1,6 +1,7 @@
 import 'server-only';
 import type { EtatJoueur, EvenementPublic, Langue, RefusQuiz } from '@/lib/partie';
 import { hacher, jetonDe } from './session';
+import { signalerSalle } from './signal';
 import { supabaseService } from './supabase';
 
 /** Un code ouvert à l'arrivée, ou `null`. */
@@ -157,5 +158,7 @@ export async function renommerEquipe(
     if (!refus) throw new Error(error.message);
     return { ok: false, refus };
   }
+  // Aucun signal de régie ne couvre ce changement : l'écran commun le reçoit du serveur.
+  await signalerSalle(etat.evenement.id);
   return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
 }

@@ -21,9 +21,6 @@ const TABLES = [
   // ferait relire l'état en continu à 150 joueurs. Le compte des connectés suit la relecture
   // de sûreté.
   { table: 'joueurs', event: 'INSERT' },
-  // Un capitaine qui renomme son équipe depuis son téléphone : aucun signal de régie ne le
-  // couvre, et c'est rare.
-  { table: 'equipes', event: 'UPDATE' },
 ] as const;
 /**
  * La régie compte en plus les réponses au quiz en mode téléphone (« 12 réponses reçues ») et
