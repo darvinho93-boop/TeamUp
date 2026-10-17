@@ -332,10 +332,12 @@ export type Database = {
           equipe_id: string | null
           evenement_id: string
           id: string
-          jeton_hash: string
+          jeton_hash: string | null
           langue: Database["public"]["Enums"]["langue"]
+          peut_ajouter: boolean
           prenom: string
           rejoint_le: string
+          sans_telephone: boolean | null
           vu_le: string
         }
         Insert: {
@@ -343,10 +345,12 @@ export type Database = {
           equipe_id?: string | null
           evenement_id: string
           id?: string
-          jeton_hash: string
+          jeton_hash?: string | null
           langue?: Database["public"]["Enums"]["langue"]
+          peut_ajouter?: boolean
           prenom: string
           rejoint_le?: string
+          sans_telephone?: boolean | null
           vu_le?: string
         }
         Update: {
@@ -354,10 +358,12 @@ export type Database = {
           equipe_id?: string | null
           evenement_id?: string
           id?: string
-          jeton_hash?: string
+          jeton_hash?: string | null
           langue?: Database["public"]["Enums"]["langue"]
+          peut_ajouter?: boolean
           prenom?: string
           rejoint_le?: string
+          sans_telephone?: boolean | null
           vu_le?: string
         }
         Relationships: [
@@ -782,6 +788,14 @@ export type Database = {
       }
     }
     Functions: {
+      ajouter_invite: {
+        Args: { p_groupe?: string; p_jeton_parrain: string; p_prenom: string }
+        Returns: Json
+      }
+      ajouter_invite_regie: {
+        Args: { p_evenement: string; p_groupe?: string; p_prenom: string }
+        Returns: Json
+      }
       anime: { Args: { p_evenement: string }; Returns: boolean }
       annuaire_animateurs: {
         Args: never
@@ -857,6 +871,16 @@ export type Database = {
       }
       photos_du_joueur: {
         Args: { p_joueur: Database["public"]["Tables"]["joueurs"]["Row"] }
+        Returns: Json
+      }
+      placer_joueur: {
+        Args: {
+          p_evenement: Database["public"]["Tables"]["evenements"]["Row"]
+          p_groupe: string
+          p_jeton_hash: string
+          p_langue: Database["public"]["Enums"]["langue"]
+          p_prenom: string
+        }
         Returns: Json
       }
       pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
