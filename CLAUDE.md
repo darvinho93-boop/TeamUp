@@ -374,7 +374,8 @@ invité **au clic** sur son prénom, membres de l'équipe qui passe au pilotage 
   même, toutes les cartes tournent ensemble. Au premier rendu, la page 0 (le serveur et le
   navigateur n'ont pas la même heure : sinon, erreur d'hydratation).
 - Grille de la scène et pages : revues le 2026-10-17 (voir « Salle et écran des équipes »).
-  En carrousel, toujours 26 prénoms par page sur une rangée de cartes, 10 sur deux, en 2 rem.
+  En carrousel, 26 prénoms par page sur une rangée de cartes, 10 sur deux, en 2 rem ; 7 sur une
+  seule colonne quand il y a quatre cartes par rangée (7 ou 8 équipes).
 - `etat_ecran` donne `capitaine` (son prénom ou `null`) par équipe. Le client tolère son
   absence : sans la migration `20261009090000`, tri alphabétique sans capitaine marqué.
 - Page Salle : la page serveur lit et se rafraîchit, `src/regie/SalleEquipes.tsx` affiche.
@@ -639,7 +640,10 @@ la Salle choisit entre « **tous les noms** » (défaut) et « **carrousel** ».
   migration `20261017100000` (« tous »).
 - La Salle prévient l'écran après chaque changement (`src/regie/SignalSalle.tsx` : le signal
   sans données de la régie sur `salle:<id>`) ; sans lui, l'écran n'écoute que les arrivées et
-  attendrait sa relecture de sûreté (20 s).
+  attendrait sa relecture de sûreté (20 s). Un signal demandé avant l'ouverture du canal attend
+  qu'il le soit (une action faite aussitôt la page chargée se perdait). L'écran suit une action
+  de la Salle en 0,3 à 1,7 s sur le poste (l'action serveur recharge la page avant le signal) :
+  les e2e lui laissent 5 s.
 - Grille (`grilleDesEquipes`, `src/lib/membres.ts`) : une rangée jusqu'à 3 équipes, puis 2 × 2,
   3 × 2 et 4 × 2. Les rangées se partagent la hauteur de la scène (`.tu-stage-teams--scene`).
   Le nom de l'équipe et son effectif sont sur une ligne.
@@ -652,7 +656,8 @@ la Salle choisit entre « **tous les noms** » (défaut) et « **carrousel** ».
   `cqi` : elle suit aussi un projecteur plus petit que 1 920 × 1 080).
 - **Écart assumé au cahier des charges § 5.2** (plancher de 2 rem) en mode « tous » : environ
   1,4 rem à 8 équipes de 19, 2 rem à 4 de 19, 2,75 rem à 8 de 5 (mesuré à 1 920 × 1 080).
-  Le carrousel garde 2 rem.
+  Le carrousel garde 2 rem ; à quatre cartes par rangée, une colonne de 7 (deux colonnes de
+  2 rem coupaient « Alexandrine », vu en CI le 2026-10-17 selon la page qui tournait).
 - `e2e/ecran-equipes.spec.ts` : 8 équipes et 150 joueurs en 1 920 × 1 080, chaque prénom dans
   le cadre et entier, destitution et retrait suivis à l'écran, bascule en carrousel.
 - `e2e/partie.spec.ts` dépasse parfois son plafond de 1,5 s sur ce poste, avant comme après ces
@@ -686,3 +691,42 @@ depuis son téléphone, tout de suite à l'écran, et la régie peut renommer et
 - `e2e/capitaines.spec.ts` : une volontaire et un non-volontaire, tirage, renommage vu à l'écran
   sans touche de régie, nom bloqué puis renommé par la régie. Les parcours d'arrivée existants
   passent l'étape « Capitaine ? » par « Non merci ».
+
+## Conventions posées le 2026-10-17 (ouverture et logo de la soirée)
+
+Tranché le 2026-10-17 (mariage KQN4JF, Vinoyan & Mélanie, d'après leur faire-part et le reel du
+teaser) : avant la page du QR code, une **ouverture** en boucle (les quatre ronds du teaser) ; au
+passage à « Accueil », une **révélation** : logo Team Up!, puis le **monogramme de la soirée**
+(« V | M »), qui se **déploie en titre** (« Vinoyan & Mélanie ») et se pose dans un **bandeau
+marine** en haut de la page du QR. Logo saisi **en texte** à la Salle, **valable pour tout
+événement** ; une **nouvelle soirée démarre sur l'ouverture** ; roulement puis jingle.
+
+- **Écarts assumés à la charte** : le marine et l'or du faire-part (`--tu-faire-part-*`), pendant
+  la révélation et dans le bandeau seulement ; deux polices de plus, auto-hébergées
+  (`@teamup/ui/fonts-soiree.css` : Cinzel pour le monogramme, Great Vibes pour le titre).
+- Base : scène `ouverture` (migration `20261017120000`, seule : une valeur d'énumération ne sert
+  pas dans la transaction qui l'ajoute), scène par défaut des nouvelles soirées
+  (`20261017121000`) ; `evenements.logo_initiales` (1 à 3 parties de 3 caractères, vérifiées par
+  `monogramme_valide`) et `logo_titre` (60), ensemble ou pas du tout, écrits sous la session de
+  l'animateur ; `etat_ecran.evenement.logo`. Les soirées de test (`creerEvenementJetable`,
+  `partie.spec`) repartent de l'accueil.
+- Logique pure, testée (`src/lib/logo-soiree.ts`) : `lireMonogramme` (« V | M »),
+  `deploiement` (chaque initiale prend, dans l'ordre, le premier mot qui commence par elle ;
+  sinon `null` et le titre vient en fondu), `REVELATION` (instants en ms ; `fin` = 8,8 s =
+  `--tu-dur-revelation`, testé ; le déploiement tombe sur la cymbale du roulement, à 5 s).
+- Briques (`src/marque/`) : `Ronds` (`boucle` pour l'ouverture, `forme` pour la révélation ;
+  tout en CSS, `ouverture.css`) et `Monogramme` (monogramme puis titre ; `titreSeul` pour le
+  bandeau). `src/ecran/Revelation.tsx` passe les instants en variables CSS (`--tu-rev-*`).
+- Déclenchement (`Salle.tsx`, comme l'interlude) : seulement quand cet écran voit la scène passer
+  d'`ouverture` à `accueil` ; ni au chargement, ni dans l'aperçu de la régie, ni sous
+  `prefers-reduced-motion`. Le panneau replié a les cotes du bandeau (`--tu-stage-bandeau-h`,
+  `--tu-titre-soiree-bandeau`) : le passage ne se voit pas.
+- Sons : `sonsDeLaRevelation` (roulement à 0, jingle 600 ms après la cymbale ; sans mouvement,
+  le jingle seul) ; l'ambiance joue à l'ouverture comme à l'accueil.
+- Une écriture manuscrite déborde de sa boîte : le reste d'un mot qui s'écrit garde une marge
+  (`--tu-titre-soiree-debord`) pour ne pas couper la boucle du « e » final.
+- Régie : « Ouverture » en tête des scènes libres du pilotage ; encart « Logo de la soirée » à la
+  Salle (`LogoSoiree.tsx`, aperçu dans l'habillage du faire-part).
+- Une soirée existante ne bascule pas seule sur l'ouverture : choisir « Ouverture » au pilotage.
+- `e2e/ouverture.spec.ts` : logo saisi à la Salle, ouverture à l'écran, « Accueil », révélation
+  (monogramme, titre), puis bandeau et code sur la page du QR.
