@@ -373,10 +373,8 @@ invité **au clic** sur son prénom, membres de l'équipe qui passe au pilotage 
   affichée se déduit de l'heure de la base (`pageA`, 5 s par page) : deux écrans montrent la
   même, toutes les cartes tournent ensemble. Au premier rendu, la page 0 (le serveur et le
   navigateur n'ont pas la même heure : sinon, erreur d'hydratation).
-- Grille de la scène : une rangée jusqu'à 3 équipes (26 prénoms par page), deux au-delà
-  (10 par page). Ces nombres vont avec `--tu-stage-membres-rangs*` : la scène 16:9 n'en loge
-  pas plus, à revérifier à l'écran si on touche aux tailles. Prénoms en 2 rem, le plancher
-  du cahier des charges.
+- Grille de la scène et pages : revues le 2026-10-17 (voir « Salle et écran des équipes »).
+  En carrousel, toujours 26 prénoms par page sur une rangée de cartes, 10 sur deux, en 2 rem.
 - `etat_ecran` donne `capitaine` (son prénom ou `null`) par équipe. Le client tolère son
   absence : sans la migration `20261009090000`, tri alphabétique sans capitaine marqué.
 - Page Salle : la page serveur lit et se rafraîchit, `src/regie/SalleEquipes.tsx` affiche.
@@ -625,3 +623,37 @@ l'animateur, ou **depuis le téléphone d'un joueur que l'animateur y autorise**
 - Le test des 150 arrivées simultanées (`tests/arrivee.test.ts`) est instable sur le poste
   (dépassement de 30 s une fois sur trois, avant comme après ce changement, A/B fait le
   2026-10-17) : la CI fait foi.
+
+## Conventions posées le 2026-10-17 (Salle et écran des équipes)
+
+Tranché le 2026-10-17 : à la Salle, on **destitue un capitaine** (« Nommer capitaine » sur un
+autre le remplace toujours) et on **retire un joueur** (suppression ; un vrai invité peut
+rejoindre de nouveau par le QR code) ; à l'écran, les **8 équipes tiennent dans le cadre** et
+la Salle choisit entre « **tous les noms** » (défaut) et « **carrousel** ».
+
+- Retirer : un `delete` sous la session de l'animateur, derrière `BoutonConfirme`. Ses réponses
+  au quiz partent en cascade, `passages.joueur_designe_id` et `photos.envoyee_par` passent à
+  `null`. Le compteur des groupes à l'arrivée ne bouge pas (comme un déplacement, lot 11).
+- Le mode vit dans `pilotage.membres_mode`, écrit par `regler_membres` (comme `regler_son` :
+  ne touche pas à `maj_le`), lu dans `etat_ecran.membres_mode`. Le client tient sans la
+  migration `20261017100000` (« tous »).
+- La Salle prévient l'écran après chaque changement (`src/regie/SignalSalle.tsx` : le signal
+  sans données de la régie sur `salle:<id>`) ; sans lui, l'écran n'écoute que les arrivées et
+  attendrait sa relecture de sûreté (20 s).
+- Grille (`grilleDesEquipes`, `src/lib/membres.ts`) : une rangée jusqu'à 3 équipes, puis 2 × 2,
+  3 × 2 et 4 × 2. Les rangées se partagent la hauteur de la scène (`.tu-stage-teams--scene`).
+  Le nom de l'équipe et son effectif sont sur une ligne.
+- « Tous les noms » (`dispositionDesMembres`) : jusqu'à 20 prénoms par carte d'un coup sur deux
+  rangées de cartes, 40 sur une ; au-delà, des pages équilibrées. Colonnes de prénoms selon la
+  largeur des cartes (4, 3, puis 2), une seule pour une petite équipe ; rangs d'après la plus
+  grande équipe (5 au moins), donc la même taille de texte sur toutes les cartes. La scène
+  passe rangs et colonnes en variables CSS (des nombres) ; la police remplit le rang, bornée
+  par la largeur d'une colonne et par `--tu-stage-membre-max` (requêtes de conteneur `cqh`,
+  `cqi` : elle suit aussi un projecteur plus petit que 1 920 × 1 080).
+- **Écart assumé au cahier des charges § 5.2** (plancher de 2 rem) en mode « tous » : environ
+  1,4 rem à 8 équipes de 19, 2 rem à 4 de 19, 2,75 rem à 8 de 5 (mesuré à 1 920 × 1 080).
+  Le carrousel garde 2 rem.
+- `e2e/ecran-equipes.spec.ts` : 8 équipes et 150 joueurs en 1 920 × 1 080, chaque prénom dans
+  le cadre et entier, destitution et retrait suivis à l'écran, bascule en carrousel.
+- `e2e/partie.spec.ts` dépasse parfois son plafond de 1,5 s sur ce poste, avant comme après ces
+  changements (A/B fait le 2026-10-17) : la CI fait foi.
