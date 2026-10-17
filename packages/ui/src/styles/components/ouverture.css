@@ -1,8 +1,9 @@
-/* Ouverture, révélation du logo de la soirée et bandeau de la page du QR code (2026-10-17).
-   Les quatre ronds reprennent le teaser : ils apparaissent, se rejoignent en tournant, forment le
-   pictogramme, se remettent en cercle et se dispersent. Le marine et l'or du faire-part ne
-   servent qu'ici (écart assumé à la charte). Sous prefers-reduced-motion, rien ne bouge : le
-   pictogramme s'affiche, la révélation n'a pas lieu (Salle.tsx). */
+/* Ouverture de l'écran commun (2026-10-17, revue le 2026-10-18). Les quatre ronds reprennent le
+   teaser : ils apparaissent, se rejoignent en tournant, forment le pictogramme, se remettent en
+   cercle et se dispersent, en boucle. Au passage à l'accueil, la boucle en cours va à son terme,
+   puis une passe finale au même rythme s'arrête sur le logo Team Up! et découvre la page du QR
+   code. Sous prefers-reduced-motion, rien ne bouge : le pictogramme s'affiche, pas de passe
+   finale (Salle.tsx). */
 
 /* ---------------------------------------------------------------- Les quatre ronds */
 
@@ -95,17 +96,21 @@
     animation: tu-ronds-logo-boucle var(--tu-dur-ronds-cycle) var(--tu-ease) infinite;
   }
 
-  /* Une fois, en tête de la révélation : les ronds forment le logo, et le nom se pose dessous. */
-  .tu-ronds--forme .tu-rond {
-    animation: tu-rond-forme var(--tu-ronds-duree) var(--tu-ease) both;
+  /* Une dernière passe, au rythme de la boucle, qui s'arrête sur le logo et son nom. */
+  .tu-ronds--finale .tu-rond {
+    animation: tu-rond-finale var(--tu-dur-ronds-cycle) var(--tu-ease) both;
   }
 
-  .tu-ronds--forme .tu-ronds__ronde {
-    animation: tu-ronde-forme var(--tu-ronds-duree) var(--tu-ease) both;
+  .tu-ronds--finale .tu-ronds__ronde {
+    animation: tu-ronde-finale var(--tu-dur-ronds-cycle) var(--tu-ease) both;
   }
 
-  .tu-ronds--forme .tu-ronds__logo {
-    animation: tu-ronds-logo-forme var(--tu-ronds-duree) var(--tu-ease) both;
+  .tu-ronds--finale .tu-ronds__logo {
+    animation: tu-ronds-logo-finale var(--tu-dur-ronds-cycle) var(--tu-ease) both;
+  }
+
+  .tu-ronds--finale .tu-ronds__nom {
+    animation: tu-ronds-nom-finale var(--tu-dur-ronds-cycle) var(--tu-ease) both;
   }
 }
 
@@ -185,53 +190,73 @@
   }
 }
 
-@keyframes tu-rond-forme {
+/* La passe finale reprend la boucle jusqu'au pictogramme (52-58 % du cycle), puis s'y arrête. */
+@keyframes tu-rond-finale {
   0% {
     opacity: 0;
     transform: translate(var(--tu-rond-dx), var(--tu-rond-dy)) scale(0);
   }
 
-  15% {
+  8% {
     opacity: 1;
     transform: translate(var(--tu-rond-dx), var(--tu-rond-dy)) scale(1);
   }
 
-  50%,
-  68% {
+  26% {
+    opacity: 1;
+    transform: translate(calc(var(--tu-rond-dx) * 0.75), calc(var(--tu-rond-dy) * 0.75));
+  }
+
+  38%,
+  50% {
     opacity: 1;
     transform: translate(var(--tu-rond-cx), var(--tu-rond-cy));
   }
 
-  82%,
+  56%,
   100% {
     opacity: 0;
     transform: translate(calc(var(--tu-rond-cx) * 0.4), calc(var(--tu-rond-cy) * 0.4)) scale(0.6);
   }
 }
 
-@keyframes tu-ronde-forme {
+@keyframes tu-ronde-finale {
   0%,
-  45% {
+  36% {
     transform: rotate(0deg);
   }
 
-  75%,
+  50%,
   100% {
     transform: rotate(360deg);
   }
 }
 
-@keyframes tu-ronds-logo-forme {
+@keyframes tu-ronds-logo-finale {
   0%,
-  72% {
+  52% {
     opacity: 0;
     transform: scale(0.85);
   }
 
-  86%,
+  58%,
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes tu-ronds-nom-finale {
+  0%,
+  62% {
+    opacity: 0;
+    transform: translateY(0.3em);
+  }
+
+  66%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -242,11 +267,12 @@
   justify-content: center;
 }
 
-/* ---------------------------------------------------------------- La révélation */
+/* ---------------------------------------------------------------- La passe finale */
 
-/* Par-dessus la scène, comme l'interlude ; absente sans mouvement. Ses instants (--tu-rev-*)
-   viennent de REVELATION (src/lib/logo-soiree.ts), posés par le composant. */
-.tu-revelation {
+/* Par-dessus la page du QR code, déjà à jour, comme l'interlude ; absente sans mouvement. Elle
+   s'efface en découvrant la page, aux instants de FINALE (src/lib/ouverture.ts), posés par le
+   composant. */
+.tu-finale {
   position: absolute;
   inset: 0;
   z-index: var(--tu-z-chargement);
@@ -256,25 +282,10 @@
   pointer-events: none;
 }
 
-.tu-revelation__marque {
-  position: absolute;
-  inset: 0;
-}
-
 @media (prefers-reduced-motion: no-preference) {
-  .tu-revelation {
+  .tu-finale {
     display: block;
-    animation: tu-sortie var(--tu-dur-reveal) var(--tu-ease) var(--tu-rev-fond) both;
-  }
-}
-
-@keyframes tu-entree {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
+    animation: tu-sortie var(--tu-finale-fondu) var(--tu-ease) var(--tu-finale-qr) both;
   }
 }
 

@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { cx, Wordmark } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
-import { REVELATION_MS } from '@/lib/logo-soiree';
+import { attenteFinDeBoucle, FINALE } from '@/lib/ouverture';
 import type { EtatSalle } from '@/lib/salle';
-import { INTERLUDE_MS } from '@/lib/sons';
+import { INTERLUDE_MS, sonsDeLaFinale, type Son } from '@/lib/sons';
 import { Pictogramme } from '@/marque/Pictogramme';
-import { Revelation } from './Revelation';
+import { Finale } from './Finale';
 import { Scene } from './Scenes';
 import { SonsContexte, useSons } from './sons/useSons';
 
@@ -49,27 +49,51 @@ export function Salle({
     return () => clearTimeout(fin);
   }, [interlude]);
 
-  // De l'ouverture à l'accueil, la révélation du logo de la soirée passe par-dessus la page du QR
-  // code. Seulement si cet écran a vu le passage : ni au chargement, ni dans l'aperçu, ni sans
-  // mouvement (on arrive alors directement sur la page).
+  // De l'ouverture à l'accueil, la boucle en cours va à son terme (on ne coupe pas la
+  // cinématique), puis une passe finale forme le logo Team Up! par-dessus la page du QR code.
+  // Seulement si cet écran a vu le passage : ni au chargement, ni dans l'aperçu, ni sans
+  // mouvement (on arrive alors directement sur la page). La boucle est en CSS : elle a démarré
+  // quand la scène d'ouverture a été montée.
+  const debutBoucle = useRef(0);
+  useEffect(() => {
+    if (scene === 'ouverture') debutBoucle.current = performance.now();
+  }, [scene]);
   const [sceneVue, setSceneVue] = useState(scene);
-  const [revelation, setRevelation] = useState(0);
-  const [revelee, setRevelee] = useState(0);
+  const [passage, setPassage] = useState(0);
+  const [finaleDe, setFinaleDe] = useState(0);
+  const [termine, setTermine] = useState(0);
   if (scene !== sceneVue) {
     setSceneVue(scene);
     const sansMouvement = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (sceneVue === 'ouverture' && scene === 'accueil' && !apercu && !sansMouvement)
-      setRevelation((n) => n + 1);
+      setPassage((n) => n + 1);
   }
-  const enRevelation = revelation > revelee;
+  const enCours = scene === 'accueil' && passage > termine;
+  const finDeBoucle = enCours && finaleDe < passage;
+  const enFinale = enCours && finaleDe === passage;
+  const sceneAffichee = finDeBoucle ? 'ouverture' : scene;
+
+  // Les sons partent avec la passe finale, pas au clic : le lecteur du moment, pris au vol.
+  const jouerRef = useRef<((son: Son, apresMs?: number) => void) | null>(null);
   useEffect(() => {
-    if (!revelation) return;
-    const fin = setTimeout(() => setRevelee(revelation), REVELATION_MS);
-    return () => clearTimeout(fin);
-  }, [revelation]);
+    if (!passage) return;
+    const attente = attenteFinDeBoucle(performance.now() - debutBoucle.current);
+    const debut = setTimeout(() => {
+      setFinaleDe(passage);
+      for (const pas of sonsDeLaFinale()) jouerRef.current?.(pas.son, pas.apresMs);
+    }, attente);
+    const fin = setTimeout(() => setTermine(passage), attente + FINALE.fin);
+    return () => {
+      clearTimeout(debut);
+      clearTimeout(fin);
+    };
+  }, [passage]);
 
   // Le son ne sort que de l'écran commun : l'aperçu de la régie reste muet.
   const sons = useSons(etat, apercu, decalageMs);
+  useEffect(() => {
+    jouerRef.current = sons.jouer;
+  }, [sons.jouer]);
 
   return (
     <NextIntlClientProvider locale={langue} messages={MESSAGES[langue]}>
@@ -78,16 +102,19 @@ export function Salle({
           className={cx('tu-stage', apercu && 'tu-stage--apercu')}
           lang={langue}
           aria-hidden={apercu || undefined}
+          data-fin-de-boucle={finDeBoucle || undefined}
         >
           {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
           <Scene
-            key={`${scene}:${mancheId ?? ''}`}
-            etat={etat}
+            key={`${sceneAffichee}:${mancheId ?? ''}`}
+            etat={
+              finDeBoucle ? { ...etat, pilotage: { ...etat.pilotage, scene: sceneAffichee } } : etat
+            }
             decalageMs={decalageMs}
             qrSvg={qrSvg}
             adresse={adresse}
           />
-          {scene !== 'accueil' && scene !== 'ouverture' && (
+          {sceneAffichee !== 'accueil' && sceneAffichee !== 'ouverture' && (
             <span className="tu-marque tu-stage__picto">
               <Pictogramme taille="coin" />
               <Wordmark className="tu-stage__nom" />
@@ -98,7 +125,7 @@ export function Salle({
               <Pictogramme taille="lg" anime />
             </div>
           )}
-          {enRevelation && <Revelation key={revelation} />}
+          {enFinale && <Finale key={passage} />}
           {sons.aActiver && (
             <button
               type="button"

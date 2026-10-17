@@ -60,12 +60,11 @@
   --tu-stage-podium-2: 14rem;
   --tu-stage-podium-3: 10rem;
 
-  /* Ouverture et révélation du logo de la soirée (2026-10-17). La durée est égale à
-     REVELATION_MS (src/lib/logo-soiree.ts), testé. */
-  --tu-dur-revelation: 8800ms;
-  /* Les quatre ronds de l'ouverture : un cycle, la taille d'un rond, le rayon de la ronde, l'écart
-     de la dispersion. Le sable du logo, un peu foncé pour se voir sur le beige. */
-  --tu-dur-ronds-cycle: 9s;
+  /* Ouverture de l'écran commun (2026-10-17). */
+  /* Les quatre ronds de l'ouverture : un cycle (égal à CYCLE_OUVERTURE_MS, src/lib/ouverture.ts,
+     testé), la taille d'un rond, le rayon de la ronde, l'écart de la dispersion. Le sable du logo,
+     un peu foncé pour se voir sur le beige. */
+  --tu-dur-ronds-cycle: 9000ms;
   --tu-rond: 3.25rem;
   --tu-ronds-ronde: 9rem;
   --tu-ronds-loin-x: 34vw;

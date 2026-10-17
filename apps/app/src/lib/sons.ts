@@ -1,5 +1,5 @@
 import type { GameCode } from '@teamup/game';
-import { REVELATION } from './logo-soiree';
+import { FINALE } from './ouverture';
 import { ETAPE_TIRAGE_ORDRE } from './pilotage';
 import { mancheCourante, type EtatSalle } from './salle';
 
@@ -160,25 +160,16 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
 }
 
 /**
- * La révélation du logo de la soirée, quand l'écran passe de l'ouverture à l'accueil : le
- * roulement de tambour sous les ronds et le monogramme (sa cymbale tombe sur le déploiement),
- * puis le jingle quand le titre s'écrit. Sans mouvement, pas de révélation : le jingle seul.
+ * La passe finale de l'ouverture, avant la page du QR code : le roulement de tambour sous les
+ * ronds (sa cymbale tombe sur le logo), puis le jingle quand « Team Up! » paraît. L'écran les
+ * joue au début de la passe, une fois la boucle en cours menée à son terme (`Salle.tsx`).
  */
-export function sonsDeLaRevelation(
-  avant: Instant,
-  apres: Instant,
-  sansMouvement: boolean,
-): { son: Son; apresMs: number }[] {
-  if (avant.scene !== 'ouverture' || apres.scene !== 'accueil') return [];
-  if (sansMouvement) return [{ son: 'jingle', apresMs: 0 }];
+export function sonsDeLaFinale(): { son: Son; apresMs: number }[] {
   return [
-    { son: 'roulement', apresMs: REVELATION.ronds },
-    { son: 'jingle', apresMs: REVELATION.deploiement + JINGLE_APRES_CYMBALE_MS },
+    { son: 'roulement', apresMs: FINALE.ronds },
+    { son: 'jingle', apresMs: FINALE.nom },
   ];
 }
-
-/** Le jingle laisse sonner la cymbale un instant avant de la couper (un son à la fois). */
-export const JINGLE_APRES_CYMBALE_MS = 600;
 
 /**
  * La musique de fond du moment : l'ambiance à l'ouverture et à l'accueil, pendant que les invités
