@@ -640,8 +640,9 @@ la Salle choisit entre « **tous les noms** » (défaut) et « **carrousel** ».
   migration `20261017100000` (« tous »).
 - La Salle prévient l'écran après chaque changement (`src/regie/SignalSalle.tsx` : le signal
   sans données de la régie sur `salle:<id>`) ; sans lui, l'écran n'écoute que les arrivées et
-  attendrait sa relecture de sûreté (20 s). Un signal demandé avant l'ouverture du canal attend
-  qu'il le soit (une action faite aussitôt la page chargée se perdait). L'écran suit une action
+  attendrait sa relecture de sûreté (20 s). Le signal part dès que le canal existe, au pilotage
+  (`useEtatSalle`) comme à la Salle : avant, une touche frappée aussitôt la page chargée, avant
+  la création du canal, se perdait (vu le 2026-10-17 et le 2026-10-18). L'écran suit une action
   de la Salle en 0,3 à 1,7 s sur le poste (l'action serveur recharge la page avant le signal) :
   les e2e lui laissent 5 s.
 - Grille (`grilleDesEquipes`, `src/lib/membres.ts`) : une rangée jusqu'à 3 équipes, puis 2 × 2,
@@ -692,41 +693,40 @@ depuis son téléphone, tout de suite à l'écran, et la régie peut renommer et
   sans touche de régie, nom bloqué puis renommé par la régie. Les parcours d'arrivée existants
   passent l'étape « Capitaine ? » par « Non merci ».
 
-## Conventions posées le 2026-10-17 (ouverture et logo de la soirée)
+## Conventions posées le 2026-10-17 (ouverture de l'écran commun)
 
-Tranché le 2026-10-17 (mariage KQN4JF, Vinoyan & Mélanie, d'après leur faire-part et le reel du
-teaser) : avant la page du QR code, une **ouverture** en boucle (les quatre ronds du teaser) ; au
-passage à « Accueil », une **révélation** : logo Team Up!, puis le **monogramme de la soirée**
-(« V | M »), qui se **déploie en titre** (« Vinoyan & Mélanie ») et se pose dans un **bandeau
-marine** en haut de la page du QR. Logo saisi **en texte** à la Salle, **valable pour tout
-événement** ; une **nouvelle soirée démarre sur l'ouverture** ; roulement puis jingle.
+Tranché le 2026-10-17, revu le 2026-10-18 : avant la page du QR code, une **ouverture** en boucle
+(les quatre ronds du teaser) ; une **nouvelle soirée démarre dessus**. Au passage à « Accueil »,
+la **boucle en cours va à son terme** (on ne coupe jamais la cinématique), puis une **passe
+finale** forme le logo Team Up! et son nom, et la page du QR se découvre ; roulement puis jingle.
 
-- **Écarts assumés à la charte** : le marine et l'or du faire-part (`--tu-faire-part-*`), pendant
-  la révélation et dans le bandeau seulement ; deux polices de plus, auto-hébergées
-  (`@teamup/ui/fonts-soiree.css` : Cinzel pour le monogramme, Great Vibes pour le titre).
+- **Le logo de la soirée est retiré le 2026-10-18** (monogramme « V | M » déployé en « Vinoyan &
+  Mélanie », bandeau marine et or, encart de la Salle, polices Cinzel et Great Vibes) : plus
+  aucun écart à la charte. Les colonnes `evenements.logo_initiales` et `logo_titre` (migration
+  `20261017121000`) **restent en base, vides et inutilisées**, à la demande de l'utilisateur ;
+  `etat_ecran.evenement.logo` vaut `null` et l'écran l'ignore. Le code retiré est dans
+  l'historique git (`7ca138c`, `b9056f2`).
 - Base : scène `ouverture` (migration `20261017120000`, seule : une valeur d'énumération ne sert
   pas dans la transaction qui l'ajoute), scène par défaut des nouvelles soirées
-  (`20261017121000`) ; `evenements.logo_initiales` (1 à 3 parties de 3 caractères, vérifiées par
-  `monogramme_valide`) et `logo_titre` (60), ensemble ou pas du tout, écrits sous la session de
-  l'animateur ; `etat_ecran.evenement.logo`. Les soirées de test (`creerEvenementJetable`,
-  `partie.spec`) repartent de l'accueil.
-- Logique pure, testée (`src/lib/logo-soiree.ts`) : `lireMonogramme` (« V | M »),
-  `deploiement` (chaque initiale prend, dans l'ordre, le premier mot qui commence par elle ;
-  sinon `null` et le titre vient en fondu), `REVELATION` (instants en ms ; `fin` = 8,8 s =
-  `--tu-dur-revelation`, testé ; le déploiement tombe sur la cymbale du roulement, à 5 s).
-- Briques (`src/marque/`) : `Ronds` (`boucle` pour l'ouverture, `forme` pour la révélation ;
-  tout en CSS, `ouverture.css`) et `Monogramme` (monogramme puis titre ; `titreSeul` pour le
-  bandeau). `src/ecran/Revelation.tsx` passe les instants en variables CSS (`--tu-rev-*`).
-- Déclenchement (`Salle.tsx`, comme l'interlude) : seulement quand cet écran voit la scène passer
-  d'`ouverture` à `accueil` ; ni au chargement, ni dans l'aperçu de la régie, ni sous
-  `prefers-reduced-motion`. Le panneau replié a les cotes du bandeau (`--tu-stage-bandeau-h`,
-  `--tu-titre-soiree-bandeau`) : le passage ne se voit pas.
-- Sons : `sonsDeLaRevelation` (roulement à 0, jingle 600 ms après la cymbale ; sans mouvement,
-  le jingle seul) ; l'ambiance joue à l'ouverture comme à l'accueil.
-- Une écriture manuscrite déborde de sa boîte : le reste d'un mot qui s'écrit garde une marge
-  (`--tu-titre-soiree-debord`) pour ne pas couper la boucle du « e » final.
-- Régie : « Ouverture » en tête des scènes libres du pilotage ; encart « Logo de la soirée » à la
-  Salle (`LogoSoiree.tsx`, aperçu dans l'habillage du faire-part).
-- Une soirée existante ne bascule pas seule sur l'ouverture : choisir « Ouverture » au pilotage.
-- `e2e/ouverture.spec.ts` : logo saisi à la Salle, ouverture à l'écran, « Accueil », révélation
-  (monogramme, titre), puis bandeau et code sur la page du QR.
+  (`20261017121000`). Les soirées de test (`creerEvenementJetable`, `partie.spec`) repartent de
+  l'accueil.
+- Logique pure, testée (`src/lib/ouverture.ts`) : `CYCLE_OUVERTURE_MS` (9 s, égal à
+  `--tu-dur-ronds-cycle`, testé), `attenteFinDeBoucle` (ce qui reste du cycle en cours), `FINALE`
+  (instants de la passe finale : logo à 5 s, sur la cymbale du roulement ; nom à 5,6 s ; fondu
+  vers le QR de 7,4 à 8 s).
+- `Ronds` (`src/marque/Ronds.tsx`, tout en CSS dans `ouverture.css`) : `boucle` pour l'ouverture,
+  `finale` pour la passe finale (mêmes images clés jusqu'au pictogramme, puis il reste, et
+  « Team Up! » paraît). `src/ecran/Finale.tsx` la pose par-dessus la page du QR.
+- Déroulé (`Salle.tsx`) : un effet note le départ de la boucle quand la scène d'ouverture est
+  montée. Au passage d'`ouverture` à `accueil` vu par cet écran (ni au chargement, ni dans
+  l'aperçu, ni sous `prefers-reduced-motion`), l'écran **garde la scène d'ouverture affichée sans
+  la remonter** (`data-fin-de-boucle` sur la scène), attend `attenteFinDeBoucle`, puis montre
+  l'accueil sous la passe finale, retirée à `FINALE.fin`. Si la régie quitte l'accueil entre-temps,
+  la nouvelle scène s'affiche.
+- Sons : `sonsDeLaFinale` (roulement à 0, jingle au nom), joués par `Salle.tsx` au début de la
+  passe finale avec le lecteur du moment (`jouer` de `useSons` accepte un délai) ; rien au clic.
+  L'ambiance joue à l'ouverture comme à l'accueil.
+- Régie : « Ouverture » en tête des scènes libres du pilotage. Une soirée existante ne bascule
+  pas seule sur l'ouverture.
+- `e2e/ouverture.spec.ts` : ouverture à l'écran, « Accueil », l'écran reste sur la boucle
+  (`data-fin-de-boucle`), puis la passe finale avec « Team Up! », puis la page du QR et son code.
