@@ -598,3 +598,30 @@ consentement pour la mesure d'audience ; sur « Les jeux », **une vidéo par je
   autre page, types de fichiers stricts, référent limité, capteurs refusés). Pas de règle sur
   les scripts : le site en a en ligne. La fonction du formulaire tourne à Paris (`cdg1`,
   réglage du projet `teamup-site`).
+
+## Conventions posées le 2026-10-17 (invités sans téléphone)
+
+Tranché le 2026-10-17 : un invité sans téléphone s'ajoute **à la Salle de la régie**, par
+l'animateur, ou **depuis le téléphone d'un joueur que l'animateur y autorise** ; son équipe se
+**tire comme à l'arrivée** (groupe facultatif) ; au quiz en mode téléphone il est **spectateur**.
+
+- Un invité ajouté est un joueur **sans session** : `joueurs.jeton_hash` est vide (colonne
+  générée `sans_telephone`). Aucune fonction joueur ne le trouve, il n'a pas d'écran.
+  Il joue tout ce qui se joue en salle, duels compris (il peut être tiré).
+- Jamais capitaine (il ne peut pas envoyer de photo) ni autorisé à ajouter : deux contraintes
+  de la base. `peut_ajouter` ne se pose que sur un joueur qui a un téléphone.
+- Le tirage de l'équipe vit dans `placer_joueur` (interne), commun à `rejoindre_evenement`,
+  `ajouter_invite` (rôle de service, jeton du parrain, sa langue) et `ajouter_invite_regie`
+  (session de l'animateur, `anime()`, première langue de la soirée). La limite de 150 compte
+  les invités ajoutés. Pas de lien gardé entre l'invité et qui l'a ajouté.
+- Quiz : `quiz_joueurs` écarte les joueurs sans session ; ils ne comptent ni pour ni contre
+  leur équipe. En mode croix, l'animateur les compte debout comme les autres.
+- Régie : formulaire « Ajouter un invité » en haut de la Salle ; sur l'étiquette, un anneau
+  pour « sans téléphone » (jamais compté connecté) et un « + » pour qui peut ajouter ;
+  l'autorisation se donne et se retire dans la fiche de l'invité.
+- Téléphone : `etat_joueur.joueur.peut_ajouter` fait paraître « Ajouter un invité » à la
+  relecture suivante ; `POST /api/partie/[code]/invite` renvoie le prénom et l'équipe tirée,
+  à annoncer à l'invité.
+- Le test des 150 arrivées simultanées (`tests/arrivee.test.ts`) est instable sur le poste
+  (dépassement de 30 s une fois sur trois, avant comme après ce changement, A/B fait le
+  2026-10-17) : la CI fait foi.
