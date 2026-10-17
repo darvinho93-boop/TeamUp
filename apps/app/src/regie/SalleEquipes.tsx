@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
-import { designerCapitaine } from '@/app/regie/[code]/salle/actions';
+import { autoriserAjout, designerCapitaine } from '@/app/regie/[code]/salle/actions';
 import { correspond, trierMembres } from '@/lib/membres';
 import { ChoixEquipe } from './ChoixEquipe';
 
@@ -13,6 +13,10 @@ export interface JoueurDeLaSalle {
   capitaine: boolean;
   equipe_id: string | null;
   enLigne: boolean;
+  /** Ajouté à la main : ni session, ni capitaine, spectateur au quiz par téléphone. */
+  sansTelephone: boolean;
+  /** Autorisé à ajouter des invités sans téléphone depuis le sien. */
+  peutAjouter: boolean;
 }
 
 export interface EquipeDeLaSalle {
@@ -26,7 +30,8 @@ export interface EquipeDeLaSalle {
 /**
  * Toute la salle d'un coup d'œil : une carte par équipe, ses membres en étiquettes (capitaine en
  * tête, puis ordre alphabétique). La recherche estompe ceux qui ne correspondent pas ; les
- * commandes d'un invité (changer d'équipe, capitaine) ne s'ouvrent qu'au clic sur son prénom.
+ * commandes d'un invité (changer d'équipe, capitaine, autorisation d'ajouter) ne s'ouvrent qu'au
+ * clic sur son prénom.
  */
 export function SalleEquipes({
   code,
@@ -42,6 +47,8 @@ export function SalleEquipes({
   const [ouvert, setOuvert] = useState<string | null>(null);
   const cherche = recherche.trim() !== '';
   const trouves = cherche ? joueurs.filter((j) => correspond(j.prenom, recherche)).length : 0;
+  const etatDe = (j: JoueurDeLaSalle) =>
+    j.sansTelephone ? t('sansTelephone') : j.enLigne ? t('connecte') : t('horsLigne');
 
   const carte = (equipe: EquipeDeLaSalle | null) => {
     const membres = trierMembres(joueurs.filter((j) => j.equipe_id === (equipe?.id ?? null)));
@@ -74,14 +81,19 @@ export function SalleEquipes({
                 onClick={() => setOuvert(j.id === ouvert ? null : j.id)}
               >
                 <span
-                  className={cx('tu-regie-chip__etat', j.enLigne && 'tu-regie-chip__etat--on')}
+                  className={cx(
+                    'tu-regie-chip__etat',
+                    j.enLigne && 'tu-regie-chip__etat--on',
+                    j.sansTelephone && 'tu-regie-chip__etat--sans',
+                  )}
                   aria-hidden="true"
                 />
                 {j.capitaine && <span aria-hidden="true">★</span>}
                 {j.prenom}
+                {j.peutAjouter && <span aria-hidden="true">+</span>}
                 <span className="tu-visually-hidden">
-                  {j.capitaine && ` · ${t('capitaine')}`} ·{' '}
-                  {j.enLigne ? t('connecte') : t('horsLigne')}
+                  {j.capitaine && ` · ${t('capitaine')}`}
+                  {j.peutAjouter && ` · ${t('peutAjouter')}`} · {etatDe(j)}
                 </span>
               </button>
             </li>
@@ -99,7 +111,7 @@ export function SalleEquipes({
                 )}
               >
                 {' · '}
-                {choisi.enLigne ? t('connecte') : t('horsLigne')}
+                {etatDe(choisi)}
               </span>
             </p>
             <ChoixEquipe
@@ -109,10 +121,17 @@ export function SalleEquipes({
               equipes={equipes.map((e) => ({ id: e.id, nom: e.nom }))}
               libelle={t('deplacer', { prenom: choisi.prenom })}
             />
-            {choisi.equipe_id && !choisi.capitaine && (
+            {choisi.equipe_id && !choisi.capitaine && !choisi.sansTelephone && (
               <form action={designerCapitaine.bind(null, code, choisi.id)}>
                 <button type="submit" className="tu-btn tu-btn--ghost">
                   {t('nommerCapitaine')}
+                </button>
+              </form>
+            )}
+            {!choisi.sansTelephone && (
+              <form action={autoriserAjout.bind(null, code, choisi.id, !choisi.peutAjouter)}>
+                <button type="submit" className="tu-btn tu-btn--ghost">
+                  {choisi.peutAjouter ? t('retirerAjout') : t('autoriserAjout')}
                 </button>
               </form>
             )}

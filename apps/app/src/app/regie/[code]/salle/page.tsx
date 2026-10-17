@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { evenementDeLaRegie } from '@/serveur/regie';
+import { FormulaireInvite } from '@/regie/FormulaireInvite';
 import { RafraichirAuto } from '@/regie/RafraichirAuto';
 import { SalleEquipes } from '@/regie/SalleEquipes';
 
@@ -27,7 +28,7 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
         .order('numero'),
       supabase
         .from('joueurs')
-        .select('id, prenom, langue, capitaine, equipe_id, vu_le')
+        .select('id, prenom, langue, capitaine, equipe_id, vu_le, sans_telephone, peut_ajouter')
         .eq('evenement_id', evenement.id)
         .order('rejoint_le'),
       supabase.from('groupes').select('id, nom').eq('evenement_id', evenement.id).order('ordre'),
@@ -48,9 +49,10 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
       })
       .join(' · ');
   const maintenant = instantDuRendu();
-  const connectes = (joueurs ?? []).filter(
-    (j) => maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS,
-  ).length;
+  // Un invité sans téléphone n'est jamais « connecté » : son `vu_le` est l'heure de l'ajout.
+  const enLigne = (j: { vu_le: string; sans_telephone: boolean | null }) =>
+    !j.sans_telephone && maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS;
+  const connectes = (joueurs ?? []).filter(enLigne).length;
   return (
     <>
       <RafraichirAuto intervalleMs={5000} />
@@ -68,6 +70,7 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
       <p className="tu-regie__muted" role="status">
         {t('compte', { joueurs: (joueurs ?? []).length, connectes })}
       </p>
+      <FormulaireInvite code={evenement.code} groupes={groupes ?? []} />
       <SalleEquipes
         code={evenement.code}
         equipes={(equipes ?? []).map((e) => ({ ...e, groupes: detailGroupes(e.id) }))}
@@ -76,7 +79,9 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
           prenom: j.prenom,
           capitaine: j.capitaine,
           equipe_id: j.equipe_id,
-          enLigne: maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS,
+          enLigne: enLigne(j),
+          sansTelephone: j.sans_telephone === true,
+          peutAjouter: j.peut_ajouter,
         }))}
       />
     </>

@@ -26,6 +26,24 @@
     "aide": "Pour mélanger les équipes. On ne le garde pas.",
     "sansReponse": "Je préfère ne pas répondre"
   },
+  "ajout": {
+    "ouvrir": "Ajouter un invité",
+    "titre": "Un invité sans téléphone",
+    "aide": "Écris son prénom : il jouera avec son équipe, en salle.",
+    "champ": "Son prénom",
+    "bouton": "Ajouter",
+    "retour": "Retour",
+    "groupeTitre": "Le groupe de {prenom}",
+    "fait": "{prenom} rejoint {equipe}",
+    "faitSansEquipe": "{prenom} est ajouté",
+    "faitAide": "Dis-le-lui : son équipe l'attend. Il suit le jeu sur l'écran.",
+    "encore": "Ajouter un autre invité",
+    "vide": "Écris son prénom.",
+    "complet": "La partie est complète.",
+    "interdit": "Tu ne peux plus ajouter d'invité. Demande à l'animateur.",
+    "close": "La partie n'est plus ouverte.",
+    "serveur": "Ça n'a pas marché. Réessaie."
+  },
   "equipe": {
     "surtitre": "Ton équipe",
     "aide": "Retrouve les joueurs de cette couleur dans la salle.",
@@ -349,7 +367,22 @@
       "resultats": "{n, plural, =0 {Aucun invité trouvé} one {# invité trouvé} other {# invités trouvés}}",
       "fermer": "Fermer",
       "sansEquipe": "Sans équipe",
-      "groupes": "À l'arrivée : {detail}"
+      "groupes": "À l'arrivée : {detail}",
+      "ajoutTitre": "Ajouter un invité sans téléphone",
+      "ajoutAide": "Son équipe se tire comme à l'arrivée. Il joue en salle comme les autres ; au quiz par téléphone, il regarde.",
+      "prenom": "Prénom",
+      "groupe": "Groupe",
+      "sansGroupe": "Je préfère ne pas répondre",
+      "ajouter": "Ajouter",
+      "ajoutInvalide": "Indiquez un prénom (40 caractères au plus).",
+      "ajoutEchec": "L'invité n'a pas pu être ajouté. Réessayez.",
+      "complet": "La soirée est complète (150 joueurs).",
+      "ajoute": "{prenom} rejoint {equipe}.",
+      "ajouteSansEquipe": "{prenom} est ajouté, sans équipe pour l'instant.",
+      "sansTelephone": "sans téléphone",
+      "peutAjouter": "peut ajouter des invités",
+      "autoriserAjout": "Autoriser à ajouter des invités",
+      "retirerAjout": "Retirer l'autorisation d'ajouter"
     },
     "scores": {
       "titre": "Scores",

@@ -340,6 +340,12 @@ button.tu-regie-chip:hover,
   background: var(--tu-success);
 }
 
+/* Invité ajouté à la main : un anneau, ni connecté ni hors ligne. */
+.tu-regie-chip__etat--sans {
+  border: var(--tu-btn-border-width) solid var(--tu-text-muted);
+  background: transparent;
+}
+
 /* Les commandes d'un invité, ouvertes au clic sur son prénom. */
 .tu-regie-fiche {
   display: flex;

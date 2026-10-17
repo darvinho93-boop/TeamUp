@@ -26,6 +26,24 @@
     "aide": "To mix the teams. We don't keep it.",
     "sansReponse": "I'd rather not say"
   },
+  "ajout": {
+    "ouvrir": "Add a guest",
+    "titre": "A guest without a phone",
+    "aide": "Type their first name: they will play with their team, in the room.",
+    "champ": "Their first name",
+    "bouton": "Add",
+    "retour": "Back",
+    "groupeTitre": "{prenom}'s group",
+    "fait": "{prenom} joins {equipe}",
+    "faitSansEquipe": "{prenom} is added",
+    "faitAide": "Tell them: their team is waiting. They follow the game on the screen.",
+    "encore": "Add another guest",
+    "vide": "Type their first name.",
+    "complet": "The game is full.",
+    "interdit": "You can no longer add guests. Ask the host.",
+    "close": "This game is no longer open.",
+    "serveur": "That didn't work. Try again."
+  },
   "equipe": {
     "surtitre": "Your team",
     "aide": "Find the players wearing this colour in the room.",
@@ -349,7 +367,22 @@
       "resultats": "{n, plural, =0 {No guest found} one {# guest found} other {# guests found}}",
       "fermer": "Close",
       "sansEquipe": "No team",
-      "groupes": "On arrival: {detail}"
+      "groupes": "On arrival: {detail}",
+      "ajoutTitre": "Add a guest without a phone",
+      "ajoutAide": "Their team is drawn as on arrival. They play in the room like everyone else; during the phone quiz, they watch.",
+      "prenom": "First name",
+      "groupe": "Group",
+      "sansGroupe": "I'd rather not say",
+      "ajouter": "Add",
+      "ajoutInvalide": "Enter a first name (40 characters at most).",
+      "ajoutEchec": "The guest could not be added. Try again.",
+      "complet": "The event is full (150 players).",
+      "ajoute": "{prenom} joins {equipe}.",
+      "ajouteSansEquipe": "{prenom} is added, with no team for now.",
+      "sansTelephone": "no phone",
+      "peutAjouter": "can add guests",
+      "autoriserAjout": "Allow to add guests",
+      "retirerAjout": "Remove permission to add"
     },
     "scores": {
       "titre": "Scores",
