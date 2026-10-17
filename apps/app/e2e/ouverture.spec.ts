@@ -1,0 +1,68 @@
+import { expect, test } from '@playwright/test';
+import { clientService, creerEvenementJetable, supprimerEvenements } from '../tests/base';
+
+let evenement: { id: string; code: string };
+
+test.beforeAll(async () => {
+  evenement = await creerEvenementJetable({ equipes: 2, langues: ['fr'] });
+  // Comme une soirée neuve : l'écran s'ouvre sur l'ouverture.
+  await clientService()
+    .from('pilotage')
+    .update({ scene: 'ouverture' })
+    .eq('evenement_id', evenement.id);
+});
+
+test.afterAll(() => supprimerEvenements([evenement.id]));
+
+test('le logo saisi à la Salle se révèle au passage de l’ouverture à l’accueil', async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const regie = await (
+    await browser.newContext({ viewport: { width: 1440, height: 900 }, isMobile: false })
+  ).newPage();
+  await regie.goto('/regie');
+  await regie.getByLabel('E-mail').fill('anna@teamup.test');
+  await regie.getByLabel('Mot de passe').fill('motdepasse');
+  await regie.getByRole('button', { name: 'Se connecter' }).click();
+  await regie.waitForURL('**/regie');
+
+  // --- La Salle saisit le monogramme et le titre ; l'aperçu les montre.
+  await regie.goto(`/regie/${evenement.code}/salle`);
+  const logo = regie.getByTestId('logo-soiree');
+  await logo.getByLabel('Monogramme').fill('V | M');
+  await logo.getByLabel('Titre').fill('Vinoyan & Mélanie');
+  await expect(logo.getByRole('img', { name: 'Aperçu du logo' })).toContainText('V | M');
+  await logo.getByRole('button', { name: 'Enregistrer le logo' }).click();
+  await expect(logo.getByText('Logo enregistré.')).toBeVisible();
+
+  // --- L'écran tourne sur l'ouverture : les quatre ronds.
+  const ecran = await (
+    await browser.newContext({
+      storageState: await regie.context().storageState(),
+      viewport: { width: 1920, height: 1080 },
+      isMobile: false,
+    })
+  ).newPage();
+  await ecran.goto(`/ecran/${evenement.code}`);
+  await expect(ecran.locator('[data-scene="ouverture"]')).toBeVisible();
+  await expect(ecran.locator('[data-scene="ouverture"] .tu-rond')).toHaveCount(4);
+  await expect(ecran.locator('[data-en-direct="true"]')).toBeVisible({ timeout: 15_000 });
+
+  // --- « Accueil » au pilotage : la révélation passe, puis la page du QR avec son bandeau.
+  await regie.goto(`/regie/${evenement.code}/pilotage`);
+  await expect(regie.getByRole('button', { name: 'Ouverture' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await regie.getByRole('button', { name: 'Accueil', exact: true }).click();
+
+  const revelation = ecran.getByTestId('revelation');
+  await expect(revelation).toBeVisible({ timeout: 5000 });
+  await expect(revelation.locator('.tu-soiree__monogramme')).toHaveText('V|M');
+  await expect(revelation.getByTestId('titre-soiree')).toHaveText('Vinoyan & Mélanie');
+  await expect(revelation).toHaveCount(0, { timeout: 15_000 });
+
+  await expect(ecran.getByTestId('bandeau')).toHaveText('Vinoyan & Mélanie');
+  await expect(ecran.getByTestId('code')).toHaveText(evenement.code);
+});

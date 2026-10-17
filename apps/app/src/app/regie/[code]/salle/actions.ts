@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
+import { lireMonogramme, TITRE_MAX } from '@/lib/logo-soiree';
 import { evenementDeLaRegie } from '@/serveur/regie';
 
 export type EtatAjoutInvite = { erreur?: string; ok?: string } | undefined;
@@ -151,5 +152,48 @@ export async function figerNom(code: string, equipeId: string, oui: boolean) {
     .update({ nom_fige: oui })
     .eq('id', equipeId)
     .eq('evenement_id', evenement.id);
+  revalidatePath(`/regie/${evenement.code}/salle`);
+}
+
+export type EtatLogo = { erreur?: string; ok?: string } | undefined;
+
+const Logo = z.object({
+  monogramme: z.string(),
+  titre: z.string().trim().min(1).max(TITRE_MAX),
+});
+
+/**
+ * Le logo de la soirée : un monogramme (« V | M ») et son titre (« Vinoyan & Mélanie »). La base
+ * revérifie leur forme (contraintes de `evenements`).
+ */
+export async function enregistrerLogo(
+  code: string,
+  _: EtatLogo,
+  donnees: FormData,
+): Promise<EtatLogo> {
+  const { supabase, evenement } = await evenementDeLaRegie(code);
+  const t = await getTranslations('regie.salle');
+  const saisie = Logo.safeParse({
+    monogramme: donnees.get('monogramme'),
+    titre: donnees.get('titre'),
+  });
+  const initiales = saisie.success ? lireMonogramme(saisie.data.monogramme) : null;
+  if (!saisie.success || !initiales) return { erreur: t('logoInvalide') };
+  const { error } = await supabase
+    .from('evenements')
+    .update({ logo_initiales: initiales, logo_titre: saisie.data.titre })
+    .eq('id', evenement.id);
+  if (error) return { erreur: t('logoInvalide') };
+  revalidatePath(`/regie/${evenement.code}/salle`);
+  return { ok: t('logoEnregistre') };
+}
+
+/** Retire le logo : l'ouverture mène alors à la page du QR code sans bandeau. */
+export async function retirerLogo(code: string) {
+  const { supabase, evenement } = await evenementDeLaRegie(code);
+  await supabase
+    .from('evenements')
+    .update({ logo_initiales: null, logo_titre: null })
+    .eq('id', evenement.id);
   revalidatePath(`/regie/${evenement.code}/salle`);
 }
