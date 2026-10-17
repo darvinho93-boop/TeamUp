@@ -60,6 +60,10 @@
   --tu-stage-podium-2: 14rem;
   --tu-stage-podium-3: 10rem;
 
+  /* Ouverture et révélation du logo de la soirée (2026-10-17). La durée est égale à
+     REVELATION_MS (src/lib/logo-soiree.ts), testé. */
+  --tu-dur-revelation: 8800ms;
+
   /* Explications animées (lot 12) : hauteur du décor, silhouette, écran, quadrant, phrase. */
   --tu-expl-visuel-h: 28rem;
   --tu-expl-perso: 6rem;
