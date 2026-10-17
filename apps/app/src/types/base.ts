@@ -133,6 +133,7 @@ export type Database = {
           evenement_id: string
           id: string
           nom: string
+          nom_fige: boolean
           numero: number
         }
         Insert: {
@@ -140,6 +141,7 @@ export type Database = {
           evenement_id: string
           id?: string
           nom: string
+          nom_fige?: boolean
           numero: number
         }
         Update: {
@@ -147,6 +149,7 @@ export type Database = {
           evenement_id?: string
           id?: string
           nom?: string
+          nom_fige?: boolean
           numero?: number
         }
         Relationships: [
@@ -338,6 +341,7 @@ export type Database = {
           prenom: string
           rejoint_le: string
           sans_telephone: boolean | null
+          volontaire: boolean
           vu_le: string
         }
         Insert: {
@@ -351,6 +355,7 @@ export type Database = {
           prenom: string
           rejoint_le?: string
           sans_telephone?: boolean | null
+          volontaire?: boolean
           vu_le?: string
         }
         Update: {
@@ -364,6 +369,7 @@ export type Database = {
           prenom?: string
           rejoint_le?: string
           sans_telephone?: boolean | null
+          volontaire?: boolean
           vu_le?: string
         }
         Relationships: [
@@ -883,6 +889,7 @@ export type Database = {
           p_jeton_hash: string
           p_langue: Database["public"]["Enums"]["langue"]
           p_prenom: string
+          p_volontaire?: boolean
         }
         Returns: Json
       }
@@ -914,7 +921,12 @@ export type Database = {
           p_jeton_hash: string
           p_langue: Database["public"]["Enums"]["langue"]
           p_prenom: string
+          p_volontaire?: boolean
         }
+        Returns: Json
+      }
+      renommer_equipe: {
+        Args: { p_jeton_hash: string; p_nom: string }
         Returns: Json
       }
       repondre_quiz: {
@@ -934,6 +946,7 @@ export type Database = {
       }
       survivants_quiz: { Args: { p_manche: string }; Returns: Json }
       texte_rempli: { Args: { p_valeur: Json }; Returns: boolean }
+      tirer_capitaines: { Args: { p_evenement: string }; Returns: number }
     }
     Enums: {
       etiquette: "b2c" | "b2b" | "tout_public"
