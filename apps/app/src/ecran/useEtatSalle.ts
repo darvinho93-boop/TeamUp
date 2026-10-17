@@ -38,6 +38,8 @@ const TABLES_REGIE = [
  * on les regroupe, le signal de la régie assurant déjà la réactivité. */
 const REGROUPEMENT_MS = 250;
 export const SIGNAL = 'relire';
+/** Ce qu'un signal attend au plus la création du canal. */
+const ATTENTE_CANAL_MS = 3000;
 
 /**
  * L'état de la salle, tenu à jour en temps réel pour l'écran commun et la régie.
@@ -59,7 +61,10 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
   const [enDirect, setEnDirect] = useState(false);
   const enCours = useRef(false);
   const aRelire = useRef(false);
-  const canalRef = useRef<RealtimeChannel | null>(null);
+  // Le canal, une fois créé (après le jeton de l'animateur) : un signal demandé avant attend qu'il
+  // le soit, au lieu d'être perdu (une touche frappée aussitôt la page chargée n'atteignait
+  // l'écran qu'à sa relecture de sûreté).
+  const pretRef = useRef<Promise<RealtimeChannel | null> | null>(null);
   const regroupement = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const relire = useCallback(async () => {
@@ -93,6 +98,12 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
     const id = initial.evenement.id;
     let canal: ReturnType<typeof supabase.channel> | null = null;
     let actif = true;
+    let resoudre: (pret: RealtimeChannel | null) => void = () => {};
+    pretRef.current = new Promise((r) => {
+      resoudre = r;
+    });
+    // Au-delà, le signal part sans attendre l'abonnement (supabase-js passe alors par son API).
+    const repli = setTimeout(() => resoudre(canal), ATTENTE_CANAL_MS);
 
     void (async () => {
       // Le jeton de l'animateur, pour que le temps réel applique sa RLS.
@@ -100,7 +111,9 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
       if (!actif) return;
       // Même sujet pour l'écran et la régie : le signal de l'une atteint l'autre.
       canal = supabase.channel(`salle:${id}`, { config: { broadcast: { self: false } } });
-      canalRef.current = canal;
+      // Le signal peut partir dès que le canal existe : tant qu'il n'est pas ouvert, supabase-js
+      // l'envoie par son API.
+      resoudre(canal);
       canal.on('broadcast', { event: SIGNAL }, () => void relire());
       for (const { table, event } of regie ? TABLES_REGIE : TABLES) {
         canal.on(
@@ -125,7 +138,9 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
     void relire();
     return () => {
       actif = false;
-      canalRef.current = null;
+      clearTimeout(repli);
+      resoudre(null);
+      pretRef.current = null;
       if (regroupement.current) clearTimeout(regroupement.current);
       if (canal) void supabase.removeChannel(canal);
     };
@@ -138,7 +153,9 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
 
   /** Prévient les autres fenêtres de la salle qu'il faut relire (après une touche de la régie). */
   const signaler = useCallback(() => {
-    void canalRef.current?.send({ type: 'broadcast', event: SIGNAL, payload: {} });
+    void pretRef.current?.then((canal) =>
+      canal?.send({ type: 'broadcast', event: SIGNAL, payload: {} }),
+    );
   }, []);
 
   return { etat, decalageMs, enDirect, relire, signaler };
