@@ -86,7 +86,9 @@ export function Arrivee({
     }
   };
 
-  if (rejoint) return <EcranJoueur code={code} etatInitial={rejoint} vueInitiale="equipe" />;
+  if (rejoint) {
+    return <EcranJoueur code={code} etatInitial={rejoint} vueInitiale="equipe" groupes={groupes} />;
+  }
 
   if (!langue) {
     return (

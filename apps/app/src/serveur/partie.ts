@@ -55,6 +55,40 @@ export async function rejoindre(
   throw new Error(error.message);
 }
 
+export type ResultatAjout =
+  | { ok: true; prenom: string; equipe: string | null }
+  | { ok: false; erreur: 'session' | 'interdit' | 'complet' | 'groupe' | 'close' };
+
+/**
+ * Le joueur de ce cookie ajoute un invité sans téléphone. La base vérifie seule qu'il y est
+ * autorisé (`peut_ajouter`, donné à la régie) ; l'équipe se tire comme à l'arrivée.
+ */
+export async function ajouterInvite(
+  code: string,
+  prenom: string,
+  groupe: string | null,
+): Promise<ResultatAjout> {
+  const jeton = await jetonDe(code);
+  const etat = jeton ? await etatPourJeton(code, jeton) : null;
+  if (!jeton || !etat) return { ok: false, erreur: 'session' };
+
+  const { data, error } = await supabaseService().rpc('ajouter_invite', {
+    p_jeton_parrain: hacher(jeton),
+    p_prenom: prenom,
+    ...(groupe ? { p_groupe: groupe } : {}),
+  });
+  if (error) {
+    if (/non autorisé/.test(error.message)) return { ok: false, erreur: 'interdit' };
+    if (/complet/.test(error.message)) return { ok: false, erreur: 'complet' };
+    if (/groupe/.test(error.message)) return { ok: false, erreur: 'groupe' };
+    if (/clos/.test(error.message)) return { ok: false, erreur: 'close' };
+    if (/session/.test(error.message)) return { ok: false, erreur: 'session' };
+    throw new Error(error.message);
+  }
+  const ajout = data as { prenom: string; equipe: { nom: string } | null };
+  return { ok: true, prenom: ajout.prenom, equipe: ajout.equipe?.nom ?? null };
+}
+
 /**
  * Réponse au quiz du joueur de ce cookie. La base décide seule de ce qui est recevable
  * (question ouverte, joueur encore en jeu, première réponse) : on ne fait que traduire son refus.

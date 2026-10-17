@@ -67,7 +67,14 @@ export interface PhotosJoueur {
 }
 
 export interface EtatJoueur {
-  joueur: { id: string; prenom: string; langue: Langue; capitaine: boolean };
+  joueur: {
+    id: string;
+    prenom: string;
+    langue: Langue;
+    capitaine: boolean;
+    /** Autorisé à la régie à ajouter des invités sans téléphone. */
+    peut_ajouter: boolean;
+  };
   evenement: {
     /** Canal du signal temps réel de la salle ; ne donne accès à rien d'autre. */
     id: string;

@@ -3,24 +3,28 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
-import type { EtatJoueur } from '@/lib/partie';
+import type { EtatJoueur, GroupePublic } from '@/lib/partie';
+import { AjoutInvite } from './AjoutInvite';
 import { Cadre } from './Cadre';
 import { Photos } from './Photos';
 import { Quiz } from './Quiz';
 import { useEtatJoueur } from './useEtatJoueur';
 import { useFilePhotos } from './useFilePhotos';
 
-type Vue = 'equipe' | 'attente' | 'photos';
+type Vue = 'equipe' | 'attente' | 'photos' | 'ajout';
 
 /** Le joueur a rejoint : « Mon équipe », puis l'attente, tenus à jour en continu. */
 export function EcranJoueur({
   code,
   etatInitial,
   vueInitiale = 'attente',
+  groupes = [],
 }: {
   code: string;
   etatInitial: EtatJoueur;
   vueInitiale?: Vue;
+  /** Les groupes de la soirée : un invité ajouté depuis ce téléphone peut en choisir un. */
+  groupes?: GroupePublic[];
 }) {
   const t = useTranslations();
   const { etat, horsLigne, decalageMs, remplacer, relire } = useEtatJoueur(code, etatInitial);
@@ -67,6 +71,15 @@ export function EcranJoueur({
             relire={relire}
           />
         </div>
+      </Cadre>
+    );
+  }
+
+  // L'autorisation peut être retirée pendant la saisie : la vue se ferme d'elle-même.
+  if (vue === 'ajout' && joueur.peut_ajouter && evenement.statut !== 'termine') {
+    return (
+      <Cadre bandeau={bandeau}>
+        <AjoutInvite code={code} groupes={groupes} retour={() => setVue('attente')} />
       </Cadre>
     );
   }
@@ -133,6 +146,11 @@ export function EcranJoueur({
                   envoyees: photos.themes.filter((th) => th.envoyee_le !== null).length,
                   total: photos.themes.length,
                 })}
+              </Button>
+            )}
+            {joueur.peut_ajouter && (
+              <Button variant="outline" size="lg" block onClick={() => setVue('ajout')}>
+                {t('ajout.ouvrir')}
               </Button>
             )}
           </div>

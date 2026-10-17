@@ -16,10 +16,11 @@ export default async function Partie({ params }: PageProps<'/[code]'>) {
   const code = normaliserCode((await params).code);
   if (!code) return <SaisieCode erreurInitiale="codeInconnu" />;
 
-  const etat = await etatDuJoueur(code);
-  if (etat) return <EcranJoueur code={code} etatInitial={etat} />;
+  const [etat, evenement] = await Promise.all([etatDuJoueur(code), evenementPublic(code)]);
+  if (etat) {
+    return <EcranJoueur code={code} etatInitial={etat} groupes={evenement?.groupes ?? []} />;
+  }
 
-  const evenement = await evenementPublic(code);
   if (!evenement) return <SaisieCode erreurInitiale="codeInconnu" />;
 
   return (
