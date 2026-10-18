@@ -405,6 +405,7 @@
         "expliquer": "Expliquer",
         "expliquerCroix": "Expliquer (croix)",
         "expliquerTelephone": "Expliquer (téléphone)",
+        "expliquerJetons": "Expliquer (jetons)",
         "enCours": "Explication à l'écran :",
         "rejouer": "Rejouer",
         "arreter": "Arrêter l'explication"
@@ -587,6 +588,13 @@
         "telephone": "Réponds sur ton téléphone : tu as 30 secondes.",
         "elimine": "Mauvaise réponse : éliminé !",
         "survivants": "100 points par survivant de ton équipe."
+      },
+      "qcm2-jetons": {
+        "quadrants": "Une question, quatre réponses : l'équipe se concerte, réunie.",
+        "jetons-capitaine": "Ton capitaine a des jetons : autant que de joueurs dans la plus grande équipe.",
+        "repartition": "Il les pose tous sur son téléphone : sur une réponse, ou plusieurs en cas de doute.",
+        "jetons-perdus": "Les jetons posés sur une mauvaise réponse sont perdus.",
+        "jetons-restants": "À la fin, 100 points par jeton qui reste."
       },
       "enchere2": {
         "champions": "Un champion par équipe s'avance.",

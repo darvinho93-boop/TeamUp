@@ -15,7 +15,9 @@ const SCRIPTS = Object.keys(SCRIPTS_EXPLICATION) as ScriptExplication[];
 
 describe('scripts des explications', () => {
   it('couvrent les 5 jeux et les 2 duels, rien de plus', () => {
-    expect(new Set(SCRIPTS)).toEqual(new Set([...SOCLE_GAMES, ...BETA_DUELS, 'qcm2-telephone']));
+    expect(new Set(SCRIPTS)).toEqual(
+      new Set([...SOCLE_GAMES, ...BETA_DUELS, 'qcm2-telephone', 'qcm2-jetons']),
+    );
   });
 
   it.each(SCRIPTS)('%s dure entre 20 et 30 s', (script) => {
@@ -36,8 +38,9 @@ describe('scripts des explications', () => {
 
   it('le Quiz s’explique selon son mode, les autres jeux n’en ont qu’un', () => {
     expect(scriptExplication('qcm2')).toBe('qcm2');
-    expect(scriptExplication('qcm2', true)).toBe('qcm2-telephone');
-    expect(scriptExplication('mime2', true)).toBe('mime2');
+    expect(scriptExplication('qcm2', 'telephone')).toBe('qcm2-telephone');
+    expect(scriptExplication('qcm2', 'jetons')).toBe('qcm2-jetons');
+    expect(scriptExplication('mime2', 'jetons')).toBe('mime2');
   });
 });
 

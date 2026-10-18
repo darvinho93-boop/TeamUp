@@ -52,14 +52,28 @@ function Equipe({ n, equipe = 1, className }: { n: number; equipe?: number; clas
 
 const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
+/** Un jeton du Quiz en mode jetons : un disque ambre (équipe 4), jamais le corail. */
+function Jetons({ n, className }: { n: number; className?: string }) {
+  return (
+    <span className={cx('tu-expl-jetons tu-expl-suite', className)}>
+      {Array.from({ length: n }, (_, i) => (
+        <span key={i} className={cx('tu-expl-jeton', teamModifier(4))} />
+      ))}
+    </span>
+  );
+}
+
 function Quadrants({
   bonne,
   joueurs = false,
+  jetons,
 }: {
   /** Index de la bonne réponse, une fois révélée. */
   bonne?: number;
   /** Des invités placés dans les zones. */
   joueurs?: boolean;
+  /** Mode jetons : les jetons posés sur chaque réponse. */
+  jetons?: readonly number[];
 }) {
   return (
     <ul className="tu-expl-quadrants">
@@ -79,6 +93,7 @@ function Quadrants({
               <Perso equipe={EQUIPES[(i + 1) % EQUIPES.length]} />
             </span>
           )}
+          {(jetons?.[i] ?? 0) > 0 && <Jetons n={jetons![i]!} />}
         </li>
       ))}
     </ul>
@@ -174,6 +189,24 @@ const VISUELS: Record<VisuelExplication, () => ReactNode> = {
   survivants: () => (
     <>
       <Equipe n={3} equipe={3} className="tu-expl-suite" />
+      <span className="tu-expl-points">×100</span>
+    </>
+  ),
+  // Quatre joueurs dans la plus grande équipe : quatre jetons au téléphone du capitaine.
+  'jetons-capitaine': () => (
+    <>
+      <Equipe n={4} equipe={1} className="tu-expl-suite" />
+      <span className="tu-expl-fleche">→</span>
+      <Telephone>
+        <Jetons n={4} className="tu-expl-jetons--telephone" />
+      </Telephone>
+    </>
+  ),
+  repartition: () => <Quadrants jetons={[3, 1, 0, 0]} />,
+  'jetons-perdus': () => <Quadrants jetons={[3, 1, 0, 0]} bonne={0} />,
+  'jetons-restants': () => (
+    <>
+      <Jetons n={3} />
       <span className="tu-expl-points">×100</span>
     </>
   ),

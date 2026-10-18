@@ -505,15 +505,20 @@ describe('l’explication animée', () => {
     expect(etape(e, { type: 'expliquer' })?.pilotage.chrono).toBe('demarrer');
   });
 
-  it('le Quiz s’explique en mode téléphone sur demande, les autres jeux l’ignorent', () => {
-    const quiz = etape(etat({ scene: 'intro', manche_id: 'qz' }), {
-      type: 'expliquer',
-      telephone: true,
+  it('le Quiz s’explique selon le mode demandé, les autres jeux l’ignorent', () => {
+    const intro = etat({ scene: 'intro', manche_id: 'qz' });
+    expect(etape(intro, { type: 'expliquer', mode: 'telephone' })?.pilotage.etape).toBe(
+      'explication-telephone',
+    );
+    const jetons = etape(intro, { type: 'expliquer', mode: 'jetons' });
+    expect(jetons?.pilotage).toMatchObject({
+      etape: 'explication-jetons',
+      chrono: 'demarrer',
+      chrono_duree_s: 29,
     });
-    expect(quiz?.pilotage.etape).toBe('explication-telephone');
     const mime = etape(etat({ scene: 'intro', manche_id: 'mi' }), {
       type: 'expliquer',
-      telephone: true,
+      mode: 'jetons',
     });
     expect(mime?.pilotage.etape).toBe('explication');
   });
@@ -536,6 +541,7 @@ describe('l’explication animée', () => {
   it('l’écran sait quel script jouer', () => {
     expect(scriptEnCours('qcm2', 'intro', 'explication')).toBe('qcm2');
     expect(scriptEnCours('qcm2', 'intro', 'explication-telephone')).toBe('qcm2-telephone');
+    expect(scriptEnCours('qcm2', 'intro', 'explication-jetons')).toBe('qcm2-jetons');
     expect(scriptEnCours('mime2', 'intro', 'explication-telephone')).toBeNull();
     expect(scriptEnCours('mime2', 'intro', null)).toBeNull();
     expect(scriptEnCours('mime2', 'jeu', 'explication')).toBeNull();

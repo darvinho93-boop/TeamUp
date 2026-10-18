@@ -405,6 +405,7 @@
         "expliquer": "Explain",
         "expliquerCroix": "Explain (cross)",
         "expliquerTelephone": "Explain (phone)",
+        "expliquerJetons": "Explain (tokens)",
         "enCours": "Explanation on screen:",
         "rejouer": "Replay",
         "arreter": "Stop the explanation"
@@ -587,6 +588,13 @@
         "telephone": "Answer on your phone: you have 30 seconds.",
         "elimine": "Wrong answer: you're out!",
         "survivants": "100 points for each survivor in your team."
+      },
+      "qcm2-jetons": {
+        "quadrants": "One question, four answers: the team talks it over, together.",
+        "jetons-capitaine": "Your captain has tokens: as many as there are players in the largest team.",
+        "repartition": "They place them all on their phone: on one answer, or several if in doubt.",
+        "jetons-perdus": "Tokens placed on a wrong answer are lost.",
+        "jetons-restants": "At the end, 100 points for each token left."
       },
       "enchere2": {
         "champions": "Each team sends one champion forward.",

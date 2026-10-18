@@ -5,9 +5,10 @@
  */
 
 import type { GameCode } from './catalogue';
+import type { ModeQuiz } from './pilotage/quiz';
 
-/** Le Quiz s'explique selon son mode, choisi seulement au lancement : deux scripts. */
-export type ScriptExplication = GameCode | 'qcm2-telephone';
+/** Le Quiz s'explique selon son mode, choisi seulement au lancement : trois scripts. */
+export type ScriptExplication = GameCode | 'qcm2-telephone' | 'qcm2-jetons';
 
 /** Ce que l'écran dessine pour une carte. */
 export type VisuelExplication =
@@ -20,6 +21,10 @@ export type VisuelExplication =
   | 'telephone'
   | 'elimine'
   | 'survivants'
+  | 'jetons-capitaine'
+  | 'repartition'
+  | 'jetons-perdus'
+  | 'jetons-restants'
   | 'champions'
   | 'encheres'
   | 'chrono'
@@ -66,6 +71,14 @@ export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplic
   ],
   qcm2: [carte('quadrants', 6), carte('zones', 6), ...QUIZ_FIN],
   'qcm2-telephone': [carte('quadrants', 6), carte('telephone', 6), ...QUIZ_FIN],
+  // Mode jetons (2026-10-18) : le capitaine mise pour l'équipe, les jetons mal placés sont perdus.
+  'qcm2-jetons': [
+    carte('quadrants', 6),
+    carte('jetons-capitaine', 6),
+    carte('repartition', 6),
+    carte('jetons-perdus', 6),
+    carte('jetons-restants', 5),
+  ],
   enchere2: [carte('champions', 6), carte('encheres', 6), carte('chrono', 6), carte('verdict', 6)],
   mime2: [carte('file', 6), carte('mot', 6), carte('chaine', 7), carte('annonce', 6)],
   photo2: [
@@ -89,8 +102,9 @@ export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplic
 };
 
 /** Le script d'un jeu ; pour le Quiz, celui de son mode. */
-export function scriptExplication(jeu: GameCode, telephone = false): ScriptExplication {
-  return jeu === 'qcm2' && telephone ? 'qcm2-telephone' : jeu;
+export function scriptExplication(jeu: GameCode, mode: ModeQuiz = 'croix'): ScriptExplication {
+  if (jeu !== 'qcm2' || mode === 'croix') return jeu;
+  return mode === 'telephone' ? 'qcm2-telephone' : 'qcm2-jetons';
 }
 
 export function dureeExplicationS(script: ScriptExplication): number {

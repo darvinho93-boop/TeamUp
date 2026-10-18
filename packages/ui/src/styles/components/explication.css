@@ -221,6 +221,45 @@
   width: calc(var(--tu-expl-perso) * 0.5);
 }
 
+/* Jetons du Quiz : des disques ambre, côte à côte. */
+.tu-expl-jetons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--tu-space-1);
+}
+
+/* Dans le téléphone du capitaine : deux par deux, comme les touches du mode téléphone. */
+.tu-expl-jetons--telephone {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, auto);
+  justify-content: center;
+  gap: var(--tu-space-4);
+  padding-block: var(--tu-space-4);
+}
+
+/* Seuls sur la carte (jetons restants) : à la hauteur du « ×100 », en plus grand. */
+.tu-expl-visuel > .tu-expl-jetons {
+  align-self: center;
+}
+
+.tu-expl-visuel > .tu-expl-jetons .tu-expl-jeton {
+  width: calc(var(--tu-expl-perso) * 0.6);
+}
+
+.tu-expl-jeton {
+  width: calc(var(--tu-expl-perso) * 0.42);
+  aspect-ratio: 1;
+  border: var(--tu-btn-border-width) solid var(--tu-surface);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-team-color);
+}
+
+.tu-expl-quadrants__zone .tu-expl-jeton {
+  width: calc(var(--tu-expl-perso) * 0.3);
+}
+
 /* Téléphone : quatre boutons de réponse. */
 .tu-expl-telephone {
   display: grid;

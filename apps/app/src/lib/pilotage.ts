@@ -54,7 +54,8 @@ import {
 export type Commande =
   | { type: 'scene'; scene: Exclude<Scene, 'intro' | 'jeu'> }
   | { type: 'intro'; mancheId: string }
-  | { type: 'expliquer'; telephone?: boolean }
+  /** Le Quiz s'explique selon le mode qu'on va lancer ; les autres jeux n'en ont qu'un. */
+  | { type: 'expliquer'; mode?: ModeQuiz }
   | { type: 'arreterExplication' }
   /** L'ordre tiré par la régie (lot 13) : les ids des passages de la manche, dans l'ordre. */
   | { type: 'tirerOrdre'; passages: string[] }
@@ -115,10 +116,21 @@ export interface Motifs {
 
 /**
  * Explication animée (lot 12) : une étape de la scène intro, `explication` ou, pour le Quiz
- * en mode téléphone, `explication-telephone`. Le chrono de la salle en donne le départ.
+ * en mode téléphone ou jetons, `explication-telephone` ou `explication-jetons`. Le chrono de
+ * la salle en donne le départ.
  */
 const ETAPE_EXPLICATION = 'explication';
-const ETAPE_EXPLICATION_TELEPHONE = 'explication-telephone';
+const ETAPES_EXPLICATION_QUIZ: Record<Exclude<ModeQuiz, 'croix'>, string> = {
+  telephone: 'explication-telephone',
+  jetons: 'explication-jetons',
+};
+
+/** Le mode du Quiz qu'une étape d'explication présente (`croix` pour toutes les autres). */
+export function modeExpliqueDe(etape: string | null): ModeQuiz {
+  if (etape === ETAPES_EXPLICATION_QUIZ.telephone) return 'telephone';
+  if (etape === ETAPES_EXPLICATION_QUIZ.jetons) return 'jetons';
+  return 'croix';
+}
 
 /** Le script que l'écran doit jouer, ou `null` hors explication. */
 export function scriptEnCours(
@@ -128,7 +140,8 @@ export function scriptEnCours(
 ): ScriptExplication | null {
   if (!jeu || scene !== 'intro') return null;
   if (etape === ETAPE_EXPLICATION) return scriptExplication(jeu);
-  if (etape === ETAPE_EXPLICATION_TELEPHONE && jeu === 'qcm2') return scriptExplication(jeu, true);
+  const mode = modeExpliqueDe(etape);
+  if (mode !== 'croix' && jeu === 'qcm2') return scriptExplication(jeu, mode);
   return null;
 }
 
@@ -209,12 +222,13 @@ export function calculerEtape(
 
       case 'expliquer': {
         if (p.scene !== 'intro' || !manche) return null;
-        const telephone = commande.telephone === true && manche.jeu === 'qcm2';
+        const mode = manche.jeu === 'qcm2' ? (commande.mode ?? 'croix') : 'croix';
         // Rejouer, c'est la même touche : un nouveau départ, posé par la base.
-        ecriture.pilotage.etape = telephone ? ETAPE_EXPLICATION_TELEPHONE : ETAPE_EXPLICATION;
+        ecriture.pilotage.etape =
+          mode === 'croix' ? ETAPE_EXPLICATION : ETAPES_EXPLICATION_QUIZ[mode];
         Object.assign(
           ecriture.pilotage,
-          chronoDe({ demarrer: dureeExplicationS(scriptExplication(manche.jeu, telephone)) }),
+          chronoDe({ demarrer: dureeExplicationS(scriptExplication(manche.jeu, mode)) }),
         );
         return ecriture;
       }

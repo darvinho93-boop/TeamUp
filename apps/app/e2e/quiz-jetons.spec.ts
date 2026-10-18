@@ -146,6 +146,16 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   await expect(jetons).toBeDisabled();
   await expect(regie.getByTestId('capitaines-jetons')).toContainText('Aucun capitaine');
 
+  // L'explication du mode jetons se lance depuis l'intro, avant le lancement.
+  await regie.getByRole('button', { name: 'Expliquer (jetons)' }).click();
+  const explication = ecran.locator('[data-scene="explication"]');
+  await expect(explication).toHaveAttribute('data-carte', '1', { timeout: 2000 });
+  await expect(ecran.getByTestId('phrase-explication')).toContainText("l'équipe se concerte");
+  await expect(explication).toHaveAttribute('data-carte', '2', { timeout: 8000 });
+  await expect(ecran.getByTestId('phrase-explication')).toContainText('Ton capitaine a des jetons');
+  await regie.getByRole('button', { name: "Arrêter l'explication" }).click();
+  await expect(scene('intro')).toBeVisible();
+
   // La régie nomme les capitaines (ici en base ; la Salle a son propre e2e).
   await service
     .from('joueurs')

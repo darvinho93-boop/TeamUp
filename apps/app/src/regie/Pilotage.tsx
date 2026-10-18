@@ -25,7 +25,13 @@ import {
   tirerOrdre,
   tempsDeJeu,
 } from '@teamup/game';
-import { calculerEtape, jeuParEquipe, scriptEnCours, type Commande } from '@/lib/pilotage';
+import {
+  calculerEtape,
+  jeuParEquipe,
+  modeExpliqueDe,
+  scriptEnCours,
+  type Commande,
+} from '@/lib/pilotage';
 import {
   capitainesManquants,
   jetonsDeDepartDe,
@@ -358,8 +364,11 @@ function PanneauExplication({ etat, manche, decalageMs, agir }: PanneauProps) {
         <Button variant="ghost" onClick={() => agir({ type: 'expliquer' })}>
           {t('expliquerCroix')}
         </Button>
-        <Button variant="ghost" onClick={() => agir({ type: 'expliquer', telephone: true })}>
+        <Button variant="ghost" onClick={() => agir({ type: 'expliquer', mode: 'telephone' })}>
           {t('expliquerTelephone')}
+        </Button>
+        <Button variant="ghost" onClick={() => agir({ type: 'expliquer', mode: 'jetons' })}>
+          {t('expliquerJetons')}
         </Button>
       </div>
     ) : (
@@ -377,7 +386,7 @@ function PanneauExplication({ etat, manche, decalageMs, agir }: PanneauProps) {
       </span>
       <Button
         variant="ghost"
-        onClick={() => agir({ type: 'expliquer', telephone: etape === 'explication-telephone' })}
+        onClick={() => agir({ type: 'expliquer', mode: modeExpliqueDe(etape) })}
       >
         {t('rejouer')}
       </Button>
