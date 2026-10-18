@@ -774,6 +774,14 @@ posés à l'équipe en retard. À l'écran, **tout en direct, dans les cases des
   bouge sous `prefers-reduced-motion`.
 - Explication : script `qcm2-jetons` (29 s), étape `explication-jetons`, touche « Expliquer
   (jetons) » ; `scriptExplication(jeu, mode)` prend le mode du Quiz.
+- Cases du quiz à l'écran, tous modes (revu le 2026-10-18 avec le quiz d'un mariage, réponses
+  longues en trois langues, qui sortaient de l'écran) : les deux rangées se partagent la hauteur,
+  et `useAjusterQuiz` (`src/ecran/`) réduit le texte par pas de 5 % (`--tu-quiz-echelle`, 0,5 au
+  plus bas) jusqu'à ce qu'aucune case ne déborde. En mode jetons, la place des pastilles de toutes
+  les équipes en jeu est réservée d'abord (`--tu-mises-rangs`, pastilles de hauteur fixe, réduites
+  avec le texte mais jamais sous 70 %). Recalculé par question et étape, au chargement des polices
+  et au redimensionnement, jamais à l'arrivée d'une mise. L'e2e à 8 équipes joue une question
+  longue en fr, en et ta et vérifie qu'aucune case ne déborde.
 - `e2e/quiz-jetons.spec.ts` : parcours à deux équipes (lancement refusé sans capitaine, mises en
   direct, gel et déblocage, révéler quand même, × 100) et contrôle des cases à 8 équipes en
   1 920 × 1 080.

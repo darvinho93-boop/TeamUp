@@ -576,10 +576,14 @@
   padding-inline-end: var(--tu-stage-marque);
 }
 
+/* Les deux rangées de cases se partagent la hauteur qui reste. Leur texte se réduit
+   (--tu-quiz-echelle, posée par l'écran, de 1 à 0,5) jusqu'à tenir dans sa case : une longue
+   réponse en trois langues ne sort ni de sa case ni de l'écran. */
 .tu-stage-quiz {
   display: grid;
   flex: 1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: var(--tu-space-6);
   min-height: 0;
   margin: 0;
@@ -591,6 +595,8 @@
   display: flex;
   align-items: center;
   gap: var(--tu-space-6);
+  min-height: 0;
+  overflow: hidden;
   padding: var(--tu-space-6) var(--tu-space-8);
   border: var(--tu-btn-border-width) solid var(--tu-border);
   border-radius: var(--tu-radius-lg);
@@ -603,8 +609,16 @@
 .tu-stage-quiz__lettre {
   flex: none;
   font-family: var(--tu-font-numeric);
-  font-size: var(--tu-size-4xl);
+  font-size: calc(var(--tu-size-4xl) * var(--tu-quiz-echelle, 1));
   font-weight: 700;
+}
+
+.tu-stage-quiz .tu-stage-multi__premier {
+  font-size: calc(var(--tu-size-3xl) * var(--tu-quiz-echelle, 1));
+}
+
+.tu-stage-quiz .tu-stage-multi__autre {
+  font-size: calc(var(--tu-size-2xl) * var(--tu-quiz-echelle, 1));
 }
 
 .tu-stage-quiz__zone--bonne {
@@ -657,20 +671,36 @@
 }
 
 .tu-stage-quiz--jetons .tu-stage-quiz__lettre {
-  font-size: var(--tu-size-3xl);
+  font-size: calc(var(--tu-size-3xl) * var(--tu-quiz-echelle, 1));
 }
 
 .tu-stage-quiz--jetons .tu-stage-multi__premier {
-  font-size: var(--tu-size-2xl);
+  font-size: calc(var(--tu-size-2xl) * var(--tu-quiz-echelle, 1));
 }
 
+.tu-stage-quiz--jetons .tu-stage-multi__autre {
+  font-size: calc(var(--tu-size-xl) * var(--tu-quiz-echelle, 1));
+}
+
+/* La place des pastilles de toutes les équipes en jeu est réservée (--tu-mises-rangs, posée
+   par l'écran) : les mises qui arrivent ne poussent rien et ne sont jamais coupées. Les pastilles
+   se réduisent avec le texte des cases, jamais sous 70 % : elles restent lisibles de loin. */
 .tu-stage-mises {
+  --tu-mises-echelle: max(var(--tu-quiz-echelle, 1), 0.7);
+  --tu-stage-mise-texte: calc(var(--tu-size-xl) * var(--tu-mises-echelle));
+  --tu-stage-mise-h: calc(
+    var(--tu-stage-mise-texte) * var(--tu-leading-tight) + var(--tu-space-2) * 2
+  );
+
   display: grid;
   flex: 1 1 0;
+  min-height: calc(
+    var(--tu-mises-rangs, 1) * var(--tu-stage-mise-h) + (var(--tu-mises-rangs, 1) - 1) *
+      var(--tu-space-3)
+  );
   grid-template-columns: repeat(auto-fill, minmax(var(--tu-stage-mise-min), 1fr));
   align-content: start;
   gap: var(--tu-space-3);
-  min-height: 0;
   margin: var(--tu-space-4) 0 0;
   padding: 0;
   list-style: none;
@@ -683,13 +713,15 @@
   align-items: center;
   gap: var(--tu-space-2);
   min-width: 0;
-  padding: var(--tu-space-2) var(--tu-space-4);
+  /* Hauteur fixe : la place réservée est exactement celle des pastilles à venir. */
+  height: var(--tu-stage-mise-h);
+  padding: 0 var(--tu-space-4);
   border-radius: var(--tu-radius-pill);
   outline: var(--tu-btn-border-width) solid var(--tu-surface);
   background: var(--tu-team-color);
   color: var(--tu-team-on);
   font-family: var(--tu-font-display);
-  font-size: var(--tu-size-xl);
+  font-size: var(--tu-stage-mise-texte);
   font-weight: 600;
   animation: tu-mise-entre var(--tu-dur-reveal) var(--tu-ease) both;
 }

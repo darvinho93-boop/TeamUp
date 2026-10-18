@@ -22,7 +22,11 @@ const QUESTIONS = [
 ];
 
 const evenements: string[] = [];
-test.afterAll(() => supprimerEvenements(evenements));
+const contenus: string[] = [];
+test.afterAll(async () => {
+  await supprimerEvenements(evenements);
+  if (contenus.length) await clientService().from('contenus').delete().in('id', contenus);
+});
 
 /** Une manche de quiz de trois questions, préparée en base. */
 async function preparerQuiz(evenementId: string): Promise<{ manche: string; passages: string[] }> {
@@ -273,9 +277,44 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   expect(scores).toEqual([{ equipe_id: equipe(1), points: 200, motif: 'Quiz – 2 jetons' }]);
 });
 
+/**
+ * Une question aux réponses longues, en trois langues : le pire cas des cases de l'écran (vu le
+ * 2026-10-18 avec le quiz d'un mariage). Bonne réponse : B.
+ */
+const QUESTION_LONGUE = {
+  fr: {
+    question:
+      'Et pour finir, selon vous, pourquoi cette équipe fonctionne-t-elle si bien ensemble ?',
+    propositions: [
+      "Parce qu'ils sont tous exactement pareils",
+      "Parce qu'ils sont complémentaires malgré leurs différences",
+      "Parce qu'ils aiment toujours tous les mêmes choses",
+      "Parce que l'un sait garder son calme quand l'autre veut que tout soit parfait",
+    ],
+  },
+  en: {
+    question: 'And finally, why do you think this team works so well together?',
+    propositions: [
+      'Because they are all exactly alike',
+      'Because they complement each other despite their differences',
+      'Because they all always like the same things',
+      'Because one knows how to stay calm when the other wants everything to be perfect',
+    ],
+  },
+  ta: {
+    question: 'இறுதியாக, இந்த அணி ஏன் இவ்வளவு நன்றாக ஒத்துப்போகிறது?',
+    propositions: [
+      'ஏனென்றால் அவர்கள் அனைவரும் முற்றிலும் ஒரே மாதிரியானவர்கள்',
+      'ஏனென்றால் வேறுபாடுகள் இருந்தாலும் அவர்கள் ஒருவரையொருவர் நிறைவு செய்கிறார்கள்',
+      'ஏனென்றால் அவர்கள் அனைவருக்கும் எப்போதும் ஒரே விஷயங்கள் பிடிக்கும்',
+      'ஏனென்றால் ஒருவர் எல்லாம் சரியாக இருக்க வேண்டும் என்று நினைக்கும்போது மற்றவர் அமைதியாக இருக்கத் தெரிந்தவர்',
+    ],
+  },
+} as const;
+
 test('à 8 équipes, les mises tiennent dans les cases de l’écran', async ({ browser }) => {
   test.setTimeout(120_000);
-  const evenement = await creerEvenementJetable({ equipes: 8, langues: ['fr', 'en'] });
+  const evenement = await creerEvenementJetable({ equipes: 8, langues: ['fr', 'en', 'ta'] });
   evenements.push(evenement.id);
   const service = clientService();
   const { data: equipes } = await service
@@ -301,6 +340,27 @@ test('à 8 équipes, les mises tiennent dans les cases de l’écran', async ({ 
   );
   if (error) throw new Error(error.message);
   const { manche, passages } = await preparerQuiz(evenement.id);
+  // La première question devient la question longue (contenu inactif, retiré à la fin).
+  const { data: longue } = await service
+    .from('contenus')
+    .insert({ jeu: 'qcm2', etiquette: 'tout_public', actif: false })
+    .select('id')
+    .single();
+  const contenu = longue!['id'] as string;
+  contenus.push(contenu);
+  await service.from('contenus_traductions').insert(
+    Object.entries(QUESTION_LONGUE).map(([langue, valeur]) => ({
+      contenu_id: contenu,
+      langue,
+      valeur,
+    })),
+  );
+  await service
+    .from('contenus_secrets')
+    .insert(
+      ['fr', 'en', 'ta'].map((langue) => ({ contenu_id: contenu, langue, valeur: { bonne: 1 } })),
+    );
+  await service.from('passages').update({ contenu_id: contenu }).eq('id', passages[0]!);
 
   // --- Lancement en mode jetons (19, l'effectif des plus grandes), puis la première question.
   const anna = await clientAnimateur('anna@teamup.test');
@@ -353,6 +413,13 @@ test('à 8 équipes, les mises tiennent dans les cases de l’écran', async ({ 
   await ecran.waitForTimeout(2500);
 
   const dansLesCases = async () => {
+    // Le texte s'est réduit jusqu'à tenir : aucune case ne déborde, aucune ne sort de l'écran.
+    const debords = await ecran
+      .locator('.tu-stage-quiz__zone')
+      .evaluateAll((zones) =>
+        zones.map((z) => z.scrollHeight - z.clientHeight).filter((ecart) => ecart > 1),
+      );
+    expect(debords, 'cases qui débordent').toEqual([]);
     for (const lettre of ['A', 'B', 'C', 'D']) {
       const liste = ecran.getByTestId(`mises-${lettre}`);
       const zone = (await liste.locator('xpath=..').boundingBox())!;
@@ -386,6 +453,7 @@ test('à 8 équipes, les mises tiennent dans les cases de l’écran', async ({ 
   await ecran.reload();
   await expect(ecran.getByTestId('bonne-reponse')).toBeVisible({ timeout: 15_000 });
   await expect(ecran.getByTestId('bonne-reponse')).toContainText('Les Super Champions 2026');
+  await expect(ecran.getByTestId('bonne-reponse')).toContainText('complémentaires');
   await ecran.waitForTimeout(2500);
   await dansLesCases();
   await ecran.screenshot({ path: test.info().outputPath('ecran-jetons-reponse.png') });

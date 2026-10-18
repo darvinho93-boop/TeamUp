@@ -39,6 +39,7 @@ import {
 import { Chrono, useMaintenant } from './Chrono';
 import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
+import { useAjusterQuiz } from './useAjusterQuiz';
 import { OrdreTire, ordreDesEquipes, TirageOrdre } from './TirageOrdre';
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
@@ -609,6 +610,14 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
   const passage = passageCourant(etat);
   const telephone = manche.options['mode'] === 'telephone';
   const jetons = manche.options['mode'] === 'jetons';
+  // Mode jetons : les équipes qui ont encore des jetons (pastilles possibles, mises attendues).
+  const enJeu = etat.equipes.filter((e) => (manche.jetons?.[String(e.numero)]?.restants ?? 0) > 0);
+  const zones = useRef<HTMLOListElement>(null);
+  useAjusterQuiz(
+    zones,
+    `${passage?.id}:${etape}:${langues.join()}:${jetons}`,
+    jetons ? enJeu.length : 0,
+  );
 
   if (etape === 'survivants' || etape === 'resultat') {
     const survivants = survivantsDe(manche);
@@ -661,7 +670,6 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
     });
 
   // Mode jetons : combien d'équipes qui ont encore des jetons ont validé leur mise.
-  const enJeu = etat.equipes.filter((e) => (manche.jetons?.[String(e.numero)]?.restants ?? 0) > 0);
   const validees = enJeu.filter((e) => passage.mises?.[String(e.numero)]?.valide).length;
 
   return (
@@ -692,7 +700,11 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
       />
       {/* Une clé par question : en mode jetons, la réponse remonte dans sa case à chaque
           question, pas seulement à la première. */}
-      <ol key={passage.id} className={cx('tu-stage-quiz', jetons && 'tu-stage-quiz--jetons')}>
+      <ol
+        key={passage.id}
+        ref={zones}
+        className={cx('tu-stage-quiz', jetons && 'tu-stage-quiz--jetons')}
+      >
         {LETTRES.map((lettre, i) => (
           <li
             key={lettre}
