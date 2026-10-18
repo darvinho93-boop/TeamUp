@@ -311,7 +311,7 @@
       "motifTenu": "Surenchère — pari tenu",
       "motifRate": "Surenchère — pari raté par une autre équipe",
       "motifQuiz": "{survivants, plural, =0 {Quiz – aucun survivant} one {Quiz – # survivant} other {Quiz – # survivants}}",
-      "motifQuizJetons": "{jetons, plural, =0 {Quiz : aucun jeton} one {Quiz : # jeton} other {Quiz : # jetons}}",
+      "motifQuizJetons": "{jetons, plural, =0 {Quiz – aucun jeton} one {Quiz – # jeton} other {Quiz – # jetons}}",
       "motifMime": "Mime – {equipe}",
       "motifPhoto": "Photo : {equipe}",
       "quiz": {
@@ -622,7 +622,10 @@
     "ordre": {
       "titre": "Ordre de passage",
       "ligne": "Ordre de passage : {ordre}"
-    }
+    },
+    "jetons": "{n, plural, =0 {aucun jeton} one {# jeton} other {# jetons}}",
+    "misesValidees": "{n, plural, =0 {aucune mise validée} one {# mise validée} other {# mises validées}} sur {total}",
+    "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}"
   },
   "admin": {
     "nav": {

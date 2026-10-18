@@ -116,6 +116,8 @@
   --tu-dur-interlude: 1600ms;  /* le logo entre deux jeux, à l'écran commun : le temps d'un roulement de tambour */
   --tu-dur-barre: 1400ms;      /* un aller de la barre de chargement */
   --tu-dur-cascade: 90ms;      /* écart entre deux blocs qui apparaissent l'un après l'autre (vitrine) */
+  --tu-dur-mises-attente: 1200ms; /* quiz en mode jetons : la salle lit les réponses au milieu des cases… */
+  --tu-dur-mises-monte: 700ms;    /* … puis elles montent en haut, la place des jetons */
 }
 
 /* ---- Thème sombre : blocs marine de la vitrine. L'app n'en a plus (fond beige partout, 2026-10-09). ---- */
@@ -148,5 +150,7 @@
     --tu-dur-interlude: 0ms;
     --tu-dur-barre: 0ms;
     --tu-dur-cascade: 0ms;
+    --tu-dur-mises-attente: 0ms;
+    --tu-dur-mises-monte: 0ms;
   }
 }

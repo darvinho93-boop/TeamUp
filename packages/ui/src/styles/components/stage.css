@@ -621,6 +621,105 @@
   opacity: 0.35;
 }
 
+/* Quiz en mode jetons : la réponse part du milieu de sa case et monte en haut (l'espace
+   au-dessus d'elle se résorbe), puis les jetons des équipes remplissent la case, en direct. */
+.tu-stage-quiz--jetons .tu-stage-quiz__zone {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--tu-space-4) var(--tu-space-6);
+}
+
+.tu-stage-quiz--jetons .tu-stage-quiz__zone::before {
+  content: '';
+  flex: 0 0 0;
+  animation: tu-reponse-monte var(--tu-dur-mises-monte) var(--tu-ease) var(--tu-dur-mises-attente)
+    both;
+}
+
+@keyframes tu-reponse-monte {
+  from {
+    flex-grow: 1;
+  }
+
+  to {
+    flex-grow: 0;
+  }
+}
+
+.tu-stage-quiz__reponse {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--tu-space-4);
+}
+
+.tu-stage-quiz--jetons .tu-stage-quiz__lettre {
+  font-size: var(--tu-size-3xl);
+}
+
+.tu-stage-quiz--jetons .tu-stage-multi__premier {
+  font-size: var(--tu-size-2xl);
+}
+
+.tu-stage-mises {
+  display: grid;
+  flex: 1 1 0;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tu-stage-mise-min), 1fr));
+  align-content: start;
+  gap: var(--tu-space-3);
+  min-height: 0;
+  margin: var(--tu-space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* La pastille de l'équipe, à sa couleur ; un liseré clair la détache du fond de la bonne
+   réponse (l'équipe 1 y serait marine sur marine). */
+.tu-stage-mise {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  min-width: 0;
+  padding: var(--tu-space-2) var(--tu-space-4);
+  border-radius: var(--tu-radius-pill);
+  outline: var(--tu-btn-border-width) solid var(--tu-surface);
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-xl);
+  font-weight: 600;
+  animation: tu-mise-entre var(--tu-dur-reveal) var(--tu-ease) both;
+}
+
+@keyframes tu-mise-entre {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.tu-stage-mise__nom {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tu-stage-mise__nombre {
+  flex: none;
+  font-family: var(--tu-font-numeric);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tu-stage-mise__coche {
+  flex: none;
+}
+
 /* Mime : le verdict en plein écran, vert si le mot est trouvé, rouge sinon. */
 /* Sur ces fonds pleins, le texte est blanc (et le texte atténué aussi) : le navy du fond beige
    n'y tient pas (2,8:1 sur le rouge). */
@@ -649,6 +748,12 @@
   .tu-stage-quiz__zone,
   .tu-stage-duel__joueur {
     transition: none;
+  }
+
+  /* La réponse est d'emblée en haut de sa case ; les jetons paraissent sans bouger. */
+  .tu-stage-quiz--jetons .tu-stage-quiz__zone::before,
+  .tu-stage-mise {
+    animation: none;
   }
 }
 

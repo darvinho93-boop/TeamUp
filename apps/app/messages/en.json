@@ -311,7 +311,7 @@
       "motifTenu": "Bidding war — bet kept",
       "motifRate": "Bidding war — bet missed by another team",
       "motifQuiz": "{survivants, plural, =0 {Quiz – no survivors} one {Quiz – # survivor} other {Quiz – # survivors}}",
-      "motifQuizJetons": "{jetons, plural, =0 {Quiz: no tokens} one {Quiz: # token} other {Quiz: # tokens}}",
+      "motifQuizJetons": "{jetons, plural, =0 {Quiz – no tokens} one {Quiz – # token} other {Quiz – # tokens}}",
       "motifMime": "Mime – {equipe}",
       "motifPhoto": "Photo: {equipe}",
       "quiz": {
@@ -622,7 +622,10 @@
     "ordre": {
       "titre": "Playing order",
       "ligne": "Playing order: {ordre}"
-    }
+    },
+    "jetons": "{n, plural, =0 {no tokens} one {# token} other {# tokens}}",
+    "misesValidees": "{n, plural, =0 {no bets confirmed} one {# bet confirmed} other {# bets confirmed}} out of {total}",
+    "miseEquipe": "{equipe}: {n, plural, one {# token} other {# tokens}}"
   },
   "admin": {
     "nav": {

@@ -311,7 +311,7 @@
       "motifTenu": "ஏலப் போட்டி — சவால் வென்றது",
       "motifRate": "ஏலப் போட்டி — வேறு அணியின் சவால் தோற்றது",
       "motifQuiz": "{survivants, plural, =0 {வினாடி வினா – யாரும் தப்பவில்லை} one {வினாடி வினா – # பேர்} other {வினாடி வினா – # பேர்}}",
-      "motifQuizJetons": "{jetons, plural, =0 {வினாடி வினா: வில்லை இல்லை} one {வினாடி வினா: # வில்லை} other {வினாடி வினா: # வில்லைகள்}}",
+      "motifQuizJetons": "{jetons, plural, =0 {வினாடி வினா – வில்லை இல்லை} one {வினாடி வினா – # வில்லை} other {வினாடி வினா – # வில்லைகள்}}",
       "motifMime": "நடிப்பு – {equipe}",
       "motifPhoto": "புகைப்படம்: {equipe}",
       "quiz": {
@@ -622,7 +622,10 @@
     "ordre": {
       "titre": "விளையாடும் வரிசை",
       "ligne": "விளையாடும் வரிசை: {ordre}"
-    }
+    },
+    "jetons": "{n, plural, =0 {வில்லை இல்லை} one {# வில்லை} other {# வில்லைகள்}}",
+    "misesValidees": "{total} இல் {n} பந்தயங்கள் உறுதியானவை",
+    "miseEquipe": "{equipe}: {n, plural, one {# வில்லை} other {# வில்லைகள்}}"
   },
   "admin": {
     "nav": {

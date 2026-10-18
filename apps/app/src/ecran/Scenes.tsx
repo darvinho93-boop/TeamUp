@@ -23,6 +23,7 @@ import {
   type EquipeSalle,
   type EtatSalle,
   type MancheSalle,
+  type PassageSalle,
   indicesMsDe,
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
@@ -547,11 +548,58 @@ function Podium({ etat }: { etat: EtatSalle }) {
 
 const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
-/** Survivants validés en fin de manche, ou comptés en direct par la base en mode téléphone. */
+/**
+ * Survivants validés en fin de manche, ou comptés en direct par la base : survivants en mode
+ * téléphone, jetons restants en mode jetons.
+ */
 function survivantsDe(manche: MancheSalle): Record<string, number> | null {
   const valides = manche.options['survivants'];
   if (valides && typeof valides === 'object') return valides as Record<string, number>;
+  if (manche.jetons) {
+    return Object.fromEntries(Object.entries(manche.jetons).map(([n, j]) => [n, j.restants]));
+  }
   return manche.survivants ?? null;
+}
+
+/**
+ * Quiz en mode jetons (2026-10-18) : dans la case d'une réponse, les jetons que chaque équipe y
+ * pose, en direct. Une équipe paraît dès son premier jeton ; la coche dit sa mise validée.
+ */
+function MisesDeLaReponse({
+  etat,
+  passage,
+  i,
+}: {
+  etat: EtatSalle;
+  passage: PassageSalle;
+  i: number;
+}) {
+  const t = useTranslations('ecran');
+  const presentes = etat.equipes.flatMap((equipe) => {
+    const mise = passage.mises?.[String(equipe.numero)];
+    const n = mise?.repartition[i] ?? 0;
+    return n > 0 ? [{ equipe, n, valide: mise?.valide === true }] : [];
+  });
+  return (
+    <ul className="tu-stage-mises" data-testid={`mises-${LETTRES[i]}`}>
+      {presentes.map(({ equipe, n, valide }) => (
+        <li
+          key={equipe.id}
+          className={cx('tu-stage-mise', teamModifier(equipe.numero))}
+          aria-label={t('miseEquipe', { equipe: equipe.nom, n })}
+          data-valide={valide}
+        >
+          <span className="tu-stage-mise__nom">{equipe.nom}</span>
+          <span className="tu-stage-mise__nombre">{n}</span>
+          {valide && (
+            <span className="tu-stage-mise__coche" aria-hidden="true">
+              ✓
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
@@ -560,6 +608,7 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
   const langues = etat.evenement.langues;
   const passage = passageCourant(etat);
   const telephone = manche.options['mode'] === 'telephone';
+  const jetons = manche.options['mode'] === 'jetons';
 
   if (etape === 'survivants' || etape === 'resultat') {
     const survivants = survivantsDe(manche);
@@ -567,14 +616,16 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
     return (
       <div className="tu-stage__body" data-scene="qcm2" data-etape={etape}>
         <h1 className="tu-stage__xl">{t('finQuiz')}</h1>
-        {survivants && (telephone || valide) && (
+        {survivants && (telephone || jetons || valide) && (
           <ul className="tu-stage-teams" data-testid="survivants">
             {etat.equipes.map((e) => {
               const n = survivants[String(e.numero)] ?? 0;
               return (
                 <li key={e.id} className={cx('tu-stage-team', teamModifier(e.numero))}>
                   <span className="tu-stage-team__nom">{e.nom}</span>
-                  <span className="tu-stage-team__nombre">{t('survivants', { n })}</span>
+                  <span className="tu-stage-team__nombre">
+                    {t(jetons ? 'jetons' : 'survivants', { n })}
+                  </span>
                   {valide && (
                     <span className="tu-stage-team__nombre">
                       {t('points', { points: n * POINTS_PAR_SURVIVANT })}
@@ -609,13 +660,21 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
       return typeof texte === 'string' ? [{ langue, texte }] : [];
     });
 
+  // Mode jetons : combien d'équipes qui ont encore des jetons ont validé leur mise.
+  const enJeu = etat.equipes.filter((e) => (manche.jetons?.[String(e.numero)]?.restants ?? 0) > 0);
+  const validees = enJeu.filter((e) => passage.mises?.[String(e.numero)]?.valide).length;
+
   return (
     <div className="tu-stage__body" data-scene="qcm2" data-etape={etape ?? ''}>
       <div className="tu-stage-quiz__tete">
-        <p className="tu-stage__m tu-stage__muted">
+        <p className="tu-stage__m tu-stage__muted" data-testid="quiz-tete">
           {numero}
           {etape === 'question' &&
-            (telephone ? ` · ${t('reponses', { n: passage.reponses ?? 0 })}` : ` · ${t('croix')}`)}
+            (jetons
+              ? ` · ${t('misesValidees', { n: validees, total: enJeu.length })}`
+              : telephone
+                ? ` · ${t('reponses', { n: passage.reponses ?? 0 })}`
+                : ` · ${t('croix')}`)}
         </p>
         {etape === 'question' && (
           <Chrono
@@ -631,7 +690,9 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
         className="tu-stage-multi--titre"
         textes={texteParLangue(passage.public, 'question', langues)}
       />
-      <ol className="tu-stage-quiz">
+      {/* Une clé par question : en mode jetons, la réponse remonte dans sa case à chaque
+          question, pas seulement à la première. */}
+      <ol key={passage.id} className={cx('tu-stage-quiz', jetons && 'tu-stage-quiz--jetons')}>
         {LETTRES.map((lettre, i) => (
           <li
             key={lettre}
@@ -642,8 +703,20 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
             )}
             data-testid={i === bonne ? 'bonne-reponse' : undefined}
           >
-            <span className="tu-stage-quiz__lettre">{lettre}</span>
-            <Multilingue textes={propositions(i)} />
+            {jetons ? (
+              <>
+                <div className="tu-stage-quiz__reponse">
+                  <span className="tu-stage-quiz__lettre">{lettre}</span>
+                  <Multilingue textes={propositions(i)} />
+                </div>
+                <MisesDeLaReponse etat={etat} passage={passage} i={i} />
+              </>
+            ) : (
+              <>
+                <span className="tu-stage-quiz__lettre">{lettre}</span>
+                <Multilingue textes={propositions(i)} />
+              </>
+            )}
           </li>
         ))}
       </ol>
