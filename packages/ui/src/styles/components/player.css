@@ -399,7 +399,10 @@
 .tu-mise__texte {
   flex: 1 1 6rem;
   min-width: 0;
-  overflow-wrap: anywhere;
+  /* Colonne étroite sur 360 px : un mot long se coupe avec un trait d'union (langue de la page),
+     pas au milieu d'une syllabe. */
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .tu-mise__lettre {
