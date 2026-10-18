@@ -64,6 +64,9 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
   const enLigne = (j: { vu_le: string; sans_telephone: boolean | null }) =>
     !j.sans_telephone && maintenant - new Date(j.vu_le).getTime() < CONNECTE_MS;
   const connectes = (joueurs ?? []).filter(enLigne).length;
+  // Venus par le QR code (un téléphone) ou inscrits à la main par la régie ou un joueur autorisé :
+  // l'animateur voit d'un coup d'œil qui peut encore tenir un rôle au téléphone (capitaine).
+  const parQr = (joueurs ?? []).filter((j) => !j.sans_telephone).length;
   return (
     <SignalSalle evenementId={evenement.id}>
       <RafraichirAuto intervalleMs={5000} />
@@ -79,7 +82,12 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
         </a>
       </div>
       <p className="tu-regie__muted" role="status">
-        {t('compte', { joueurs: (joueurs ?? []).length, connectes })}
+        {t('compte', {
+          joueurs: (joueurs ?? []).length,
+          qr: parQr,
+          connectes,
+          main: (joueurs ?? []).length - parQr,
+        })}
       </p>
       <TirerCapitaines code={evenement.code} />
       <ModeMembres

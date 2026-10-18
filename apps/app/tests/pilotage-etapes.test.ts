@@ -7,6 +7,7 @@ const motifs = {
   tenu: 'tenu',
   rate: 'raté',
   quiz: (n: number) => `Quiz ${n}`,
+  quizJetons: (n: number) => `Jetons ${n}`,
   mime: (equipe: string) => `Mime ${equipe}`,
   photo: (equipe: string) => `Photo ${equipe}`,
   duel: (prenom: string, equipe: string) => `Duel ${prenom} ${equipe}`,
@@ -250,6 +251,25 @@ describe('une touche de la régie', () => {
     expect(croix?.passage).toBeNull();
     const tel = etape(intro, { type: 'commencer', mode: 'telephone' });
     expect(tel?.manche?.options).toEqual({ mode: 'telephone' });
+  });
+
+  it('Quiz en mode jetons : refusé tant qu’une équipe qui a des joueurs n’a pas de capitaine', () => {
+    const intro = etat({ scene: 'intro', manche_id: 'qz' });
+    intro.equipes[0]!.capitaine = 'Alice';
+    expect(etape(intro, { type: 'commencer', mode: 'jetons' })).toBeNull();
+    // L'équipe 3 n'a personne : elle ne bloque pas.
+    intro.equipes[1]!.capitaine = 'Chloé';
+    const jetons = etape(intro, { type: 'commencer', mode: 'jetons' });
+    // Toutes partent avec l'effectif de la plus grande (3).
+    expect(jetons?.manche?.options).toEqual({ mode: 'jetons', jetons: 3 });
+  });
+
+  it('Quiz en mode jetons : les jetons restants valent des survivants, avec leur motif', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'survivants' });
+    e.programme[2]!.options = { questions: 2, mode: 'jetons', jetons: 3 };
+    expect(etape(e, { type: 'survivants', survivants: { 1: 2, 2: 0, 3: 0 } })?.scores).toEqual([
+      { equipe_id: 'e1', points: 200, motif: 'Jetons 2', manche_id: 'qz' },
+    ]);
   });
 
   it('Quiz : afficher ouvre la question et lance 30 s ; révéler la termine', () => {

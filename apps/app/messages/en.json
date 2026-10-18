@@ -311,6 +311,7 @@
       "motifTenu": "Bidding war — bet kept",
       "motifRate": "Bidding war — bet missed by another team",
       "motifQuiz": "{survivants, plural, =0 {Quiz – no survivors} one {Quiz – # survivor} other {Quiz – # survivors}}",
+      "motifQuizJetons": "{jetons, plural, =0 {Quiz: no tokens} one {Quiz: # token} other {Quiz: # tokens}}",
       "motifMime": "Mime – {equipe}",
       "motifPhoto": "Photo: {equipe}",
       "quiz": {
@@ -331,7 +332,30 @@
         "survivantsTelephone": "Survivors counted by the app",
         "survivantsDe": "Survivors of {equipe}",
         "survivants": "{n, plural, =0 {no survivors} one {# survivor} other {# survivors}}",
-        "valider": "Confirm survivors"
+        "valider": "Confirm survivors",
+        "commencerJetons": "Token mode (the captain bets for the team)",
+        "modeJetons": "token mode",
+        "capitainesTitre": "Token mode: one captain per team",
+        "jetonsDeDepart": "{n, plural, =0 {No tokens: no players yet} one {Each team starts with # token (the size of the largest team)} other {Each team starts with # tokens (the size of the largest team)}}",
+        "capitaineConnecte": "phone connected",
+        "capitaineHorsLigne": "phone offline: change the captain in the Room",
+        "sansCapitaine": "No captain",
+        "capitainesManquants": "{n, plural, one {One team has no captain: name one before starting.} other {# teams have no captain: name them before starting.}}",
+        "nommerALaSalle": "Name or draw the captains in the Room",
+        "mises": "Team bets",
+        "statutMise": {
+          "validee": "Bet confirmed",
+          "en_cours": "{n, plural, =0 {All placed, not confirmed yet} one {In progress: # token to place} other {In progress: # tokens to place}}",
+          "figee": "Frozen: time's up",
+          "sans_jetons": "No tokens left"
+        },
+        "jetonsRestants": "{n, plural, =0 {no tokens left} one {# token left} other {# tokens left}}",
+        "debloquer": "Unfreeze",
+        "revelerAttend": "“Reveal” waits for a confirmed bet from every team that still has tokens.",
+        "revelerQuandMeme": "Reveal anyway (unplaced tokens are lost)",
+        "survivantsJetons": "Tokens left, counted by the app (× 100 points)",
+        "jetons": "{n, plural, =0 {no tokens} one {# token} other {# tokens}}",
+        "validerJetons": "Confirm the tokens left"
       },
       "mime": {
         "titre": "Mime",
@@ -393,7 +417,7 @@
     "salle": {
       "titre": "Room",
       "ouvrirEcran": "Open the shared screen",
-      "compte": "{joueurs, plural, =0 {No players} one {# player} other {# players}}, {connectes} connected",
+      "compte": "{joueurs, plural, =0 {No players} one {# player} other {# players}}: {qr} via QR code ({connectes} connected), {main, plural, =0 {none added by hand} other {# added by hand}}",
       "capitaine": "captain",
       "connecte": "connected",
       "horsLigne": "offline",

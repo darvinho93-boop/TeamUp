@@ -41,6 +41,7 @@ import {
   type ScoresParEquipe,
   type ScriptExplication,
 } from '@teamup/game';
+import { capitainesManquants, jetonsDeDepartDe } from './jetons';
 import {
   indicesMsDe,
   mancheCourante,
@@ -105,6 +106,8 @@ export interface Motifs {
   tenu: string;
   rate: string;
   quiz: (survivants: number) => string;
+  /** Quiz en mode jetons : les jetons restants, comptés comme des survivants. */
+  quizJetons: (jetons: number) => string;
   mime: (equipe: string) => string;
   photo: (equipe: string) => string;
   duel: (prenom: string, equipe: string) => string;
@@ -277,11 +280,21 @@ export function calculerEtape(
         } else {
           return null;
         }
+        const mode = commande.mode ?? 'croix';
+        // Mode jetons : chaque équipe mise par son capitaine ; toutes partent avec l'effectif de
+        // la plus grande (2026-10-18).
+        if (manche.jeu === 'qcm2' && mode === 'jetons' && capitainesManquants(etat).length > 0) {
+          return null;
+        }
         ecriture.manche = {
           id: manche.id,
           statut: 'en_cours',
           // Le mode du quiz se choisit au lancement de la manche (spec v3), la croix d'abord.
-          ...(manche.jeu === 'qcm2' ? { options: { mode: commande.mode ?? 'croix' } } : {}),
+          ...(manche.jeu === 'qcm2'
+            ? {
+                options: mode === 'jetons' ? { mode, jetons: jetonsDeDepartDe(etat) } : { mode },
+              }
+            : {}),
         };
         ecriture.ouvrirLaSoiree = etat.evenement.statut === 'preparation';
         return ecriture;
@@ -398,7 +411,9 @@ export function calculerEtape(
               ecriture.scores.push({
                 equipe_id: equipe.id,
                 points,
-                motif: motifs.quiz(action.survivants[Number(numero)] ?? 0),
+                motif: (manche.options['mode'] === 'jetons' ? motifs.quizJetons : motifs.quiz)(
+                  action.survivants[Number(numero)] ?? 0,
+                ),
                 manche_id: manche.id,
               });
             }

@@ -24,8 +24,18 @@ export interface PassageSalle {
   secret: ParLangue | null;
   /** Quiz : réponses reçues des téléphones pour cette question. */
   reponses?: number | null;
+  /** Quiz en mode jetons : la mise de chaque équipe (par numéro), en direct. */
+  mises?: Record<string, MiseSalle> | null;
   /** Photo : les photos du thème (régie toujours, écran une fois la diffusion lancée). */
   photos?: PhotoSalle[] | null;
+}
+
+export interface MiseSalle {
+  /** Les jetons posés sur A, B, C et D. */
+  repartition: [number, number, number, number];
+  valide: boolean;
+  /** Rouverte par la régie après le chrono. */
+  debloquee: boolean;
 }
 
 export interface PhotoSalle {
@@ -44,6 +54,8 @@ export interface MancheSalle {
   options: Valeurs;
   /** Quiz en mode téléphone : survivants par numéro d'équipe, comptés par la base. */
   survivants?: Record<string, number> | null;
+  /** Quiz en mode jetons : jetons de départ et restants par numéro d'équipe, comptés par la base. */
+  jetons?: Record<string, { depart: number; restants: number }> | null;
   passages: PassageSalle[];
 }
 
@@ -56,6 +68,8 @@ export interface EquipeSalle {
   prenoms: string[];
   /** Prénom du capitaine ; absent tant que la base n'a pas la migration du 2026-10-09. */
   capitaine?: string | null;
+  /** Le téléphone du capitaine a donné signe de vie (30 s) ; migration du 2026-10-18. */
+  capitaine_connecte?: boolean;
 }
 
 export interface EtatSalle {

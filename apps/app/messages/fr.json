@@ -311,6 +311,7 @@
       "motifTenu": "Surenchère — pari tenu",
       "motifRate": "Surenchère — pari raté par une autre équipe",
       "motifQuiz": "{survivants, plural, =0 {Quiz – aucun survivant} one {Quiz – # survivant} other {Quiz – # survivants}}",
+      "motifQuizJetons": "{jetons, plural, =0 {Quiz : aucun jeton} one {Quiz : # jeton} other {Quiz : # jetons}}",
       "motifMime": "Mime – {equipe}",
       "motifPhoto": "Photo : {equipe}",
       "quiz": {
@@ -331,7 +332,30 @@
         "survivantsTelephone": "Survivants comptés par l’app",
         "survivantsDe": "Survivants de {equipe}",
         "survivants": "{n, plural, =0 {aucun survivant} one {# survivant} other {# survivants}}",
-        "valider": "Valider les survivants"
+        "valider": "Valider les survivants",
+        "commencerJetons": "Mode jetons (le capitaine mise pour l'équipe)",
+        "modeJetons": "mode jetons",
+        "capitainesTitre": "Mode jetons : un capitaine par équipe",
+        "jetonsDeDepart": "{n, plural, =0 {Aucun jeton : pas encore de joueur} one {Chaque équipe part avec # jeton (l'effectif de la plus grande)} other {Chaque équipe part avec # jetons (l'effectif de la plus grande)}}",
+        "capitaineConnecte": "téléphone connecté",
+        "capitaineHorsLigne": "téléphone hors ligne : changez-le à la Salle",
+        "sansCapitaine": "Aucun capitaine",
+        "capitainesManquants": "{n, plural, one {Une équipe n'a pas de capitaine : nommez-le avant de lancer.} other {# équipes n'ont pas de capitaine : nommez-les avant de lancer.}}",
+        "nommerALaSalle": "Nommer ou tirer les capitaines à la Salle",
+        "mises": "Mises des équipes",
+        "statutMise": {
+          "validee": "Mise validée",
+          "en_cours": "{n, plural, =0 {Tout est posé, pas encore validé} one {En cours : # jeton à poser} other {En cours : # jetons à poser}}",
+          "figee": "Figée : temps écoulé",
+          "sans_jetons": "Plus de jetons"
+        },
+        "jetonsRestants": "{n, plural, =0 {plus aucun jeton} one {reste # jeton} other {restent # jetons}}",
+        "debloquer": "Débloquer",
+        "revelerAttend": "« Révéler » attend la mise validée de chaque équipe qui a des jetons.",
+        "revelerQuandMeme": "Révéler quand même (jetons non posés perdus)",
+        "survivantsJetons": "Jetons restants, comptés par l'app (× 100 points)",
+        "jetons": "{n, plural, =0 {aucun jeton} one {# jeton} other {# jetons}}",
+        "validerJetons": "Valider les jetons restants"
       },
       "mime": {
         "titre": "Mime",
@@ -393,7 +417,7 @@
     "salle": {
       "titre": "Salle",
       "ouvrirEcran": "Ouvrir l'écran commun",
-      "compte": "{joueurs, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}}, dont {connectes} connectés",
+      "compte": "{joueurs, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}} : {qr} par QR code {connectes, plural, one {dont # connecté} other {dont # connectés}}, {main, plural, =0 {aucun inscrit à la main} one {# inscrit à la main} other {# inscrits à la main}}",
       "capitaine": "capitaine",
       "connecte": "connecté",
       "horsLigne": "hors ligne",

@@ -371,7 +371,8 @@ $$;
 -- L'écran et la régie : jetons et mises en direct
 -- ---------------------------------------------------------------------------
 
--- Reprise de 20261017121000_logo_de_la_soiree.sql, avec `manche.jetons` et `passage.mises`.
+-- Reprise de 20261017121000_logo_de_la_soiree.sql, avec `manche.jetons`, `passage.mises` et
+-- `equipe.capitaine_connecte`.
 create or replace function public.etat_ecran(p_code text, p_regie boolean default false)
 returns jsonb
 language sql
@@ -414,7 +415,12 @@ as $$
         'capitaine', (
           select j.prenom from public.joueurs j
           where j.equipe_id = eq.id and j.capitaine
-          order by j.rejoint_le limit 1)
+          order by j.rejoint_le limit 1),
+        -- Le téléphone du capitaine a donné signe de vie (30 s) : la régie le vérifie avant de
+        -- lancer le quiz en mode jetons (2026-10-18).
+        'capitaine_connecte', exists (
+          select 1 from public.joueurs j
+          where j.equipe_id = eq.id and j.capitaine and j.vu_le > now() - interval '30 seconds')
       ) order by eq.numero)
       from public.equipes eq where eq.evenement_id = e.id
     ), '[]'::jsonb),

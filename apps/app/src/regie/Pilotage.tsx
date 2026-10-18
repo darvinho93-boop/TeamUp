@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
 import {
@@ -25,6 +26,13 @@ import {
   tempsDeJeu,
 } from '@teamup/game';
 import { calculerEtape, jeuParEquipe, scriptEnCours, type Commande } from '@/lib/pilotage';
+import {
+  capitainesManquants,
+  jetonsDeDepartDe,
+  misesDesEquipes,
+  resteAPoser,
+  revelationPrete,
+} from '@/lib/jetons';
 import { membresTries } from '@/lib/membres';
 import { reglageDe } from '@/lib/sons';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
@@ -97,6 +105,7 @@ export function Pilotage({
       tenu: t('motifTenu'),
       rate: t('motifRate'),
       quiz: (survivants) => t('motifQuiz', { survivants }),
+      quizJetons: (jetons) => t('motifQuizJetons', { jetons }),
       mime: (equipe) => t('motifMime', { equipe }),
       photo: (equipe) => t('motifPhoto', { equipe }),
       duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
@@ -140,6 +149,19 @@ export function Pilotage({
             .eq('id', etat.evenement.id);
         }
       }
+      await relire();
+    });
+  };
+
+  /** Mode jetons : la régie rouvre la mise d'une équipe figée (chrono écoulé, réseau perdu). */
+  const debloquer = (passageId: string, equipeId: string) => {
+    demarrer(async () => {
+      const { error } = await supabaseNavigateur().rpc('debloquer_mise', {
+        p_passage: passageId,
+        p_equipe: equipeId,
+      });
+      if (error) setAlerte(t('erreur.impossible'));
+      else signaler();
       await relire();
     });
   };
@@ -238,7 +260,18 @@ export function Pilotage({
             >
               {t('quiz.commencerTelephone')}
             </Button>
+            <Button
+              variant="ghost"
+              className="tu-regie-keys__wide"
+              disabled={capitainesManquants(etat).length > 0}
+              onClick={() => agir({ type: 'commencer', mode: 'jetons' })}
+            >
+              {t('quiz.commencerJetons')}
+            </Button>
           </div>
+        )}
+        {scene === 'intro' && manche?.jeu === 'qcm2' && (
+          <CapitainesJetons etat={etat} code={code} />
         )}
         {scene === 'jeu' && manche?.jeu === 'list2' && (
           <PanneauPointsCommuns etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
@@ -247,7 +280,13 @@ export function Pilotage({
           <PanneauSurenchere etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
         {scene === 'jeu' && manche?.jeu === 'qcm2' && (
-          <PanneauQuiz etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+          <PanneauQuiz
+            etat={etat}
+            manche={manche}
+            decalageMs={decalageMs}
+            agir={agir}
+            debloquer={debloquer}
+          />
         )}
         {scene === 'jeu' && manche?.jeu === 'mime2' && (
           <PanneauMime etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
@@ -654,13 +693,75 @@ function PanneauSurenchere({ etat, manche, decalageMs, agir }: PanneauProps) {
   );
 }
 
-function PanneauQuiz({ etat, manche, decalageMs, agir }: PanneauProps) {
+/**
+ * Avant le mode jetons : un capitaine par équipe, son téléphone en ligne. Le lancement attend
+ * qu'aucune équipe qui a des joueurs n'en manque ; un capitaine hors ligne se remplace à la Salle.
+ */
+function CapitainesJetons({ etat, code }: { etat: EtatSalle; code: string }) {
+  const tq = useTranslations('regie.pilotage.quiz');
+  const manquants = capitainesManquants(etat);
+  return (
+    <section
+      className="tu-regie-secret"
+      aria-label={tq('capitainesTitre')}
+      data-testid="capitaines-jetons"
+    >
+      <p className="tu-regie-item__title">{tq('capitainesTitre')}</p>
+      <p className="tu-regie__muted">{tq('jetonsDeDepart', { n: jetonsDeDepartDe(etat) })}</p>
+      <ul className="tu-regie-list">
+        {etat.equipes
+          .filter((e) => e.joueurs > 0)
+          .map((e) => (
+            <li key={e.id} className="tu-regie-item">
+              <span className={cx('tu-team tu-team--badge', teamModifier(e.numero))}>{e.nom}</span>
+              {e.capitaine ? (
+                <span className="tu-regie-item__main">
+                  <span className="tu-regie-item__title">{e.capitaine}</span>
+                  <span
+                    className={cx(
+                      'tu-regie-player__state',
+                      e.capitaine_connecte && 'tu-regie-player__state--on',
+                    )}
+                  >
+                    {e.capitaine_connecte ? tq('capitaineConnecte') : tq('capitaineHorsLigne')}
+                  </span>
+                </span>
+              ) : (
+                <span className="tu-regie-player__state tu-regie-player__state--alerte">
+                  {tq('sansCapitaine')}
+                </span>
+              )}
+            </li>
+          ))}
+      </ul>
+      {manquants.length > 0 && (
+        <p className="tu-regie__alert" role="alert">
+          {tq('capitainesManquants', { n: manquants.length })}
+        </p>
+      )}
+      <Link href={`/regie/${code}/salle`} className="tu-regie__lien">
+        {tq('nommerALaSalle')}
+      </Link>
+    </section>
+  );
+}
+
+function PanneauQuiz({
+  etat,
+  manche,
+  decalageMs,
+  agir,
+  debloquer,
+}: PanneauProps & { debloquer: (passageId: string, equipeId: string) => void }) {
   const t = useTranslations('regie.pilotage');
   const tq = useTranslations('regie.pilotage.quiz');
   const [saisie, setSaisie] = useState<Record<number, string>>({});
   const etape = etat.pilotage.etape as EtapeQuiz;
   const passage = passageCourant(etat);
   const telephone = manche.options['mode'] === 'telephone';
+  const jetons = manche.options['mode'] === 'jetons';
+  // Le statut « figée » suit le chrono : la liste se redessine chaque seconde de la question.
+  const maintenant = useMaintenant(jetons && etape === 'question');
   const langue = etat.evenement.langues[0] ?? 'fr';
   const reste = manche.passages.some((x) => x.id !== passage?.id && x.statut !== 'termine');
   const permises = actionsQuiz({ etape, resteDesQuestions: reste });
@@ -672,19 +773,30 @@ function PanneauQuiz({ etat, manche, decalageMs, agir }: PanneauProps) {
   const bonne = passage?.secret?.[langue]?.['bonne'];
 
   // Survivants : comptés par la base en mode téléphone, saisis par l'animateur en mode croix.
+  // En mode jetons, les jetons restants, comptés par la base, en tiennent lieu.
   const survivants: Record<number, number> = Object.fromEntries(
     etat.equipes.map((e) => [
       e.numero,
-      telephone
-        ? (manche.survivants?.[String(e.numero)] ?? 0)
-        : Math.max(0, Math.trunc(Number(saisie[e.numero] ?? '0')) || 0),
+      jetons
+        ? (manche.jetons?.[String(e.numero)]?.restants ?? 0)
+        : telephone
+          ? (manche.survivants?.[String(e.numero)] ?? 0)
+          : Math.max(0, Math.trunc(Number(saisie[e.numero] ?? '0')) || 0),
     ]),
   );
+
+  const mises =
+    jetons && passage
+      ? misesDesEquipes(etat, manche, passage, ecouleMs(etat, decalageMs, maintenant))
+      : [];
+  // « Révéler » attend toutes les mises ; « Révéler quand même » coûte leurs jetons non posés
+  // aux équipes en retard.
+  const attendLesMises = jetons && etape === 'question' && !revelationPrete(mises);
 
   const touche = (action: 'afficher' | 'reveler' | 'suivante' | 'fin', libelle: string) => (
     <Button
       key={action}
-      disabled={!permises.includes(action)}
+      disabled={!permises.includes(action) || (action === 'reveler' && attendLesMises)}
       onClick={() => agir({ type: 'quiz', action })}
     >
       {libelle}
@@ -696,15 +808,15 @@ function PanneauQuiz({ etat, manche, decalageMs, agir }: PanneauProps) {
     return (
       <section className="tu-regie__section" aria-label={tq('titre')}>
         <p className="tu-regie-item__title">
-          {tq(telephone ? 'survivantsTelephone' : 'survivantsCroix')}
+          {tq(jetons ? 'survivantsJetons' : telephone ? 'survivantsTelephone' : 'survivantsCroix')}
         </p>
         <ul className="tu-regie-list">
           {etat.equipes.map((e) => (
             <li key={e.id} className="tu-regie-item">
               <span className={cx('tu-team tu-team--badge', teamModifier(e.numero))}>{e.nom}</span>
-              {telephone || fini ? (
+              {telephone || jetons || fini ? (
                 <span className="tu-regie-item__title" data-testid={`survivants-${e.numero}`}>
-                  {tq('survivants', { n: survivants[e.numero] ?? 0 })}
+                  {tq(jetons ? 'jetons' : 'survivants', { n: survivants[e.numero] ?? 0 })}
                 </span>
               ) : (
                 <input
@@ -724,10 +836,10 @@ function PanneauQuiz({ etat, manche, decalageMs, agir }: PanneauProps) {
         {!fini && (
           <BoutonConfirme
             size="lg"
-            confirmation={t('confirmer', { action: tq('valider') })}
+            confirmation={t('confirmer', { action: tq(jetons ? 'validerJetons' : 'valider') })}
             onConfirm={() => agir({ type: 'survivants', survivants })}
           >
-            {tq('valider')}
+            {tq(jetons ? 'validerJetons' : 'valider')}
           </BoutonConfirme>
         )}
         {fini && (
@@ -746,7 +858,7 @@ function PanneauQuiz({ etat, manche, decalageMs, agir }: PanneauProps) {
       <p className="tu-regie__muted">
         {tq('numero', { n: passage.ordre, total: manche.passages.length })}
         {' · '}
-        {tq(telephone ? 'modeTelephone' : 'modeCroix')}
+        {tq(jetons ? 'modeJetons' : telephone ? 'modeTelephone' : 'modeCroix')}
       </p>
       <div className="tu-regie-secret">
         <p className="tu-regie-item__title">
@@ -778,9 +890,62 @@ function PanneauQuiz({ etat, manche, decalageMs, agir }: PanneauProps) {
           {tq('reponses', { n: passage.reponses ?? 0 })}
         </p>
       )}
+      {jetons && (etape === 'question' || etape === 'reponse') && (
+        <ul className="tu-regie-list" aria-label={tq('mises')} data-testid="regie-mises">
+          {mises.map((m) => (
+            <li
+              key={m.equipe.id}
+              className="tu-regie-item"
+              data-testid={`regie-mise-${m.equipe.numero}`}
+              data-statut={m.statut}
+            >
+              <span className={cx('tu-team tu-team--badge', teamModifier(m.equipe.numero))}>
+                {m.equipe.nom}
+              </span>
+              <span className="tu-regie-mise">
+                {LETTRES.map((lettre, i) => (
+                  <span
+                    key={lettre}
+                    className={cx(
+                      'tu-regie-mise__case',
+                      etape === 'reponse' && i === bonne && 'tu-regie-mise__case--bonne',
+                    )}
+                  >
+                    <span className="tu-regie-quiz__lettre">{lettre}</span> {m.repartition[i]}
+                  </span>
+                ))}
+              </span>
+              <span className={cx('tu-regie-mise__statut', `tu-regie-mise__statut--${m.statut}`)}>
+                {etape === 'reponse'
+                  ? tq('jetonsRestants', { n: m.dispo })
+                  : tq(`statutMise.${m.statut}`, { n: resteAPoser(m) })}
+              </span>
+              {etape === 'question' && m.statut === 'figee' && (
+                <Button variant="ghost" onClick={() => debloquer(passage.id, m.equipe.id)}>
+                  {tq('debloquer')}
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      {attendLesMises && (
+        <p className="tu-regie__muted" role="status">
+          {tq('revelerAttend')}
+        </p>
+      )}
       <div className="tu-regie-keys">
         {touche('afficher', tq('afficher'))}
         {touche('reveler', tq('reveler'))}
+        {attendLesMises && permises.includes('reveler') && (
+          <BoutonConfirme
+            variant="ghost"
+            confirmation={t('confirmer', { action: tq('revelerQuandMeme') })}
+            onConfirm={() => agir({ type: 'quiz', action: 'reveler' })}
+          >
+            {tq('revelerQuandMeme')}
+          </BoutonConfirme>
+        )}
         {permises.includes('suivante') && touche('suivante', tq('suivante'))}
         {permises.includes('fin') && touche('fin', tq('fin'))}
         <BoutonConfirme
