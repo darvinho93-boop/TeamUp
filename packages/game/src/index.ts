@@ -7,6 +7,7 @@ export * from './chrono';
 export * from './points-communs';
 export * from './scores';
 export * from './quiz';
+export * from './jetons';
 export * from './surenchere';
 export * from './mime';
 export * from './photo';

@@ -1,14 +1,16 @@
 /**
- * Pilotage du Quiz (spec v3, jeu 02). Mêmes étapes dans les deux modes :
+ * Pilotage du Quiz (spec v3, jeu 02). Mêmes étapes dans les trois modes :
  *
  *   pret ──afficher──▶ question ──révéler──▶ reponse ──suivante──▶ pret      (question suivante)
  *                         └──annuler──▶ pret                        └──fin──▶ survivants ──valider──▶ resultat
  *
  * `question` : la question et ses quatre propositions sont à l'écran, le chrono de 30 s tourne.
- * En mode croix, la salle se place ; en mode téléphone, chacun répond sur son écran.
+ * En mode croix, la salle se place ; en mode téléphone, chacun répond sur son écran ; en mode
+ * jetons (2026-10-18), le capitaine de chaque équipe répartit les jetons de l'équipe.
  * `reponse` : la bonne réponse est révélée, les mauvaises zones (ou les mauvais téléphones) sortent.
  * `annuler` : la question ne compte pas (réseau tombé en mode téléphone) ; on passe à la suivante.
- * `survivants` : la régie saisit (croix) ou confirme (téléphone) les survivants par équipe.
+ * `survivants` : la régie saisit (croix) ou confirme (téléphone) les survivants par équipe ; en
+ * mode jetons, elle confirme les jetons restants, qui se comptent comme des survivants.
  *
  * Le score se calcule **une seule fois**, à la validation des survivants, par `scoreQuiz` :
  * le mode n'entre pas dans le calcul, c'est ce qui rend les deux modes comparables.
@@ -19,8 +21,8 @@ import { scoreQuiz } from '../quiz';
 import type { ScoresParEquipe } from '../scores';
 import type { Chrono } from './transition';
 
-export type ModeQuiz = 'croix' | 'telephone';
-export const MODES_QUIZ: readonly ModeQuiz[] = ['croix', 'telephone'];
+export type ModeQuiz = 'croix' | 'telephone' | 'jetons';
+export const MODES_QUIZ: readonly ModeQuiz[] = ['croix', 'telephone', 'jetons'];
 
 export const CHRONO_QUESTION_S = FICHES.qcm2.chronoPassageS;
 /** Sans repêchage (décision du 2026-09-24) : trois ou quatre questions, quatre par défaut. */
