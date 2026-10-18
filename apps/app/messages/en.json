@@ -92,7 +92,23 @@
     "prochaine": "Get ready, the next question is coming.",
     "fin": "End of the quiz",
     "survivant": "You made it to the end. Well done!",
-    "spectateur": "The quiz started before you arrived: watch the screen, you'll play the next game."
+    "spectateur": "The quiz started before you arrived: watch the screen, you'll play the next game.",
+    "jetons": {
+      "sansEquipe": "You have no team for this quiz: watch the screen.",
+      "equipe": "{n, plural, =0 {Your team has no tokens left} one {Your team has # token} other {Your team has # tokens}}",
+      "capitaine": "You're the captain: for each question, you share out the team's tokens. Stay together!",
+      "coequipier": "Your captain bets for the team: help them choose!",
+      "plusDeJetons": "No tokens left: watch the rest on the screen.",
+      "reste": "{n, plural, one {# token left to place} other {# tokens left to place}}",
+      "toutPose": "All tokens are placed: confirm the bet.",
+      "valider": "Confirm the bet",
+      "validee": "Bet confirmed. Watch the screen!",
+      "fige": "Time's up: go and see the host.",
+      "restants": "{n, plural, =0 {No tokens left} one {You have # token left} other {You have # tokens left}}",
+      "moins": "Remove a token from answer {lettre}",
+      "plus": "Add a token to answer {lettre}",
+      "ligne": "Answer {lettre}: {texte}, {n, plural, one {# token} other {# tokens}}"
+    }
   },
   "photos": {
     "ouvrir": "Photos: {envoyees} of {total}",

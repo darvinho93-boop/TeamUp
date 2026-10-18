@@ -366,6 +366,108 @@
   font-weight: 700;
 }
 
+/* Quiz en mode jetons : une ligne par réponse, la mise à droite (− n +, cibles de 56 px). La
+   lettre est dans le texte : une pastille ne laisserait plus de place au libellé sur 360 px.
+   Surface neutre, jamais le corail (réservé à « Valider »). Vert et rouge à la révélation. */
+.tu-mises {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  margin: 0;
+  margin-top: auto;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-mise {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--tu-space-2) var(--tu-space-3);
+  min-height: calc(var(--tu-tap-min) * 1.25);
+  padding: var(--tu-space-1) var(--tu-space-3);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+  color: var(--tu-text);
+  font-size: var(--tu-size-lg);
+  font-weight: 600;
+  text-align: start;
+}
+
+.tu-mise__texte {
+  flex: 1 1 6rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.tu-mise__lettre {
+  margin-inline-end: var(--tu-space-2);
+  font-family: var(--tu-font-numeric);
+  font-weight: 700;
+}
+
+.tu-mise__reglage {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--tu-space-2);
+}
+
+.tu-mise__pas {
+  display: grid;
+  place-items: center;
+  width: var(--tu-tap-min);
+  height: var(--tu-tap-min);
+  padding: 0;
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-surface-muted);
+  color: var(--tu-text);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.tu-mise__pas:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.tu-mise__nombre {
+  flex: none;
+  min-width: var(--tu-space-8);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.tu-mise--posee {
+  border-color: var(--tu-primary);
+}
+
+.tu-mise--bonne {
+  border-color: var(--tu-success);
+  background: var(--tu-sage-50);
+  color: var(--tu-success-text);
+}
+
+.tu-mise--fausse {
+  border-color: var(--tu-danger);
+  color: var(--tu-danger-text);
+}
+
+.tu-mise--fausse .tu-mise__texte {
+  text-decoration: line-through;
+}
+
 /* Hors ligne : bandeau en haut, jamais bloquant. */
 .tu-banner {
   position: sticky;

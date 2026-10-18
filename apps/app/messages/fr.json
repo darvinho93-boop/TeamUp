@@ -92,7 +92,23 @@
     "prochaine": "Prépare-toi, la question suivante arrive.",
     "fin": "Fin du quiz",
     "survivant": "Tu as tenu jusqu'au bout. Bravo !",
-    "spectateur": "Le quiz a commencé avant ton arrivée : regarde l'écran, tu joueras au prochain jeu."
+    "spectateur": "Le quiz a commencé avant ton arrivée : regarde l'écran, tu joueras au prochain jeu.",
+    "jetons": {
+      "sansEquipe": "Tu n'as pas d'équipe pour ce quiz : regarde l'écran.",
+      "equipe": "{n, plural, =0 {Votre équipe n'a plus de jeton} one {Votre équipe a # jeton} other {Votre équipe a # jetons}}",
+      "capitaine": "Tu es capitaine : à chaque question, tu répartis les jetons de l'équipe. Restez ensemble !",
+      "coequipier": "Votre capitaine mise pour l'équipe : aidez-le à choisir !",
+      "plusDeJetons": "Plus de jetons : regardez la suite sur l'écran.",
+      "reste": "{n, plural, one {Reste # jeton à poser} other {Reste # jetons à poser}}",
+      "toutPose": "Tous les jetons sont posés : valide la mise.",
+      "valider": "Valider la mise",
+      "validee": "Mise validée. Regardez l'écran !",
+      "fige": "Temps écoulé : allez voir l'animateur.",
+      "restants": "{n, plural, =0 {Plus aucun jeton} one {Il vous reste # jeton} other {Il vous reste # jetons}}",
+      "moins": "Retirer un jeton de la réponse {lettre}",
+      "plus": "Ajouter un jeton sur la réponse {lettre}",
+      "ligne": "Réponse {lettre} : {texte}, {n, plural, one {# jeton} other {# jetons}}"
+    }
   },
   "photos": {
     "ouvrir": "Photos : {envoyees} sur {total}",

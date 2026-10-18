@@ -38,6 +38,11 @@ const TABLES_REGIE = [
  * on les regroupe, le signal de la régie assurant déjà la réactivité. */
 const REGROUPEMENT_MS = 250;
 export const SIGNAL = 'relire';
+/**
+ * Le serveur, à chaque mise d'un capitaine (quiz en mode jetons) : l'écran les montre en direct,
+ * la régie les suit. Les téléphones ne l'écoutent pas.
+ */
+export const SIGNAL_MISES = 'mises';
 /** Ce qu'un signal attend au plus la création du canal. */
 const ATTENTE_CANAL_MS = 3000;
 
@@ -115,6 +120,8 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
       // l'envoie par son API.
       resoudre(canal);
       canal.on('broadcast', { event: SIGNAL }, () => void relire());
+      // Des mises en rafale ne font qu'une lecture de plus : `relire` regroupe.
+      canal.on('broadcast', { event: SIGNAL_MISES }, () => void relire());
       for (const { table, event } of regie ? TABLES_REGIE : TABLES) {
         canal.on(
           'postgres_changes',

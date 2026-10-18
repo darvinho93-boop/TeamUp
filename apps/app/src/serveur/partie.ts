@@ -1,5 +1,5 @@
 import 'server-only';
-import type { EtatJoueur, EvenementPublic, Langue, RefusQuiz } from '@/lib/partie';
+import type { EtatJoueur, EvenementPublic, Langue, RefusMise, RefusQuiz } from '@/lib/partie';
 import { hacher, jetonDe } from './session';
 import { signalerSalle } from './signal';
 import { supabaseService } from './supabase';
@@ -124,6 +124,46 @@ export async function repondreQuiz(
     if (!refus) throw new Error(error.message);
     return { ok: false, refus };
   }
+  return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
+}
+
+/**
+ * Mise du capitaine de ce cookie en mode jetons, enregistrée à chaque appel et validée quand
+ * `valider`. La base décide seule (capitaine, question ouverte, chrono, déblocage, jetons) ;
+ * l'écran et la régie sont prévenus aussitôt, les téléphones à leur relecture.
+ */
+export async function miserQuiz(
+  code: string,
+  repartition: number[],
+  valider: boolean,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusMise }> {
+  const jeton = await jetonDe(code);
+  const etat = jeton ? await etatPourJeton(code, jeton) : null;
+  if (!jeton || !etat) return { ok: false, refus: 'session' };
+
+  const { error } = await supabaseService().rpc('miser_quiz', {
+    p_jeton_hash: hacher(jeton),
+    p_repartition: repartition,
+    p_valider: valider,
+  });
+  if (error) {
+    const refus: RefusMise | null = /fermée/.test(error.message)
+      ? 'fermee'
+      : /pas capitaine/.test(error.message)
+        ? 'capitaine'
+        : /déjà/.test(error.message)
+          ? 'deja'
+          : /temps écoulé/.test(error.message)
+            ? 'temps'
+            : /invalide/.test(error.message)
+              ? 'invalide'
+              : /session/.test(error.message)
+                ? 'session'
+                : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  await signalerSalle(etat.evenement.id, 'mises');
   return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
 }
 

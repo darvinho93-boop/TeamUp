@@ -3,30 +3,39 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx } from '@teamup/ui/react';
-import { formatChrono, tempsRestant } from '@teamup/game';
-import type { EtatJoueur, QuizJoueur, RefusQuiz } from '@/lib/partie';
-import { useMaintenant } from '@/ecran/Chrono';
+import type { EtatJoueur, QuizJoueur, QuizTelephone, RefusQuiz } from '@/lib/partie';
+import { ChronoQuestion, LETTRES } from './quizCommun';
+import { QuizJetons } from './QuizJetons';
 
-export const LETTRES = ['A', 'B', 'C', 'D'] as const;
+interface Proprietes<Q> {
+  code: string;
+  quiz: Q;
+  decalageMs: number;
+  remplacer: (etat: EtatJoueur) => void;
+  relire: () => void;
+}
+
+/** Le quiz sur le téléphone : un écran par mode (le mode croix n'en a pas). */
+export function Quiz({ quiz, ...props }: Proprietes<QuizJoueur>) {
+  return quiz.mode === 'jetons' ? (
+    <QuizJetons quiz={quiz} {...props} />
+  ) : (
+    <QuizEnModeTelephone quiz={quiz} {...props} />
+  );
+}
 
 /**
  * Quiz en mode téléphone : la question en grand, quatre boutons. Une mauvaise réponse (ou pas
  * de réponse à temps) élimine : le téléphone le dit, puis le joueur regarde la suite.
  * Toutes les règles vivent dans la base ; cet écran ne fait qu'afficher ce qu'elle renvoie.
  */
-export function Quiz({
+function QuizEnModeTelephone({
   code,
   quiz,
   decalageMs,
   remplacer,
   relire,
-}: {
-  code: string;
-  quiz: QuizJoueur;
-  decalageMs: number;
-  remplacer: (etat: EtatJoueur) => void;
-  relire: () => void;
-}) {
+}: Proprietes<QuizTelephone>) {
   const t = useTranslations('quiz');
   const [envoi, setEnvoi] = useState<{ passage: string | null; choix: number } | null>(null);
   const [refus, setRefus] = useState<{ passage: string | null; refus: RefusQuiz } | null>(null);
@@ -162,23 +171,5 @@ export function Quiz({
                 : null}
       </p>
     </div>
-  );
-}
-
-function ChronoQuestion({
-  departMs,
-  dureeS,
-  decalageMs,
-}: {
-  departMs: number;
-  dureeS: number;
-  decalageMs: number;
-}) {
-  const maintenant = useMaintenant(true);
-  const reste = tempsRestant(dureeS, Math.max(0, maintenant + decalageMs - departMs));
-  return (
-    <span className={cx('tu-quiz__chrono', reste === 0 && 'tu-quiz__chrono--zero')} role="timer">
-      {formatChrono(reste)}
-    </span>
   );
 }

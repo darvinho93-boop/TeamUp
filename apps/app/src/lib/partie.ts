@@ -38,10 +38,10 @@ export interface GroupePublic {
 }
 
 /**
- * Le quiz vu par un téléphone, en mode téléphone seulement (`null` en mode croix). La bonne
+ * Le quiz vu par un téléphone, en mode téléphone ou jetons (`null` en mode croix). La bonne
  * réponse n'arrive qu'une fois révélée à la salle : la base ne l'envoie pas avant.
  */
-export interface QuizJoueur {
+interface QuizCommun {
   serveur_ms: number;
   etape: 'pret' | 'question' | 'reponse' | 'survivants' | 'resultat';
   passage_id: string | null;
@@ -50,12 +50,35 @@ export interface QuizJoueur {
   chrono_depart_ms: number | null;
   chrono_duree_s: number | null;
   question: { question: string; propositions: string[] } | null;
-  ma_reponse: number | null;
   bonne: number | null;
+}
+
+export interface QuizTelephone extends QuizCommun {
+  mode: 'telephone';
+  ma_reponse: number | null;
   /** Arrivé après la première question : il regarde. */
   participant: boolean;
   elimine: boolean;
 }
+
+/**
+ * Mode jetons (2026-10-18) : le capitaine mise pour son équipe, ses coéquipiers voient la même
+ * chose en lecture seule. Les mises sont publiques (l'écran les montre en direct).
+ */
+export interface QuizJetons extends QuizCommun {
+  mode: 'jetons';
+  capitaine: boolean;
+  /** Sans équipe, le joueur regarde. */
+  equipe: boolean;
+  /** Pendant la question, les jetons à poser ; une fois révélée, ceux qui restent. */
+  jetons: number;
+  repartition: [number, number, number, number];
+  valide: boolean;
+  /** Chrono écoulé sans validation : seule la régie rouvre la mise. */
+  fige: boolean;
+}
+
+export type QuizJoueur = QuizTelephone | QuizJetons;
 
 /**
  * Le photo challenge vu par un téléphone : les thèmes dans sa langue et l'heure d'envoi de la
@@ -103,6 +126,9 @@ export type ErreurPartie = 'code_inconnu' | 'complet' | 'langue' | 'prenom' | 's
 
 /** Refus d'une réponse au quiz, dans l'ordre où la base les vérifie. */
 export type RefusQuiz = 'session' | 'fermee' | 'spectateur' | 'elimine' | 'deja';
+
+/** Refus d'une mise en mode jetons, dans l'ordre où la base les vérifie. */
+export type RefusMise = 'session' | 'fermee' | 'capitaine' | 'deja' | 'temps' | 'invalide';
 
 /** Refus d'un envoi photo. Tous définitifs, sauf `serveur` : la file d'attente réessaiera. */
 export type RefusPhoto = 'session' | 'capitaine' | 'close' | 'theme' | 'fichier';
