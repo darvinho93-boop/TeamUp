@@ -730,3 +730,50 @@ finale** forme le logo Team Up! et son nom, et la page du QR se découvre ; roul
   pas seule sur l'ouverture.
 - `e2e/ouverture.spec.ts` : ouverture à l'écran, « Accueil », l'écran reste sur la boucle
   (`data-fin-de-boucle`), puis la passe finale avec « Team Up! », puis la page du QR et son code.
+
+## Conventions posées le 2026-10-18 (Quiz en mode jetons)
+
+Tranché le 2026-10-18 : un troisième mode du Quiz, **jetons**. Le capitaine de chaque équipe,
+réunie autour de lui, répartit **tous** les jetons de l'équipe sur les quatre réponses depuis son
+téléphone (− et +, puis « Valider ») ; les jetons posés sur une mauvaise réponse sont perdus.
+**Toutes les équipes partent avec l'effectif de la plus grande**, fixé au lancement. En fin de
+manche, **jetons restants × 100** (le barème des survivants). 3 ou 4 questions, 30 s chacune.
+Chrono écoulé sans validation : l'équipe est **figée** jusqu'à ce que la régie la **débloque**.
+« Révéler » **attend** toutes les mises ; « Révéler quand même » (confirmé) coûte ses jetons non
+posés à l'équipe en retard. À l'écran, **tout en direct, dans les cases des réponses**.
+
+- **Écart assumé à la spec v3**, qui ne prévoit que les modes croix et téléphone : un troisième
+  mode, pas un nouveau jeu (mêmes questions, même barème), un seul téléphone actif par équipe.
+- Logique pure : `packages/game/src/jetons.ts` (`jetonsDeDepart`, `miseValide`, `jetonsApres`) ;
+  côté régie, `src/lib/jetons.ts` (`capitainesManquants`, `misesDesEquipes`, `revelationPrete`).
+- Base (migration `20261018090000`) : `mises_quiz`, une ligne par passage et par équipe
+  (`repartition smallint[4]`, `valide`, `debloquee`), lue par l'animateur, écrite **uniquement**
+  par `miser_quiz` (rôle de service ; refuse session inconnue, question fermée, non-capitaine,
+  mise déjà validée, temps écoulé à l'heure de la base + 1 s sauf déblocage, mise invalide) et
+  `debloquer_mise` (session de l'animateur). `jetons_quiz(manche)` chaîne les jetons : le départ
+  (`manches.options.jetons`, posé par « Commencer »), puis, question révélée après question
+  révélée (les annulées ne comptent pas), la mise sur la bonne réponse ; sans mise, zéro.
+- `quiz_du_joueur` passe la main à `quiz_jetons_du_joueur` en mode jetons ; le mode téléphone
+  gagne la clé `mode`. `etat_ecran` expose `manche.jetons`, `passage.mises` (publiques : l'écran
+  les montre) et `equipe.capitaine_connecte` (téléphone vu depuis moins de 30 s).
+- Temps réel : chaque mise passe par `POST /api/partie/[code]/mise`, puis le serveur envoie le
+  signal **`mises`** sur `salle:<id>` (`signalerSalle(id, 'mises')`), que seuls l'écran et la
+  régie écoutent : un appui de capitaine ne fait pas relire 150 téléphones. Les coéquipiers
+  voient la mise à leur relecture de 4 s.
+- Téléphone (`src/joueur/QuizJetons.tsx`) : la mise part 400 ms après le dernier appui, tout de
+  suite à la validation, les envois en file ; un bouton tenu appuyé répète. La lettre est dans le
+  texte de la ligne : une pastille ne laissait plus de place au libellé sur 360 px.
+- Régie : « Mode jetons » grisé tant qu'une équipe qui a des joueurs n'a pas de capitaine ; liste
+  des capitaines et de leur téléphone, lien vers la Salle. Pendant la question, la mise et le
+  statut de chaque équipe (validée, en cours, figée, sans jetons), « Débloquer ». La Salle compte
+  les arrivées par QR code, les connectés et les inscrits à la main.
+- Écran : dans chaque case, la réponse part du milieu et monte en haut (un `::before` dont le
+  `flex-grow` passe de 1 à 0 : `--tu-dur-mises-attente`, puis `--tu-dur-mises-monte`), puis les
+  pastilles des équipes (`--tu-stage-mise-min`, trois par rangée) s'y ajoutent en direct, coche
+  à la validation. La liste a une clé par question : l'animation repart à chaque question. Rien ne
+  bouge sous `prefers-reduced-motion`.
+- Explication : script `qcm2-jetons` (29 s), étape `explication-jetons`, touche « Expliquer
+  (jetons) » ; `scriptExplication(jeu, mode)` prend le mode du Quiz.
+- `e2e/quiz-jetons.spec.ts` : parcours à deux équipes (lancement refusé sans capitaine, mises en
+  direct, gel et déblocage, révéler quand même, × 100) et contrôle des cases à 8 équipes en
+  1 920 × 1 080.
