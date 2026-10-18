@@ -23,6 +23,7 @@ export const SONS = [
   'arrivee',
   'ambiance',
   'explication',
+  'finale',
 ] as const;
 export type Son = (typeof SONS)[number];
 
@@ -45,7 +46,15 @@ export const NIVEAUX: Record<Son, number> = {
   arrivee: 0.45,
   ambiance: 0.3,
   explication: 0.22,
+  finale: 0.9,
 };
+
+/**
+ * Le coup du son de la passe finale (la piste du reel Team Up!, `scripts/son-finale.mjs`), en ms
+ * depuis le début du fichier : il tombe quand le logo se forme. À garder égal à ce qu'annonce le
+ * script (testé sur le fichier).
+ */
+export const COUP_FINALE_MS = 2668;
 
 /**
  * Un son à la fois. Les battements du chrono sont brefs et se posent sur tout ; un autre son
@@ -160,15 +169,13 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
 }
 
 /**
- * La passe finale de l'ouverture, avant la page du QR code : le roulement de tambour sous les
- * ronds (sa cymbale tombe sur le logo), puis le jingle quand « Team Up! » paraît. L'écran les
- * joue au début de la passe, une fois la boucle en cours menée à son terme (`Salle.tsx`).
+ * La passe finale de l'ouverture (décision du 2026-10-18) : la piste du reel Team Up!, à la place
+ * du roulement et du jingle. Elle part de sorte que son coup tombe quand le logo se forme
+ * (`FINALE.logo`), après sa montée sous les ronds. L'écran la joue au début de la passe, une fois
+ * la boucle en cours menée à son terme (`Salle.tsx`).
  */
 export function sonsDeLaFinale(): { son: Son; apresMs: number }[] {
-  return [
-    { son: 'roulement', apresMs: FINALE.ronds },
-    { son: 'jingle', apresMs: FINALE.nom },
-  ];
+  return [{ son: 'finale', apresMs: FINALE.logo - COUP_FINALE_MS }];
 }
 
 /**

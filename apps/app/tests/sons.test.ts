@@ -1,7 +1,8 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
+  COUP_FINALE_MS,
   deroule,
   estBattement,
   fichierDe,
@@ -133,11 +134,24 @@ describe('la musique de fond', () => {
 });
 
 describe('la passe finale de l’ouverture', () => {
-  it('roule sous les ronds, puis le jingle quand le nom paraît', () => {
-    expect(sonsDeLaFinale()).toEqual([
-      { son: 'roulement', apresMs: 0 },
-      { son: 'jingle', apresMs: FINALE.nom },
-    ]);
+  it('joue la piste du reel, son coup sur le logo (2026-10-18)', () => {
+    expect(sonsDeLaFinale()).toEqual([{ son: 'finale', apresMs: FINALE.logo - COUP_FINALE_MS }]);
+    expect(FINALE.logo - COUP_FINALE_MS).toBeGreaterThanOrEqual(0);
+  });
+
+  it('le coup annoncé est bien celui du fichier, à 15 ms près', () => {
+    const octets = readFileSync(new URL('../public/sons/finale.wav', import.meta.url));
+    const frequence = octets.readUInt32LE(24);
+    let crete = 0;
+    let coup = 0;
+    for (let i = 44; i + 1 < octets.length; i += 2) {
+      const v = Math.abs(octets.readInt16LE(i));
+      if (v > crete) {
+        crete = v;
+        coup = (i - 44) / 2;
+      }
+    }
+    expect(Math.abs((coup / frequence) * 1000 - COUP_FINALE_MS)).toBeLessThan(15);
   });
 
   it('ne sonne pas au clic : l’écran la joue quand la boucle en cours a fini', () => {

@@ -20,6 +20,7 @@ const MOMENTS: Record<Son, string> = {
   arrivee: 'Un invité rejoint la soirée',
   ambiance: 'Accueil : musique de fond, en boucle',
   explication: 'Explication animée d’un jeu : musique de fond, en boucle',
+  finale: 'Ouverture → accueil : la piste du reel, son coup quand le logo se forme',
 };
 
 const estFond = (son: Son): son is Fond => son === 'ambiance' || son === 'explication';

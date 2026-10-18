@@ -702,7 +702,8 @@ depuis son téléphone, tout de suite à l'écran, et la régie peut renommer et
 Tranché le 2026-10-17, revu le 2026-10-18 : avant la page du QR code, une **ouverture** en boucle
 (les quatre ronds du teaser) ; une **nouvelle soirée démarre dessus**. Au passage à « Accueil »,
 la **boucle en cours va à son terme** (on ne coupe jamais la cinématique), puis une **passe
-finale** forme le logo Team Up! et son nom, et la page du QR se découvre ; roulement puis jingle.
+finale** forme le logo Team Up! et son nom, et la page du QR se découvre ; depuis le 2026-10-18,
+sur **la piste du reel Team Up!** (son coup sur le logo), à la place du roulement et du jingle.
 
 - **Le logo de la soirée est retiré le 2026-10-18** (monogramme « V | M » déployé en « Vinoyan &
   Mélanie », bandeau marine et or, encart de la Salle, polices Cinzel et Great Vibes) : plus
@@ -727,9 +728,13 @@ finale** forme le logo Team Up! et son nom, et la page du QR se découvre ; roul
   la remonter** (`data-fin-de-boucle` sur la scène), attend `attenteFinDeBoucle`, puis montre
   l'accueil sous la passe finale, retirée à `FINALE.fin`. Si la régie quitte l'accueil entre-temps,
   la nouvelle scène s'affiche.
-- Sons : `sonsDeLaFinale` (roulement à 0, jingle au nom), joués par `Salle.tsx` au début de la
-  passe finale avec le lecteur du moment (`jouer` de `useSons` accepte un délai) ; rien au clic.
-  L'ambiance joue à l'ouverture comme à l'accueil.
+- Sons : `sonsDeLaFinale`, joués par `Salle.tsx` au début de la passe finale avec le lecteur du
+  moment (`jouer` de `useSons` accepte un délai) ; rien au clic. L'ambiance joue à l'ouverture
+  comme à l'accueil. Depuis le 2026-10-18, un seul son, `finale` : la piste du reel
+  (`teamup_reel.mp4`, 6,5 s), recalée par `scripts/son-finale.mjs` (silence du début coupé, crête
+  à 0,85 ; la vidéo se décode d'abord avec le ffmpeg du projet vidéo, commande dans le script ; le
+  brut reste dans `scripts/sons-bruts/`, ignoré). Il part à `FINALE.logo - COUP_FINALE_MS` pour que
+  son coup tombe sur le logo, à 5 s ; `COUP_FINALE_MS` (2 668 ms) est testé sur le fichier.
 - Régie : « Ouverture » en tête des scènes libres du pilotage. Une soirée existante ne bascule
   pas seule sur l'ouverture.
 - `e2e/ouverture.spec.ts` : ouverture à l'écran, « Accueil », l'écran reste sur la boucle
