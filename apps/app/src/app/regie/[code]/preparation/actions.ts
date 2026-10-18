@@ -193,8 +193,9 @@ const Questions = z.coerce
   .catch(QUESTIONS_QUIZ_DEFAUT);
 
 /**
- * Quiz : une question par passage, trois ou quatre, sans repêchage (décision du 2026-09-24).
- * Le mode (croix ou téléphone) ne se fixe pas ici : il se choisit au lancement de la manche.
+ * Quiz : une question par passage, de trois à dix, sans repêchage (décisions du 2026-09-24 et
+ * du 2026-10-18 : on en prévoit plus, la régie termine quand elle veut). Le mode ne se fixe
+ * pas ici : il se choisit au lancement de la manche.
  */
 export async function ajouterQuiz(code: string, donnees: FormData) {
   const { supabase, evenement, rafraichir } = await contexte(code);

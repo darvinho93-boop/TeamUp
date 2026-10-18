@@ -197,7 +197,10 @@ ignorés ; la CI, elle, en démarre une, donc ils y tournent pour de bon.
 ## Conventions posées au lot 7
 
 Tranché le 2026-09-24 : quiz **sans repêchage** (3 ou 4 questions, 4 par défaut) ; file de
-mime **sans plafond** dans l'app (la composer revient à l'animateur).
+mime **sans plafond** dans l'app (la composer revient à l'animateur). Revu le 2026-10-18 : **de 3
+à 10 questions** à la préparation (4 par défaut), et la régie peut **terminer le quiz après
+n'importe quelle réponse révélée** (« Terminer le quiz ici », confirmé) ; les questions non jouées
+ne comptent pour rien (ni élimination, ni jetons), les points se calculent sur celles jouées.
 
 - Mime : le mot se montre à J1 **sur l'écran de régie seulement** (spec v3). `secret_visible`
   ne le sort vers l'écran qu'au verdict ; aucun téléphone ne le reçoit, `joueur_designe_id`

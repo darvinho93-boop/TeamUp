@@ -326,6 +326,7 @@
         "reveler": "Révéler la réponse",
         "suivante": "Question suivante",
         "fin": "Fin des questions",
+        "terminerIci": "Terminer le quiz ici",
         "annuler": "Annuler la question",
         "reponses": "{n, plural, =0 {Aucune réponse reçue} one {# réponse reçue} other {# réponses reçues}}",
         "survivantsCroix": "Combien de survivants par équipe ?",

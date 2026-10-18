@@ -292,7 +292,11 @@ describe('une touche de la régie', () => {
       passage_id: 'q2',
       etape: 'pret',
     });
-    expect(etape(e, { type: 'quiz', action: 'fin' })).toBeNull();
+    // Terminer avant la dernière question : la q2 reste non jouée, on passe aux survivants.
+    expect(etape(e, { type: 'quiz', action: 'fin' })).toMatchObject({
+      pilotage: { etape: 'survivants', passage_id: 'q1' },
+      passage: null,
+    });
 
     const derniere = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'reponse' });
     for (const p of derniere.programme[2]!.passages) p.statut = 'termine';

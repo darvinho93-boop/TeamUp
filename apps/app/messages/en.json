@@ -326,6 +326,7 @@
         "reveler": "Reveal the answer",
         "suivante": "Next question",
         "fin": "End of questions",
+        "terminerIci": "End the quiz here",
         "annuler": "Cancel the question",
         "reponses": "{n, plural, =0 {No answers yet} one {# answer received} other {# answers received}}",
         "survivantsCroix": "How many survivors per team?",

@@ -12,7 +12,15 @@ import {
   type EtatSurenchere,
 } from './surenchere';
 import { mancheJouee, mancheSuivante, passageSuivant, type MancheDuProgramme } from './programme';
-import { actionsQuiz, appliquerQuiz, CHRONO_QUESTION_S, MODES_QUIZ, type EtatQuiz } from './quiz';
+import {
+  actionsQuiz,
+  appliquerQuiz,
+  CHRONO_QUESTION_S,
+  MODES_QUIZ,
+  QUESTIONS_QUIZ,
+  QUESTIONS_QUIZ_DEFAUT,
+  type EtatQuiz,
+} from './quiz';
 import { actionsMime, appliquerMime, CHRONO_MIME_S } from './mime';
 import { actionsPhoto, appliquerPhoto } from './photo';
 
@@ -206,8 +214,19 @@ describe('pilotage du Quiz', () => {
       etape: 'reponse',
       chrono: 'arreter',
     });
-    expect(actionsQuiz(q('reponse'))).toEqual(['suivante']);
+    expect(actionsQuiz(q('reponse'))).toEqual(['suivante', 'fin']);
     expect(appliquerQuiz(q('reponse'), { type: 'suivante' }).etape).toBe('pret');
+  });
+
+  it('se termine après n’importe quelle réponse révélée, pas pendant une question', () => {
+    expect(appliquerQuiz(q('reponse'), { type: 'fin' }).etape).toBe('survivants');
+    expect(() => appliquerQuiz(q('question'), { type: 'fin' })).toThrow(/impossible/);
+    expect(() => appliquerQuiz(q('pret'), { type: 'fin' })).toThrow(/impossible/);
+  });
+
+  it('se prépare de 3 à 10 questions, 4 par défaut', () => {
+    expect(QUESTIONS_QUIZ).toEqual([3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(QUESTIONS_QUIZ_DEFAUT).toBe(4);
   });
 
   it('passe aux survivants après la dernière question', () => {

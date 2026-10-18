@@ -25,8 +25,12 @@ export type ModeQuiz = 'croix' | 'telephone' | 'jetons';
 export const MODES_QUIZ: readonly ModeQuiz[] = ['croix', 'telephone', 'jetons'];
 
 export const CHRONO_QUESTION_S = FICHES.qcm2.chronoPassageS;
-/** Sans repêchage (décision du 2026-09-24) : trois ou quatre questions, quatre par défaut. */
-export const QUESTIONS_QUIZ = [3, 4] as const;
+/**
+ * Sans repêchage (décision du 2026-09-24), quatre questions par défaut. Jusqu'à dix depuis le
+ * 2026-10-18 : l'animateur en prévoit plus et termine le quiz quand il veut (`fin` après chaque
+ * réponse révélée).
+ */
+export const QUESTIONS_QUIZ = [3, 4, 5, 6, 7, 8, 9, 10] as const;
 export const QUESTIONS_QUIZ_DEFAUT = 4;
 
 export type EtapeQuiz = 'pret' | 'question' | 'reponse' | 'survivants' | 'resultat';
@@ -60,7 +64,8 @@ export function actionsQuiz(etat: EtatQuiz): ActionQuiz['type'][] {
     case 'question':
       return ['reveler', 'annuler'];
     case 'reponse':
-      return etat.resteDesQuestions ? ['suivante'] : ['fin'];
+      // Terminer avant la dernière question : les questions non jouées ne comptent pas.
+      return etat.resteDesQuestions ? ['suivante', 'fin'] : ['fin'];
     case 'survivants':
       return ['valider'];
     case 'resultat':

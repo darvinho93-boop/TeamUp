@@ -956,7 +956,17 @@ function PanneauQuiz({
           </BoutonConfirme>
         )}
         {permises.includes('suivante') && touche('suivante', tq('suivante'))}
-        {permises.includes('fin') && touche('fin', tq('fin'))}
+        {permises.includes('fin') && !reste && touche('fin', tq('fin'))}
+        {permises.includes('fin') && reste && (
+          // Avant la dernière question : les questions restantes ne seront pas jouées.
+          <BoutonConfirme
+            variant="ghost"
+            confirmation={t('confirmer', { action: tq('terminerIci') })}
+            onConfirm={() => agir({ type: 'quiz', action: 'fin' })}
+          >
+            {tq('terminerIci')}
+          </BoutonConfirme>
+        )}
         <BoutonConfirme
           variant="ghost"
           disabled={!permises.includes('annuler')}

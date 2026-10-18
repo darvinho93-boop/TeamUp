@@ -14,11 +14,13 @@ import {
  * équipe figée au chrono se débloque à la régie ; les jetons restants valent × 100.
  */
 
-// Contenus de la démo : bonnes réponses 1 (« 8 pattes »), 2 (« Mercure »), 0 (« 90 »).
+// Contenus de la démo : bonnes réponses 1 (« 8 pattes »), 2 (« Mercure »), 0 (« 90 »), 1. La
+// quatrième n'est pas jouée : la régie termine le quiz après la troisième.
 const QUESTIONS = [
   'aaaa0301-0000-4000-8000-000000000301',
   'aaaa0302-0000-4000-8000-000000000302',
   'aaaa0303-0000-4000-8000-000000000303',
+  'aaaa0304-0000-4000-8000-000000000304',
 ];
 
 const evenements: string[] = [];
@@ -28,12 +30,12 @@ test.afterAll(async () => {
   if (contenus.length) await clientService().from('contenus').delete().in('id', contenus);
 });
 
-/** Une manche de quiz de trois questions, préparée en base. */
+/** Une manche de quiz de quatre questions, préparée en base. */
 async function preparerQuiz(evenementId: string): Promise<{ manche: string; passages: string[] }> {
   const service = clientService();
   const { data: m } = await service
     .from('manches')
-    .insert({ evenement_id: evenementId, jeu: 'qcm2', ordre: 1, options: { questions: 3 } })
+    .insert({ evenement_id: evenementId, jeu: 'qcm2', ordre: 1, options: { questions: 4 } })
     .select('id')
     .single();
   const manche = m!['id'] as string;
@@ -260,7 +262,10 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   });
   await regie.getByRole('button', { name: 'Révéler la réponse' }).click();
   await expect(ecran.getByTestId('bonne-reponse')).toBeVisible();
-  await regie.getByRole('button', { name: 'Fin des questions' }).click();
+  // Il reste une question : la régie termine le quiz ici, elle ne sera pas jouée.
+  await expect(regie.getByRole('button', { name: 'Fin des questions' })).toHaveCount(0);
+  await regie.getByRole('button', { name: 'Terminer le quiz ici', exact: true }).click();
+  await regie.getByRole('button', { name: 'Confirmer : Terminer le quiz ici' }).click();
 
   // --- Les jetons restants valent des survivants : × 100.
   await expect(scene('qcm2', 'survivants')).toBeVisible();
