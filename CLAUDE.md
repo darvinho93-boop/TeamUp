@@ -785,6 +785,15 @@ posés à l'équipe en retard. À l'écran, **tout en direct, dans les cases des
   avec le texte mais jamais sous 70 %). Recalculé par question et étape, au chargement des polices
   et au redimensionnement, jamais à l'arrivée d'une mise. L'e2e à 8 équipes joue une question
   longue en fr, en et ta et vérifie qu'aucune case ne déborde.
+- Même mécanique pour la Surenchère (même jour, mêmes contenus de mariage) : `useAjusterTexte`
+  (`src/ecran/`, générique, `useAjusterQuiz` s'appuie dessus) réduit le texte des cartes de la
+  grille des thèmes (`--tu-themes-echelle` ; trois colonnes au plus, deux pour quatre thèmes,
+  rangées qui se partagent la hauteur) et celui de l'écran du sujet (`--tu-surenchere-echelle` :
+  thème, sujet, chrono, verdict). La mesure compare les **boîtes** des éléments au bas du bloc,
+  pas `scrollHeight` : les glyphes d'un chrono géant (hauteur de ligne 1) dépassent de leur ligne
+  sans rien couper, et `scrollHeight` les comptait (tout tombait à 50 % pour rien). En largeur,
+  les mots longs se coupent en CSS (`overflow-wrap`, césure sauf en tamoul).
+  `e2e/surenchere-ecran.spec.ts` : six thèmes longs en trois langues, chrono, verdict et grille.
 - `e2e/quiz-jetons.spec.ts` : parcours à deux équipes (lancement refusé sans capitaine, mises en
   direct, gel et déblocage, révéler quand même, × 100) et contrôle des cases à 8 équipes en
   1 920 × 1 080.

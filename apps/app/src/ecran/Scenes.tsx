@@ -40,6 +40,7 @@ import { Chrono, useMaintenant } from './Chrono';
 import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
 import { useAjusterQuiz } from './useAjusterQuiz';
+import { useAjusterTexte } from './useAjusterTexte';
 import { OrdreTire, ordreDesEquipes, TirageOrdre } from './TirageOrdre';
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
@@ -422,12 +423,27 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
     typeof manche.options['chrono_s'] === 'number'
       ? manche.options['chrono_s']
       : CHRONO_SURENCHERE_DEFAUT_S;
+  // Thèmes, sujets et verdicts, parfois en trois langues : le texte se réduit jusqu'à tenir,
+  // dans chaque carte de la grille comme sur l'écran du sujet.
+  const grille = useRef<HTMLUListElement>(null);
+  const corps = useRef<HTMLDivElement>(null);
+  const joues = manche.passages.filter((p) => p.statut === 'termine').length;
+  const cle = `${passage?.id}:${etape}:${joues}:${langues.join()}`;
+  useAjusterTexte(grille, cle, '--tu-themes-echelle');
+  useAjusterTexte(corps, cle, '--tu-surenchere-echelle');
+  // Trois colonnes au plus (six thèmes : deux rangées), deux pour quatre thèmes.
+  const nombre = manche.passages.length;
+  const colonnes = nombre === 4 ? 2 : Math.min(3, Math.max(1, nombre));
 
   if (etape === 'themes' || !passage) {
     return (
       <div className="tu-stage__body" data-scene="enchere2" data-etape="themes">
         <h1 className="tu-stage__xl">{t('themes')}</h1>
-        <ul className="tu-stage-themes">
+        <ul
+          ref={grille}
+          className="tu-stage-themes"
+          style={{ '--tu-themes-colonnes': colonnes } as CSSProperties}
+        >
           {manche.passages.map((p) => {
             const champion = etat.equipes.find((e) => e.numero === p.resultat['equipe_champion']);
             return (
@@ -456,7 +472,12 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
 
   const champion = etat.equipes.find((e) => e.numero === passage.resultat['equipe_champion']);
   return (
-    <div className="tu-stage__body" data-scene="enchere2" data-etape={etape ?? ''}>
+    <div
+      ref={corps}
+      className="tu-stage__body tu-stage-surenchere"
+      data-scene="enchere2"
+      data-etape={etape ?? ''}
+    >
       <Multilingue
         className="tu-stage-multi--titre"
         textes={texteParLangue(passage.public, 'theme', langues)}

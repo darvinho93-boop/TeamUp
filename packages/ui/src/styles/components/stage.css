@@ -393,10 +393,18 @@
 }
 
 /* Surenchère : les thèmes. */
+/* Les thèmes de la Surenchère : trois colonnes au plus (--tu-themes-colonnes, posée par
+   l'écran), les rangées se partagent la hauteur, et le texte des cartes (thème, sujet et verdict
+   des thèmes joués, parfois en trois langues) se réduit jusqu'à tenir (--tu-themes-echelle). */
 .tu-stage-themes {
+  --tu-themes-echelle: 1;
+
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--tu-stage-team-min), 1fr));
+  flex: 1;
+  grid-template-columns: repeat(var(--tu-themes-colonnes, 3), minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
   gap: var(--tu-space-6);
+  min-height: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -405,8 +413,12 @@
 .tu-stage-theme {
   display: flex;
   flex-direction: column;
-  gap: var(--tu-space-4);
-  padding: var(--tu-space-8);
+  gap: calc(var(--tu-space-4) * var(--tu-themes-echelle));
+  min-height: 0;
+  overflow: hidden;
+  padding: calc(var(--tu-space-8) * var(--tu-themes-echelle));
+  overflow-wrap: break-word;
+  hyphens: auto;
   border: var(--tu-btn-border-width) solid var(--tu-border);
   border-radius: var(--tu-radius-lg);
   background: var(--tu-surface);
@@ -414,6 +426,51 @@
 
 .tu-stage-theme--joue {
   background: var(--tu-surface-muted);
+}
+
+.tu-stage-theme .tu-stage-multi__premier {
+  font-size: calc(var(--tu-size-3xl) * var(--tu-themes-echelle));
+}
+
+.tu-stage-theme .tu-stage-multi__autre,
+.tu-stage-theme .tu-stage__m {
+  font-size: calc(var(--tu-size-2xl) * var(--tu-themes-echelle));
+}
+
+/* La césure automatique sert le français et l'anglais ; elle couperait le tamoul à tort. */
+.tu-stage-theme :lang(ta),
+.tu-stage-quiz__zone :lang(ta) {
+  hyphens: manual;
+}
+
+/* Le sujet d'un thème : thème, sujet en grand et chrono ou verdict, réduits ensemble
+   (--tu-surenchere-echelle) quand trois langues ne tiennent pas dans la scène. */
+.tu-stage-surenchere {
+  --tu-surenchere-echelle: 1;
+
+  overflow: hidden;
+  overflow-wrap: break-word;
+}
+
+.tu-stage-surenchere .tu-stage-multi__premier {
+  font-size: calc(var(--tu-size-3xl) * var(--tu-surenchere-echelle));
+}
+
+.tu-stage-surenchere .tu-stage-multi--geant .tu-stage-multi__premier {
+  font-size: calc(var(--tu-size-4xl) * var(--tu-surenchere-echelle));
+}
+
+.tu-stage-surenchere .tu-stage-multi__autre,
+.tu-stage-surenchere .tu-stage__m {
+  font-size: calc(var(--tu-size-2xl) * var(--tu-surenchere-echelle));
+}
+
+.tu-stage-surenchere .tu-stage__xl {
+  font-size: calc(var(--tu-size-4xl) * var(--tu-surenchere-echelle));
+}
+
+.tu-stage-surenchere .tu-stage__giant {
+  font-size: calc(var(--tu-size-5xl) * var(--tu-surenchere-echelle));
 }
 
 /* Classement. */
@@ -597,6 +654,9 @@
   gap: var(--tu-space-6);
   min-height: 0;
   overflow: hidden;
+  /* Un mot trop long se coupe (la mesure de l'ajustement ne regarde que la hauteur). */
+  overflow-wrap: break-word;
+  hyphens: auto;
   padding: var(--tu-space-6) var(--tu-space-8);
   border: var(--tu-btn-border-width) solid var(--tu-border);
   border-radius: var(--tu-radius-lg);

@@ -419,11 +419,16 @@ test('à 8 équipes, les mises tiennent dans les cases de l’écran', async ({ 
 
   const dansLesCases = async () => {
     // Le texte s'est réduit jusqu'à tenir : aucune case ne déborde, aucune ne sort de l'écran.
-    const debords = await ecran
-      .locator('.tu-stage-quiz__zone')
-      .evaluateAll((zones) =>
-        zones.map((z) => z.scrollHeight - z.clientHeight).filter((ecart) => ecart > 1),
-      );
+    const debords = await ecran.locator('.tu-stage-quiz__zone').evaluateAll((zones) =>
+      zones
+        .map((z) => {
+          // Les boîtes, comme les mesure l'écran : le dessin des lettres ne compte pas.
+          const bas = z.getBoundingClientRect().bottom;
+          const boites = [...z.querySelectorAll('*')].map((e) => e.getBoundingClientRect());
+          return Math.max(0, ...boites.map((r) => r.bottom - bas));
+        })
+        .filter((ecart) => ecart > 1),
+    );
     expect(debords, 'cases qui débordent').toEqual([]);
     for (const lettre of ['A', 'B', 'C', 'D']) {
       const liste = ecran.getByTestId(`mises-${lettre}`);
