@@ -151,6 +151,16 @@
   line-height: 1;
 }
 
+/* Le lien complet de la soirée, à taper tel quel (app.teamup-game.fr/CODE), sous le code. */
+.tu-stage-lien {
+  margin: 0;
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+  color: var(--tu-primary);
+  overflow-wrap: anywhere;
+}
+
 /* Équipes. */
 .tu-stage-teams {
   display: grid;
@@ -679,6 +689,12 @@
 
 .tu-stage-quiz .tu-stage-multi__autre {
   font-size: calc(var(--tu-size-2xl) * var(--tu-quiz-echelle, 1));
+}
+
+/* Pas encore affichée : la case et sa lettre, en retrait, jusqu'à son tour (2026-10-18). */
+.tu-stage-quiz__zone--attente {
+  background: var(--tu-surface-muted);
+  color: var(--tu-text-muted);
 }
 
 .tu-stage-quiz__zone--bonne {

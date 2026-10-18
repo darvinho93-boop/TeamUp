@@ -200,22 +200,49 @@ describe('progression du programme', () => {
 });
 
 describe('pilotage du Quiz', () => {
+  // Par défaut, une question dont le chrono tourne (A, B, C, D affichées) : on peut révéler.
   const q = (etape: EtatQuiz['etape'], resteDesQuestions = true): EtatQuiz => ({
     etape,
     resteDesQuestions,
+    propositions: 4,
+    chronoLance: true,
   });
 
-  it('enchaîne question, révélation et question suivante', () => {
-    expect(actionsQuiz(q('pret'))).toEqual(['afficher']);
-    const affichee = appliquerQuiz(q('pret'), { type: 'afficher' });
-    expect(affichee).toEqual({ etape: 'question', chrono: { demarrer: CHRONO_QUESTION_S } });
+  it('montre la question seule, puis A, B, C, D une à une, puis lance le chrono', () => {
+    let etat: EtatQuiz = { etape: 'pret', resteDesQuestions: true };
+    expect(actionsQuiz(etat)).toEqual(['afficher']);
+    const affichee = appliquerQuiz(etat, { type: 'afficher' });
+    expect(affichee).toEqual({ etape: 'question', chrono: 'arreter', propositions: 0 });
+    etat = { ...etat, etape: 'question', propositions: 0, chronoLance: false };
+    for (let n = 1; n <= 4; n++) {
+      // Ni révéler ni lancer avant que les quatre réponses soient à l'écran.
+      expect(actionsQuiz(etat)).toEqual(['proposition', 'annuler']);
+      const suite = appliquerQuiz(etat, { type: 'proposition' });
+      expect(suite).toEqual({ etape: 'question', chrono: 'garder', propositions: n });
+      etat = { ...etat, propositions: suite.propositions! };
+    }
+    expect(actionsQuiz(etat)).toEqual(['lancer', 'annuler']);
+    expect(() => appliquerQuiz(etat, { type: 'proposition' })).toThrow(/impossible/);
+    expect(appliquerQuiz(etat, { type: 'lancer' })).toEqual({
+      etape: 'question',
+      chrono: { demarrer: CHRONO_QUESTION_S },
+      propositions: 4,
+    });
     expect(CHRONO_QUESTION_S).toBe(30);
+    expect(actionsQuiz({ ...etat, chronoLance: true })).toEqual(['reveler', 'annuler']);
+  });
+
+  it('enchaîne révélation et question suivante', () => {
     expect(appliquerQuiz(q('question'), { type: 'reveler' })).toEqual({
       etape: 'reponse',
       chrono: 'arreter',
     });
     expect(actionsQuiz(q('reponse'))).toEqual(['suivante', 'fin']);
-    expect(appliquerQuiz(q('reponse'), { type: 'suivante' }).etape).toBe('pret');
+    expect(appliquerQuiz(q('reponse'), { type: 'suivante' })).toEqual({
+      etape: 'pret',
+      chrono: 'garder',
+      propositions: 0,
+    });
   });
 
   it('se termine après n’importe quelle réponse révélée, pas pendant une question', () => {
@@ -239,6 +266,7 @@ describe('pilotage du Quiz', () => {
     expect(appliquerQuiz(q('question'), { type: 'annuler' })).toEqual({
       etape: 'pret',
       chrono: 'arreter',
+      propositions: 0,
     });
     expect(appliquerQuiz(q('question', false), { type: 'annuler' }).etape).toBe('survivants');
   });
@@ -262,10 +290,21 @@ describe('pilotage du Quiz', () => {
     const joue = () => {
       let etat: EtatQuiz = q('pret');
       for (let i = 0; i < 4; i++) {
-        etat = { ...etat, resteDesQuestions: i < 3 };
-        for (const type of ['afficher', 'reveler'] as const) {
-          etat = { ...etat, etape: appliquerQuiz(etat, { type }).etape };
+        etat = { ...etat, resteDesQuestions: i < 3, propositions: 0, chronoLance: false };
+        const touches = [
+          'afficher',
+          'proposition',
+          'proposition',
+          'proposition',
+          'proposition',
+          'lancer',
+        ] as const;
+        for (const type of touches) {
+          const suite = appliquerQuiz(etat, { type });
+          etat = { ...etat, etape: suite.etape, propositions: suite.propositions ?? 0 };
         }
+        etat = { ...etat, chronoLance: true };
+        etat = { ...etat, etape: appliquerQuiz(etat, { type: 'reveler' }).etape };
         const suite = etat.resteDesQuestions ? 'suivante' : 'fin';
         etat = { ...etat, etape: appliquerQuiz(etat, { type: suite }).etape };
       }

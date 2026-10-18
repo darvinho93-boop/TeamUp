@@ -272,14 +272,36 @@ describe('une touche de la régie', () => {
     ]);
   });
 
-  it('Quiz : afficher ouvre la question et lance 30 s ; révéler la termine', () => {
+  it('Quiz : la question seule, puis A, B, C, D une à une, puis le chrono de 30 s', () => {
     const pret = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'pret' });
     expect(etape(pret, { type: 'quiz', action: 'afficher' })).toMatchObject({
-      pilotage: { etape: 'question', chrono: 'demarrer', chrono_duree_s: 30 },
+      pilotage: { etape: 'question', chrono: 'arreter', indices: 0 },
       passage: { id: 'q1', statut: 'en_cours' },
     });
-    const question = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'question' });
-    expect(etape(question, { type: 'quiz', action: 'reveler' })).toMatchObject({
+    const question = (indices: number, chrono_depart_ms: number | null = null) =>
+      etat({
+        scene: 'jeu',
+        manche_id: 'qz',
+        passage_id: 'q1',
+        etape: 'question',
+        indices,
+        chrono_depart_ms,
+      });
+    expect(etape(question(0), { type: 'quiz', action: 'proposition' })?.pilotage).toMatchObject({
+      etape: 'question',
+      indices: 1,
+      chrono: 'garder',
+    });
+    // Ni chrono ni révélation tant que les quatre réponses ne sont pas à l'écran.
+    expect(etape(question(2), { type: 'quiz', action: 'lancer' })).toBeNull();
+    expect(etape(question(4), { type: 'quiz', action: 'reveler' })).toBeNull();
+    expect(etape(question(4), { type: 'quiz', action: 'lancer' })?.pilotage).toMatchObject({
+      etape: 'question',
+      indices: 4,
+      chrono: 'demarrer',
+      chrono_duree_s: 30,
+    });
+    expect(etape(question(4, 1000), { type: 'quiz', action: 'reveler' })).toMatchObject({
       pilotage: { etape: 'reponse', chrono: 'arreter' },
       passage: { id: 'q1', statut: 'termine' },
     });

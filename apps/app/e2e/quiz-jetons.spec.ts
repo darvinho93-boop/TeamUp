@@ -55,6 +55,14 @@ async function preparerQuiz(evenementId: string): Promise<{ manche: string; pass
   return { manche, passages: passages.map((p) => p['id'] as string) };
 }
 
+/** A, B, C, D une à une, puis le chrono : les mises ne s'ouvrent qu'au lancement (2026-10-18). */
+async function ouvrirLaQuestion(regie: Page) {
+  for (const lettre of ['A', 'B', 'C', 'D']) {
+    await regie.getByRole('button', { name: `Afficher la réponse ${lettre}` }).click();
+  }
+  await regie.getByRole('button', { name: 'Lancer le chrono' }).click();
+}
+
 async function connecterRegie(browser: Browser): Promise<Page> {
   const regie = await (
     await browser.newContext({ viewport: { width: 1440, height: 900 }, isMobile: false })
@@ -181,6 +189,11 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   // la validation, Bruno le voit en lecture seule.
   await regie.getByRole('button', { name: 'Afficher la question' }).click();
   await expect(scene('qcm2', 'question')).toBeVisible();
+  await expect(alice.getByTestId('statut-quiz')).toHaveText(/les réponses arrivent/, {
+    timeout: 5000,
+  });
+  expect((await miser([0, 0, 3, 0])).status()).toBe(409);
+  await ouvrirLaQuestion(regie);
   const plus = (page: Page, lettre: string) =>
     page.getByRole('button', { name: `Ajouter un jeton sur la réponse ${lettre}` });
   await expect(plus(alice, 'B')).toBeVisible({ timeout: 5000 });
@@ -234,6 +247,7 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   await regie.getByRole('button', { name: 'Question suivante' }).click();
   await regie.getByRole('button', { name: 'Afficher la question' }).click();
   await expect(scene('qcm2', 'question')).toBeVisible();
+  await ouvrirLaQuestion(regie);
   await expect(plus(alice, 'C')).toBeVisible({ timeout: 5000 });
   await plus(alice, 'C').click();
   await plus(alice, 'C').click();
@@ -251,6 +265,7 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   await regie.getByRole('button', { name: 'Question suivante' }).click();
   await regie.getByRole('button', { name: 'Afficher la question' }).click();
   await expect(scene('qcm2', 'question')).toBeVisible();
+  await ouvrirLaQuestion(regie);
   await expect(regie.getByTestId('regie-mise-2')).toHaveAttribute('data-statut', 'sans_jetons');
   expect((await miser([0, 0, 0, 0], true)).status()).toBe(200);
   await expect(plus(alice, 'A')).toBeVisible({ timeout: 5000 });
@@ -391,6 +406,7 @@ test('à 8 équipes, les mises tiennent dans les cases de l’écran', async ({ 
       manche_id: manche,
       passage_id: passages[0],
       etape: 'question',
+      indices: 4,
       chrono: 'demarrer',
       chrono_duree_s: 30,
     },

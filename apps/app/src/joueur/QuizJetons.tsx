@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button, cx } from '@teamup/ui/react';
 import { totalMise, type Repartition } from '@teamup/game';
 import type { EtatJoueur, QuizJetons as Quiz, RefusMise } from '@/lib/partie';
-import { ChronoQuestion, LETTRES } from './quizCommun';
+import { ChronoQuestion, LETTRES, QuestionSeule } from './quizCommun';
 
 /** Une mise en cours part au serveur ce délai après le dernier appui (l'écran la montre). */
 const ENVOI_MS = 400;
@@ -59,7 +59,8 @@ export function QuizJetons({
     [],
   );
 
-  const ouverte = quiz.etape === 'question' && !!quiz.question;
+  // On ne mise qu'une fois le chrono lancé, A, B, C, D à l'écran (2026-10-18).
+  const ouverte = quiz.etape === 'question' && !!quiz.question && quiz.chrono_depart_ms !== null;
   const peutMiser = ouverte && quiz.capitaine && !quiz.valide && !quiz.fige && quiz.jetons > 0;
   const mise: Repartition =
     peutMiser && brouillon?.passage === quiz.passage_id ? brouillon.repartition : quiz.repartition;
@@ -164,6 +165,10 @@ export function QuizJetons({
   }
 
   const revelee = quiz.etape === 'reponse' && quiz.bonne !== null;
+
+  if (quiz.etape === 'question' && !ouverte) {
+    return <QuestionSeule quiz={quiz} />;
+  }
 
   const statut = revelee
     ? t('jetons.restants', { n: quiz.jetons })

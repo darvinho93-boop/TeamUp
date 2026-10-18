@@ -28,7 +28,7 @@
   },
   "capitaine": {
     "titre": "Captain?",
-    "aide": "The captain picks the team name and takes the photos. We draw lots among the volunteers.",
+    "aide": "The captain picks the team name, takes the photos and places the team's tokens in the quiz. We draw lots among the volunteers.",
     "oui": "I volunteer",
     "non": "No thanks"
   },
@@ -76,7 +76,7 @@
     "regarde": "Watch the screen",
     "voirEquipe": "See my team",
     "termine": "The game is over. Thanks for playing!",
-    "capitaine": "You're your team's captain."
+    "capitaine": "You're the captain: the team name, the photos and the quiz tokens are up to you!"
   },
   "horsLigne": {
     "bandeau": "Connection lost. Retrying…"
@@ -108,7 +108,8 @@
       "moins": "Remove a token from answer {lettre}",
       "plus": "Add a token to answer {lettre}",
       "ligne": "Answer {lettre}: {texte}, {n, plural, one {# token} other {# tokens}}"
-    }
+    },
+    "reponsesAVenir": "Watch the screen: the answers are coming one by one."
   },
   "photos": {
     "ouvrir": "Photos: {envoyees} of {total}",
@@ -356,7 +357,9 @@
         "revelerQuandMeme": "Reveal anyway (unplaced tokens are lost)",
         "survivantsJetons": "Tokens left, counted by the app (× 100 points)",
         "jetons": "{n, plural, =0 {no tokens} one {# token} other {# tokens}}",
-        "validerJetons": "Confirm the tokens left"
+        "validerJetons": "Confirm the tokens left",
+        "proposition": "Show answer {lettre}",
+        "lancer": "Start the timer"
       },
       "mime": {
         "titre": "Mime",
@@ -524,7 +527,6 @@
   },
   "ecran": {
     "rejoindre": "Join the game",
-    "adresse": "Scan the QR code, or type the code at {adresse}",
     "joueurs": "{n, plural, =0 {No players} one {# player} other {# players}}",
     "equipes": "The teams",
     "capitaine": "Captain",
@@ -561,7 +563,7 @@
     "finQuiz": "End of the quiz",
     "survivants": "{n, plural, =0 {no survivors} one {# survivor} other {# survivors}}",
     "mimeFile": "{equipe}: line up, all facing the same way!",
-    "mimeJ1": "The first in line comes to read the word at the control desk.",
+    "mimeJ1": "Only the first in line looks at the screen!",
     "mimeChaine": "Mime, whisper, mime… all the way to the last one!",
     "leMot": "The word",
     "themePhoto": "Theme {n} of {total}",
@@ -634,7 +636,8 @@
     },
     "jetons": "{n, plural, =0 {no tokens} one {# token} other {# tokens}}",
     "misesValidees": "{n, plural, =0 {no bets confirmed} one {# bet confirmed} other {# bets confirmed}} out of {total}",
-    "miseEquipe": "{equipe}: {n, plural, one {# token} other {# tokens}}"
+    "miseEquipe": "{equipe}: {n, plural, one {# token} other {# tokens}}",
+    "ouLien": "Scan the QR code, or open this link:"
   },
   "admin": {
     "nav": {

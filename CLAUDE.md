@@ -204,7 +204,8 @@ ne comptent pour rien (ni élimination, ni jetons), les points se calculent sur 
 
 - Mime : le mot se montre à J1 **sur l'écran de régie seulement** (spec v3). `secret_visible`
   ne le sort vers l'écran qu'au verdict ; aucun téléphone ne le reçoit, `joueur_designe_id`
-  n'y sert pas.
+  n'y sert pas. **Revu le 2026-10-18** : le mot paraît aussi sur l'écran commun à l'étape
+  « secret » (voir « déroulé des jeux à l'écran » plus bas).
 - Quiz : le mode (croix ou téléphone) se fixe **au lancement de la manche**, dans
   `manches.options.mode` (`enregistrer_etape` fusionne `p_manche.options`). Une question par
   passage : révélée = passage terminé ; annulée = terminé avec `resultat.annulee`, elle ne compte pas.
@@ -797,3 +798,28 @@ posés à l'équipe en retard. À l'écran, **tout en direct, dans les cases des
 - `e2e/quiz-jetons.spec.ts` : parcours à deux équipes (lancement refusé sans capitaine, mises en
   direct, gel et déblocage, révéler quand même, × 100) et contrôle des cases à 8 équipes en
   1 920 × 1 080.
+
+## Conventions posées le 2026-10-18 (déroulé des jeux à l'écran)
+
+Tranché le 2026-10-18 après un aperçu de soirée : au quiz, **une touche par réponse** puis
+« Lancer le chrono », **dans tous les modes** ; au Mime, le mot à l'écran **le temps que le
+premier de la file le lise**.
+
+- Accueil de l'écran commun : sous le code, le **lien complet** à taper tel quel
+  (`app.teamup-game.fr/CODE`, `data-testid="lien"`), à la place de « tapez le code sur … ».
+- Capitaine : ses responsabilités (nom de l'équipe, photos, jetons du quiz) sont dites à
+  l'arrivée (`capitaine.aide`) et sur l'écran d'attente (`attente.capitaine`).
+- Points communs : à l'étape `masque`, l'écran ne montre plus que « Équipe X, ouvrez les yeux ! » :
+  la consigne affichée jusque-là donnait le point commun à l'équipe qui rouvre les yeux.
+- Quiz : `question` en trois temps. « Afficher la question » (la question seule, sans chrono),
+  puis « Afficher la réponse A » … « D » (`proposition`, une touche chacune), puis « Lancer le
+  chrono » (`lancer`, 30 s). Les propositions affichées vivent dans `pilotage.indices` (contrainte
+  élargie à 0–4, migration `20261018120000`) ; « Révéler » n'est possible qu'une fois le chrono
+  lancé. L'écran garde les quatre cases, celles à venir en retrait avec leur lettre seule
+  (`data-affichee`). Les téléphones montrent la question seule et « Regardez l'écran : les réponses
+  arrivent une à une » (`QuestionSeule`, `src/joueur/quizCommun.tsx`) ; on ne répond ni ne mise
+  avant le lancement, ce que la base garantissait déjà (`chrono_depart` nul : question fermée).
+- Mime : à l'étape `secret`, l'écran commun montre le mot en grand sous « Seul le premier de la
+  file regarde l'écran ! » ; `secret_visible` le donne à l'écran à cette étape seulement (migration
+  `20261018120000`), il disparaît au lancement de la chaîne et revient au verdict. Aucun téléphone
+  ne le reçoit (testé). **Écart à la spec v3**, qui le réservait à l'écran de régie.

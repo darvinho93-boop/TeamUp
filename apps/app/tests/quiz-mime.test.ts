@@ -276,15 +276,23 @@ avecBase('le mime', () => {
       { p_passage: { id: passageMime, statut } },
     );
 
-  it('le mot reste à la régie tant que la chaîne tourne', async () => {
-    for (const etape of ['pret', 'secret', 'lance']) {
+  it('le mot paraît à l’écran le temps que le premier le lise, jamais pendant la chaîne', async () => {
+    // 2026-10-18 : affiché à l'étape « secret » (le reste de la file est dos tourné).
+    for (const [etape, visible] of [
+      ['pret', false],
+      ['secret', true],
+      ['lance', false],
+    ] as const) {
       await mime(etape, 'en_cours');
-      expect(passageDe(await etat(), passageMime).secret).toBeNull();
+      const secret = passageDe(await etat(), passageMime).secret;
+      if (visible) expect(secret?.['fr']).toEqual({ mot: 'parapluie' });
+      else expect(secret).toBeNull();
       expect(passageDe(await etat(true), passageMime).secret?.['fr']).toEqual({ mot: 'parapluie' });
     }
   });
 
-  it('ne sort vers aucun téléphone', async () => {
+  it('ne sort vers aucun téléphone, même quand l’écran le montre', async () => {
+    await mime('secret', 'en_cours');
     const { data } = await appeler(clientService(), 'etat_joueur', {
       p_jeton_hash: hacher(jeton('Alice')),
     });

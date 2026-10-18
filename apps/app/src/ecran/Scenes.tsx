@@ -113,7 +113,10 @@ function Accueil({ etat, qrSvg, adresse }: Props) {
         <p className="tu-stage-code" data-testid="code">
           {etat.evenement.code}
         </p>
-        <p className="tu-stage__m tu-stage__muted">{t('adresse', { adresse })}</p>
+        <p className="tu-stage__m tu-stage__muted">{t('ouLien')}</p>
+        <p className="tu-stage-lien" data-testid="lien">
+          {adresse}/{etat.evenement.code}
+        </p>
         <p className="tu-stage__m" data-testid="joueurs">
           {t('joueurs', { n: etat.joueurs })}
         </p>
@@ -352,8 +355,8 @@ function PointsCommuns({ etat, decalageMs }: Props) {
 
       {etape === 'masque' && (
         <div className="tu-stage-centre">
+          {/* Rien du point commun : l'équipe rouvre les yeux et ne doit pas le lire. */}
           <p className="tu-stage__xl">{t('ouvrezLesYeux', { equipe: equipe.nom })}</p>
-          <Multilingue textes={texteParLangue(passage.public, 'consigne', langues)} />
         </div>
       )}
 
@@ -636,7 +639,7 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
   const zones = useRef<HTMLOListElement>(null);
   useAjusterQuiz(
     zones,
-    `${passage?.id}:${etape}:${langues.join()}:${jetons}`,
+    `${passage?.id}:${etape}:${etat.pilotage.indices}:${langues.join()}:${jetons}`,
     jetons ? enJeu.length : 0,
   );
 
@@ -683,6 +686,9 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
 
   const revelee = etape === 'reponse';
   const bonne = revelee ? passage.secret?.[langues[0] ?? 'fr']?.['bonne'] : undefined;
+  // La question seule, puis A, B, C, D une à une ; on ne répond qu'au lancement du chrono.
+  const affichees = etape === 'question' ? etat.pilotage.indices : LETTRES.length;
+  const lance = etape === 'question' && depart !== null;
   const propositions = (i: number) =>
     langues.flatMap((langue) => {
       const liste = passage.public[langue]?.['propositions'];
@@ -698,14 +704,14 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
       <div className="tu-stage-quiz__tete">
         <p className="tu-stage__m tu-stage__muted" data-testid="quiz-tete">
           {numero}
-          {etape === 'question' &&
+          {lance &&
             (jetons
               ? ` · ${t('misesValidees', { n: validees, total: enJeu.length })}`
               : telephone
                 ? ` · ${t('reponses', { n: passage.reponses ?? 0 })}`
                 : ` · ${t('croix')}`)}
         </p>
-        {etape === 'question' && (
+        {lance && (
           <Chrono
             departMs={depart}
             dureeS={duree ?? CHRONO_QUESTION_S}
@@ -726,32 +732,45 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
         ref={zones}
         className={cx('tu-stage-quiz', jetons && 'tu-stage-quiz--jetons')}
       >
-        {LETTRES.map((lettre, i) => (
-          <li
-            key={lettre}
-            className={cx(
-              'tu-stage-quiz__zone',
-              revelee &&
-                (i === bonne ? 'tu-stage-quiz__zone--bonne' : 'tu-stage-quiz__zone--fausse'),
-            )}
-            data-testid={i === bonne ? 'bonne-reponse' : undefined}
-          >
-            {jetons ? (
-              <>
-                <div className="tu-stage-quiz__reponse">
+        {LETTRES.map((lettre, i) =>
+          i >= affichees ? (
+            // Pas encore affichée : la case et sa lettre seulement.
+            <li
+              key={`${lettre}:attente`}
+              className="tu-stage-quiz__zone tu-stage-quiz__zone--attente"
+              data-testid={`zone-${lettre}`}
+              data-affichee="false"
+            >
+              <span className="tu-stage-quiz__lettre">{lettre}</span>
+            </li>
+          ) : (
+            <li
+              key={lettre}
+              className={cx(
+                'tu-stage-quiz__zone',
+                revelee &&
+                  (i === bonne ? 'tu-stage-quiz__zone--bonne' : 'tu-stage-quiz__zone--fausse'),
+              )}
+              data-testid={i === bonne ? 'bonne-reponse' : `zone-${lettre}`}
+              data-affichee="true"
+            >
+              {jetons ? (
+                <>
+                  <div className="tu-stage-quiz__reponse">
+                    <span className="tu-stage-quiz__lettre">{lettre}</span>
+                    <Multilingue textes={propositions(i)} />
+                  </div>
+                  <MisesDeLaReponse etat={etat} passage={passage} i={i} />
+                </>
+              ) : (
+                <>
                   <span className="tu-stage-quiz__lettre">{lettre}</span>
                   <Multilingue textes={propositions(i)} />
-                </div>
-                <MisesDeLaReponse etat={etat} passage={passage} i={i} />
-              </>
-            ) : (
-              <>
-                <span className="tu-stage-quiz__lettre">{lettre}</span>
-                <Multilingue textes={propositions(i)} />
-              </>
-            )}
-          </li>
-        ))}
+                </>
+              )}
+            </li>
+          ),
+        )}
       </ol>
     </div>
   );
@@ -799,7 +818,15 @@ function Mime({ etat, decalageMs }: Props) {
         <p className="tu-stage__xl tu-stage-centre">{t('mimeFile', { equipe: equipe.nom })}</p>
       )}
       {etape === 'secret' && (
-        <p className="tu-stage__xl tu-stage-centre tu-stage-reveal">{t('mimeJ1')}</p>
+        // Le reste de la file est dos tourné (2026-10-18) ; le mot repart au lancement.
+        <div className="tu-stage-centre tu-stage-reveal">
+          <p className="tu-stage__l">{t('mimeJ1')}</p>
+          <Multilingue
+            testId="mot"
+            className="tu-stage-multi--geant"
+            textes={texteParLangue(passage.secret, 'mot', etat.evenement.langues)}
+          />
+        </div>
       )}
       {etape === 'lance' && (
         <div className="tu-stage-jeu">

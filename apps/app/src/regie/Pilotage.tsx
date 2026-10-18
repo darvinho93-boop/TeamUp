@@ -773,7 +773,13 @@ function PanneauQuiz({
   const maintenant = useMaintenant(jetons && etape === 'question');
   const langue = etat.evenement.langues[0] ?? 'fr';
   const reste = manche.passages.some((x) => x.id !== passage?.id && x.statut !== 'termine');
-  const permises = actionsQuiz({ etape, resteDesQuestions: reste });
+  // Les mêmes entrées que `calculerEtape` : réponses déjà affichées, chrono lancé ou non.
+  const permises = actionsQuiz({
+    etape,
+    resteDesQuestions: reste,
+    propositions: etat.pilotage.indices,
+    chronoLance: etat.pilotage.chrono_depart_ms !== null,
+  });
 
   const question = passage?.public[langue];
   const propositions = Array.isArray(question?.['propositions'])
@@ -802,7 +808,10 @@ function PanneauQuiz({
   // aux équipes en retard.
   const attendLesMises = jetons && etape === 'question' && !revelationPrete(mises);
 
-  const touche = (action: 'afficher' | 'reveler' | 'suivante' | 'fin', libelle: string) => (
+  const touche = (
+    action: 'afficher' | 'proposition' | 'lancer' | 'reveler' | 'suivante' | 'fin',
+    libelle: string,
+  ) => (
     <Button
       key={action}
       disabled={!permises.includes(action) || (action === 'reveler' && attendLesMises)}
@@ -945,6 +954,13 @@ function PanneauQuiz({
       )}
       <div className="tu-regie-keys">
         {touche('afficher', tq('afficher'))}
+        {/* La question seule, puis A, B, C, D une à une, puis le chrono (2026-10-18). */}
+        {permises.includes('proposition') &&
+          touche(
+            'proposition',
+            tq('proposition', { lettre: LETTRES[etat.pilotage.indices] ?? 'A' }),
+          )}
+        {permises.includes('lancer') && touche('lancer', tq('lancer'))}
         {touche('reveler', tq('reveler'))}
         {attendLesMises && permises.includes('reveler') && (
           <BoutonConfirme

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx } from '@teamup/ui/react';
 import type { EtatJoueur, QuizJoueur, QuizTelephone, RefusQuiz } from '@/lib/partie';
-import { ChronoQuestion, LETTRES } from './quizCommun';
+import { ChronoQuestion, LETTRES, QuestionSeule } from './quizCommun';
 import { QuizJetons } from './QuizJetons';
 
 interface Proprietes<Q> {
@@ -40,7 +40,8 @@ function QuizEnModeTelephone({
   const [envoi, setEnvoi] = useState<{ passage: string | null; choix: number } | null>(null);
   const [refus, setRefus] = useState<{ passage: string | null; refus: RefusQuiz } | null>(null);
 
-  const ouverte = quiz.etape === 'question';
+  // On ne répond qu'une fois le chrono lancé, A, B, C, D à l'écran (2026-10-18).
+  const ouverte = quiz.etape === 'question' && quiz.chrono_depart_ms !== null;
   const envoiEnCours = envoi?.passage === quiz.passage_id ? envoi.choix : null;
   const refusCourant = refus?.passage === quiz.passage_id ? refus.refus : null;
   const peutRepondre =
@@ -108,6 +109,10 @@ function QuizEnModeTelephone({
 
   const choisie = quiz.ma_reponse ?? envoiEnCours;
   const revelee = quiz.etape === 'reponse' && quiz.bonne !== null;
+
+  if (quiz.etape === 'question' && !ouverte) {
+    return <QuestionSeule quiz={quiz} />;
+  }
 
   return (
     <div className="tu-quiz">

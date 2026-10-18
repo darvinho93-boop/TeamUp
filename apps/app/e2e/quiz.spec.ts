@@ -44,6 +44,28 @@ async function mesurer(etape: string, action: () => Promise<void>, attendu: Loca
   latences.push({ etape, ms: Date.now() - debut });
 }
 
+/**
+ * Après « Afficher la question » : A, B, C, D une à une, puis le chrono (2026-10-18). L'écran
+ * montre chaque réponse à son tour ; on ne répond qu'au lancement.
+ */
+async function ouvrirLaQuestion(regie: Page, ecran?: Page) {
+  for (const [i, lettre] of LETTRES.entries()) {
+    await regie.getByRole('button', { name: `Afficher la réponse ${lettre}` }).click();
+    if (ecran) {
+      await expect(ecran.getByTestId(`zone-${lettre}`)).toHaveAttribute('data-affichee', 'true');
+      const suivante = LETTRES[i + 1];
+      if (suivante) {
+        await expect(ecran.getByTestId(`zone-${suivante}`)).toHaveAttribute(
+          'data-affichee',
+          'false',
+        );
+      }
+    }
+  }
+  await regie.getByRole('button', { name: 'Lancer le chrono' }).click();
+  if (ecran) await expect(ecran.getByRole('timer')).toBeVisible();
+}
+
 const confirmer = async (regie: Page, nom: string) => {
   await regie.getByRole('button', { name: nom, exact: true }).click();
   await regie.getByRole('button', { name: `Confirmer : ${nom}` }).click();
@@ -186,6 +208,19 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
     const bonne = await bonneReponse(pilotage!['passage_id'] as string);
     const fausse = (bonne + 1) % 4;
 
+    // Avant le chrono, personne ne répond : le téléphone attend, la base refuse.
+    if (q === 1) {
+      await expect(telephone.getByTestId('statut-quiz')).toHaveText(/les réponses arrivent/, {
+        timeout: 2000,
+      });
+      expect(
+        (
+          await telephones[0]!.post(`/api/partie/${code}/quiz`, { data: { choix: bonne } })
+        ).status(),
+      ).toBe(409);
+    }
+    await ouvrirLaQuestion(regie, q === 1 ? ecran : undefined);
+
     // Le vrai téléphone reçoit la question par le signal de la salle, sans attendre sa relecture.
     if (q === 1) {
       const bouton = telephone.getByRole('button', {
@@ -250,6 +285,7 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
   for (let q = 1; q <= 3; q++) {
     await regie.getByRole('button', { name: 'Afficher la question' }).click();
     await expect(scene('qcm2', 'question')).toBeVisible();
+    await ouvrirLaQuestion(regie);
     if (q === 1) {
       // En mode croix, les téléphones ne voient rien du quiz et ne peuvent pas répondre.
       const etat = await telephones[0]!.get(`/api/partie/${code}/etat`);
@@ -304,10 +340,11 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
       () => regie.getByRole('button', { name: 'Montrer le mot au premier de la file' }).click(),
       scene('mime2', 'secret'),
     );
-    // Le mot est sur la régie, pour J1 : ni l'écran ni les téléphones ne l'ont.
+    // Le mot est à la régie et sur l'écran, le temps que le premier le lise (2026-10-18) ;
+    // aucun téléphone ne l'a.
     const mot = (await regie.getByTestId('regie-mot').locator('[lang="fr"]').textContent())!;
     expect(mot.length).toBeGreaterThan(0);
-    await expect(ecran.getByText(mot)).toHaveCount(0);
+    await expect(ecran.getByTestId('mot')).toContainText(mot);
     const etat = await telephones[0]!.get(`/api/partie/${code}/etat`);
     expect(await etat.text()).not.toContain(mot);
     await regie.getByTestId('regie-mot').click();
@@ -317,6 +354,8 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
       () => regie.getByRole('button', { name: 'Lancer' }).click(),
       scene('mime2', 'lance'),
     );
+    // La chaîne est lancée : le mot quitte l'écran (le reste de la file pourrait se retourner).
+    await expect(ecran.getByText(mot)).toHaveCount(0);
     await mesurer(
       `${verdict} ${numero}`,
       () => confirmer(regie, verdict),

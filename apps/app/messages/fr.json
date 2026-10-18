@@ -28,7 +28,7 @@
   },
   "capitaine": {
     "titre": "Capitaine ?",
-    "aide": "Le capitaine choisit le nom de l'équipe et prend les photos. On tire au sort parmi les volontaires.",
+    "aide": "Le capitaine choisit le nom de l'équipe, prend les photos et mise les jetons de l'équipe au quiz. On tire au sort parmi les volontaires.",
     "oui": "Je me propose",
     "non": "Non merci"
   },
@@ -76,7 +76,7 @@
     "regarde": "Regarde l'écran",
     "voirEquipe": "Voir mon équipe",
     "termine": "La partie est terminée. Merci d'avoir joué !",
-    "capitaine": "Tu es capitaine de ton équipe."
+    "capitaine": "Tu es capitaine : le nom de l'équipe, les photos et les jetons du quiz, c'est toi !"
   },
   "horsLigne": {
     "bandeau": "Connexion perdue. On réessaie…"
@@ -108,7 +108,8 @@
       "moins": "Retirer un jeton de la réponse {lettre}",
       "plus": "Ajouter un jeton sur la réponse {lettre}",
       "ligne": "Réponse {lettre} : {texte}, {n, plural, one {# jeton} other {# jetons}}"
-    }
+    },
+    "reponsesAVenir": "Regardez l'écran : les réponses arrivent une à une."
   },
   "photos": {
     "ouvrir": "Photos : {envoyees} sur {total}",
@@ -356,7 +357,9 @@
         "revelerQuandMeme": "Révéler quand même (jetons non posés perdus)",
         "survivantsJetons": "Jetons restants, comptés par l'app (× 100 points)",
         "jetons": "{n, plural, =0 {aucun jeton} one {# jeton} other {# jetons}}",
-        "validerJetons": "Valider les jetons restants"
+        "validerJetons": "Valider les jetons restants",
+        "proposition": "Afficher la réponse {lettre}",
+        "lancer": "Lancer le chrono"
       },
       "mime": {
         "titre": "Mime",
@@ -524,7 +527,6 @@
   },
   "ecran": {
     "rejoindre": "Rejoignez la partie",
-    "adresse": "Scannez le QR code, ou tapez le code sur {adresse}",
     "joueurs": "{n, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}}",
     "equipes": "Les équipes",
     "capitaine": "Capitaine",
@@ -561,7 +563,7 @@
     "finQuiz": "Fin du quiz",
     "survivants": "{n, plural, =0 {aucun survivant} one {# survivant} other {# survivants}}",
     "mimeFile": "{equipe} : en file, tous tournés du même côté !",
-    "mimeJ1": "Le premier de la file vient lire le mot à la régie.",
+    "mimeJ1": "Seul le premier de la file regarde l'écran !",
     "mimeChaine": "Mime, oreille, mime… jusqu’au dernier !",
     "leMot": "Le mot",
     "themePhoto": "Thème {n} sur {total}",
@@ -634,7 +636,8 @@
     },
     "jetons": "{n, plural, =0 {aucun jeton} one {# jeton} other {# jetons}}",
     "misesValidees": "{n, plural, =0 {aucune mise validée} one {# mise validée} other {# mises validées}} sur {total}",
-    "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}"
+    "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}",
+    "ouLien": "Scannez le QR code, ou ouvrez ce lien :"
   },
   "admin": {
     "nav": {

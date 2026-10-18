@@ -391,11 +391,19 @@ export function calculerEtape(
           commande.type === 'quiz'
             ? { type: commande.action }
             : { type: 'valider', survivants: commande.survivants };
+        // Les propositions affichées une à une vivent dans `indices` (inutilisé par le quiz
+        // jusque-là) ; le chrono lancé, c'est un départ posé par la base (2026-10-18).
         const suite = appliquerQuiz(
-          { etape: p.etape as EtapeQuiz, resteDesQuestions: suivante !== undefined },
+          {
+            etape: p.etape as EtapeQuiz,
+            resteDesQuestions: suivante !== undefined,
+            propositions: p.indices,
+            chronoLance: p.chrono_depart_ms !== null,
+          },
           action,
         );
         Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        if (suite.propositions !== undefined) ecriture.pilotage.indices = suite.propositions;
         switch (action.type) {
           case 'afficher':
             ecriture.passage = { id: passage.id, statut: 'en_cours' };
