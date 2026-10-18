@@ -453,6 +453,58 @@ export type Database = {
           },
         ]
       }
+      mises_quiz: {
+        Row: {
+          debloquee: boolean
+          equipe_id: string
+          evenement_id: string
+          maj_le: string
+          passage_id: string
+          repartition: number[]
+          valide: boolean
+        }
+        Insert: {
+          debloquee?: boolean
+          equipe_id: string
+          evenement_id: string
+          maj_le?: string
+          passage_id: string
+          repartition?: number[]
+          valide?: boolean
+        }
+        Update: {
+          debloquee?: boolean
+          equipe_id?: string
+          evenement_id?: string
+          maj_le?: string
+          passage_id?: string
+          repartition?: number[]
+          valide?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mises_quiz_equipe_id_fkey"
+            columns: ["equipe_id"]
+            isOneToOne: false
+            referencedRelation: "classement"
+            referencedColumns: ["equipe_id"]
+          },
+          {
+            foreignKeyName: "mises_quiz_equipe_id_fkey"
+            columns: ["equipe_id"]
+            isOneToOne: false
+            referencedRelation: "equipes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mises_quiz_passage_id_evenement_id_fkey"
+            columns: ["passage_id", "evenement_id"]
+            isOneToOne: false
+            referencedRelation: "passages"
+            referencedColumns: ["id", "evenement_id"]
+          },
+        ]
+      }
       passages: {
         Row: {
           commence_le: string | null
@@ -845,6 +897,10 @@ export type Database = {
         }
         Returns: Json
       }
+      debloquer_mise: {
+        Args: { p_equipe: string; p_passage: string }
+        Returns: undefined
+      }
       echanger_manches: {
         Args: { p_a: string; p_b: string }
         Returns: undefined
@@ -879,6 +935,23 @@ export type Database = {
       etat_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       evenement_public: { Args: { p_code: string }; Returns: Json }
       expiration_photo: { Args: { p_evenement: string }; Returns: string }
+      jetons_quiz: {
+        Args: { p_manche: string }
+        Returns: {
+          depart: number
+          equipe_id: string
+          numero: number
+          restants: number
+        }[]
+      }
+      miser_quiz: {
+        Args: {
+          p_jeton_hash: string
+          p_repartition: number[]
+          p_valider: boolean
+        }
+        Returns: Json
+      }
       monogramme_valide: { Args: { p_initiales: string[] }; Returns: boolean }
       nouveau_code: { Args: never; Returns: string }
       ordonner_passages: {
@@ -903,6 +976,14 @@ export type Database = {
       pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json }
       quiz_du_joueur: {
         Args: { p_joueur: Database["public"]["Tables"]["joueurs"]["Row"] }
+        Returns: Json
+      }
+      quiz_jetons_du_joueur: {
+        Args: {
+          p_joueur: Database["public"]["Tables"]["joueurs"]["Row"]
+          p_manche: Database["public"]["Tables"]["manches"]["Row"]
+          p_pilotage: Database["public"]["Tables"]["pilotage"]["Row"]
+        }
         Returns: Json
       }
       quiz_joueurs: {

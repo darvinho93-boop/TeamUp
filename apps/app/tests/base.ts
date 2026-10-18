@@ -171,6 +171,7 @@ export const TABLES = [
   'contenus_secrets',
   'photos',
   'reponses_quiz',
+  'mises_quiz',
   'classement',
   'groupes',
   'equipes_groupes',
