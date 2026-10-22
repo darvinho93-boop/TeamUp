@@ -13,6 +13,12 @@ export const INTERVALLE_MS = 4000;
  * pour étaler la rafale sans retarder la question de façon perceptible.
  */
 const ETALEMENT_MS = 250;
+/**
+ * Le canal est public (clé anon) : quelqu'un qui l'inonderait de signaux ne doit pas faire
+ * relire 150 téléphones en continu. Un signal reçu pendant qu'une relecture attend s'y joint, et
+ * deux relectures sur signal sont espacées d'au moins cette durée (audit du 2026-10-23).
+ */
+const ECART_MIN_MS = 750;
 const SIGNAL = 'relire';
 
 /**
@@ -84,6 +90,7 @@ export function useEtatJoueur(code: string, initial: EtatJoueur) {
   useEffect(() => {
     let canal: RealtimeChannel | null = null;
     let etalement: ReturnType<typeof setTimeout> | undefined;
+    let derniere = 0;
     try {
       const supabase = supabaseNavigateur();
       canal = supabase.channel(`salle:${evenementId}`, {
@@ -91,8 +98,16 @@ export function useEtatJoueur(code: string, initial: EtatJoueur) {
       });
       canal
         .on('broadcast', { event: SIGNAL }, () => {
-          clearTimeout(etalement);
-          etalement = setTimeout(() => void relireRef.current(), Math.random() * ETALEMENT_MS);
+          if (etalement !== undefined) return;
+          const attente = Math.max(
+            Math.random() * ETALEMENT_MS,
+            derniere + ECART_MIN_MS - Date.now(),
+          );
+          etalement = setTimeout(() => {
+            etalement = undefined;
+            derniere = Date.now();
+            void relireRef.current();
+          }, attente);
         })
         .subscribe();
     } catch {
