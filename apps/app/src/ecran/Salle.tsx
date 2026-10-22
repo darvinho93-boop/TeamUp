@@ -7,7 +7,10 @@ import { MESSAGES } from '@/i18n/messages';
 import { attenteFinDeBoucle, FINALE } from '@/lib/ouverture';
 import type { EtatSalle } from '@/lib/salle';
 import { INTERLUDE_MS, sonsDeLaFinale, type Son } from '@/lib/sons';
+import { IconeInstagram } from '@/marque/IconeInstagram';
+import { INSTAGRAM } from '@/marque/instagram';
 import { Pictogramme } from '@/marque/Pictogramme';
+import { Ronds } from '@/marque/Ronds';
 import { Finale } from './Finale';
 import { Scene } from './Scenes';
 import { SonsContexte, useSons } from './sons/useSons';
@@ -114,9 +117,15 @@ export function Salle({
             qrSvg={qrSvg}
             adresse={adresse}
           />
+          {/* Le compte Instagram en haut à gauche, sur toutes les scènes ; le logo animé en haut à
+              droite, sauf là où il est déjà en grand (2026-10-22). */}
+          <span className="tu-stage__insta" data-testid="insta-coin">
+            <IconeInstagram />
+            {INSTAGRAM.pseudo}
+          </span>
           {sceneAffichee !== 'accueil' && sceneAffichee !== 'ouverture' && (
             <span className="tu-marque tu-stage__picto">
-              <Pictogramme taille="coin" />
+              <Ronds mode="coin" />
               <Wordmark className="tu-stage__nom" />
             </span>
           )}

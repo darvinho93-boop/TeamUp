@@ -260,6 +260,104 @@
   }
 }
 
+/* ---------------------------------------------------------------- Le logo du coin */
+
+/* En haut à droite de chaque scène (2026-10-22) : les mêmes ronds, en petit, sur un cycle long où
+   le pictogramme reste l'essentiel du temps. Sans mouvement, le pictogramme seul. */
+.tu-ronds--coin {
+  --tu-rond: var(--tu-ronds-coin-rond);
+  --tu-ronds-ronde: var(--tu-ronds-coin-ronde);
+  --tu-ronds-loin-x: var(--tu-ronds-coin-loin);
+  --tu-ronds-loin-y: var(--tu-ronds-coin-loin);
+
+  width: var(--tu-picto-coin);
+  height: var(--tu-picto-coin);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-ronds--coin .tu-rond {
+    animation: tu-rond-coin var(--tu-dur-ronds-coin) var(--tu-ease) infinite;
+  }
+
+  .tu-ronds--coin .tu-ronds__ronde {
+    animation: tu-ronde-coin var(--tu-dur-ronds-coin) var(--tu-ease) infinite;
+  }
+
+  .tu-ronds--coin .tu-ronds__logo {
+    animation: tu-ronds-logo-coin var(--tu-dur-ronds-coin) var(--tu-ease) infinite;
+  }
+}
+
+@keyframes tu-rond-coin {
+  0% {
+    opacity: 0;
+    transform: translate(var(--tu-rond-dx), var(--tu-rond-dy)) scale(0);
+  }
+
+  5% {
+    opacity: 1;
+    transform: translate(var(--tu-rond-dx), var(--tu-rond-dy)) scale(1);
+  }
+
+  14%,
+  17% {
+    opacity: 1;
+    transform: translate(var(--tu-rond-cx), var(--tu-rond-cy));
+  }
+
+  21%,
+  88% {
+    opacity: 0;
+    transform: translate(calc(var(--tu-rond-cx) * 0.4), calc(var(--tu-rond-cy) * 0.4)) scale(0.6);
+  }
+
+  92% {
+    opacity: 1;
+    transform: translate(var(--tu-rond-cx), var(--tu-rond-cy));
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--tu-rond-dx) * 1.3), calc(var(--tu-rond-dy) * 1.3)) scale(0.4);
+  }
+}
+
+@keyframes tu-ronde-coin {
+  0%,
+  5% {
+    transform: rotate(0deg);
+  }
+
+  17%,
+  90% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(540deg);
+  }
+}
+
+@keyframes tu-ronds-logo-coin {
+  0%,
+  17% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  22%,
+  88% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  92%,
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
 /* ---------------------------------------------------------------- La scène d'ouverture */
 
 .tu-stage-ouverture {

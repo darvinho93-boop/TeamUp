@@ -181,6 +181,25 @@
   right: var(--tu-space-16);
 }
 
+/* Le compte Instagram, en haut à gauche de chaque scène (2026-10-22), au-dessus des titres. */
+.tu-stage__insta {
+  position: absolute;
+  top: var(--tu-space-3);
+  left: var(--tu-space-16);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  color: var(--tu-text);
+  font-size: var(--tu-size-xl);
+  font-weight: 600;
+}
+
+.tu-icone-insta {
+  width: 1.2em;
+  height: 1.2em;
+  flex: none;
+}
+
 /* Le son demande un clic pour démarrer : le seul bouton de l'écran commun, en bas à gauche. */
 .tu-stage__son {
   position: absolute;
