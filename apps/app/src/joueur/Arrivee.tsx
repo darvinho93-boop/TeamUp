@@ -30,11 +30,14 @@ export function Arrivee({
   code,
   langues,
   groupes,
+  groupeFacultatif = true,
   langueCourante,
 }: {
   code: string;
   langues: Langue[];
   groupes: GroupePublic[];
+  /** L'animateur laisse-t-il « Je préfère ne pas répondre » ? La base le vérifie aussi. */
+  groupeFacultatif?: boolean;
   /** Langue des textes affichés, d'après le cookie. */
   langueCourante: Langue;
 }) {
@@ -139,11 +142,13 @@ export function Arrivee({
                 </Button>
               </li>
             ))}
-            <li>
-              <Button variant="ghost" size="lg" block onClick={() => choisirGroupe(null)}>
-                {tGroupe('sansReponse')}
-              </Button>
-            </li>
+            {groupeFacultatif && (
+              <li>
+                <Button variant="ghost" size="lg" block onClick={() => choisirGroupe(null)}>
+                  {tGroupe('sansReponse')}
+                </Button>
+              </li>
+            )}
           </ul>
         </div>
       </Cadre>

@@ -55,6 +55,7 @@ export default async function Preparation({
     { data: joueurs },
     { data: photos },
     { data: groupes },
+    { data: reglageGroupes },
   ] = await Promise.all([
     supabase
       .from('equipes')
@@ -76,7 +77,10 @@ export default async function Preparation({
     supabase.from('joueurs').select('equipe_id').eq('evenement_id', evenement.id),
     supabase.from('photos').select('theme_id').eq('evenement_id', evenement.id),
     supabase.from('groupes').select('ordre, nom').eq('evenement_id', evenement.id),
+    supabase.from('evenements').select('groupe_facultatif').eq('id', evenement.id).maybeSingle(),
   ]);
+  // Sans la migration 20261022100000, la lecture échoue : proposé, comme avant.
+  const groupeFacultatif = reglageGroupes?.groupe_facultatif ?? true;
   const groupeDeRang = new Map((groupes ?? []).map((g) => [g.ordre, g.nom]));
 
   const nomEquipe = new Map((equipes ?? []).map((e) => [e.id, e]));
@@ -185,6 +189,10 @@ export default async function Preparation({
               </li>
             ))}
           </ul>
+          <label className="tu-regie__choices">
+            <input type="checkbox" name="groupe_facultatif" defaultChecked={groupeFacultatif} />
+            {t('groupes.facultatif')}
+          </label>
           <div className="tu-cluster">
             <Button type="submit">{t('groupes.enregistrer')}</Button>
           </div>

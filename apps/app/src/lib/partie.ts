@@ -30,6 +30,11 @@ export interface EvenementPublic {
   statut: 'preparation' | 'repetition' | 'en_cours';
   /** Groupes à mélanger (lot 11), dans l'ordre de la préparation ; vide sans groupes. */
   groupes: GroupePublic[];
+  /**
+   * « Je préfère ne pas répondre » proposé au choix du groupe (2026-10-22). Absent (base sans la
+   * migration `20261022100000`) : proposé, comme avant.
+   */
+  groupe_facultatif?: boolean;
 }
 
 export interface GroupePublic {

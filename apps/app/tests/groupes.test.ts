@@ -153,13 +153,42 @@ avecBase('les groupes à mélanger', () => {
 
   it('la soirée décrit ses groupes dans l’ordre, sans rien d’autre', async () => {
     const { code, groupes } = await soireeAGroupes(2, ['Côté mariée', 'Côté marié']);
-    const { data } = await appeler<{ groupes: unknown }>(clientService(), 'evenement_public', {
-      p_code: code,
-    });
+    const { data } = await appeler<{ groupes: unknown; groupe_facultatif: unknown }>(
+      clientService(),
+      'evenement_public',
+      { p_code: code },
+    );
     expect(data?.groupes).toEqual([
       { id: groupes.get('Côté mariée'), nom: 'Côté mariée' },
       { id: groupes.get('Côté marié'), nom: 'Côté marié' },
     ]);
+    expect(data?.groupe_facultatif).toBe(true);
+  });
+
+  it('sans « Je préfère ne pas répondre », l’arrivée exige un groupe (2026-10-22)', async () => {
+    const { id, code, groupes } = await soireeAGroupes(2, ['Famille', 'Amis']);
+    await clientService().from('evenements').update({ groupe_facultatif: false }).eq('id', id);
+    const { data: publique } = await appeler<{ groupe_facultatif: boolean }>(
+      clientService(),
+      'evenement_public',
+      { p_code: code },
+    );
+    expect(publique?.groupe_facultatif).toBe(false);
+    const { erreur } = await rejoindre(code, null);
+    expect(erreur).toMatch(/groupe obligatoire/);
+    const { data } = await rejoindre(code, groupes.get('Amis')!);
+    expect(data?.equipe).not.toBeNull();
+  });
+
+  it('une soirée sans groupes n’exige rien, même réglée ainsi', async () => {
+    const evenement = await creerEvenementJetable({ equipes: 2 });
+    crees.push(evenement.id);
+    await clientService()
+      .from('evenements')
+      .update({ groupe_facultatif: false })
+      .eq('id', evenement.id);
+    const { erreur } = await rejoindre(evenement.code, null);
+    expect(erreur).toBeNull();
   });
 
   it('aucun joueur ne porte de groupe', async () => {

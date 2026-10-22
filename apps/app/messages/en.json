@@ -248,7 +248,8 @@
             "1": "E.g. Sales",
             "2": "E.g. Accounting"
           }
-        }
+        },
+        "facultatif": "Offer guests “I'd rather not say”"
       }
     },
     "pilotage": {

@@ -28,6 +28,7 @@ export default async function Partie({ params }: PageProps<'/[code]'>) {
       code={code}
       langues={evenement.langues}
       groupes={evenement.groupes}
+      groupeFacultatif={evenement.groupe_facultatif ?? true}
       langueCourante={await getLocale()}
     />
   );

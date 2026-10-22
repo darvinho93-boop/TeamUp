@@ -96,6 +96,11 @@ export async function enregistrerGroupes(code: string, donnees: FormData) {
   if (remplis.length) {
     await supabase.from('groupes').upsert(remplis, { onConflict: 'evenement_id,ordre' });
   }
+  // « Je préfère ne pas répondre » proposé à l'arrivée, ou non (2026-10-22).
+  await supabase
+    .from('evenements')
+    .update({ groupe_facultatif: donnees.get('groupe_facultatif') === 'on' })
+    .eq('id', evenement.id);
   rafraichir();
 }
 

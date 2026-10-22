@@ -248,7 +248,8 @@
             "1": "Ex. Commercial",
             "2": "Ex. Comptabilité"
           }
-        }
+        },
+        "facultatif": "Proposer « Je préfère ne pas répondre » aux invités"
       }
     },
     "pilotage": {
