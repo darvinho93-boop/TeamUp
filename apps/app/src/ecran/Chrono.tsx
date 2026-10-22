@@ -2,8 +2,8 @@
 
 import { useContext, useEffect, useRef, useState } from 'react';
 import { cx } from '@teamup/ui/react';
-import { formatChrono, tempsRestant } from '@teamup/game';
-import { sonDuChrono } from '@/lib/sons';
+import { formatChrono, phaseDuChrono, tempsRestant } from '@teamup/game';
+import { monteeDuChrono, sonDuChrono } from '@/lib/sons';
 import { SonsContexte } from './sons/useSons';
 
 /** L'heure du navigateur, rafraîchie cinq fois par seconde tant que `actif`. */
@@ -20,7 +20,7 @@ export function useMaintenant(actif: boolean): number {
 /**
  * Chrono de la salle : compte à rebours depuis l'heure de départ posée par la base.
  * `decalageMs` aligne l'horloge du navigateur sur celle de la base : l'écran et la régie
- * affichent la même seconde. À zéro, il vire au rouge.
+ * affichent la même seconde. Orange de 10 à 6 s, rouge de 5 à 0 (2026-10-22), quand il tourne.
  */
 export function Chrono({
   departMs,
@@ -50,11 +50,16 @@ export function Chrono({
     dernier.current = reste;
     if (!jouer || reste >= avant) return;
     const son = sonDuChrono(reste);
-    if (son) jouer(son);
+    if (son) jouer(son, 0, monteeDuChrono(reste));
   }, [jouer, reste]);
+  const phase = phaseDuChrono(reste);
   return (
     <span
-      className={cx('tu-stage-chrono', reste === 0 && 'tu-stage-chrono--zero', className)}
+      className={cx(
+        'tu-stage-chrono',
+        phase !== 'normal' && `tu-stage-chrono--${phase}`,
+        className,
+      )}
       data-testid="chrono"
       role="timer"
     >

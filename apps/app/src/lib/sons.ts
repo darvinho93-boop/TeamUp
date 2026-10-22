@@ -198,3 +198,18 @@ export function sonDuChrono(reste: number): Son | null {
   if (reste > DERNIERES_SECONDES) return null;
   return reste % 2 ? 'tac' : 'tic';
 }
+
+/** De quoi faire monter un son : son niveau et sa vitesse de lecture, multipliés. */
+export interface Montee {
+  gain: number;
+  vitesse: number;
+}
+
+/**
+ * Le battement monte à mesure que le chrono descend (2026-10-22) : de 70 % à 150 % du niveau, et
+ * de la vitesse normale à 1,35 fois (donc plus aigu), entre la dixième et la dernière seconde.
+ */
+export function monteeDuChrono(reste: number): Montee {
+  const p = Math.min(1, Math.max(0, (DERNIERES_SECONDES - reste) / (DERNIERES_SECONDES - 1)));
+  return { gain: 0.7 + 0.8 * p, vitesse: 1 + 0.35 * p };
+}

@@ -27,3 +27,15 @@ export function formatDuree(secondes: number): string {
   if (reste === 0) return `${min} min`;
   return `${min} min ${String(reste).padStart(2, '0')}`;
 }
+
+export type PhaseChrono = 'normal' | 'alerte' | 'critique';
+
+/**
+ * La couleur des dernières secondes (2026-10-22) : orange de 10 à 6, rouge de 5 à 0. Un chrono
+ * de 10 s ou moins passe donc à l'orange dès le départ.
+ */
+export function phaseDuChrono(reste: number): PhaseChrono {
+  if (reste <= 5) return 'critique';
+  if (reste <= 10) return 'alerte';
+  return 'normal';
+}

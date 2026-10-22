@@ -5,6 +5,7 @@ import {
   NIVEAUX,
   SONS,
   type Fond,
+  type Montee,
   type ReglageSon,
   type Son,
 } from '@/lib/sons';
@@ -19,8 +20,11 @@ const COUPE_S = 0.06;
 const CANAL = 'teamup-son';
 
 export interface Lecteur {
-  /** Joue un son, tout de suite ou après un délai (le jingle attend la fin de l'interlude). */
-  jouer(son: Son, apresMs?: number): void;
+  /**
+   * Joue un son, tout de suite ou après un délai (le jingle attend la fin de l'interlude) ;
+   * `montee` en change le niveau et la vitesse (le battement des dernières secondes).
+   */
+  jouer(son: Son, apresMs?: number, montee?: Montee): void;
   /** La musique de fond, en boucle : en changer ou l'éteindre (`null`), en fondu. */
   fond(son: Fond | null): void;
   regler(reglage: ReglageSon): void;
@@ -101,11 +105,12 @@ export async function creerLecteur(
     gain.setTargetAtTime(NIVEAUX[boucle.son], t + dureeS, FONDU_S / 3);
   };
 
-  const source = (son: Son, niveau: number) => {
+  const source = (son: Son, niveau: number, vitesse = 1) => {
     const tampon = tampons.get(son);
     if (!tampon) return null;
     const noeud = contexte.createBufferSource();
     noeud.buffer = tampon;
+    noeud.playbackRate.value = vitesse;
     const gain = contexte.createGain();
     gain.gain.value = niveau;
     noeud.connect(gain).connect(sortie);
@@ -115,9 +120,9 @@ export async function creerLecteur(
   const lecteur: Lecteur = {
     journal,
     reglage,
-    jouer(son, apresMs = 0) {
+    jouer(son, apresMs = 0, montee) {
       if (apresMs > 0) {
-        setTimeout(() => lecteur.jouer(son), apresMs);
+        setTimeout(() => lecteur.jouer(son, 0, montee), apresMs);
         return;
       }
       const maintenant = performance.now();
@@ -125,7 +130,7 @@ export async function creerLecteur(
         if (maintenant - derniereArrivee < ESPACE_ARRIVEES_MS) return;
         derniereArrivee = maintenant;
       }
-      const voix = source(son, NIVEAUX[son]);
+      const voix = source(son, NIVEAUX[son] * (montee?.gain ?? 1), montee?.vitesse);
       if (!voix) return;
       if (!estBattement(son)) {
         // Un son à la fois : celui qui jouait encore s'éteint, la musique de fond s'efface dessous.

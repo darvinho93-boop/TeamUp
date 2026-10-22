@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatChrono, formatDuree, tempsRestant } from './chrono';
+import { formatChrono, formatDuree, phaseDuChrono, tempsRestant } from './chrono';
 
 describe('tempsRestant', () => {
   it('vaut la durée entière au départ', () => {
@@ -45,5 +45,18 @@ describe('formatDuree', () => {
     [0, '0 s'],
   ])('%i s → %s', (s, attendu) => {
     expect(formatDuree(s)).toBe(attendu);
+  });
+});
+
+describe('phaseDuChrono', () => {
+  it.each([
+    [130, 'normal'],
+    [11, 'normal'],
+    [10, 'alerte'],
+    [6, 'alerte'],
+    [5, 'critique'],
+    [0, 'critique'],
+  ])('%i s → %s', (reste, attendu) => {
+    expect(phaseDuChrono(reste)).toBe(attendu);
   });
 });

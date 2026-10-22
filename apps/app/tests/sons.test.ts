@@ -12,6 +12,7 @@ import {
   NIVEAUX,
   reglageDe,
   SONS,
+  monteeDuChrono,
   sonDuChrono,
   sonsDeLaFinale,
   sonsPour,
@@ -207,5 +208,18 @@ describe('un son à la fois', () => {
   it('la musique de fond s’efface sous un son, sans s’arrêter', () => {
     expect(FOND_SOUS_UN_SON).toBeGreaterThan(0);
     expect(FOND_SOUS_UN_SON).toBeLessThan(0.5);
+  });
+});
+
+describe('la montée des dernières secondes', () => {
+  it('monte en niveau et en vitesse de la dixième à la dernière seconde', () => {
+    const montees = [10, 9, 5, 2, 1].map(monteeDuChrono);
+    for (let i = 1; i < montees.length; i++) {
+      expect(montees[i]!.gain).toBeGreaterThan(montees[i - 1]!.gain);
+      expect(montees[i]!.vitesse).toBeGreaterThan(montees[i - 1]!.vitesse);
+    }
+    expect(monteeDuChrono(10)).toEqual({ gain: 0.7, vitesse: 1 });
+    expect(monteeDuChrono(1).gain).toBeCloseTo(1.5);
+    expect(monteeDuChrono(1).vitesse).toBeCloseTo(1.35);
   });
 });

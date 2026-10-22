@@ -1,7 +1,16 @@
 'use client';
 
 import { createContext, useCallback, useEffect, useRef, useState } from 'react';
-import { deroule, fondA, instantDe, reglageDe, sonsPour, type Instant, type Son } from '@/lib/sons';
+import {
+  deroule,
+  fondA,
+  instantDe,
+  reglageDe,
+  sonsPour,
+  type Instant,
+  type Montee,
+  type Son,
+} from '@/lib/sons';
 import type { EtatSalle } from '@/lib/salle';
 import { creerLecteur, type Lecteur } from './lecteur';
 
@@ -9,7 +18,9 @@ import { creerLecteur, type Lecteur } from './lecteur';
  * De quoi jouer un son, pour les composants qui en déclenchent d'eux-mêmes (le chrono, l'arrêt
  * d'un palier). `null` partout sauf sur l'écran commun : la régie et son aperçu restent muets.
  */
-export const SonsContexte = createContext<((son: Son, apresMs?: number) => void) | null>(null);
+export const SonsContexte = createContext<
+  ((son: Son, apresMs?: number, montee?: Montee) => void) | null
+>(null);
 
 declare global {
   interface Window {
@@ -87,7 +98,7 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
   }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs, depart, duree, decalageMs]);
 
   const jouer = useCallback(
-    (son: Son, apresMs?: number) => lecteur?.jouer(son, apresMs),
+    (son: Son, apresMs?: number, montee?: Montee) => lecteur?.jouer(son, apresMs, montee),
     [lecteur],
   );
 

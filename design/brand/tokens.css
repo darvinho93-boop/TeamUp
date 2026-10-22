@@ -46,6 +46,7 @@
   --tu-success:       var(--tu-sage-700);
   --tu-warning:       #E0A100;
   --tu-danger:        #D9382B;
+  --tu-alerte:        #E8740C;   /* orange des dernières secondes d'un chrono, avant le rouge (2026-10-22) */
   --tu-focus:         var(--tu-coral-500);
 
   /* ---- Paliers de Points communs (2026-10-22) : une couleur par palier, l'indice qu'il ouvre

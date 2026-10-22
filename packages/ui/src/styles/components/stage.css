@@ -357,7 +357,11 @@
   transition: color var(--tu-dur-base) var(--tu-ease);
 }
 
-.tu-stage-chrono--zero {
+.tu-stage-chrono--alerte {
+  color: var(--tu-alerte);
+}
+
+.tu-stage-chrono--critique {
   color: var(--tu-danger);
 }
 
