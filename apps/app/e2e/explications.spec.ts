@@ -61,9 +61,9 @@ test('Expliquer joue les cartes à l’écran, au même endroit sur un second é
   await expect(phrase).toContainText('One team sits with its back to the screen');
   await expect(regie.getByRole('button', { name: 'Rejouer' })).toBeVisible();
 
-  // --- Six secondes plus tard, la deuxième carte ; un écran ouvert maintenant, sans
+  // --- Neuf secondes plus tard, la deuxième carte ; un écran ouvert maintenant, sans
   //     animation, tombe sur la même.
-  await expect(explication).toHaveAttribute('data-carte', '2', { timeout: 8_000 });
+  await expect(explication).toHaveAttribute('data-carte', '2', { timeout: 11_000 });
   const second = await ouvrirEcran('reduce');
   await expect(second.locator('[data-scene="explication"]')).toHaveAttribute('data-carte', '2');
   await expect(second.getByTestId('phrase-explication')).toContainText('point commun');

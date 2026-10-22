@@ -317,11 +317,13 @@ répondre ») ; le groupe ne sert qu'au tirage de l'équipe, **rien n'est gardé
 
 ## Conventions posées au lot 12
 
-Tranché le 2026-10-03 : explication **codée** (ni MP4 ni vidéo générée), **20 à 30 s**, lancée
+Tranché le 2026-10-03 : explication **codée** (ni MP4 ni vidéo générée), **20 à 30 s** (allongée
+à **30 à 50 s** le 2026-10-22, la salle n'avait pas le temps de lire), lancée
 par une touche **« Expliquer »** de la régie, pour les **5 jeux et les 2 duels**.
 
 - Scripts dans `packages/game/src/explications.ts` : des cartes `{ cle, dureeS, visuel }`,
-  20 à 30 s par script, 4 s au moins par carte (testé). Le Quiz en a deux, croix et
+  30 à 50 s par script, 6 s au moins par carte (testé), environ 9 s chacune ; les animations
+  des décors battent au pas de `--tu-dur-expl` (1 s). Le Quiz en a deux, croix et
   téléphone, puisque son mode ne se choisit qu'au lancement.
 - Une étape de la scène `intro` : `explication` ou `explication-telephone`, avec le chrono de
   la salle démarré pour la durée du script. Aucune migration. L'écran déduit la carte de

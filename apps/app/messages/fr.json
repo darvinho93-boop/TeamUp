@@ -577,8 +577,9 @@
       "list2": {
         "equipe-dos": "Une équipe s'assoit dos à l'écran, les yeux fermés.",
         "ecran-cache": "L'écran montre un point commun à toute la salle, puis se cache.",
-        "salle-debout": "Les invités concernés se lèvent : l'équipe devine ce qui les rassemble.",
-        "paliers": "Plus c'est rapide, plus ça rapporte. Le chrono s'arrête à chaque palier pour un indice."
+        "salle-debout": "Les invités concernés se lèvent : l'équipe devine ce qui lie les invités debout.",
+        "paliers": "Plus l'équipe trouve vite, plus elle marque. À chaque palier, le chrono s'arrête pour un indice.",
+        "paliers-durees": "Palier 1 : 1 min, points ×3. Palier 2 : 35 s, ×2. Palier 3 : 35 s, ×1."
       },
       "qcm2": {
         "quadrants": "Une question, quatre réponses : A, B, C, D.",
@@ -608,7 +609,7 @@
       "mime2": {
         "file": "L'équipe se met en file, sans se retourner.",
         "mot": "Le premier voit le mot et le mime au suivant.",
-        "chaine": "Mime, puis à l'oreille, puis mime… jusqu'au dernier.",
+        "chaine": "Le 2e chuchote ce qu'il a compris à l'oreille du 3e, qui le mime au 4e… et ainsi de suite.",
         "annonce": "Le dernier l'annonce : mot trouvé, +100 !"
       },
       "photo2": {

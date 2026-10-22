@@ -48,6 +48,15 @@
   --tu-danger:        #D9382B;
   --tu-focus:         var(--tu-coral-500);
 
+  /* ---- Paliers de Points communs (2026-10-22) : une couleur par palier, l'indice qu'il ouvre
+     la reprend. Jamais le corail, réservé aux actions. ---- */
+  --tu-palier-1:      var(--tu-success);
+  --tu-on-palier-1:   var(--tu-text-invert);
+  --tu-palier-2:      var(--tu-warning);
+  --tu-on-palier-2:   var(--tu-navy-900);
+  --tu-palier-3:      var(--tu-team-8);
+  --tu-on-palier-3:   var(--tu-text-invert);
+
   /* ---- Couleurs d'équipe (les 4 groupes qu'on veut mélanger) ---- */
   --tu-team-1: var(--tu-navy-700);
   --tu-team-2: var(--tu-coral-500);
@@ -109,6 +118,7 @@
   --tu-dur-fast: 120ms;
   --tu-dur-base: 220ms;
   --tu-dur-reveal: 600ms;
+  --tu-dur-expl: 1000ms;       /* le pas des animations des explications : ralenti le 2026-10-22, la salle suivait mal */
   --tu-dur-attente: 300ms;     /* une page qui arrive plus vite ne montre pas l'écran de chargement */
   --tu-ease-logo: cubic-bezier(0.45, 0, 0.2, 1);  /* départ doux : on voit les personnages arriver */
   --tu-dur-logo: 1100ms;       /* les quatre personnages du logo se rejoignent */

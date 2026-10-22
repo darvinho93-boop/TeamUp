@@ -576,9 +576,10 @@
     "explications": {
       "list2": {
         "equipe-dos": "One team sits with its back to the screen, eyes closed.",
-        "ecran-cache": "The screen shows the whole room something in common, then hides it.",
-        "salle-debout": "The guests concerned stand up: the team guesses what they share.",
-        "paliers": "The faster, the more points. The timer stops at each stage for a clue."
+        "ecran-cache": "The screen shows the room something some guests have in common, then hides it.",
+        "salle-debout": "Those guests stand up: the team guesses what links the standing guests.",
+        "paliers": "The faster the team finds it, the more points it scores. At each stage, the timer stops for a clue.",
+        "paliers-durees": "Stage 1: 1 min, points ×3. Stage 2: 35 s, ×2. Stage 3: 35 s, ×1."
       },
       "qcm2": {
         "quadrants": "One question, four answers: A, B, C, D.",
@@ -595,21 +596,21 @@
       "qcm2-jetons": {
         "quadrants": "One question, four answers: the team talks it over, together.",
         "jetons-capitaine": "Your captain has tokens: as many as there are players in the largest team.",
-        "repartition": "They place them all on their phone: on one answer, or several if in doubt.",
+        "repartition": "They place them all on their phone: on one answer, or spread over several if unsure.",
         "jetons-perdus": "Tokens placed on a wrong answer are lost.",
         "jetons-restants": "At the end, 100 points for each token left."
       },
       "enchere2": {
         "champions": "Each team sends one champion forward.",
         "encheres": "The topic is revealed, the bids go up: “5!” “7!”",
-        "chrono": "The highest bidder must keep their word, against the clock.",
-        "verdict": "Bid kept: +100. Missed: +20 for every other team."
+        "chrono": "The highest bidder must deliver, against the clock.",
+        "verdict": "Bid made: +100. Missed: +20 for every other team."
       },
       "mime2": {
-        "file": "The team lines up, no looking back.",
-        "mot": "The first one sees the word and mimes it to the next.",
-        "chaine": "Mime, then whisper, then mime… down to the last one.",
-        "annonce": "The last one says it out loud: word found, +100!"
+        "file": "The team stands in a line, without turning around.",
+        "mot": "The first player sees the word and mimes it to the second.",
+        "chaine": "The 2nd whispers what they understood to the 3rd, who mimes it to the 4th… and so on.",
+        "annonce": "The last player says the word out loud: if it's right, +100!"
       },
       "photo2": {
         "capitaine": "All evening, the captain sends one photo per theme.",
@@ -620,13 +621,13 @@
       "grab": {
         "duellistes-table": "Two duellists, a table of objects.",
         "musique": "The music starts…",
-        "attrape": "Grab the matching object, first!",
+        "attrape": "Be the first to grab the matching object!",
         "points": "Duel won: +50 for your team."
       },
       "cup": {
         "duellistes-gobelet": "Two duellists, a cup between them.",
         "tete-epaule": "Touch what the host says: head, shoulder…",
-        "gobelet": "At the word “cup”, grab it first!",
+        "gobelet": "When you hear “cup”, be the first to grab it!",
         "points": "Watch out for traps! Duel won: +50."
       }
     },

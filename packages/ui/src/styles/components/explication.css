@@ -291,7 +291,7 @@
   background: var(--tu-surface-muted);
 }
 
-/* Paliers de Points communs : 60, 35 et 35 s, ×3, ×2, ×1. */
+/* Paliers de Points communs : largeur à l'échelle de la durée (posée par le composant), une couleur chacun. */
 .tu-expl-paliers {
   display: flex;
   align-items: flex-end;
@@ -301,6 +301,7 @@
 
 .tu-expl-paliers__palier {
   display: flex;
+  flex-basis: 0;
   flex-direction: column;
   gap: var(--tu-space-2);
   font-family: var(--tu-font-numeric);
@@ -308,27 +309,22 @@
   font-weight: 700;
 }
 
-.tu-expl-paliers__palier:nth-child(1) {
-  flex: 60;
+.tu-expl-paliers__palier--1 {
+  --tu-expl-palier: var(--tu-palier-1);
 }
 
-.tu-expl-paliers__palier:nth-child(2),
-.tu-expl-paliers__palier:nth-child(3) {
-  flex: 35;
+.tu-expl-paliers__palier--2 {
+  --tu-expl-palier: var(--tu-palier-2);
+}
+
+.tu-expl-paliers__palier--3 {
+  --tu-expl-palier: var(--tu-palier-3);
 }
 
 .tu-expl-paliers__barre {
-  height: var(--tu-space-4);
+  height: var(--tu-space-6);
   border-radius: var(--tu-radius-pill);
-  background: var(--tu-primary);
-}
-
-.tu-expl-paliers__palier:nth-child(2) .tu-expl-paliers__barre {
-  opacity: 0.7;
-}
-
-.tu-expl-paliers__palier:nth-child(3) .tu-expl-paliers__barre {
-  opacity: 0.4;
+  background: var(--tu-expl-palier);
 }
 
 /* Chrono géant en anneau. */
@@ -436,89 +432,89 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .tu-expl__carte {
-    animation: tu-expl-entree var(--tu-dur-reveal) var(--tu-ease) both;
+    animation: tu-expl-entree var(--tu-dur-expl) var(--tu-ease) both;
   }
 
   /* Les éléments marqués entrent les uns après les autres. */
   .tu-expl-suite > * {
-    animation: tu-expl-entree var(--tu-dur-reveal) var(--tu-ease) both;
+    animation: tu-expl-entree var(--tu-dur-expl) var(--tu-ease) both;
   }
 
   .tu-expl-suite > :nth-child(2) {
-    animation-delay: calc(var(--tu-dur-reveal) * 1);
+    animation-delay: calc(var(--tu-dur-expl) * 1);
   }
 
   .tu-expl-suite > :nth-child(3) {
-    animation-delay: calc(var(--tu-dur-reveal) * 2);
+    animation-delay: calc(var(--tu-dur-expl) * 2);
   }
 
   .tu-expl-suite > :nth-child(4) {
-    animation-delay: calc(var(--tu-dur-reveal) * 3);
+    animation-delay: calc(var(--tu-dur-expl) * 3);
   }
 
   .tu-expl-suite > :nth-child(5) {
-    animation-delay: calc(var(--tu-dur-reveal) * 4);
+    animation-delay: calc(var(--tu-dur-expl) * 4);
   }
 
   .tu-expl-suite > :nth-child(6) {
-    animation-delay: calc(var(--tu-dur-reveal) * 5);
+    animation-delay: calc(var(--tu-dur-expl) * 5);
   }
 
   .tu-expl-se-leve {
-    animation: tu-expl-lever var(--tu-dur-reveal) var(--tu-ease) both;
-    animation-delay: calc(var(--tu-dur-reveal) * 2);
+    animation: tu-expl-lever var(--tu-dur-expl) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-dur-expl) * 2);
   }
 
   .tu-expl-avance {
-    animation: tu-expl-avancer calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
-    animation-delay: var(--tu-dur-reveal);
+    animation: tu-expl-avancer calc(var(--tu-dur-expl) * 2) var(--tu-ease) both;
+    animation-delay: var(--tu-dur-expl);
   }
 
   .tu-expl-ecran__rideau {
-    animation: tu-expl-rideau calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
-    animation-delay: calc(var(--tu-dur-reveal) * 4);
+    animation: tu-expl-rideau calc(var(--tu-dur-expl) * 2) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-dur-expl) * 4);
   }
 
   .tu-expl-pulse {
-    animation: tu-expl-pulse calc(var(--tu-dur-reveal) * 2) var(--tu-ease) infinite;
+    animation: tu-expl-pulse calc(var(--tu-dur-expl) * 2) var(--tu-ease) infinite;
   }
 
   .tu-expl-mime {
-    animation: tu-expl-mime calc(var(--tu-dur-reveal) * 2) var(--tu-ease) infinite alternate;
+    animation: tu-expl-mime calc(var(--tu-dur-expl) * 2) var(--tu-ease) infinite alternate;
   }
 
   .tu-expl-anneau {
-    animation: tu-expl-decompte calc(var(--tu-dur-reveal) * 9) linear both;
+    animation: tu-expl-decompte calc(var(--tu-dur-expl) * 9) linear both;
   }
 
   .tu-expl-photo--gagnante {
-    animation: tu-expl-gagner calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
-    animation-delay: var(--tu-dur-reveal);
+    animation: tu-expl-gagner calc(var(--tu-dur-expl) * 2) var(--tu-ease) both;
+    animation-delay: var(--tu-dur-expl);
   }
 
   .tu-expl-photo--eteinte {
-    animation: tu-expl-eteindre calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
-    animation-delay: var(--tu-dur-reveal);
+    animation: tu-expl-eteindre calc(var(--tu-dur-expl) * 2) var(--tu-ease) both;
+    animation-delay: var(--tu-dur-expl);
   }
 
   .tu-expl-quadrants__zone--fausse,
   .tu-expl-perso--eteint {
-    animation: tu-expl-eteindre calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
-    animation-delay: calc(var(--tu-dur-reveal) * 2);
+    animation: tu-expl-eteindre calc(var(--tu-dur-expl) * 2) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-dur-expl) * 2);
   }
 
   .tu-expl-repere__point--tete {
-    animation: tu-expl-clin calc(var(--tu-dur-reveal) * 6) var(--tu-ease) infinite;
+    animation: tu-expl-clin calc(var(--tu-dur-expl) * 6) var(--tu-ease) infinite;
   }
 
   .tu-expl-repere__point--epaule {
-    animation: tu-expl-clin calc(var(--tu-dur-reveal) * 6) var(--tu-ease) infinite;
-    animation-delay: calc(var(--tu-dur-reveal) * 3);
+    animation: tu-expl-clin calc(var(--tu-dur-expl) * 6) var(--tu-ease) infinite;
+    animation-delay: calc(var(--tu-dur-expl) * 3);
   }
 
   .tu-expl-gobelet--saute {
-    animation: tu-expl-saut calc(var(--tu-dur-reveal) * 2) var(--tu-ease) both;
-    animation-delay: calc(var(--tu-dur-reveal) * 2);
+    animation: tu-expl-saut calc(var(--tu-dur-expl) * 2) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-dur-expl) * 2);
   }
 
   .tu-expl__segment-plein {

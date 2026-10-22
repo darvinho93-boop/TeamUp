@@ -165,7 +165,7 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   const explication = ecran.locator('[data-scene="explication"]');
   await expect(explication).toHaveAttribute('data-carte', '1', { timeout: 2000 });
   await expect(ecran.getByTestId('phrase-explication')).toContainText("l'équipe se concerte");
-  await expect(explication).toHaveAttribute('data-carte', '2', { timeout: 8000 });
+  await expect(explication).toHaveAttribute('data-carte', '2', { timeout: 11000 });
   await expect(ecran.getByTestId('phrase-explication')).toContainText('Ton capitaine a des jetons');
   await regie.getByRole('button', { name: "Arrêter l'explication" }).click();
   await expect(scene('intro')).toBeVisible();

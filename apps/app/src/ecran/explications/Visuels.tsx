@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { cx, teamModifier } from '@teamup/ui/react';
-import type { VisuelExplication } from '@teamup/game';
+import { formatChrono, PALIERS, type VisuelExplication } from '@teamup/game';
 
 /**
  * Le décor de chaque carte d'explication (lot 12) : silhouettes, écran, quadrants,
@@ -156,16 +156,8 @@ const VISUELS: Record<VisuelExplication, () => ReactNode> = {
       <Salle n={7} debout={[1, 3, 4]} />
     </>
   ),
-  paliers: () => (
-    <div className="tu-expl-paliers tu-expl-suite">
-      {['×3', '×2', '×1'].map((m) => (
-        <div key={m} className="tu-expl-paliers__palier">
-          {m}
-          <span className="tu-expl-paliers__barre" />
-        </div>
-      ))}
-    </div>
-  ),
+  paliers: () => <Paliers />,
+  'paliers-durees': () => <Paliers durees />,
 
   // ---- Quiz
   quadrants: () => <Quadrants />,
@@ -335,6 +327,25 @@ const VISUELS: Record<VisuelExplication, () => ReactNode> = {
     </>
   ),
 };
+
+/** Les trois paliers à l'échelle de leur durée, chacun de sa couleur ; avec `durees`, leur durée au format du chrono. */
+function Paliers({ durees = false }: { durees?: boolean }) {
+  return (
+    <div className="tu-expl-paliers tu-expl-suite">
+      {PALIERS.map((p, i) => (
+        <div
+          key={i}
+          className={`tu-expl-paliers__palier tu-expl-paliers__palier--${i + 1}`}
+          style={{ flexGrow: p.dureeS }}
+        >
+          {durees && <span className="tu-expl-paliers__duree">{formatChrono(p.dureeS)}</span>}×
+          {p.multiplicateur}
+          <span className="tu-expl-paliers__barre" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function VisuelCarte({ visuel }: { visuel: VisuelExplication }) {
   return (

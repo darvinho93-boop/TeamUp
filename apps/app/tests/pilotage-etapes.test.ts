@@ -520,7 +520,7 @@ describe('l’explication animée', () => {
       manche_id: 'pc',
       etape: 'explication',
       chrono: 'demarrer',
-      chrono_duree_s: 24,
+      chrono_duree_s: 45,
     });
     expect(ecriture?.manche).toBeNull();
     expect(ecriture?.ouvrirLaSoiree).toBe(false);
@@ -540,7 +540,7 @@ describe('l’explication animée', () => {
     expect(jetons?.pilotage).toMatchObject({
       etape: 'explication-jetons',
       chrono: 'demarrer',
-      chrono_duree_s: 29,
+      chrono_duree_s: 44,
     });
     const mime = etape(etat({ scene: 'intro', manche_id: 'mi' }), {
       type: 'expliquer',

@@ -16,6 +16,7 @@ export type VisuelExplication =
   | 'ecran-cache'
   | 'salle-debout'
   | 'paliers'
+  | 'paliers-durees'
   | 'quadrants'
   | 'zones'
   | 'telephone'
@@ -52,52 +53,56 @@ export interface CarteExplication {
   visuel: VisuelExplication;
 }
 
-/** Bornes d'une explication (décision du 2026-10-03) ; une carte se lit en 4 s au moins. */
-export const EXPLICATION_MIN_S = 20;
-export const EXPLICATION_MAX_S = 30;
-export const CARTE_MIN_S = 4;
+/**
+ * Bornes d'une explication (décision du 2026-10-03, allongée le 2026-10-22 : la salle n'avait
+ * pas le temps de lire) ; une carte se lit en 6 s au moins.
+ */
+export const EXPLICATION_MIN_S = 30;
+export const EXPLICATION_MAX_S = 50;
+export const CARTE_MIN_S = 6;
 
 const carte = (cle: string, dureeS: number, visuel: VisuelExplication = cle as VisuelExplication) =>
   ({ cle, dureeS, visuel }) satisfies CarteExplication;
 
-const QUIZ_FIN = [carte('elimine', 6), carte('survivants', 6)];
+const QUIZ_FIN = [carte('elimine', 9), carte('survivants', 9)];
 
 export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplication[]> = {
   list2: [
-    carte('equipe-dos', 6),
-    carte('ecran-cache', 6),
-    carte('salle-debout', 6),
-    carte('paliers', 6),
+    carte('equipe-dos', 9),
+    carte('ecran-cache', 9),
+    carte('salle-debout', 9),
+    carte('paliers', 9),
+    carte('paliers-durees', 9),
   ],
-  qcm2: [carte('quadrants', 6), carte('zones', 6), ...QUIZ_FIN],
-  'qcm2-telephone': [carte('quadrants', 6), carte('telephone', 6), ...QUIZ_FIN],
+  qcm2: [carte('quadrants', 9), carte('zones', 9), ...QUIZ_FIN],
+  'qcm2-telephone': [carte('quadrants', 9), carte('telephone', 9), ...QUIZ_FIN],
   // Mode jetons (2026-10-18) : le capitaine mise pour l'équipe, les jetons mal placés sont perdus.
   'qcm2-jetons': [
-    carte('quadrants', 6),
-    carte('jetons-capitaine', 6),
-    carte('repartition', 6),
-    carte('jetons-perdus', 6),
-    carte('jetons-restants', 5),
+    carte('quadrants', 9),
+    carte('jetons-capitaine', 9),
+    carte('repartition', 9),
+    carte('jetons-perdus', 9),
+    carte('jetons-restants', 8),
   ],
-  enchere2: [carte('champions', 6), carte('encheres', 6), carte('chrono', 6), carte('verdict', 6)],
-  mime2: [carte('file', 6), carte('mot', 6), carte('chaine', 7), carte('annonce', 6)],
+  enchere2: [carte('champions', 9), carte('encheres', 9), carte('chrono', 9), carte('verdict', 9)],
+  mime2: [carte('file', 9), carte('mot', 9), carte('chaine', 10), carte('annonce', 9)],
   photo2: [
-    carte('capitaine', 6),
-    carte('diaporama', 6),
-    carte('gagnante', 6),
-    carte('points-photo', 5),
+    carte('capitaine', 9),
+    carte('diaporama', 9),
+    carte('gagnante', 9),
+    carte('points-photo', 8),
   ],
   grab: [
-    carte('duellistes-table', 6),
-    carte('musique', 5),
-    carte('attrape', 6),
-    carte('points', 5, 'points-duel'),
+    carte('duellistes-table', 9),
+    carte('musique', 8),
+    carte('attrape', 9),
+    carte('points', 8, 'points-duel'),
   ],
   cup: [
-    carte('duellistes-gobelet', 6),
-    carte('tete-epaule', 6),
-    carte('gobelet', 6),
-    carte('points', 6, 'points-duel'),
+    carte('duellistes-gobelet', 9),
+    carte('tete-epaule', 9),
+    carte('gobelet', 9),
+    carte('points', 9, 'points-duel'),
   ],
 };
 
