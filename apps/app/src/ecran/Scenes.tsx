@@ -29,6 +29,9 @@ import {
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
 import { MESSAGES } from '@/i18n/messages';
+import type { Langue } from '@/lib/partie';
+import { IconeInstagram } from '@/marque/IconeInstagram';
+import { INSTAGRAM } from '@/marque/instagram';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Ronds } from '@/marque/Ronds';
 import {
@@ -77,6 +80,10 @@ export function Scene(props: Props) {
       return <Scores etat={etat} />;
     case 'podium':
       return <Podium etat={etat} />;
+    case 'instagram':
+      return <Instagram etat={etat} />;
+    case 'cloture':
+      return <Cloture etat={etat} />;
   }
 }
 
@@ -606,6 +613,77 @@ function Podium({ etat }: { etat: EtatSalle }) {
       </ol>
       <p className="tu-stage__l">{t('merci')}</p>
       {premier && <Celebration force={1} className="tu-celebration--podium" />}
+    </div>
+  );
+}
+
+/**
+ * L'invitation à suivre le compte Instagram : le QR code, le pseudo, l'appel. `compact` (à la
+ * clôture, sous « Merci ! ») : le QR, le pseudo et la consigne, dans la première langue.
+ */
+function BlocInstagram({ langues, compact = false }: { langues: Langue[]; compact?: boolean }) {
+  const t = useTranslations('ecran.instagram');
+  return (
+    <div className="tu-stage-insta" data-testid="bloc-instagram">
+      {/* QR fixe, fabriqué par scripts/qr-instagram.mjs : rien à optimiser côté Next. */}
+      <img className="tu-stage-insta__qr" src="/qr-instagram.svg" alt={t('scanner')} />
+      <div className="tu-stage-insta__texte">
+        <p className="tu-stage-insta__pseudo">
+          <IconeInstagram className="tu-stage-insta__icone" />
+          {INSTAGRAM.pseudo}
+        </p>
+        {compact ? (
+          <p className="tu-stage__l">{t('titre')}</p>
+        ) : (
+          <>
+            <Multilingue
+              className="tu-stage-multi--titre"
+              textes={langues.map((langue) => ({
+                langue,
+                texte: MESSAGES[langue].ecran.instagram.titre,
+              }))}
+            />
+            <p className="tu-stage__m tu-stage__muted">{t('appel')}</p>
+          </>
+        )}
+        <p className="tu-stage__m">{t('scanner')}</p>
+      </div>
+    </div>
+  );
+}
+
+/** La page Instagram (2026-10-22), lancée par la régie quand elle veut : les ronds en fond. */
+function Instagram({ etat }: { etat: EtatSalle }) {
+  return (
+    <div className="tu-stage__body tu-stage-page-insta" data-scene="instagram">
+      <div className="tu-stage-page-insta__fond">
+        <Ronds mode="boucle" />
+      </div>
+      <BlocInstagram langues={etat.evenement.langues} />
+    </div>
+  );
+}
+
+/**
+ * La clôture (2026-10-22) : les ronds forment le logo Team Up! comme à l'ouverture, puis
+ * « Merci ! », puis l'invitation Instagram, qui reste. Les temps viennent de la feuille de style ;
+ * sans mouvement, tout est là d'emblée.
+ */
+function Cloture({ etat }: { etat: EtatSalle }) {
+  const langues = etat.evenement.langues;
+  return (
+    <div className="tu-stage__body tu-stage-cloture" data-scene="cloture">
+      <div className="tu-stage-cloture__logo">
+        <Ronds mode="finale" />
+      </div>
+      <Multilingue
+        className="tu-stage-cloture__merci tu-stage-multi--titre"
+        testId="merci"
+        textes={langues.map((langue) => ({ langue, texte: MESSAGES[langue].ecran.cloture }))}
+      />
+      <div className="tu-stage-cloture__insta">
+        <BlocInstagram langues={langues} compact />
+      </div>
     </div>
   );
 }

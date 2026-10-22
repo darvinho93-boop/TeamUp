@@ -263,7 +263,9 @@
         "equipes": "Équipes",
         "programme": "Programme",
         "scores": "Scores",
-        "podium": "Podium"
+        "podium": "Podium",
+        "instagram": "Instagram",
+        "cloture": "Clôture"
       },
       "programme": "Programme de la soirée",
       "statut": {
@@ -557,6 +559,12 @@
     "scores": "Classement",
     "podium": "Podium",
     "merci": "Merci à tous, et bravo !",
+    "instagram": {
+      "titre": "Suivez-nous sur Instagram !",
+      "appel": "Abonnez-vous pour revivre la soirée et ne rien rater de la suite.",
+      "scanner": "Scannez le QR code"
+    },
+    "cloture": "Merci à tous pour cette soirée !",
     "question": "Question {n} sur {total}",
     "croix": "placez-vous dans la zone de votre réponse !",
     "reponses": "{n, plural, =0 {aucune réponse} one {# réponse} other {# réponses}}",

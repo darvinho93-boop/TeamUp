@@ -81,6 +81,8 @@ const SCENES_LIBRES: Exclude<Scene, 'intro' | 'jeu'>[] = [
   'programme',
   'scores',
   'podium',
+  'instagram',
+  'cloture',
 ];
 
 type Agir = (commande: Commande) => void;

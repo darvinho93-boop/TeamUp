@@ -263,7 +263,9 @@
         "equipes": "Teams",
         "programme": "Programme",
         "scores": "Scores",
-        "podium": "Podium"
+        "podium": "Podium",
+        "instagram": "Instagram",
+        "cloture": "Closing"
       },
       "programme": "Tonight's programme",
       "statut": {
@@ -557,6 +559,12 @@
     "scores": "Standings",
     "podium": "Podium",
     "merci": "Thank you all, and well done!",
+    "instagram": {
+      "titre": "Follow us on Instagram!",
+      "appel": "Follow us to relive the evening and catch what comes next.",
+      "scanner": "Scan the QR code"
+    },
+    "cloture": "Thank you all for this evening!",
     "question": "Question {n} of {total}",
     "croix": "stand in the zone of your answer!",
     "reponses": "{n, plural, =0 {no answers} one {# answer} other {# answers}}",

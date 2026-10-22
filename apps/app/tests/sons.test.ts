@@ -223,3 +223,20 @@ describe('la montée des dernières secondes', () => {
     expect(monteeDuChrono(1).vitesse).toBeCloseTo(1.35);
   });
 });
+
+describe('la page Instagram et la clôture', () => {
+  it('la clôture joue la piste du reel, une fois, son coup sur le logo', () => {
+    expect(sonsPour(instant({ scene: 'podium' }), instant({ scene: 'cloture' }))).toEqual([
+      'finale',
+    ]);
+    expect(sonsPour(instant({ scene: 'cloture' }), instant({ scene: 'cloture' }))).toEqual([]);
+    expect(deroule('finale', false)).toEqual(sonsDeLaFinale());
+    expect(deroule('finale', true)).toEqual([{ son: 'finale', apresMs: 0 }]);
+  });
+
+  it('l’ambiance joue sous la page Instagram et la clôture', () => {
+    expect(fondA(instant({ scene: 'instagram' }))).toBe('ambiance');
+    expect(fondA(instant({ scene: 'cloture' }))).toBe('ambiance');
+    expect(fondA(instant({ scene: 'podium' }))).toBeNull();
+  });
+});

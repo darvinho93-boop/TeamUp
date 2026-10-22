@@ -392,3 +392,112 @@
     opacity: 0;
   }
 }
+
+/* ---------------------------------------------------------------- Instagram et clôture */
+
+/* L'invitation à suivre @teamup_officiel (2026-10-22) : le QR code à gauche, le pseudo et l'appel
+   à droite. Sur la page Instagram, les ronds de l'ouverture tournent derrière, estompés. */
+.tu-stage-insta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-16);
+}
+
+.tu-stage-insta__qr {
+  width: var(--tu-stage-insta-qr);
+  height: var(--tu-stage-insta-qr);
+  flex: none;
+  border-radius: var(--tu-radius-lg);
+}
+
+.tu-stage-insta__texte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  max-width: var(--tu-expl-phrase-max);
+}
+
+.tu-stage-insta__pseudo {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-4);
+  color: var(--tu-primary);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tu-stage-page-insta {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.tu-stage-page-insta__fond {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.tu-stage-cloture {
+  align-items: center;
+  gap: var(--tu-space-6);
+  text-align: center;
+}
+
+.tu-stage-cloture__logo {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+.tu-stage-cloture .tu-stage-insta {
+  --tu-stage-insta-qr: var(--tu-stage-insta-qr-petit);
+}
+
+.tu-stage-cloture .tu-stage-insta__pseudo {
+  font-size: var(--tu-size-4xl);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-insta > * {
+    animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease) both;
+  }
+
+  .tu-stage-insta__texte {
+    animation-delay: var(--tu-dur-reveal);
+  }
+
+  .tu-stage-insta__icone {
+    animation: tu-battement var(--tu-dur-battement) var(--tu-ease) infinite;
+  }
+
+  /* Après le logo et son nom : « Merci ! », puis l'invitation. */
+  .tu-stage-cloture__merci {
+    animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease) var(--tu-cloture-merci) both;
+  }
+
+  .tu-stage-cloture__insta {
+    animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease) var(--tu-cloture-insta) both;
+  }
+}
+
+@keyframes tu-battement {
+  0%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+
+  20% {
+    transform: scale(1.18);
+  }
+
+  40% {
+    transform: scale(0.96);
+  }
+}

@@ -7,7 +7,16 @@ import type { GameCode, StatutManche, StatutPassage } from '@teamup/game';
 import type { Langue } from './partie';
 
 export type Scene =
-  'ouverture' | 'accueil' | 'equipes' | 'programme' | 'intro' | 'jeu' | 'scores' | 'podium';
+  | 'ouverture'
+  | 'accueil'
+  | 'equipes'
+  | 'programme'
+  | 'intro'
+  | 'jeu'
+  | 'scores'
+  | 'podium'
+  | 'instagram'
+  | 'cloture';
 
 export type Valeurs = Record<string, unknown>;
 export type ParLangue = Partial<Record<Langue, Valeurs>>;

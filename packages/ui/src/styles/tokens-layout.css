@@ -43,7 +43,9 @@
   --tu-stage-width: 120rem;
   --tu-stage-height: 67.5rem;
   --tu-stage-qr: 32rem;
-  --tu-stage-cadre: 0.375rem; /* trait des encadrés de l'écran : la règle d'un jeu, les photos */
+  --tu-stage-cadre: 0.375rem;
+  --tu-stage-regle-max: 72rem; /* l'encadré « Comment on joue » : il laisse les coins à la marque */
+  --tu-stage-tirage-rang: 9rem; /* hauteur maximale d'une rangée du tirage de l'ordre */ /* trait des encadrés de l'écran : la règle d'un jeu, les photos */
   --tu-stage-team-min: 22rem;
   /* Membres d'une équipe : hauteur d'un prénom en carrousel, rangs par défaut (la scène donne
      les siens : 13, 7 ou 5 en carrousel, selon les cartes), repère de page. */
@@ -60,6 +62,8 @@
   --tu-stage-podium-1: 20rem;
   --tu-stage-podium-2: 14rem;
   --tu-stage-podium-3: 10rem;
+  --tu-stage-insta-qr: 26rem;
+  --tu-stage-insta-qr-petit: 15rem;
   --tu-recompense: 6rem;
   --tu-recompense-1: 9rem;
   /* Quiz en mode jetons : largeur d'une pastille d'équipe dans la case d'une réponse (trois par
@@ -86,8 +90,8 @@
   /* Confettis et feux d'artifice de l'écran commun (2026-10-22). */
   --tu-confetti-w: 0.75rem;
   --tu-confetti-h: 1.25rem;
-  --tu-feu-etincelle: 0.75rem;
-  --tu-feu-rayon: 14rem;
+  --tu-feu-etincelle: 1.25rem;
+  --tu-feu-rayon: 22rem;
 
   /* Les langues après la première, à l'écran commun : 80 % de sa taille (2026-10-22). */
   --tu-multi-ratio: 0.8;

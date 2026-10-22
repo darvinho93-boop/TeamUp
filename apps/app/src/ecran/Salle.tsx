@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { cx, Wordmark } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
 import { attenteFinDeBoucle, FINALE } from '@/lib/ouverture';
-import type { EtatSalle } from '@/lib/salle';
+import type { EtatSalle, Scene as NomDeScene } from '@/lib/salle';
 import { INTERLUDE_MS, sonsDeLaFinale, type Son } from '@/lib/sons';
 import { IconeInstagram } from '@/marque/IconeInstagram';
 import { INSTAGRAM } from '@/marque/instagram';
@@ -14,6 +14,10 @@ import { Ronds } from '@/marque/Ronds';
 import { Finale } from './Finale';
 import { Scene } from './Scenes';
 import { SonsContexte, useSons } from './sons/useSons';
+
+/** Les scènes qui portent déjà le logo en grand, ou l'invitation Instagram en entier. */
+const LOGO_EN_GRAND = new Set<NomDeScene>(['ouverture', 'accueil', 'cloture']);
+const PAGES_INSTAGRAM = new Set<NomDeScene>(['instagram', 'cloture']);
 
 /**
  * L'écran de la salle, dans la première langue de la soirée quelle que soit celle du navigateur
@@ -119,11 +123,13 @@ export function Salle({
           />
           {/* Le compte Instagram en haut à gauche, sur toutes les scènes ; le logo animé en haut à
               droite, sauf là où il est déjà en grand (2026-10-22). */}
-          <span className="tu-stage__insta" data-testid="insta-coin">
-            <IconeInstagram />
-            {INSTAGRAM.pseudo}
-          </span>
-          {sceneAffichee !== 'accueil' && sceneAffichee !== 'ouverture' && (
+          {!PAGES_INSTAGRAM.has(sceneAffichee) && (
+            <span className="tu-stage__insta" data-testid="insta-coin">
+              <IconeInstagram />
+              {INSTAGRAM.pseudo}
+            </span>
+          )}
+          {!LOGO_EN_GRAND.has(sceneAffichee) && (
             <span className="tu-marque tu-stage__picto">
               <Ronds mode="coin" />
               <Wordmark className="tu-stage__nom" />

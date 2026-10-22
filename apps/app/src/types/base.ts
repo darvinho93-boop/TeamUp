@@ -1050,6 +1050,8 @@ export type Database = {
         | "jeu"
         | "scores"
         | "podium"
+        | "instagram"
+        | "cloture"
       statut_evenement: "preparation" | "repetition" | "en_cours" | "termine"
       statut_manche: "a_venir" | "en_cours" | "terminee" | "annulee"
       statut_passage: "a_venir" | "en_cours" | "termine"
@@ -1194,6 +1196,8 @@ export const Constants = {
         "jeu",
         "scores",
         "podium",
+        "instagram",
+        "cloture",
       ],
       statut_evenement: ["preparation", "repetition", "en_cours", "termine"],
       statut_manche: ["a_venir", "en_cours", "terminee", "annulee"],

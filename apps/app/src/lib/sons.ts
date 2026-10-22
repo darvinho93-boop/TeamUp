@@ -81,8 +81,11 @@ export const INTERLUDE_MS = 1600;
  * Ce qu'un son devient au moment de le jouer. Le jingle d'un nouveau jeu se déroule en deux
  * temps : le roulement pendant que le logo est à l'écran, puis le jingle quand le nom paraît.
  * Sans mouvement (`prefers-reduced-motion`), il n'y a pas d'interlude : le jingle part seul.
+ * La piste du reel, à la clôture, part de sorte que son coup tombe quand le logo se forme, comme à
+ * l'ouverture (`sonsDeLaFinale`).
  */
 export function deroule(son: Son, sansMouvement: boolean): { son: Son; apresMs: number }[] {
+  if (son === 'finale' && !sansMouvement) return sonsDeLaFinale();
   if (son !== 'jingle' || sansMouvement) return [{ son, apresMs: 0 }];
   return [
     { son: 'presentation', apresMs: 0 },
@@ -151,6 +154,8 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
   // Un seul son, même si dix invités sont arrivés entre deux lectures.
   if (apres.scene === 'accueil' && apres.joueurs > avant.joueurs) sons.push('arrivee');
   if (apres.scene === 'podium' && avant.scene !== 'podium') sons.push('fanfare');
+  // La clôture (2026-10-22) : la piste du reel, sur le logo qui se forme.
+  if (apres.scene === 'cloture' && avant.scene !== 'cloture') sons.push('finale');
 
   if (apres.scene === 'intro') {
     const nouveauJeu = avant.scene !== 'intro' || avant.mancheId !== apres.mancheId;
@@ -184,7 +189,8 @@ export function sonsDeLaFinale(): { son: Son; apresMs: number }[] {
  * ailleurs.
  */
 export function fondA(instant: Instant): Fond | null {
-  if (instant.scene === 'ouverture' || instant.scene === 'accueil') return 'ambiance';
+  // La page Instagram et la clôture aussi (2026-10-22) : la salle n'y joue pas.
+  if (['ouverture', 'accueil', 'instagram', 'cloture'].includes(instant.scene)) return 'ambiance';
   if (instant.scene === 'intro' && instant.etape?.startsWith('explication')) return 'explication';
   return null;
 }
