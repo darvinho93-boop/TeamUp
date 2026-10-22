@@ -869,3 +869,23 @@ choix de l'animateur.
 - Groupes : `evenements.groupe_facultatif` (vrai par défaut, migration `20261022100000`), case à
   la préparation ; faux, `rejoindre_evenement` refuse un invité sans groupe quand la soirée en a.
   Les invités ajoutés par la régie ou un parrain n'y sont pas soumis.
+
+## Conventions posées le 2026-10-23 (audit sécurité et performance)
+
+- **Jamais `serialization_failure` (40001) ni `deadlock_detected` pour un refus métier** :
+  PostgREST 14 réessaie seul ces erreurs, sans fin si la cause demeure. Un refus que le client doit
+  voir prend un code `PTxxx` (PostgREST en fait le statut HTTP, ex. `PT409`) ou une classe 22/23/P0.
+- Dépendances : `pnpm audit --prod` sans critique ni haute exploitable. Overrides dans
+  `pnpm-workspace.yaml` (source-map-js, vite), à retirer quand next et astro suivent. Reste une
+  haute sans correctif publié (`http-cache-semantics`, cache d'images distantes d'Astro, inutilisé
+  par la vitrine). La vitrine ne monte pas d'Astro au-delà de 7.3 tant que le projet est en Node
+  22.20 (les suivantes exigent 22.23).
+- App : en-têtes de protection dans `apps/app/vercel.json` (comme la vitrine). L'appareil photo
+  reste permis (`camera=(self)`).
+- Le canal `salle:<id>` est public (les téléphones n'ont que la clé anon) : il ne transporte
+  rien, et un téléphone espace ses relectures sur signal (750 ms au moins, une en attente à la
+  fois). Ne jamais y faire passer de données.
+- Photo : le serveur vérifie les octets d'en-tête JPEG, pas seulement le type annoncé.
+- Risques connus, non traités : aucune limite de débit sur l'arrivée (un script pourrait remplir
+  une soirée jusqu'à 150 ; la Salle permet de retirer) ni sur le formulaire de devis (champ piège
+  et délai seulement ; une règle de limite de débit Vercel est possible).
