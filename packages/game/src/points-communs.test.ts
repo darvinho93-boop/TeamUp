@@ -26,10 +26,18 @@ describe('paliers de Points communs', () => {
       palier: 0,
       multiplicateur: 3,
       resteDansPalierS: 60,
+      restesS: [60, 35, 35],
       resteTotalS: 130,
       indices: 0,
       termine: false,
     });
+  });
+
+  it("chaque palier descend pendant qu'on y est, puis reste à zéro (2026-10-22)", () => {
+    expect(etatPaliers(s(20)).restesS).toEqual([40, 35, 35]);
+    expect(etatPaliers(s(75)).restesS).toEqual([0, 20, 35]);
+    expect(etatPaliers(s(120)).restesS).toEqual([0, 0, 10]);
+    expect(etatPaliers(s(130)).restesS).toEqual([0, 0, 0]);
   });
 
   it('passent au palier 2 après 60 s, avec un indice', () => {

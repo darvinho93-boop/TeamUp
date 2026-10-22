@@ -347,7 +347,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
   // Le temps de jeu : figé à la fin de chaque palier, jusqu'à l'indice et un peu après.
   const fini = typeof passage.resultat['ecoule_ms'] === 'number';
   const jeu = fini ? { jeuMs: ecoule, arret: null } : tempsDeJeu(ecoule, indicesMsDe(passage));
-  const palier = etatPaliers(jeu.jeuMs).palier;
+  const { palier, restesS } = etatPaliers(jeu.jeuMs);
   const palierArrete = etape === 'lance' ? (jeu.arret?.palier ?? null) : null;
   const indices = langues.flatMap((langue) => {
     const liste = passage.secret?.[langue]?.['indices'];
@@ -395,7 +395,8 @@ function PointsCommuns({ etat, decalageMs }: Props) {
             className={cx('tu-stage__giant', jeu.arret && 'tu-stage__muted')}
             arret={jeu.jeuMs}
           />
-          {/* Une couleur par palier, sa durée dessous ; l'indice qu'il ouvre prend sa couleur. */}
+          {/* Une couleur par palier, son temps restant dessous (il descend pendant le palier, puis
+              reste à 0:00) ; l'indice qu'il ouvre prend sa couleur. */}
           <ol className="tu-stage-paliers">
             {PALIERS.map((p, i) => (
               <li
@@ -408,7 +409,9 @@ function PointsCommuns({ etat, decalageMs }: Props) {
               >
                 <span>{t('palier', { n: i + 1 })}</span>
                 <span className="tu-stage-palier__mult">×{p.multiplicateur}</span>
-                <span className="tu-stage-palier__duree">{formatChrono(p.dureeS)}</span>
+                <span className="tu-stage-palier__duree">
+                  {formatChrono(restesS[i] ?? p.dureeS)}
+                </span>
               </li>
             ))}
           </ol>

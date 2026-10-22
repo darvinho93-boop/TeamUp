@@ -846,7 +846,8 @@ choix de l'animateur.
 - Présentation d'un jeu : la règle dans un encadré en haut (`.tu-stage-regle`), dans toutes les
   langues de la soirée ; l'explication reprend l'encadré pour son titre.
 - Points communs : une couleur par palier (`--tu-palier-1/2/3`, sauge 700, ambre, framboise ;
-  jamais le corail), sa durée sous chaque palier ; l'indice n porte la couleur du palier n + 1.
+  jamais le corail), son temps restant sous chaque palier (`etatPaliers(...).restesS` : il descend
+  pendant le palier, puis reste à 0:00) ; l'indice n porte la couleur du palier n + 1.
 - Fête (`src/ecran/Celebration.tsx`, `celebration.css`, CSS seul) : confettis et fusées, `force`
   1 à 3. Mot trouvé (plus forte au palier 1), photo gagnante, podium. `useArrivee` : seulement
   quand l'état change sous les yeux de l'écran, pas au rechargement (sauf le podium, qui la rejoue).

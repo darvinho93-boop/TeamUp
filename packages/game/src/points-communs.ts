@@ -81,6 +81,8 @@ export interface EtatPaliers {
   palier: number;
   multiplicateur: number;
   resteDansPalierS: number;
+  /** Secondes restantes de chaque palier : à zéro une fois franchi, entier tant qu'il attend. */
+  restesS: number[];
   resteTotalS: number;
   /** Nombre d'indices à montrer : un de plus à chaque palier franchi. */
   indices: number;
@@ -109,6 +111,7 @@ export function etatPaliers(ecouleMs: number): EtatPaliers {
     palier,
     multiplicateur: PALIERS[palier]!.multiplicateur,
     resteDansPalierS: restes[palier]!,
+    restesS: restes,
     resteTotalS,
     indices: palier,
     termine: resteTotalS === 0,
