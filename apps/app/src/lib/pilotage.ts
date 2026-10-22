@@ -595,8 +595,10 @@ export function calculerEtape(
       case 'terminer': {
         if (!manche) return null;
         ecriture.manche = { id: manche.id, statut: 'terminee' };
+        // Plus de classement d'office (2026-10-22) : le programme, jeu coché ; la régie montre
+        // le classement quand elle le décide.
         ecriture.pilotage = {
-          scene: 'scores',
+          scene: 'programme',
           manche_id: null,
           passage_id: null,
           etape: null,

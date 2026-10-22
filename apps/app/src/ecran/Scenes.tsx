@@ -551,7 +551,10 @@ function Scores({ etat }: { etat: EtatSalle }) {
   return (
     <div className="tu-stage__body" data-scene="scores">
       <h1 className="tu-stage__xl">{t('scores')}</h1>
-      <ol className="tu-stage-rank">
+      <ol
+        className="tu-stage-rank"
+        style={{ '--tu-rank-n': Math.max(1, rang.length) } as CSSProperties}
+      >
         {rang.map((e) => (
           <li key={e.id} className={cx('tu-stage-rank__ligne', teamModifier(e.numero))}>
             <span className="tu-stage-rank__nom">{e.nom}</span>

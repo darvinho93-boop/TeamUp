@@ -235,12 +235,12 @@ describe('une touche de la régie', () => {
     ]);
   });
 
-  it('terminer la manche affiche le classement', () => {
+  it('terminer la manche revient au programme, pas au classement', () => {
     const ecriture = etape(etat({ scene: 'jeu', manche_id: 'pc', etape: 'trouve' }), {
       type: 'terminer',
     });
     expect(ecriture?.manche).toEqual({ id: 'pc', statut: 'terminee' });
-    expect(ecriture?.pilotage).toMatchObject({ scene: 'scores', manche_id: null, etape: null });
+    expect(ecriture?.pilotage).toMatchObject({ scene: 'programme', manche_id: null, etape: null });
   });
 
   it('Quiz : le mode se fixe au lancement, la croix par défaut, la question attend « Afficher »', () => {

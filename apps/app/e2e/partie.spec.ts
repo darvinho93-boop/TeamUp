@@ -175,7 +175,7 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
   await mesurer(
     'terminer Points communs',
     () => regie.getByRole('button', { name: 'Terminer la manche' }).click(),
-    scene('scores'),
+    scene('programme'),
   );
 
   // --- Surenchère : un pari tenu par l'équipe 2, un raté par l'équipe 1.
@@ -222,7 +222,7 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
   await mesurer(
     'terminer Surenchère',
     () => regie.getByRole('button', { name: 'Terminer la manche' }).click(),
-    scene('scores'),
+    scene('programme'),
   );
 
   // --- Les points : ceux du barème, et ceux que l'écran affiche.
@@ -253,6 +253,12 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
   // Tenu par l'équipe 2 : +100. Raté par l'équipe 1 : +20 aux équipes 2 et 3.
   attendus.set(2, attendus.get(2)! + 100 + 20);
   attendus.set(3, attendus.get(3)! + 20);
+  // Le classement ne paraît plus seul en fin de jeu : la régie le montre.
+  await mesurer(
+    'classement',
+    () => scenes.getByRole('button', { name: 'Scores' }).click(),
+    scene('scores'),
+  );
   for (const [n, points] of attendus) {
     await expect(ecran.getByTestId(`points-${n}`)).toHaveText(String(points));
   }

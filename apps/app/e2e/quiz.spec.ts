@@ -275,7 +275,7 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
   await confirmer(regie, 'Valider les survivants');
   await expect(scene('qcm2', 'resultat')).toBeVisible();
   await regie.getByRole('button', { name: 'Terminer la manche' }).click();
-  await expect(scene('scores')).toBeVisible();
+  await expect(scene('programme')).toBeVisible();
 
   // --- Manche 2 : mode croix, mêmes survivants saisis à la main.
   await regie.getByRole('button', { name: 'Présenter' }).first().click();
@@ -313,7 +313,7 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
   await expect(scene('qcm2', 'resultat')).toBeVisible();
   await expect(ecran.getByTestId('survivants')).toBeVisible();
   await regie.getByRole('button', { name: 'Terminer la manche' }).click();
-  await expect(scene('scores')).toBeVisible();
+  await expect(scene('programme')).toBeVisible();
 
   // --- Le critère : mêmes survivants, mêmes points, survivants × 100.
   const parTelephone = await pointsDeLaManche(mancheTelephone!);
@@ -374,7 +374,7 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
     }
   }
   await regie.getByRole('button', { name: 'Terminer la manche' }).click();
-  await expect(scene('scores')).toBeVisible();
+  await expect(scene('programme')).toBeVisible();
 
   const { data: mime } = await service
     .from('scores')
