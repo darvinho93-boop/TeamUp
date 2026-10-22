@@ -60,6 +60,8 @@
   --tu-stage-podium-1: 20rem;
   --tu-stage-podium-2: 14rem;
   --tu-stage-podium-3: 10rem;
+  --tu-recompense: 6rem;
+  --tu-recompense-1: 9rem;
   /* Quiz en mode jetons : largeur d'une pastille d'équipe dans la case d'une réponse (trois par
      rangée dans une case de 1 920 × 1 080, donc huit équipes sur trois rangées). */
   --tu-stage-mise-min: 13rem;

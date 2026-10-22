@@ -67,12 +67,16 @@
 @media (prefers-reduced-motion: no-preference) {
   .tu-confetti {
     animation: tu-confetti-chute var(--tu-dur-confetti) linear both;
-    animation-delay: calc(var(--delai) * var(--tu-dur-celebration-etalement));
+    animation-delay: calc(
+      var(--tu-celebration-depart, 0ms) + var(--delai) * var(--tu-dur-celebration-etalement)
+    );
   }
 
   .tu-feu__etincelle {
     animation: tu-feu-eclat var(--tu-dur-feu) var(--tu-ease) both;
-    animation-delay: calc(var(--delai) * var(--tu-dur-celebration-etalement));
+    animation-delay: calc(
+      var(--tu-celebration-depart, 0ms) + var(--delai) * var(--tu-dur-celebration-etalement)
+    );
   }
 }
 

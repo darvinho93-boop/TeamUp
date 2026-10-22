@@ -46,6 +46,9 @@
   --tu-success:       var(--tu-sage-700);
   --tu-warning:       #E0A100;
   --tu-danger:        #D9382B;
+  --tu-or:            #D4A72C;   /* coupe du premier, cadre de la photo gagnante (2026-10-22) */
+  --tu-argent:        #A7AFB8;
+  --tu-bronze:        #B7773D;
   --tu-alerte:        #E8740C;   /* orange des dernières secondes d'un chrono, avant le rouge (2026-10-22) */
   --tu-focus:         var(--tu-coral-500);
 
@@ -123,6 +126,8 @@
   --tu-dur-confetti: 3600ms;   /* la chute d'un confetti, du haut au bas de l'écran */
   --tu-dur-feu: 1400ms;        /* l'éclat d'une fusée */
   --tu-dur-celebration-etalement: 1500ms; /* les départs se répartissent sur cette durée */
+  --tu-dur-podium: 900ms;      /* une marche du podium qui monte */
+  --tu-dur-podium-ecart: 1300ms; /* du troisième au deuxième, puis au premier */
   --tu-dur-attente: 300ms;     /* une page qui arrive plus vite ne montre pas l'écran de chargement */
   --tu-ease-logo: cubic-bezier(0.45, 0, 0.2, 1);  /* départ doux : on voit les personnages arriver */
   --tu-dur-logo: 1100ms;       /* les quatre personnages du logo se rejoignent */

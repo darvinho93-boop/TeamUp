@@ -40,6 +40,7 @@ import {
 } from '@/lib/membres';
 import { Celebration, useArrivee, type Force } from './Celebration';
 import { Chrono, useMaintenant } from './Chrono';
+import { Recompense } from './Recompense';
 import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
 import { useAjusterQuiz } from './useAjusterQuiz';
@@ -574,6 +575,11 @@ function Scores({ etat }: { etat: EtatSalle }) {
   );
 }
 
+/**
+ * Le podium (revu le 2026-10-22) : le troisième paraît, puis le deuxième, puis le premier, chacun
+ * avec sa médaille ou sa coupe ; la fête part avec le premier. L'ordre d'apparition vient de la
+ * feuille de style (`--tu-podium-rang`) ; sans mouvement, tout est là d'emblée.
+ */
 function Podium({ etat }: { etat: EtatSalle }) {
   const t = useTranslations('ecran');
   const [premier, deuxieme, troisieme] = classement(etat);
@@ -581,15 +587,17 @@ function Podium({ etat }: { etat: EtatSalle }) {
     equipe && (
       <li
         className={cx('tu-stage-podium__marche', `tu-stage-podium__marche--${place}`)}
+        style={{ '--tu-podium-rang': 3 - place } as CSSProperties}
         data-testid={`podium-${place}`}
       >
+        <Recompense place={place} className="tu-stage-podium__recompense" />
         <Pastille equipe={equipe} grande />
         <span className="tu-stage-podium__points">{equipe.points}</span>
         <span className="tu-stage-podium__socle">{place}</span>
       </li>
     );
   return (
-    <div className="tu-stage__body tu-stage-reveal" data-scene="podium">
+    <div className="tu-stage__body" data-scene="podium">
       <h1 className="tu-stage__xl">{t('podium')}</h1>
       <ol className="tu-stage-podium">
         {marche(deuxieme, 2)}
@@ -597,6 +605,7 @@ function Podium({ etat }: { etat: EtatSalle }) {
         {marche(troisieme, 3)}
       </ol>
       <p className="tu-stage__l">{t('merci')}</p>
+      {premier && <Celebration force={1} className="tu-celebration--podium" />}
     </div>
   );
 }
@@ -883,9 +892,10 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
   const urls = usePhotosSignees(
     manche.passages.flatMap((p) => (p.photos ?? []).map((ph) => ph.chemin)),
   );
+  const { etape } = etat.pilotage;
+  const fete = useArrivee(etape === 'gagnante');
   if (!passage) return null;
 
-  const { etape } = etat.pilotage;
   const photos = passage.photos ?? [];
   const numeroGagnant = passage.resultat['equipe_gagnante'];
   const verdict = etape === 'gagnante';
@@ -912,21 +922,27 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
                 key={ph.chemin}
                 className={cx(
                   'tu-stage-photo',
+                  equipe && teamModifier(equipe.numero),
                   gagnante && 'tu-stage-photo--gagnante tu-stage-reveal',
                   verdict && !gagnante && 'tu-stage-photo--eteinte',
                 )}
                 data-testid={gagnante ? 'photo-gagnante' : 'photo'}
               >
-                {url ? (
-                  // Image d'une URL signée, déjà préchargée : rien à optimiser côté Next.
-                  <img
-                    className="tu-stage-photo__image"
-                    src={url}
-                    alt={t('photoDe', { equipe: equipe?.nom ?? '' })}
-                  />
-                ) : (
-                  <span className="tu-stage-photo__image tu-stage-photo__image--attente" />
-                )}
+                {/* Chaque photo dans un cadre de la couleur de son équipe ; la gagnante, dans un
+                    cadre doré marqué de la coupe (2026-10-22). */}
+                <span className="tu-stage-photo__cadre">
+                  {url ? (
+                    // Image d'une URL signée, déjà préchargée : rien à optimiser côté Next.
+                    <img
+                      className="tu-stage-photo__image"
+                      src={url}
+                      alt={t('photoDe', { equipe: equipe?.nom ?? '' })}
+                    />
+                  ) : (
+                    <span className="tu-stage-photo__image tu-stage-photo__image--attente" />
+                  )}
+                  {gagnante && <Recompense place={1} className="tu-stage-photo__coupe" />}
+                </span>
                 {equipe && <Pastille equipe={equipe} grande={gagnante} />}
                 {gagnante && (
                   <p className="tu-stage__xl" data-testid="verdict-photo">
@@ -938,6 +954,7 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
           })}
         </ul>
       )}
+      {fete && <Celebration force={2} />}
     </div>
   );
 }

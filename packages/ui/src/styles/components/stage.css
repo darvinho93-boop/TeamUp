@@ -624,6 +624,66 @@
   height: var(--tu-stage-podium-3);
 }
 
+/* Coupe et médailles (2026-10-22). */
+.tu-recompense {
+  display: block;
+  width: var(--tu-recompense);
+  height: var(--tu-recompense);
+}
+
+.tu-recompense--1 {
+  color: var(--tu-or);
+}
+
+.tu-recompense--2 {
+  color: var(--tu-argent);
+}
+
+.tu-recompense--3 {
+  color: var(--tu-bronze);
+}
+
+.tu-recompense__reflet {
+  fill: var(--tu-surface);
+  opacity: 0.35;
+}
+
+.tu-recompense__ruban {
+  fill: var(--tu-primary);
+}
+
+.tu-recompense__chiffre {
+  fill: var(--tu-navy-900);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+}
+
+.tu-stage-podium__marche--1 .tu-recompense {
+  width: var(--tu-recompense-1);
+  height: var(--tu-recompense-1);
+}
+
+/* Le troisième, puis le deuxième, puis le premier (--tu-podium-rang : 0, 1, 2) ; la fête part
+   avec le premier. */
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-podium__marche {
+    animation: tu-podium-monte var(--tu-dur-podium) var(--tu-ease) both;
+    animation-delay: calc(var(--tu-podium-rang) * var(--tu-dur-podium-ecart));
+  }
+
+  .tu-celebration--podium {
+    --tu-celebration-depart: calc(2 * var(--tu-dur-podium-ecart));
+  }
+}
+
+@keyframes tu-podium-monte {
+  from {
+    opacity: 0;
+    transform: translateY(30%);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .tu-stage-reveal {
     animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease);
@@ -963,12 +1023,26 @@
   min-height: 0;
 }
 
+/* Le cadre d'une photo (2026-10-22) : un passe-partout blanc, liseré de la couleur de l'équipe.
+   La gagnante : cadre doré, plus épais, la coupe dans le coin. */
+.tu-stage-photo__cadre {
+  position: relative;
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  padding: var(--tu-space-3);
+  border: var(--tu-stage-cadre) solid var(--tu-team-color);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+}
+
 .tu-stage-photo__image {
   display: block;
   flex: 1;
   width: 100%;
   min-height: 0;
-  border-radius: var(--tu-screen-radius);
+  border-radius: var(--tu-radius-sm);
   object-fit: contain;
 }
 
@@ -980,9 +1054,15 @@
   grid-column: 1 / -1;
 }
 
-.tu-stage-photo--gagnante .tu-stage-photo__image {
-  outline: var(--tu-border-width) solid var(--tu-success);
-  outline-offset: var(--tu-space-2);
+.tu-stage-photo--gagnante .tu-stage-photo__cadre {
+  padding: var(--tu-space-4);
+  border: calc(var(--tu-stage-cadre) * 2.5) solid var(--tu-or);
+}
+
+.tu-stage-photo__coupe {
+  position: absolute;
+  top: calc(var(--tu-recompense) / -2);
+  right: calc(var(--tu-recompense) / -3);
 }
 
 .tu-stage-photo--eteinte {
