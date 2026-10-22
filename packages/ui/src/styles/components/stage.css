@@ -84,25 +84,28 @@
   padding: var(--tu-space-3) var(--tu-space-8);
 }
 
-/* Contenu multilingue : la première langue en grand, les autres dessous. */
+/* Contenu multilingue : la première langue en grand, les autres dessous, à une part fixe de sa
+   taille (--tu-multi-ratio, 80 % depuis le 2026-10-22). Un bloc ne règle que --tu-multi-taille. */
 .tu-stage-multi {
+  --tu-multi-taille: var(--tu-size-3xl);
+
   display: flex;
   flex-direction: column;
   gap: var(--tu-space-2);
 }
 
 .tu-stage-multi__premier {
-  font-size: var(--tu-size-3xl);
+  font-size: var(--tu-multi-taille);
   font-weight: 700;
 }
 
 .tu-stage-multi__autre {
-  font-size: var(--tu-size-2xl);
+  font-size: calc(var(--tu-multi-taille) * var(--tu-multi-ratio));
   color: var(--tu-text-muted);
 }
 
-.tu-stage-multi--geant .tu-stage-multi__premier {
-  font-size: var(--tu-size-4xl);
+.tu-stage-multi--geant {
+  --tu-multi-taille: var(--tu-size-4xl);
 }
 
 .tu-stage-multi--titre .tu-stage-multi__premier {
@@ -438,11 +441,10 @@
   background: var(--tu-surface-muted);
 }
 
-.tu-stage-theme .tu-stage-multi__premier {
-  font-size: calc(var(--tu-size-3xl) * var(--tu-themes-echelle));
+.tu-stage-theme .tu-stage-multi {
+  --tu-multi-taille: calc(var(--tu-size-3xl) * var(--tu-themes-echelle));
 }
 
-.tu-stage-theme .tu-stage-multi__autre,
 .tu-stage-theme .tu-stage__m {
   font-size: calc(var(--tu-size-2xl) * var(--tu-themes-echelle));
 }
@@ -462,15 +464,14 @@
   overflow-wrap: break-word;
 }
 
-.tu-stage-surenchere .tu-stage-multi__premier {
-  font-size: calc(var(--tu-size-3xl) * var(--tu-surenchere-echelle));
+.tu-stage-surenchere .tu-stage-multi {
+  --tu-multi-taille: calc(var(--tu-size-3xl) * var(--tu-surenchere-echelle));
 }
 
-.tu-stage-surenchere .tu-stage-multi--geant .tu-stage-multi__premier {
-  font-size: calc(var(--tu-size-4xl) * var(--tu-surenchere-echelle));
+.tu-stage-surenchere .tu-stage-multi--geant {
+  --tu-multi-taille: calc(var(--tu-size-4xl) * var(--tu-surenchere-echelle));
 }
 
-.tu-stage-surenchere .tu-stage-multi__autre,
 .tu-stage-surenchere .tu-stage__m {
   font-size: calc(var(--tu-size-2xl) * var(--tu-surenchere-echelle));
 }
@@ -683,12 +684,8 @@
   font-weight: 700;
 }
 
-.tu-stage-quiz .tu-stage-multi__premier {
-  font-size: calc(var(--tu-size-3xl) * var(--tu-quiz-echelle, 1));
-}
-
-.tu-stage-quiz .tu-stage-multi__autre {
-  font-size: calc(var(--tu-size-2xl) * var(--tu-quiz-echelle, 1));
+.tu-stage-quiz .tu-stage-multi {
+  --tu-multi-taille: calc(var(--tu-size-3xl) * var(--tu-quiz-echelle, 1));
 }
 
 /* Pas encore affichée : la case et sa lettre, en retrait, jusqu'à son tour (2026-10-18). */
@@ -750,12 +747,8 @@
   font-size: calc(var(--tu-size-3xl) * var(--tu-quiz-echelle, 1));
 }
 
-.tu-stage-quiz--jetons .tu-stage-multi__premier {
-  font-size: calc(var(--tu-size-2xl) * var(--tu-quiz-echelle, 1));
-}
-
-.tu-stage-quiz--jetons .tu-stage-multi__autre {
-  font-size: calc(var(--tu-size-xl) * var(--tu-quiz-echelle, 1));
+.tu-stage-quiz--jetons .tu-stage-multi {
+  --tu-multi-taille: calc(var(--tu-size-2xl) * var(--tu-quiz-echelle, 1));
 }
 
 /* La place des pastilles de toutes les équipes en jeu est réservée (--tu-mises-rangs, posée

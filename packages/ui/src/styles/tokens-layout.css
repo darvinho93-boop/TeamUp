@@ -75,6 +75,9 @@
   --tu-ronds-sable: #d9c9af;
 
   /* Explications animées (lot 12) : hauteur du décor, silhouette, écran, quadrant, phrase. */
+  /* Les langues après la première, à l'écran commun : 80 % de sa taille (2026-10-22). */
+  --tu-multi-ratio: 0.8;
+
   --tu-expl-visuel-h: 28rem;
   --tu-expl-perso: 6rem;
   --tu-expl-ecran-w: 26rem;
