@@ -11,6 +11,12 @@ const Envoi = z.object({
     .refine((f) => f.type === 'image/jpeg' && f.size > 0 && f.size <= TAILLE_MAX_PHOTO),
 });
 
+/** Un JPEG commence par FF D8 FF, quel que soit le type annoncé par le téléphone. */
+async function estUnJpeg(fichier: Blob): Promise<boolean> {
+  const tete = new Uint8Array(await fichier.slice(0, 3).arrayBuffer());
+  return tete[0] === 0xff && tete[1] === 0xd8 && tete[2] === 0xff;
+}
+
 const STATUT = { session: 401, capitaine: 403, close: 409, theme: 422, fichier: 422 } as const;
 
 /**
@@ -27,7 +33,9 @@ export async function POST(req: Request, { params }: RouteContext<'/api/partie/[
     envoi_id: formulaire?.get('envoi_id'),
     fichier: formulaire?.get('fichier'),
   });
-  if (!saisie.success) return reponse({ erreur: 'fichier' }, STATUT.fichier);
+  if (!saisie.success || !(await estUnJpeg(saisie.data.fichier))) {
+    return reponse({ erreur: 'fichier' }, STATUT.fichier);
+  }
 
   const { theme_id, envoi_id, fichier } = saisie.data;
   const resultat = await envoyerPhoto(code, theme_id, envoi_id, fichier);
