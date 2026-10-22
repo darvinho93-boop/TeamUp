@@ -27,6 +27,7 @@ import {
   indicesMsDe,
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
+import { MESSAGES } from '@/i18n/messages';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Ronds } from '@/marque/Ronds';
 import {
@@ -271,11 +272,24 @@ function Intro({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
       />
     );
   }
+  // La règle encadrée en haut, dans toutes les langues de la soirée (2026-10-22), puis le nom.
   return (
-    <div className="tu-stage__body tu-stage-centre tu-stage-reveal" data-scene="intro">
-      <h1 className="tu-stage__giant">{t(`jeux.${manche.jeu}`)}</h1>
-      <p className="tu-stage__l">{t(`ecran.regles.${manche.jeu}`)}</p>
-      {manche.options['ordre_tire'] === true && <OrdreTire ordre={ordreDesEquipes(etat, manche)} />}
+    <div className="tu-stage__body tu-stage-reveal" data-scene="intro">
+      <section className="tu-stage-regle" data-testid="regle">
+        <p className="tu-stage-regle__titre">{t('ecran.commentJouer')}</p>
+        <Multilingue
+          textes={etat.evenement.langues.map((langue) => ({
+            langue,
+            texte: MESSAGES[langue].ecran.regles[manche.jeu],
+          }))}
+        />
+      </section>
+      <div className="tu-stage-centre">
+        <h1 className="tu-stage__giant">{t(`jeux.${manche.jeu}`)}</h1>
+        {manche.options['ordre_tire'] === true && (
+          <OrdreTire ordre={ordreDesEquipes(etat, manche)} />
+        )}
+      </div>
     </div>
   );
 }

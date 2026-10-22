@@ -597,22 +597,65 @@
   }
 }
 
-/* Tirage de l'ordre de passage (lot 13) : les équipes se mélangent, puis se rangent une à une,
-   numérotées. Les rangées restent en place ; celles qui attendent sont estompées. */
-.tu-stage-tirage {
+/* « Comment on joue », encadré en haut de la présentation d'un jeu et de son explication
+   (2026-10-22) : la règle dans toutes les langues de la soirée. */
+.tu-stage-regle {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-3);
+  padding: var(--tu-space-6) var(--tu-space-12);
+  border: var(--tu-stage-cadre) solid var(--tu-primary);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+  text-align: center;
+}
+
+.tu-stage-regle__titre {
+  color: var(--tu-primary);
+  font-size: var(--tu-size-2xl);
+  font-weight: 700;
+  letter-spacing: var(--tu-tracking-code);
+  text-transform: uppercase;
+}
+
+.tu-stage-regle .tu-stage-multi {
+  --tu-multi-taille: var(--tu-size-3xl);
+}
+
+/* Tirage de l'ordre de passage (lot 13) : les équipes se mélangent, puis se rangent une à une,
+   numérotées. Les rangées restent en place ; celles qui attendent sont estompées.
+   La liste occupe toute la place libre (2026-10-22) : les rangées se partagent la hauteur, la
+   police suit la hauteur d'une rangée (--tu-tirage-n, le nombre d'équipes, posé par l'écran). */
+.tu-stage-tirage {
+  display: grid;
+  flex: 1;
+  grid-auto-rows: minmax(0, 1fr);
   gap: var(--tu-space-4);
+  align-self: stretch;
+  min-height: 0;
   margin: 0;
   padding: 0;
   list-style: none;
+  container-type: size;
+  font-size: min(var(--tu-size-5xl), calc(100cqh / var(--tu-tirage-n, 4) * 0.5));
 }
 
 .tu-stage-tirage__rang {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: var(--tu-space-6);
+  min-height: 0;
   opacity: 0.45;
+}
+
+.tu-stage-tirage__rang .tu-team--badge {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 0 var(--tu-space-10);
+  font-size: inherit;
+  font-weight: 700;
 }
 
 .tu-stage-tirage__rang--range {
@@ -620,11 +663,12 @@
 }
 
 .tu-stage-tirage__numero {
-  min-width: var(--tu-space-14);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 1.5em;
   font-family: var(--tu-font-numeric);
-  font-size: var(--tu-size-4xl);
   font-weight: 700;
-  text-align: end;
 }
 
 @media (prefers-reduced-motion: no-preference) {

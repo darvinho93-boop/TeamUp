@@ -12,9 +12,7 @@
 }
 
 .tu-expl__titre {
-  color: var(--tu-text-muted);
-  font-size: var(--tu-size-2xl);
-  font-weight: 600;
+  align-self: center;
 }
 
 .tu-expl__carte {

@@ -41,7 +41,7 @@ export function Explication({
 
   return (
     <div className="tu-stage__body tu-expl" data-scene="explication" data-carte={index + 1}>
-      <p className="tu-expl__titre">
+      <p className="tu-stage-regle tu-stage-regle__titre tu-expl__titre">
         {t(`jeux.${jeu}`)} · {t('ecran.commentJouer')}
       </p>
       {/* La clé remonte la carte à chaque changement : ses animations repartent de zéro. */}

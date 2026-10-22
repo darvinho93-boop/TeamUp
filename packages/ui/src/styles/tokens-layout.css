@@ -43,6 +43,7 @@
   --tu-stage-width: 120rem;
   --tu-stage-height: 67.5rem;
   --tu-stage-qr: 32rem;
+  --tu-stage-cadre: 0.375rem; /* trait des encadrés de l'écran : la règle d'un jeu, les photos */
   --tu-stage-team-min: 22rem;
   /* Membres d'une équipe : hauteur d'un prénom en carrousel, rangs par défaut (la scène donne
      les siens : 13, 7 ou 5 en carrousel, selon les cartes), repère de page. */

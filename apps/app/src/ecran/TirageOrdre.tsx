@@ -1,6 +1,6 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore, type CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
 import { aleaDepuis, equipesRangees, tirerOrdre, type GameCode } from '@teamup/game';
@@ -78,7 +78,11 @@ export function TirageOrdre({
     >
       <p className="tu-stage__l tu-stage__muted">{t(`jeux.${jeu}`)}</p>
       <h1 className="tu-stage__xl">{t('ecran.ordre.titre')}</h1>
-      <ol className="tu-stage-tirage" data-testid="ordre-tire">
+      <ol
+        className="tu-stage-tirage"
+        data-testid="ordre-tire"
+        style={{ '--tu-tirage-n': ordre.length } as CSSProperties}
+      >
         {affichees.map((equipe, i) => (
           <li
             key={equipe.id}
