@@ -10,6 +10,7 @@ import {
   CHRONO_SURENCHERE_DEFAUT_S,
   chronoDuelS,
   etatPaliers,
+  formatChrono,
   PALIERS,
   POINTS_PAR_SURVIVANT,
   tempsDeJeu,
@@ -37,6 +38,7 @@ import {
   pageA,
   pagesDe,
 } from '@/lib/membres';
+import { Celebration, useArrivee, type Force } from './Celebration';
 import { Chrono, useMaintenant } from './Chrono';
 import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
@@ -324,6 +326,8 @@ function PointsCommuns({ etat, decalageMs }: Props) {
   const { etape, chrono_depart_ms: depart } = etat.pilotage;
   const langues = etat.evenement.langues;
   const maintenant = useMaintenant(etape === 'lance');
+  // Mot trouvé sous les yeux de la salle : la fête, d'autant plus grande que le palier est tôt.
+  const fete = useArrivee(etape === 'trouve');
   if (!passage || !equipe) return null;
 
   const ecoule =
@@ -383,14 +387,20 @@ function PointsCommuns({ etat, decalageMs }: Props) {
             className={cx('tu-stage__giant', jeu.arret && 'tu-stage__muted')}
             arret={jeu.jeuMs}
           />
+          {/* Une couleur par palier, sa durée dessous ; l'indice qu'il ouvre prend sa couleur. */}
           <ol className="tu-stage-paliers">
             {PALIERS.map((p, i) => (
               <li
                 key={i}
-                className={cx('tu-stage-palier', i === palier && 'tu-stage-palier--actif')}
+                className={cx(
+                  'tu-stage-palier',
+                  `tu-stage-palier--${i + 1}`,
+                  i === palier && 'tu-stage-palier--actif',
+                )}
               >
                 <span>{t('palier', { n: i + 1 })}</span>
                 <span className="tu-stage-palier__mult">×{p.multiplicateur}</span>
+                <span className="tu-stage-palier__duree">{formatChrono(p.dureeS)}</span>
               </li>
             ))}
           </ol>
@@ -404,8 +414,10 @@ function PointsCommuns({ etat, decalageMs }: Props) {
           {etat.pilotage.indices > 0 && indices.length > 0 && (
             <div className="tu-stage-indices" data-testid="indices">
               {indices[0]!.liste.map((_, i) => (
+                // L'indice n s'ouvre au palier n + 1.
                 <Multilingue
                   key={i}
+                  className={cx('tu-stage-indice', `tu-stage-palier--${i + 2}`)}
                   textes={indices.flatMap(({ langue, liste }) =>
                     liste[i] ? [{ langue, texte: liste[i] }] : [],
                   )}
@@ -425,6 +437,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
               {t('points', { points: passage.points ?? 0 })}
             </p>
           )}
+          {fete && <Celebration force={(palier + 1) as Force} />}
         </div>
       )}
     </div>

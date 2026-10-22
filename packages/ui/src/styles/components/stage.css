@@ -369,20 +369,41 @@
   list-style: none;
 }
 
+/* Une couleur par palier (2026-10-22) : son cadre, puis tout le pavé quand il est en cours.
+   L'indice qu'il ouvre porte la même classe, donc la même couleur. */
+.tu-stage-palier--1 {
+  --tu-palier: var(--tu-palier-1);
+  --tu-on-palier: var(--tu-on-palier-1);
+}
+
+.tu-stage-palier--2 {
+  --tu-palier: var(--tu-palier-2);
+  --tu-on-palier: var(--tu-on-palier-2);
+}
+
+.tu-stage-palier--3 {
+  --tu-palier: var(--tu-palier-3);
+  --tu-on-palier: var(--tu-on-palier-3);
+}
+
 .tu-stage-palier {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: var(--tu-space-3) var(--tu-space-8);
-  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border: var(--tu-stage-cadre) solid var(--tu-palier);
   border-radius: var(--tu-radius-lg);
   color: var(--tu-text-muted);
 }
 
 .tu-stage-palier--actif {
-  border-color: var(--tu-primary);
-  background: var(--tu-primary);
-  color: var(--tu-on-primary);
+  background: var(--tu-palier);
+  color: var(--tu-on-palier);
+}
+
+.tu-stage-palier__duree {
+  font-family: var(--tu-font-numeric);
+  font-weight: 600;
 }
 
 .tu-stage-palier__mult {
@@ -395,6 +416,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--tu-space-4);
+}
+
+.tu-stage-indice {
+  padding: var(--tu-space-3) var(--tu-space-8);
+  border-inline-start: calc(var(--tu-stage-cadre) * 3) solid var(--tu-palier);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
 }
 
 .tu-stage-gagne {

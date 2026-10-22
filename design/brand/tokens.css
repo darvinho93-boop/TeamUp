@@ -119,6 +119,9 @@
   --tu-dur-base: 220ms;
   --tu-dur-reveal: 600ms;
   --tu-dur-expl: 1000ms;       /* le pas des animations des explications : ralenti le 2026-10-22, la salle suivait mal */
+  --tu-dur-confetti: 3600ms;   /* la chute d'un confetti, du haut au bas de l'écran */
+  --tu-dur-feu: 1400ms;        /* l'éclat d'une fusée */
+  --tu-dur-celebration-etalement: 1500ms; /* les départs se répartissent sur cette durée */
   --tu-dur-attente: 300ms;     /* une page qui arrive plus vite ne montre pas l'écran de chargement */
   --tu-ease-logo: cubic-bezier(0.45, 0, 0.2, 1);  /* départ doux : on voit les personnages arriver */
   --tu-dur-logo: 1100ms;       /* les quatre personnages du logo se rejoignent */

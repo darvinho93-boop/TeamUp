@@ -1,0 +1,115 @@
+/* Confettis et feux d'artifice de l'écran commun (2026-10-22) : mot trouvé, photo gagnante,
+   podium. Une seule fois, par-dessus la scène, sans rien bloquer. Couleurs d'équipe et de palier,
+   jamais le corail. Sous prefers-reduced-motion, rien du tout. */
+
+.tu-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tu-confetti {
+  position: absolute;
+  top: calc(var(--tu-confetti-h) * -2);
+  left: calc(var(--x) * 100%);
+  width: var(--tu-confetti-w);
+  height: var(--tu-confetti-h);
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-celebration-couleur);
+  opacity: 0;
+}
+
+.tu-feu {
+  position: absolute;
+  top: calc(var(--y) * 100%);
+  left: calc(var(--x) * 100%);
+}
+
+.tu-feu__etincelle {
+  position: absolute;
+  width: var(--tu-feu-etincelle);
+  height: var(--tu-feu-etincelle);
+  margin: calc(var(--tu-feu-etincelle) / -2);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-celebration-couleur);
+  opacity: 0;
+}
+
+.tu-confetti:nth-child(6n + 1),
+.tu-feu:nth-child(3n + 1) .tu-feu__etincelle {
+  --tu-celebration-couleur: var(--tu-team-1);
+}
+
+.tu-confetti:nth-child(6n + 2),
+.tu-feu:nth-child(3n + 2) .tu-feu__etincelle {
+  --tu-celebration-couleur: var(--tu-team-4);
+}
+
+.tu-confetti:nth-child(6n + 3),
+.tu-feu:nth-child(3n + 3) .tu-feu__etincelle {
+  --tu-celebration-couleur: var(--tu-team-3);
+}
+
+.tu-confetti:nth-child(6n + 4) {
+  --tu-celebration-couleur: var(--tu-team-5);
+}
+
+.tu-confetti:nth-child(6n + 5) {
+  --tu-celebration-couleur: var(--tu-team-6);
+}
+
+.tu-confetti:nth-child(6n + 6) {
+  --tu-celebration-couleur: var(--tu-team-8);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-confetti {
+    animation: tu-confetti-chute var(--tu-dur-confetti) linear both;
+    animation-delay: calc(var(--delai) * var(--tu-dur-celebration-etalement));
+  }
+
+  .tu-feu__etincelle {
+    animation: tu-feu-eclat var(--tu-dur-feu) var(--tu-ease) both;
+    animation-delay: calc(var(--delai) * var(--tu-dur-celebration-etalement));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tu-celebration {
+    display: none;
+  }
+}
+
+@keyframes tu-confetti-chute {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0);
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--derive) * 20vw), 110vh) rotate(calc(var(--tour) * 2turn));
+  }
+}
+
+@keyframes tu-feu-eclat {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(0) scale(1);
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(var(--tu-feu-rayon)) scale(0.3);
+  }
+}

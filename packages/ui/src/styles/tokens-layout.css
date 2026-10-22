@@ -76,6 +76,12 @@
   --tu-ronds-sable: #d9c9af;
 
   /* Explications animées (lot 12) : hauteur du décor, silhouette, écran, quadrant, phrase. */
+  /* Confettis et feux d'artifice de l'écran commun (2026-10-22). */
+  --tu-confetti-w: 0.75rem;
+  --tu-confetti-h: 1.25rem;
+  --tu-feu-etincelle: 0.75rem;
+  --tu-feu-rayon: 14rem;
+
   /* Les langues après la première, à l'écran commun : 80 % de sa taille (2026-10-22). */
   --tu-multi-ratio: 0.8;
 
