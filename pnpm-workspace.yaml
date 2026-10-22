@@ -6,3 +6,9 @@ packages:
 onlyBuiltDependencies:
   - esbuild
   - sharp
+
+# Correctifs de sécurité de dépendances transitives (audit du 2026-10-23) : à retirer quand
+# next et astro tireront eux-mêmes ces versions.
+overrides:
+  source-map-js: ^1.2.2
+  vite@>=8.3.0 <8.3.3: ^8.3.3
