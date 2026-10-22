@@ -830,3 +830,41 @@ premier de la file le lise**.
   file regarde l'écran ! » ; `secret_visible` le donne à l'écran à cette étape seulement (migration
   `20261018120000`), il disparaît au lancement de la chaîne et revient au verdict. Aucun téléphone
   ne le reçoit (testé). **Écart à la spec v3**, qui le réservait à l'écran de régie.
+
+## Conventions posées le 2026-10-22 (retours de la démo TEAMUP)
+
+Tranché le 2026-10-22 après la démo du 21 : paliers de Points communs **inchangés** (60 / 35 /
+35 s, le code fait foi) ; explications **plus longues et plus lentes** ; langues après la première
+à **80 %** de sa taille ; **plus de classement d'office** après un jeu ; une page **Instagram** et
+une **clôture** ; `@teamup_officiel` sur toutes les scènes ; « Je préfère ne pas répondre » au
+choix de l'animateur.
+
+- **Écart assumé à la spec v3** : « Terminer la manche » mène au **programme** (jeu coché), plus
+  au classement ; la régie montre le classement (« Scores ») quand elle le décide.
+- Langues : `.tu-stage-multi` porte `--tu-multi-taille`, les langues suivantes en prennent
+  `--tu-multi-ratio` (0,8). Un bloc ne règle que la variable, jamais deux tailles.
+- Présentation d'un jeu : la règle dans un encadré en haut (`.tu-stage-regle`), dans toutes les
+  langues de la soirée ; l'explication reprend l'encadré pour son titre.
+- Points communs : une couleur par palier (`--tu-palier-1/2/3`, sauge 700, ambre, framboise ;
+  jamais le corail), sa durée sous chaque palier ; l'indice n porte la couleur du palier n + 1.
+- Fête (`src/ecran/Celebration.tsx`, `celebration.css`, CSS seul) : confettis et fusées, `force`
+  1 à 3. Mot trouvé (plus forte au palier 1), photo gagnante, podium. `useArrivee` : seulement
+  quand l'état change sous les yeux de l'écran, pas au rechargement (sauf le podium, qui la rejoue).
+  Rien sous `prefers-reduced-motion`.
+- Chrono de l'écran : `phaseDuChrono` (`packages/game`), orange (`--tu-alerte`) de 10 à 6 s,
+  rouge de 5 à 0. Le battement monte (`monteeDuChrono` : niveau 70 → 150 %, vitesse de lecture
+  1 → 1,35), sans nouveau son ; `lecteur.jouer(son, apresMs, montee)`.
+- Podium : coupe et médailles (`src/ecran/Recompense.tsx`, `--tu-or/argent/bronze`), le 3e, puis
+  le 2e, puis le 1er (`--tu-dur-podium-ecart`). Photos : cadre à la couleur de l'équipe, la
+  gagnante en doré avec la coupe.
+- Coins de l'écran : `@teamup_officiel` en haut à gauche (`src/marque/instagram.ts`, sauf sur les
+  pages Instagram et clôture) ; en haut à droite, `Ronds mode="coin"` (cycle de 16 s, le
+  pictogramme reste l'essentiel du temps).
+- Scènes `instagram` et `cloture` (migration `20261022090000`, seule). QR du compte en fichier fixe
+  (`public/qr-instagram.svg`, `scripts/qr-instagram.mjs`, à relancer si le compte change).
+  Clôture : `Ronds mode="finale"`, la piste du reel (`deroule('finale')` = `sonsDeLaFinale`), puis
+  « Merci ! » (`--tu-cloture-merci`) et l'invitation (`--tu-cloture-insta`). L'ambiance joue
+  dessous, comme à l'accueil.
+- Groupes : `evenements.groupe_facultatif` (vrai par défaut, migration `20261022100000`), case à
+  la préparation ; faux, `rejoindre_evenement` refuse un invité sans groupe quand la soirée en a.
+  Les invités ajoutés par la régie ou un parrain n'y sont pas soumis.
