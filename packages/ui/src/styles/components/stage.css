@@ -342,14 +342,34 @@
   justify-content: center;
 }
 
+/* Chrono, paliers, indices (jusqu'à trois, parfois en trois langues) et verdict : tout se réduit
+   ensemble (--tu-pc-echelle, posée par l'écran) jusqu'à tenir dans la scène (2026-10-23). */
 .tu-stage-jeu {
+  --tu-pc-echelle: 1;
+
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--tu-space-8);
+  gap: calc(var(--tu-space-8) * var(--tu-pc-echelle));
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  overflow-wrap: break-word;
   text-align: center;
+}
+
+.tu-stage-jeu .tu-stage__giant {
+  font-size: calc(var(--tu-size-5xl) * var(--tu-pc-echelle));
+}
+
+.tu-stage-jeu .tu-stage__xl {
+  font-size: calc(var(--tu-size-4xl) * var(--tu-pc-echelle));
+}
+
+.tu-stage-jeu .tu-stage__l {
+  font-size: calc(var(--tu-size-3xl) * var(--tu-pc-echelle));
 }
 
 .tu-stage-chrono {
@@ -367,7 +387,8 @@
 
 .tu-stage-paliers {
   display: flex;
-  gap: var(--tu-space-4);
+  gap: calc(var(--tu-space-4) * var(--tu-pc-echelle, 1));
+  font-size: calc(var(--tu-size-2xl) * var(--tu-pc-echelle, 1));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -394,7 +415,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--tu-space-3) var(--tu-space-8);
+  padding: calc(var(--tu-space-3) * var(--tu-pc-echelle, 1))
+    calc(var(--tu-space-8) * var(--tu-pc-echelle, 1));
   border: var(--tu-stage-cadre) solid var(--tu-palier);
   border-radius: var(--tu-radius-lg);
   color: var(--tu-text-muted);
@@ -412,18 +434,27 @@
 
 .tu-stage-palier__mult {
   font-family: var(--tu-font-numeric);
-  font-size: var(--tu-size-4xl);
+  font-size: calc(var(--tu-size-4xl) * var(--tu-pc-echelle, 1));
   font-weight: 700;
 }
 
+/* Les indices côte à côte, à parts égales : empilés, trois indices en trois langues sortaient
+   de l'écran. */
 .tu-stage-indices {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tu-space-4);
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: calc(var(--tu-space-4) * var(--tu-pc-echelle, 1));
+  width: 100%;
 }
 
 .tu-stage-indice {
-  padding: var(--tu-space-3) var(--tu-space-8);
+  --tu-multi-taille: calc(var(--tu-size-3xl) * var(--tu-pc-echelle, 1));
+
+  justify-content: center;
+  padding: calc(var(--tu-space-3) * var(--tu-pc-echelle, 1))
+    calc(var(--tu-space-6) * var(--tu-pc-echelle, 1));
+  hyphens: auto;
   border-inline-start: calc(var(--tu-stage-cadre) * 3) solid var(--tu-palier);
   border-radius: var(--tu-radius-lg);
   background: var(--tu-surface);

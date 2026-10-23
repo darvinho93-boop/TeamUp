@@ -336,17 +336,26 @@ function PointsCommuns({ etat, decalageMs }: Props) {
   const maintenant = useMaintenant(etape === 'lance');
   // Mot trouvé sous les yeux de la salle : la fête, d'autant plus grande que le palier est tôt.
   const fete = useArrivee(etape === 'trouve');
+  const ecouleFige = passage?.resultat['ecoule_ms'];
+  const fini = typeof ecouleFige === 'number';
+  const ecoule = fini
+    ? ecouleFige
+    : depart === null
+      ? 0
+      : Math.max(0, maintenant + decalageMs - depart);
+  // Le temps de jeu : figé à la fin de chaque palier, jusqu'à l'indice et un peu après.
+  const jeu =
+    fini || !passage ? { jeuMs: ecoule, arret: null } : tempsDeJeu(ecoule, indicesMsDe(passage));
+  // Chrono, paliers, jusqu'à trois indices en trois langues, verdict : réduits ensemble jusqu'à
+  // tenir dans la scène. L'arrêt au palier ajoute une ligne, il compte dans la clé.
+  const jeuRef = useRef<HTMLDivElement>(null);
+  useAjusterTexte(
+    jeuRef,
+    `${passage?.id}:${etape}:${etat.pilotage.indices}:${langues.join()}:${jeu.arret !== null}`,
+    '--tu-pc-echelle',
+  );
   if (!passage || !equipe) return null;
 
-  const ecoule =
-    typeof passage.resultat['ecoule_ms'] === 'number'
-      ? passage.resultat['ecoule_ms']
-      : depart === null
-        ? 0
-        : Math.max(0, maintenant + decalageMs - depart);
-  // Le temps de jeu : figé à la fin de chaque palier, jusqu'à l'indice et un peu après.
-  const fini = typeof passage.resultat['ecoule_ms'] === 'number';
-  const jeu = fini ? { jeuMs: ecoule, arret: null } : tempsDeJeu(ecoule, indicesMsDe(passage));
   const { palier, restesS } = etatPaliers(jeu.jeuMs);
   const palierArrete = etape === 'lance' ? (jeu.arret?.palier ?? null) : null;
   const indices = langues.flatMap((langue) => {
@@ -387,7 +396,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
       )}
 
       {(etape === 'lance' || etape === 'trouve' || etape === 'echec') && (
-        <div className="tu-stage-jeu">
+        <div className="tu-stage-jeu" ref={jeuRef}>
           <Chrono
             departMs={depart}
             dureeS={CHRONO_POINTS_COMMUNS_S}
@@ -448,8 +457,11 @@ function PointsCommuns({ etat, decalageMs }: Props) {
               {t('points', { points: passage.points ?? 0 })}
             </p>
           )}
-          {fete && <Celebration force={(palier + 1) as Force} />}
         </div>
+      )}
+      {/* Hors du bloc mesuré : la fête couvre tout l'écran (position fixe). */}
+      {fete && (etape === 'trouve' || etape === 'echec') && (
+        <Celebration force={(palier + 1) as Force} />
       )}
     </div>
   );
