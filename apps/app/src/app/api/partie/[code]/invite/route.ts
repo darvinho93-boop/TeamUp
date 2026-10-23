@@ -8,7 +8,14 @@ const Invite = z.object({
   groupe: z.uuid().nullish(),
 });
 
-const STATUT = { session: 401, interdit: 403, complet: 409, groupe: 422, close: 409 } as const;
+const STATUT = {
+  session: 401,
+  interdit: 403,
+  complet: 409,
+  groupe: 422,
+  close: 409,
+  prenom_pris: 409,
+} as const;
 
 /**
  * Un joueur autorisé ajoute un invité sans téléphone. Renvoie le prénom et l'équipe tirée,

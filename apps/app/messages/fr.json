@@ -17,6 +17,7 @@
     "aide": "Ton équipe le verra. Le prénom suffit.",
     "bouton": "C'est parti",
     "vide": "Écris ton prénom.",
+    "pris": "Le prénom {prenom} est déjà pris dans la partie. Ajoute l'initiale de ton nom, par exemple « {prenom} M. ».",
     "complet": "La partie est complète.",
     "codeInconnu": "Cette partie n'est plus ouverte.",
     "serveur": "Ça n'a pas marché. Réessaie."
@@ -57,6 +58,7 @@
     "faitAide": "Dis-le-lui : son équipe l'attend. Il suit le jeu sur l'écran.",
     "encore": "Ajouter un autre invité",
     "vide": "Écris son prénom.",
+    "pris": "Le prénom {prenom} est déjà pris dans la partie. Ajoute l'initiale de son nom, par exemple « {prenom} M. ».",
     "complet": "La partie est complète.",
     "interdit": "Tu ne peux plus ajouter d'invité. Demande à l'animateur.",
     "close": "La partie n'est plus ouverte.",
@@ -445,6 +447,7 @@
       "ajoutInvalide": "Indiquez un prénom (40 caractères au plus).",
       "ajoutEchec": "L'invité n'a pas pu être ajouté. Réessayez.",
       "complet": "La soirée est complète (150 joueurs).",
+      "prenomPris": "Le prénom {prenom} est déjà pris dans la soirée. Ajoutez l'initiale de son nom, par exemple « {prenom} M. ».",
       "ajoute": "{prenom} rejoint {equipe}.",
       "ajouteSansEquipe": "{prenom} est ajouté, sans équipe pour l'instant.",
       "sansTelephone": "sans téléphone",

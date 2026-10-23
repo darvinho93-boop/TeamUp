@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button, TextField } from '@teamup/ui/react';
 import type { GroupePublic } from '@/lib/partie';
 
-type Erreur = 'vide' | 'complet' | 'interdit' | 'close' | 'serveur';
+type Erreur = 'vide' | 'pris' | 'complet' | 'interdit' | 'close' | 'serveur';
 
 /**
  * Un joueur autorisé par la régie ajoute un invité sans téléphone : son prénom, son groupe si la
@@ -56,7 +56,11 @@ export function AjoutInvite({
       if (reponse.ok) return setAjoute((await reponse.json()) as typeof ajoute);
       const { erreur: code_ } = (await reponse.json().catch(() => ({}))) as { erreur?: string };
       setErreur(
-        code_ === 'complet' || code_ === 'interdit' || code_ === 'close' ? code_ : 'serveur',
+        code_ === 'prenom_pris'
+          ? 'pris'
+          : code_ === 'complet' || code_ === 'interdit' || code_ === 'close'
+            ? code_
+            : 'serveur',
       );
       setEtapeGroupe(false);
     } catch {
@@ -135,7 +139,7 @@ export function AjoutInvite({
         autoCapitalize="words"
         enterKeyHint="go"
         required
-        {...(erreur ? { error: t(erreur) } : {})}
+        {...(erreur ? { error: t(erreur, { prenom: prenom.trim() }) } : {})}
       />
       <div className="tu-player__actions">
         <Button type="submit" variant="accent" size="lg" block disabled={envoi}>

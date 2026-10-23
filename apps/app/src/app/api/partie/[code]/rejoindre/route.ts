@@ -11,7 +11,13 @@ const Arrivee = z.object({
   volontaire: z.boolean().optional(),
 });
 
-const STATUT = { code_inconnu: 404, complet: 409, langue: 422, groupe: 422 } as const;
+const STATUT = {
+  code_inconnu: 404,
+  complet: 409,
+  langue: 422,
+  groupe: 422,
+  prenom_pris: 409,
+} as const;
 
 /**
  * Entrée dans la partie. Idempotente : un joueur qui a déjà sa session dans cette salle

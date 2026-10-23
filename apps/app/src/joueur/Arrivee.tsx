@@ -19,7 +19,7 @@ const TITRES: Record<Langue, string> = {
   ta: 'உங்கள் மொழி',
 };
 
-type Erreur = 'vide' | 'complet' | 'codeInconnu' | 'serveur';
+type Erreur = 'vide' | 'pris' | 'complet' | 'codeInconnu' | 'serveur';
 
 /**
  * Langue, puis prénom, puis groupe si la soirée en a (lot 11), puis « Capitaine ? », puis
@@ -65,10 +65,27 @@ export function Arrivee({
     router.refresh();
   };
 
-  const validerPrenom = (e: FormEvent) => {
+  const validerPrenom = async (e: FormEvent) => {
     e.preventDefault();
     if (!prenom.trim()) return setErreur('vide');
     setErreur(undefined);
+    // Un doublon se refuse dès cet écran ; sans réponse du serveur, on continue : l'arrivée
+    // revérifie et ramène ici au besoin.
+    setEnvoi(true);
+    try {
+      const reponse = await fetch(`/api/partie/${code}/prenom`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ prenom }),
+      });
+      if (reponse.ok && !((await reponse.json()) as { libre: boolean }).libre) {
+        return setErreur('pris');
+      }
+    } catch {
+      // Réseau : voir plus haut.
+    } finally {
+      setEnvoi(false);
+    }
     if (groupes.length > 0) return setEtapeGroupe(true);
     setEtapeCapitaine(true);
   };
@@ -89,6 +106,13 @@ export function Arrivee({
         body: JSON.stringify({ prenom, langue, groupe, volontaire }),
       });
       if (reponse.ok) return setRejoint((await reponse.json()) as EtatJoueur);
+      const { erreur: code_ } = (await reponse.json().catch(() => ({}))) as { erreur?: string };
+      if (code_ === 'prenom_pris') {
+        // Pris entre-temps par un autre : retour au prénom, le choix du groupe sera redemandé.
+        setEtapeCapitaine(false);
+        setEtapeGroupe(false);
+        return setErreur('pris');
+      }
       setErreur(
         reponse.status === 409 ? 'complet' : reponse.status === 404 ? 'codeInconnu' : 'serveur',
       );
@@ -187,7 +211,7 @@ export function Arrivee({
           </ul>
           {erreur && (
             <p className="tu-player__error" role="alert">
-              {t(erreur)}
+              {t(erreur, { prenom: prenom.trim() })}
             </p>
           )}
         </div>
@@ -197,19 +221,22 @@ export function Arrivee({
 
   return (
     <Cadre>
-      <form className="tu-player__body" onSubmit={validerPrenom} noValidate>
+      <form className="tu-player__body" onSubmit={(e) => void validerPrenom(e)} noValidate>
         <h1 className="tu-player__title">{t('titre')}</h1>
         <TextField
           label={t('champ')}
           hint={t('aide')}
           value={prenom}
-          onChange={(e) => setPrenom(e.target.value)}
+          onChange={(e) => {
+            setPrenom(e.target.value);
+            if (erreur === 'pris') setErreur(undefined);
+          }}
           maxLength={40}
           autoComplete="given-name"
           autoCapitalize="words"
           enterKeyHint="go"
           required
-          {...(erreur ? { error: t(erreur) } : {})}
+          {...(erreur ? { error: t(erreur, { prenom: prenom.trim() }) } : {})}
         />
         <div className="tu-player__actions">
           <Button type="submit" variant="accent" size="lg" block disabled={envoi}>

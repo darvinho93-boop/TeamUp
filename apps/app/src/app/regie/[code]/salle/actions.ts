@@ -33,7 +33,12 @@ export async function ajouterInvite(
     p_prenom: saisie.data.prenom,
     ...(saisie.data.groupe ? { p_groupe: saisie.data.groupe } : {}),
   });
-  if (error) return { erreur: /complet/.test(error.message) ? t('complet') : t('ajoutEchec') };
+  if (error) {
+    if (/déjà pris/.test(error.message)) {
+      return { erreur: t('prenomPris', { prenom: saisie.data.prenom }) };
+    }
+    return { erreur: /complet/.test(error.message) ? t('complet') : t('ajoutEchec') };
+  }
   revalidatePath(`/regie/${evenement.code}/salle`);
   const ajout = data as { prenom: string; equipe: { nom: string } | null };
   return {

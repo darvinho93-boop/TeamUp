@@ -872,6 +872,7 @@ export type Database = {
           role: Database['public']['Enums']['role_animateur'];
         }[];
       };
+      cle_prenom: { Args: { p_prenom: string }; Returns: string };
       contenu_bien_forme: {
         Args: {
           p_jeu: Database['public']['Enums']['jeu'];
@@ -971,6 +972,10 @@ export type Database = {
         Returns: Json;
       };
       pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json };
+      prenom_disponible: {
+        Args: { p_code: string; p_prenom: string };
+        Returns: boolean;
+      };
       quiz_du_joueur: {
         Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
         Returns: Json;

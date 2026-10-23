@@ -31,7 +31,21 @@ export async function etatPourJeton(code: string, jeton: string): Promise<EtatJo
 }
 
 export type ResultatArrivee =
-  { ok: true } | { ok: false; erreur: 'code_inconnu' | 'complet' | 'langue' | 'groupe' };
+  | { ok: true }
+  | { ok: false; erreur: 'code_inconnu' | 'complet' | 'langue' | 'groupe' | 'prenom_pris' };
+
+/**
+ * Le prénom est-il libre dans cette soirée ? Sans casse ni accents (`cle_prenom`). Indicatif :
+ * l'arrivée revérifie sous verrou.
+ */
+export async function prenomDisponible(code: string, prenom: string): Promise<boolean> {
+  const { data, error } = await supabaseService().rpc('prenom_disponible', {
+    p_code: code,
+    p_prenom: prenom,
+  });
+  if (error) throw new Error(error.message);
+  return data !== false;
+}
 
 export async function rejoindre(
   code: string,
@@ -52,6 +66,7 @@ export async function rejoindre(
     p_volontaire: volontaire,
   });
   if (!error) return { ok: true };
+  if (/déjà pris/.test(error.message)) return { ok: false, erreur: 'prenom_pris' };
   if (/complet/.test(error.message)) return { ok: false, erreur: 'complet' };
   if (/langue/.test(error.message)) return { ok: false, erreur: 'langue' };
   if (/groupe/.test(error.message)) return { ok: false, erreur: 'groupe' };
@@ -61,7 +76,7 @@ export async function rejoindre(
 
 export type ResultatAjout =
   | { ok: true; prenom: string; equipe: string | null }
-  | { ok: false; erreur: 'session' | 'interdit' | 'complet' | 'groupe' | 'close' };
+  | { ok: false; erreur: 'session' | 'interdit' | 'complet' | 'groupe' | 'close' | 'prenom_pris' };
 
 /**
  * Le joueur de ce cookie ajoute un invité sans téléphone. La base vérifie seule qu'il y est
@@ -83,6 +98,7 @@ export async function ajouterInvite(
   });
   if (error) {
     if (/non autorisé/.test(error.message)) return { ok: false, erreur: 'interdit' };
+    if (/déjà pris/.test(error.message)) return { ok: false, erreur: 'prenom_pris' };
     if (/complet/.test(error.message)) return { ok: false, erreur: 'complet' };
     if (/groupe/.test(error.message)) return { ok: false, erreur: 'groupe' };
     if (/clos/.test(error.message)) return { ok: false, erreur: 'close' };

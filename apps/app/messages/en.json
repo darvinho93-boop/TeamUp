@@ -17,6 +17,7 @@
     "aide": "Your team will see it. First name only.",
     "bouton": "Let's go",
     "vide": "Type your first name.",
+    "pris": "The name {prenom} is already taken in this game. Add your last initial, for example “{prenom} M.”.",
     "complet": "The game is full.",
     "codeInconnu": "This game is no longer open.",
     "serveur": "That didn't work. Try again."
@@ -57,6 +58,7 @@
     "faitAide": "Tell them: their team is waiting. They follow the game on the screen.",
     "encore": "Add another guest",
     "vide": "Type their first name.",
+    "pris": "The name {prenom} is already taken in this game. Add their last initial, for example “{prenom} M.”.",
     "complet": "The game is full.",
     "interdit": "You can no longer add guests. Ask the host.",
     "close": "This game is no longer open.",
@@ -445,6 +447,7 @@
       "ajoutInvalide": "Enter a first name (40 characters at most).",
       "ajoutEchec": "The guest could not be added. Try again.",
       "complet": "The event is full (150 players).",
+      "prenomPris": "The name {prenom} is already taken at this event. Add their last initial, for example “{prenom} M.”.",
       "ajoute": "{prenom} joins {equipe}.",
       "ajouteSansEquipe": "{prenom} is added, with no team for now.",
       "sansTelephone": "no phone",
