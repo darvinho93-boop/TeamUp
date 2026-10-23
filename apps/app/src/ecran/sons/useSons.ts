@@ -98,7 +98,8 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
   }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs, depart, duree, decalageMs]);
 
   const jouer = useCallback(
-    (son: Son, apresMs?: number, montee?: Montee) => lecteur?.jouer(son, apresMs, montee),
+    (son: Son, apresMs?: number, montee?: Montee, dansLeSonMs?: number) =>
+      lecteur?.jouer(son, apresMs, montee, dansLeSonMs),
     [lecteur],
   );
 

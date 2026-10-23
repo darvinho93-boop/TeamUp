@@ -140,6 +140,14 @@ describe('la passe finale de l’ouverture', () => {
     expect(FINALE.logo - COUP_FINALE_MS).toBeGreaterThanOrEqual(0);
   });
 
+  it('reprise en cours de boucle, part plus tôt ou en route, le coup toujours sur le logo', () => {
+    const avance = FINALE.logo - COUP_FINALE_MS;
+    expect(sonsDeLaFinale(1000)).toEqual([{ son: 'finale', apresMs: avance - 1000 }]);
+    expect(sonsDeLaFinale(4000)).toEqual([
+      { son: 'finale', apresMs: 0, dansLeSonMs: 4000 - avance },
+    ]);
+  });
+
   it('le coup annoncé est bien celui du fichier, à 15 ms près', () => {
     const octets = readFileSync(new URL('../public/sons/finale.wav', import.meta.url));
     const frequence = octets.readUInt32LE(24);

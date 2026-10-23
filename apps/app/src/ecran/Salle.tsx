@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { cx, Wordmark } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
-import { attenteFinDeBoucle, FINALE } from '@/lib/ouverture';
+import { FINALE, raccordFinale } from '@/lib/ouverture';
 import type { EtatSalle, Scene as NomDeScene } from '@/lib/salle';
-import { INTERLUDE_MS, sonsDeLaFinale, type Son } from '@/lib/sons';
+import { INTERLUDE_MS, sonsDeLaFinale } from '@/lib/sons';
 import { IconeInstagram } from '@/marque/IconeInstagram';
 import { INSTAGRAM } from '@/marque/instagram';
 import { Pictogramme } from '@/marque/Pictogramme';
@@ -56,9 +56,9 @@ export function Salle({
     return () => clearTimeout(fin);
   }, [interlude]);
 
-  // De l'ouverture à l'accueil, la boucle en cours va à son terme (on ne coupe pas la
-  // cinématique), puis une passe finale forme le logo Team Up! par-dessus la page du QR code.
-  // Seulement si cet écran a vu le passage : ni au chargement, ni dans l'aperçu, ni sans
+  // De l'ouverture à l'accueil, une passe finale forme le logo Team Up! par-dessus la page du QR
+  // code, sans couper la cinématique : elle prend la boucle au vol tant qu'elle la suit à
+  // l'identique, sinon la boucle va d'abord au bout de son cycle (`raccordFinale`). Seulement si cet écran a vu le passage : ni au chargement, ni dans l'aperçu, ni sans
   // mouvement (on arrive alors directement sur la page). La boucle est en CSS : elle a démarré
   // quand la scène d'ouverture a été montée.
   const debutBoucle = useRef(0);
@@ -68,6 +68,7 @@ export function Salle({
   const [sceneVue, setSceneVue] = useState(scene);
   const [passage, setPassage] = useState(0);
   const [finaleDe, setFinaleDe] = useState(0);
+  const [depuisMs, setDepuisMs] = useState(0);
   const [termine, setTermine] = useState(0);
   if (scene !== sceneVue) {
     setSceneVue(scene);
@@ -81,15 +82,17 @@ export function Salle({
   const sceneAffichee = finDeBoucle ? 'ouverture' : scene;
 
   // Les sons partent avec la passe finale, pas au clic : le lecteur du moment, pris au vol.
-  const jouerRef = useRef<((son: Son, apresMs?: number) => void) | null>(null);
+  const jouerRef = useRef<ReturnType<typeof useSons>['jouer']>(null);
   useEffect(() => {
     if (!passage) return;
-    const attente = attenteFinDeBoucle(performance.now() - debutBoucle.current);
+    const { attenteMs, depuisMs: depuis } = raccordFinale(performance.now() - debutBoucle.current);
     const debut = setTimeout(() => {
+      setDepuisMs(depuis);
       setFinaleDe(passage);
-      for (const pas of sonsDeLaFinale()) jouerRef.current?.(pas.son, pas.apresMs);
-    }, attente);
-    const fin = setTimeout(() => setTermine(passage), attente + FINALE.fin);
+      for (const pas of sonsDeLaFinale(depuis))
+        jouerRef.current?.(pas.son, pas.apresMs, undefined, pas.dansLeSonMs);
+    }, attenteMs);
+    const fin = setTimeout(() => setTermine(passage), attenteMs + FINALE.fin - depuis);
     return () => {
       clearTimeout(debut);
       clearTimeout(fin);
@@ -140,7 +143,7 @@ export function Salle({
               <Pictogramme taille="lg" anime />
             </div>
           )}
-          {enFinale && <Finale key={passage} />}
+          {enFinale && <Finale key={passage} depuisMs={depuisMs} />}
           {sons.aActiver && (
             <button
               type="button"

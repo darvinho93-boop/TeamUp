@@ -1,8 +1,8 @@
 /* Ouverture de l'écran commun (2026-10-17, revue le 2026-10-18). Les quatre ronds reprennent le
    teaser : ils apparaissent, se rejoignent en tournant, forment le pictogramme, se remettent en
-   cercle et se dispersent, en boucle. Au passage à l'accueil, la boucle en cours va à son terme,
-   puis une passe finale au même rythme s'arrête sur le logo Team Up! et découvre la page du QR
-   code. Sous prefers-reduced-motion, rien ne bouge : le pictogramme s'affiche, pas de passe
+   cercle et se dispersent, en boucle. Au passage à l'accueil, une passe finale au même rythme,
+   qui reprend la boucle au vol quand elle le peut (sinon après la fin du cycle), s'arrête sur le
+   logo Team Up! et découvre la page du QR code. Sous prefers-reduced-motion, rien ne bouge : le pictogramme s'affiche, pas de passe
    finale (Salle.tsx). */
 
 /* ---------------------------------------------------------------- Les quatre ronds */
@@ -96,21 +96,26 @@
     animation: tu-ronds-logo-boucle var(--tu-dur-ronds-cycle) var(--tu-ease) infinite;
   }
 
-  /* Une dernière passe, au rythme de la boucle, qui s'arrête sur le logo et son nom. */
+  /* Une dernière passe, au rythme de la boucle, qui s'arrête sur le logo et son nom. Reprise en
+     cours de boucle, elle part à --tu-finale-depuis de son début (Finale.tsx). */
   .tu-ronds--finale .tu-rond {
-    animation: tu-rond-finale var(--tu-dur-ronds-cycle) var(--tu-ease) both;
+    animation: tu-rond-finale var(--tu-dur-ronds-cycle) var(--tu-ease)
+      calc(var(--tu-finale-depuis, 0ms) * -1) both;
   }
 
   .tu-ronds--finale .tu-ronds__ronde {
-    animation: tu-ronde-finale var(--tu-dur-ronds-cycle) var(--tu-ease) both;
+    animation: tu-ronde-finale var(--tu-dur-ronds-cycle) var(--tu-ease)
+      calc(var(--tu-finale-depuis, 0ms) * -1) both;
   }
 
   .tu-ronds--finale .tu-ronds__logo {
-    animation: tu-ronds-logo-finale var(--tu-dur-ronds-cycle) var(--tu-ease) both;
+    animation: tu-ronds-logo-finale var(--tu-dur-ronds-cycle) var(--tu-ease)
+      calc(var(--tu-finale-depuis, 0ms) * -1) both;
   }
 
   .tu-ronds--finale .tu-ronds__nom {
-    animation: tu-ronds-nom-finale var(--tu-dur-ronds-cycle) var(--tu-ease) both;
+    animation: tu-ronds-nom-finale var(--tu-dur-ronds-cycle) var(--tu-ease)
+      calc(var(--tu-finale-depuis, 0ms) * -1) both;
   }
 }
 

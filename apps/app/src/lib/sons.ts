@@ -176,11 +176,17 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
 /**
  * La passe finale de l'ouverture (décision du 2026-10-18) : la piste du reel Team Up!, à la place
  * du roulement et du jingle. Elle part de sorte que son coup tombe quand le logo se forme
- * (`FINALE.logo`), après sa montée sous les ronds. L'écran la joue au début de la passe, une fois
- * la boucle en cours menée à son terme (`Salle.tsx`).
+ * (`FINALE.logo`), après sa montée sous les ronds. L'écran la joue au début de la passe
+ * (`Salle.tsx`) ; une passe reprise à `depuisMs` de son début (2026-10-23) prend la piste en
+ * route au besoin (`dansLeSonMs`), pour que le coup tombe toujours sur le logo.
  */
-export function sonsDeLaFinale(): { son: Son; apresMs: number }[] {
-  return [{ son: 'finale', apresMs: FINALE.logo - COUP_FINALE_MS }];
+export function sonsDeLaFinale(
+  depuisMs = 0,
+): { son: Son; apresMs: number; dansLeSonMs?: number }[] {
+  const depart = FINALE.logo - COUP_FINALE_MS - depuisMs;
+  return depart >= 0
+    ? [{ son: 'finale', apresMs: depart }]
+    : [{ son: 'finale', apresMs: 0, dansLeSonMs: -depart }];
 }
 
 /**

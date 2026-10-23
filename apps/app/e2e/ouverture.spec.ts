@@ -46,14 +46,10 @@ test('l’ouverture mène à la page du QR code par le logo Team Up!', async ({ 
   );
   await regie.getByRole('button', { name: 'Accueil', exact: true }).click();
 
-  // La boucle en cours va à son terme : l'écran reste sur l'ouverture, sans couper la cinématique.
-  await expect(ecran.locator('[data-fin-de-boucle="true"]')).toBeVisible({ timeout: 5000 });
-  await expect(ecran.locator('[data-scene="ouverture"]')).toBeVisible();
-  await expect(ecran.getByTestId('finale')).toHaveCount(0);
-
-  // Puis la passe finale : le logo et son nom, enfin la page du QR code.
+  // La passe finale prend la boucle au vol, ou après la fin du cycle si la boucle défaisait déjà
+  // le logo (l'écran reste alors sur l'ouverture) : le logo et son nom, puis la page du QR code.
   const finale = ecran.getByTestId('finale');
-  await expect(finale).toBeVisible({ timeout: 12_000 });
+  await expect(finale).toBeVisible({ timeout: 6000 });
   await expect(finale.locator('.tu-ronds__nom')).toBeVisible();
   await expect(ecran.locator('[data-fin-de-boucle="true"]')).toHaveCount(0);
   await expect(finale).toHaveCount(0, { timeout: 12_000 });

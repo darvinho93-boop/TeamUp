@@ -22,9 +22,10 @@ const CANAL = 'teamup-son';
 export interface Lecteur {
   /**
    * Joue un son, tout de suite ou après un délai (le jingle attend la fin de l'interlude) ;
-   * `montee` en change le niveau et la vitesse (le battement des dernières secondes).
+   * `montee` en change le niveau et la vitesse (le battement des dernières secondes) ;
+   * `dansLeSonMs` le prend en route (la passe finale reprise en cours de boucle).
    */
-  jouer(son: Son, apresMs?: number, montee?: Montee): void;
+  jouer(son: Son, apresMs?: number, montee?: Montee, dansLeSonMs?: number): void;
   /** La musique de fond, en boucle : en changer ou l'éteindre (`null`), en fondu. */
   fond(son: Fond | null): void;
   regler(reglage: ReglageSon): void;
@@ -120,9 +121,9 @@ export async function creerLecteur(
   const lecteur: Lecteur = {
     journal,
     reglage,
-    jouer(son, apresMs = 0, montee) {
+    jouer(son, apresMs = 0, montee, dansLeSonMs = 0) {
       if (apresMs > 0) {
-        setTimeout(() => lecteur.jouer(son, 0, montee), apresMs);
+        setTimeout(() => lecteur.jouer(son, 0, montee, dansLeSonMs), apresMs);
         return;
       }
       const maintenant = performance.now();
@@ -143,9 +144,9 @@ export async function creerLecteur(
         voix.source.onended = () => {
           if (enCours === voix) enCours = null;
         };
-        effacerLeFond(voix.source.buffer?.duration ?? 1);
+        effacerLeFond(Math.max(0, (voix.source.buffer?.duration ?? 1) - dansLeSonMs / 1000));
       }
-      voix.source.start();
+      voix.source.start(0, dansLeSonMs / 1000);
       journal.push({ son, a: Math.round(maintenant) });
     },
     fond(son) {
