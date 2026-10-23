@@ -889,3 +889,22 @@ choix de l'animateur.
 - Risques connus, non traités : aucune limite de débit sur l'arrivée (un script pourrait remplir
   une soirée jusqu'à 150 ; la Salle permet de retirer) ni sur le formulaire de devis (champ piège
   et délai seulement ; une règle de limite de débit Vercel est possible).
+
+## Conventions posées le 2026-10-23 (prénoms, indices, ouverture)
+
+- **Prénoms uniques par soirée** : `placer_joueur` refuse, sous le verrou d'arrivée, un prénom
+  déjà pris (`cle_prenom` : sans casse, sans accents latins, espaces réduits ; erreur
+  `unique_violation`, « prénom déjà pris »). Couvre le QR code, l'invité ajouté par un joueur et
+  celui de la régie (migration `20261023110000`). Le téléphone le demande dès l'écran du prénom
+  (`POST /api/partie/[code]/prenom` → `prenom_disponible`, rôle de service), avant le groupe et
+  « Capitaine ? » ; un doublon arrivé entre-temps ramène au prénom. Message : ajouter l'initiale
+  du nom. Les doublons d'avant ne sont pas touchés.
+- Points communs à l'écran : les indices **côte à côte**, et chrono, paliers, indices et verdict
+  se réduisent ensemble (`--tu-pc-echelle`, `useAjusterTexte`) jusqu'à tenir. La fête est hors
+  du bloc mesuré (position fixe). `e2e/points-communs-ecran.spec.ts` : trois indices en trois
+  langues.
+- Ouverture → accueil, **raccourcie** : la passe finale **prend la boucle au vol** tant qu'elle
+  la suit à l'identique (avant 62 % du cycle, `raccordFinale`), sinon la boucle finit son cycle
+  (3,4 s au plus). Ses animations et le fondu sont avancés de `--tu-finale-depuis` ; la piste du
+  reel part plus tôt ou **en route** (`dansLeSonMs`), son coup toujours sur le logo. Le QR paraît
+  0,8 s après le nom (`FINALE.qr` 6,4 s, `fin` 7 s). On ne coupe toujours pas la cinématique.
