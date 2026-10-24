@@ -448,20 +448,42 @@
   pointer-events: none;
 }
 
+/* Le « Merci » et l'invitation gardent leur taille ; le logo prend la hauteur qui reste et s'y
+   réduit (sa zone est un conteneur), au lieu de déborder sur les textes d'un petit projecteur. */
 .tu-stage-cloture {
   align-items: center;
   gap: var(--tu-space-6);
   text-align: center;
+  container-type: size;
 }
 
 .tu-stage-cloture__logo {
   flex: 1;
   width: 100%;
   min-height: 0;
+  container-type: size;
+}
+
+.tu-stage-cloture .tu-ronds {
+  --tu-cloture-picto-taille: min(var(--tu-picto-lg), var(--tu-cloture-picto));
+  --tu-rond: calc(var(--tu-cloture-picto-taille) * var(--tu-ronds-rond-ratio));
+  --tu-ronds-ronde: calc(var(--tu-cloture-picto-taille) * var(--tu-ronds-ronde-ratio));
+}
+
+.tu-stage-cloture .tu-ronds__logo {
+  gap: min(var(--tu-space-6), var(--tu-cloture-nom) / 4);
+}
+
+.tu-stage-cloture .tu-picto {
+  --tu-picto-taille: var(--tu-cloture-picto-taille);
+}
+
+.tu-stage-cloture .tu-ronds__nom {
+  --tu-wordmark-size: min(var(--tu-size-5xl), var(--tu-cloture-nom));
 }
 
 .tu-stage-cloture .tu-stage-insta {
-  --tu-stage-insta-qr: var(--tu-stage-insta-qr-petit);
+  --tu-stage-insta-qr: min(var(--tu-stage-insta-qr-petit), var(--tu-cloture-qr));
 }
 
 .tu-stage-cloture .tu-stage-insta__pseudo {

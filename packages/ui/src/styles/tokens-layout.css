@@ -85,6 +85,14 @@
   --tu-ronds-coin-rond: 1.1rem;
   --tu-ronds-coin-ronde: 1.6rem;
   --tu-ronds-coin-loin: 3rem;
+  /* Clôture (2026-10-24) : le logo et son nom suivent la hauteur qui leur reste sous les textes
+     (parts de leur zone), le QR celle de la scène ; un rond et la ronde restent à l'échelle du
+     pictogramme (3,25 et 9 rem pour 16). Au plus, les tailles de l'ouverture. */
+  --tu-cloture-picto: 52cqh;
+  --tu-cloture-nom: 17cqh;
+  --tu-cloture-qr: 24cqh;
+  --tu-ronds-rond-ratio: 0.2;
+  --tu-ronds-ronde-ratio: 0.56;
 
   /* Explications animées (lot 12) : hauteur du décor, silhouette, écran, quadrant, phrase. */
   /* Confettis et feux d'artifice de l'écran commun (2026-10-22). */
