@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useRef, useSyncExternalStore, type CSSProperties } from 'react';
+import { useContext, useEffect, useRef, type CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier, Wordmark } from '@teamup/ui/react';
 import {
@@ -42,7 +42,7 @@ import {
   pagesDe,
 } from '@/lib/membres';
 import { Celebration, useArrivee, type Force } from './Celebration';
-import { Chrono, useMaintenant } from './Chrono';
+import { Chrono, useMaintenant, useMonte } from './Chrono';
 import { Recompense } from './Recompense';
 import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
@@ -164,11 +164,7 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
   }));
   const maintenant = useMaintenant(equipes.some((e) => e.pages.length > 1)) + decalageMs;
   // Au premier rendu, la première page : le serveur et le navigateur n'ont pas la même heure.
-  const monte = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+  const monte = useMonte();
   return (
     <div className="tu-stage__body" data-scene="equipes">
       <h1 className="tu-stage__xl">{t('equipes')}</h1>

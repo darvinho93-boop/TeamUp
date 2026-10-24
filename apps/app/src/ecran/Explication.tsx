@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { carteA, SCRIPTS_EXPLICATION, type GameCode, type ScriptExplication } from '@teamup/game';
 import { MESSAGES } from '@/i18n/messages';
 import type { Langue } from '@/lib/partie';
-import { useMaintenant } from './Chrono';
+import { useMaintenant, useMonte } from './Chrono';
 import { VisuelCarte } from './explications/Visuels';
 import { Multilingue } from './Multilingue';
 
@@ -34,7 +34,10 @@ export function Explication({
 }) {
   const t = useTranslations();
   const maintenant = useMaintenant(true);
-  const ecoule = departMs === null ? 0 : maintenant + decalageMs - departMs;
+  // Au premier rendu, le début de la première carte : l'heure du serveur n'est pas celle de
+  // l'écran (erreur d'hydratation). La bonne carte suit aussitôt.
+  const monte = useMonte();
+  const ecoule = departMs === null || !monte ? 0 : maintenant + decalageMs - departMs;
   const { index, progression } = carteA(script, ecoule);
   const cartes = SCRIPTS_EXPLICATION[script];
   const carte = cartes[index]!;

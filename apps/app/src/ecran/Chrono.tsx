@@ -1,10 +1,23 @@
 'use client';
 
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { cx } from '@teamup/ui/react';
 import { formatChrono, phaseDuChrono, tempsRestant } from '@teamup/game';
 import { monteeDuChrono, sonDuChrono } from '@/lib/sons';
 import { SonsContexte } from './sons/useSons';
+
+/**
+ * Faux au premier rendu, vrai ensuite. Ce qui se déduit de l'heure attend d'être vrai : le serveur
+ * et le navigateur n'ont pas la même heure, et un premier rendu différent est une erreur
+ * d'hydratation.
+ */
+export function useMonte(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
 
 /** L'heure du navigateur, rafraîchie cinq fois par seconde tant que `actif`. */
 export function useMaintenant(actif: boolean): number {
