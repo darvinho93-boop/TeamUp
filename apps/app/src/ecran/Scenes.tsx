@@ -285,7 +285,7 @@ function Intro({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   // La règle encadrée en haut, dans toutes les langues de la soirée (2026-10-22), puis le nom.
   return (
     <div className="tu-stage__body tu-stage-reveal" data-scene="intro">
-      <section className="tu-stage-regle" data-testid="regle">
+      <section className="tu-stage-regle tu-stage-regle--sous-marques" data-testid="regle">
         <p className="tu-stage-regle__titre">{t('ecran.commentJouer')}</p>
         <Multilingue
           textes={etat.evenement.langues.map((langue) => ({

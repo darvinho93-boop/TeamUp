@@ -15,6 +15,15 @@
   align-self: center;
 }
 
+/* Scène étroite (projecteur de 1 024 px) : entre les marques des coins, le titre n'aurait plus la
+   place d'un mot ; il passe dessous, comme la règle de la présentation (2026-10-24). */
+@container tu-stage (width < 70rem) {
+  .tu-expl .tu-expl__titre {
+    max-width: var(--tu-stage-regle-max);
+    margin-top: var(--tu-stage-bandeau);
+  }
+}
+
 .tu-expl__carte {
   display: flex;
   flex: 1;

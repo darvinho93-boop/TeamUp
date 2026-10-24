@@ -38,6 +38,11 @@
   --tu-z-consentement: 30; /* la demande de consentement de la vitrine, au-dessus de l'en-tête */
   /* Place du logo en haut à droite de l'écran commun : ce qu'un en-tête pleine largeur lui laisse. */
   --tu-stage-marque: 21rem;
+  /* … et sa hauteur sous le haut de la scène (son retrait, le pictogramme, un écart, moins la
+     marge de la scène) : ce qu'un bloc pleine largeur laisse au-dessus de lui (2026-10-24). */
+  --tu-stage-bandeau: calc(
+    var(--tu-space-6) + var(--tu-picto-coin) + var(--tu-space-4) - var(--tu-space-12)
+  );
 
   /* Écran commun : scène 16:9 de référence (1 920 × 1 080), QR, colonnes et podium. */
   --tu-stage-width: 120rem;

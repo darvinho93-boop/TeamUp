@@ -14,6 +14,7 @@
   font-family: var(--tu-font-display);
   font-size: var(--tu-size-2xl);
   line-height: var(--tu-leading-tight);
+  container: tu-stage / inline-size;
 }
 
 /* Tamoul, à l'écran comme ailleurs : Noto Sans Tamil, le latin gardant Poppins. */
@@ -729,19 +730,27 @@
 }
 
 /* « Comment on joue », encadré en haut de la présentation d'un jeu et de son explication
-   (2026-10-22) : la règle dans toutes les langues de la soirée. */
+   (2026-10-22) : la règle dans toutes les langues de la soirée. Il ne passe jamais sous les
+   marques des coins (2026-10-24) : entre elles quand il tient sur une ligne (le titre d'une
+   explication), sous elles quand c'est la règle, sur plusieurs lignes. */
 .tu-stage-regle {
   display: flex;
+  flex: none;
   flex-direction: column;
   align-items: center;
   align-self: center;
-  max-width: var(--tu-stage-regle-max);
+  max-width: min(var(--tu-stage-regle-max), 100% - 2 * var(--tu-stage-marque));
   gap: var(--tu-space-3);
   padding: var(--tu-space-6) var(--tu-space-12);
   border: var(--tu-stage-cadre) solid var(--tu-primary);
   border-radius: var(--tu-radius-lg);
   background: var(--tu-surface);
   text-align: center;
+}
+
+.tu-stage-regle--sous-marques {
+  max-width: var(--tu-stage-regle-max);
+  margin-top: var(--tu-stage-bandeau);
 }
 
 .tu-stage-regle__titre {
