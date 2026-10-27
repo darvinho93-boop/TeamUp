@@ -941,3 +941,13 @@ Reprise de l'inventaire du 2026-10-24 (`apps/app/e2e/inventaire.spec.ts`, hors C
   cookie.
 - `e2e/ecran-equipes.spec.ts` vérifie aussi la scène entière dans la fenêtre à 1 280 × 720 et
   1 024 × 768.
+- Inventaire refait **en ligne** le 2026-10-27 (compte d'animateur et soirée jetables, créés par
+  le rôle de service puis supprimés), puis sept retouches : chrono du quiz en grand
+  (`.tu-stage-quiz__chrono`, 5xl) ; ordre de passage en lignes équilibrées ; nom d'équipe du verdict
+  d'un thème joué d'un bloc, sans césure ; sur la page Instagram, l'invitation garde le beige sous
+  elle (les ronds passent derrière) ; une **clôture trouvée au chargement** s'affiche formée, sans
+  rejouer sa cinématique (`data-d-emblee` sur la scène, posé par `Salle.tsx` tant que la scène n'a
+  pas changé) ; au téléphone, le nom d'équipe garde ses mots et les points passent dessous s'il le
+  faut ; en mode jetons, les réponses passent à la ligne par mots entiers (plus de césure).
+- Pour l'inventaire en local, arrêter tout serveur resté sur `:3100` : Playwright le réutilise
+  (`reuseExistingServer`), et les captures montrent alors l'ancien build.
