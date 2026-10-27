@@ -99,6 +99,16 @@
   color: var(--tu-text-muted);
 }
 
+/* Une pastille d'équipe ne sort jamais de sa carte : réduite par l'écran si son nom est long,
+   puis coupée en dernier recours. */
+.tu-stage .tu-team--badge {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tu-stage-badge--grand {
   font-size: var(--tu-size-3xl);
   padding: var(--tu-space-3) var(--tu-space-8);
@@ -233,10 +243,11 @@
   background: var(--tu-surface);
 }
 
-/* Scène « Équipes » : le nom et l'effectif sur une ligne, pour laisser la hauteur aux prénoms. */
+/* Scène « Équipes » : le nom et l'effectif sur une ligne, pour laisser la hauteur aux prénoms ;
+   toujours une seule, même pour un nom long (réduit par l'écran) : une carte dont l'effectif
+   passait à la ligne avait des prénoms plus petits que les autres (inventaire du 2026-10-24). */
 .tu-stage-team__tete {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   column-gap: var(--tu-space-4);
@@ -244,6 +255,7 @@
 }
 
 .tu-stage-team__nom {
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   font-size: var(--tu-size-3xl);
@@ -295,6 +307,11 @@
   white-space: nowrap;
 }
 
+.tu-stage-team__nombre {
+  flex: none;
+  white-space: nowrap;
+}
+
 /* L'étoile garde la couleur du texte : celle de l'équipe 1 (navy) disparaît sur le fond stage. */
 .tu-stage-membre__capitaine {
   margin-inline-end: var(--tu-space-2);
@@ -328,6 +345,32 @@
   padding: 0;
   list-style: none;
   counter-reset: jeu;
+}
+
+/* Le programme remplit la scène (inventaire du 2026-10-24 : sept lignes en haut à gauche) : une
+   colonne centrée, les lignes se partagent la hauteur, la police suit (--tu-programme-n). */
+.tu-stage-list--programme {
+  display: grid;
+  flex: 1;
+  grid-auto-rows: minmax(0, 1fr);
+  align-content: center;
+  align-self: center;
+  width: min(100%, var(--tu-stage-regle-max));
+  min-height: 0;
+  container-type: size;
+}
+
+.tu-stage-list--programme .tu-stage-list__item {
+  display: flex;
+  align-items: center;
+  /* En flex, l'espace qui suit le numéro (::before) disparaît : l'écart le remplace. */
+  gap: 0.3em;
+  max-height: calc(var(--tu-size-5xl) * 1.6);
+  padding-block: 0;
+  font-size: min(
+    var(--tu-size-4xl),
+    (100cqh - var(--tu-space-4) * (var(--tu-programme-n) - 1)) / var(--tu-programme-n) * 0.5
+  );
 }
 
 .tu-stage-list__item {
@@ -390,6 +433,20 @@
 
 .tu-stage-jeu .tu-stage__l {
   font-size: calc(var(--tu-size-3xl) * var(--tu-pc-echelle));
+}
+
+/* Les chronos de jeu en très grand (inventaire du 2026-10-24 : modestes au milieu du vide),
+   réduits avec le reste de leur bloc quand il le faut. */
+.tu-stage .tu-stage-chrono.tu-stage__giant {
+  font-size: var(--tu-stage-chrono);
+}
+
+.tu-stage .tu-stage-jeu .tu-stage-chrono.tu-stage__giant {
+  font-size: calc(var(--tu-stage-chrono) * var(--tu-pc-echelle));
+}
+
+.tu-stage .tu-stage-surenchere .tu-stage-chrono.tu-stage__giant {
+  font-size: calc(var(--tu-stage-chrono) * var(--tu-surenchere-echelle));
 }
 
 .tu-stage-chrono {
@@ -509,6 +566,7 @@
 .tu-stage-theme {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: calc(var(--tu-space-4) * var(--tu-themes-echelle));
   min-height: 0;
   overflow: hidden;
@@ -524,7 +582,17 @@
   background: var(--tu-surface-muted);
 }
 
+/* Le thème au milieu de sa carte, en grand (inventaire du 2026-10-24 : un peu de texte en haut
+   d'une grande carte vide) ; réduit si besoin. */
+.tu-stage-theme {
+  text-align: center;
+}
+
 .tu-stage-theme .tu-stage-multi {
+  --tu-multi-taille: calc(var(--tu-size-4xl) * var(--tu-themes-echelle));
+}
+
+.tu-stage-theme--joue .tu-stage-multi {
   --tu-multi-taille: calc(var(--tu-size-3xl) * var(--tu-themes-echelle));
 }
 
@@ -565,6 +633,56 @@
 
 .tu-stage-surenchere .tu-stage__giant {
   font-size: calc(var(--tu-size-5xl) * var(--tu-surenchere-echelle));
+}
+
+/* Le chrono et le verdict sont dans le bloc du sujet, qui peut alors rétrécir : l'ajustement voit
+   ce qui en dépasse. */
+.tu-stage-surenchere .tu-stage-centre {
+  min-height: 0;
+}
+
+/* Quiz : la question seule, en grand, avant sa première réponse (réduite si besoin). */
+.tu-stage-question-seule {
+  --tu-question-echelle: 1;
+
+  min-height: 0;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.tu-stage-question-seule .tu-stage-multi {
+  --tu-multi-taille: calc(var(--tu-size-5xl) * var(--tu-question-echelle));
+}
+
+.tu-stage-question-seule :lang(ta) {
+  hyphens: manual;
+}
+
+/* Fin du quiz : les cartes remplissent la scène, leur contenu au milieu, en grand ; la police
+   suit la largeur d'une carte. */
+.tu-stage-fin-quiz .tu-stage-team {
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-4);
+  text-align: center;
+  container-type: inline-size;
+}
+
+.tu-stage-fin-quiz .tu-stage-team__nom {
+  max-width: 100%;
+  font-size: min(var(--tu-size-4xl), 11cqi);
+}
+
+.tu-stage-fin-quiz__nombre {
+  font-size: min(var(--tu-size-3xl), 9cqi);
+}
+
+.tu-stage-fin-quiz__points {
+  font-family: var(--tu-font-numeric);
+  font-size: min(var(--tu-size-4xl), 11cqi);
+  font-weight: 700;
+  color: var(--tu-primary);
 }
 
 /* Classement : toute la scène (2026-10-22). Les lignes se partagent la hauteur ; police et
@@ -673,6 +791,11 @@
 
 .tu-stage-podium__marche--3 .tu-stage-podium__socle {
   height: var(--tu-stage-podium-3);
+}
+
+/* « Merci à tous », sous le podium, au milieu. */
+.tu-stage-podium-merci {
+  text-align: center;
 }
 
 /* Coupe et médailles (2026-10-22). */
@@ -1069,10 +1192,13 @@
 
 /* Diffusion photo : toutes les photos du thème côte à côte ; au verdict, la gagnante seule,
    en grand. */
+/* Colonnes posées par l'écran (--tu-photos-colonnes) : 3 × 2 pour six photos plutôt que 4 + 2
+   (inventaire du 2026-10-24) ; les rangées se partagent la hauteur. */
 .tu-stage-photos {
   display: grid;
   flex: 1;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--tu-stage-team-min)), 1fr));
+  grid-template-columns: repeat(var(--tu-photos-colonnes, 3), minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
   gap: var(--tu-screen-gap);
   min-height: 0;
   margin: 0;
@@ -1154,7 +1280,7 @@
 .tu-stage-duel__prenom {
   margin: 0;
   font-family: var(--tu-font-display);
-  font-size: var(--tu-size-4xl);
+  font-size: var(--tu-size-5xl);
   font-weight: 700;
   line-height: 1.1;
 }

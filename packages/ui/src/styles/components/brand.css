@@ -201,11 +201,16 @@
 }
 
 /* Le son demande un clic pour démarrer : le seul bouton de l'écran commun, en bas à gauche. */
+/* « Activer le son », dans la marge du bas, au milieu : il ne couvre plus ni une carte ni un texte
+   (inventaire du 2026-10-24). On le clique à la souris, une fois : pas besoin d'une cible de doigt. */
 .tu-stage__son {
   position: absolute;
-  bottom: var(--tu-space-6);
-  left: var(--tu-space-16);
+  bottom: var(--tu-space-2);
+  left: 50%;
   z-index: var(--tu-z-chargement);
+  min-height: calc(var(--tu-space-12) - var(--tu-space-4));
+  padding-block: 0;
+  transform: translateX(-50%);
   /* Lisible aussi par-dessus le marine de la révélation d'une soirée. */
   background: var(--tu-bg);
   font-size: var(--tu-size-lg);
@@ -214,6 +219,14 @@
 .tu-stage__nom {
   --tu-wordmark-size: var(--tu-size-3xl);
   color: var(--tu-text);
+}
+
+/* Sur le plein écran vert ou rouge d'un verdict, le nom du coin passe en blanc, comme la rosace
+   blanche des fonds sombres : le « Up » sauge disparaissait sur le vert (inventaire du 2026-10-24). */
+.tu-stage:has(.tu-stage-verdict) .tu-stage__nom,
+.tu-stage:has(.tu-stage-verdict) .tu-stage__nom :is(.tu-wordmark__up, .tu-wordmark__bang),
+.tu-stage:has(.tu-stage-verdict) .tu-stage__insta {
+  color: var(--tu-text-invert);
 }
 
 .tu-interlude {

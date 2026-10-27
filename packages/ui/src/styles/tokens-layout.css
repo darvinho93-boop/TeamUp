@@ -47,7 +47,8 @@
   /* Écran commun : scène 16:9 de référence (1 920 × 1 080), QR, colonnes et podium. */
   --tu-stage-width: 120rem;
   --tu-stage-height: 67.5rem;
-  --tu-stage-qr: 32rem;
+  --tu-stage-chrono: 10rem; /* chrono d'un jeu (Points communs, Surenchère, Mime, duels) */
+  --tu-stage-qr: 44rem; /* agrandi le 2026-10-27 : scanné du fond de la salle */
   --tu-stage-cadre: 0.375rem;
   --tu-stage-regle-max: 72rem; /* l'encadré « Comment on joue » : il laisse les coins à la marque */
   --tu-stage-tirage-rang: 9rem; /* hauteur maximale d'une rangée du tirage de l'ordre */ /* trait des encadrés de l'écran : la règle d'un jeu, les photos */

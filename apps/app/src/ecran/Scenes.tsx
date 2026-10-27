@@ -48,6 +48,7 @@ import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
 import { useAjusterQuiz } from './useAjusterQuiz';
 import { useAjusterTexte } from './useAjusterTexte';
+import { useTenirEnLargeur } from './useTenirEnLargeur';
 import { OrdreTire, ordreDesEquipes, TirageOrdre } from './TirageOrdre';
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
@@ -165,18 +166,27 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
   const maintenant = useMaintenant(equipes.some((e) => e.pages.length > 1)) + decalageMs;
   // Au premier rendu, la première page : le serveur et le navigateur n'ont pas la même heure.
   const monte = useMonte();
+  const pages = equipes.map((e) => (monte ? pageA(maintenant, e.pages.length) : 0));
+  // Un nom d'équipe ou un prénom trop long pour sa ligne se réduit, lui seul.
+  const grilleRef = useRef<HTMLUListElement>(null);
+  const cleGrille = `${pages.join()}:${equipes.map((e) => `${e.nom}:${e.prenoms.length}`).join()}:${ajuste}`;
+  useTenirEnLargeur(grilleRef, cleGrille, '.tu-stage-membre');
+  // Le nom partage sa ligne avec l'effectif : il peut descendre plus bas (24 caractères au plus
+  // depuis un téléphone).
+  useTenirEnLargeur(grilleRef, cleGrille, '.tu-stage-team__nom', 0.5);
   return (
     <div className="tu-stage__body" data-scene="equipes">
       <h1 className="tu-stage__xl">{t('equipes')}</h1>
       <ul
+        ref={grilleRef}
         className={cx(
           'tu-stage-teams tu-stage-teams--scene',
           `tu-stage-teams--${colonnes}`,
           rangees === 2 && 'tu-stage-teams--2-rangees',
         )}
       >
-        {equipes.map((e) => {
-          const page = monte ? pageA(maintenant, e.pages.length) : 0;
+        {equipes.map((e, n) => {
+          const page = pages[n] ?? 0;
           return (
             <li key={e.id} className={cx('tu-stage-team', teamModifier(e.numero))}>
               <span className="tu-stage-team__tete">
@@ -227,25 +237,27 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
 
 function Programme({ etat }: { etat: EtatSalle }) {
   const t = useTranslations();
+  const jeux = etat.programme.filter((m) => m.statut !== 'annulee');
   return (
     <div className="tu-stage__body" data-scene="programme">
       <h1 className="tu-stage__xl">{t('ecran.programme')}</h1>
-      <ol className="tu-stage-list">
-        {etat.programme
-          .filter((m) => m.statut !== 'annulee')
-          .map((m) => (
-            <li
-              key={m.id}
-              className={cx(
-                'tu-stage-list__item',
-                (m.statut === 'en_cours' || m.id === etat.pilotage.manche_id) &&
-                  'tu-stage-list__item--courant',
-                m.statut === 'terminee' && 'tu-stage-list__item--fait',
-              )}
-            >
-              {t(`jeux.${m.jeu}`)}
-            </li>
-          ))}
+      <ol
+        className="tu-stage-list tu-stage-list--programme"
+        style={{ '--tu-programme-n': Math.max(1, jeux.length) } as CSSProperties}
+      >
+        {jeux.map((m) => (
+          <li
+            key={m.id}
+            className={cx(
+              'tu-stage-list__item',
+              (m.statut === 'en_cours' || m.id === etat.pilotage.manche_id) &&
+                'tu-stage-list__item--courant',
+              m.statut === 'terminee' && 'tu-stage-list__item--fait',
+            )}
+          >
+            {t(`jeux.${m.jeu}`)}
+          </li>
+        ))}
       </ol>
     </div>
   );
@@ -538,27 +550,25 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
           className="tu-stage-multi--geant"
           textes={texteParLangue(passage.secret, 'sujet', langues)}
         />
+        {/* Sous le sujet, au milieu : en bas à gauche, il passait inaperçu. */}
+        {etape === 'chrono' && (
+          <Chrono
+            departMs={depart}
+            dureeS={duree ?? chronoS}
+            decalageMs={decalageMs}
+            className="tu-stage__giant"
+          />
+        )}
+        {(etape === 'tenu' || etape === 'rate') && (
+          <p
+            className={cx('tu-stage__xl', etape === 'tenu' ? 'tu-stage-gagne' : 'tu-stage-perdu')}
+            data-testid="verdict"
+          >
+            {etape === 'tenu' ? t('tenu') : t('perdu')}
+            {champion && ` · ${champion.nom}`}
+          </p>
+        )}
       </div>
-      {etape === 'chrono' && (
-        <Chrono
-          departMs={depart}
-          dureeS={duree ?? chronoS}
-          decalageMs={decalageMs}
-          className="tu-stage__giant"
-        />
-      )}
-      {(etape === 'tenu' || etape === 'rate') && (
-        <p
-          className={cx(
-            'tu-stage__xl tu-stage-reveal',
-            etape === 'tenu' ? 'tu-stage-gagne' : 'tu-stage-perdu',
-          )}
-          data-testid="verdict"
-        >
-          {etape === 'tenu' ? t('tenu') : t('perdu')}
-          {champion && ` · ${champion.nom}`}
-        </p>
-      )}
     </div>
   );
 }
@@ -567,10 +577,13 @@ function Scores({ etat }: { etat: EtatSalle }) {
   const t = useTranslations('ecran');
   const rang = classement(etat);
   const max = Math.max(1, ...rang.map((e) => e.points));
+  const liste = useRef<HTMLOListElement>(null);
+  useTenirEnLargeur(liste, rang.map((e) => e.nom).join(), '.tu-stage-rank__nom');
   return (
     <div className="tu-stage__body" data-scene="scores">
       <h1 className="tu-stage__xl">{t('scores')}</h1>
       <ol
+        ref={liste}
         className="tu-stage-rank"
         style={{ '--tu-rank-n': Math.max(1, rang.length) } as CSSProperties}
       >
@@ -614,15 +627,21 @@ function Podium({ etat }: { etat: EtatSalle }) {
         <span className="tu-stage-podium__socle">{place}</span>
       </li>
     );
+  const marches = useRef<HTMLOListElement>(null);
+  useTenirEnLargeur(
+    marches,
+    [premier, deuxieme, troisieme].map((e) => e?.nom).join(),
+    '.tu-team--badge',
+  );
   return (
     <div className="tu-stage__body" data-scene="podium">
       <h1 className="tu-stage__xl">{t('podium')}</h1>
-      <ol className="tu-stage-podium">
+      <ol ref={marches} className="tu-stage-podium">
         {marche(deuxieme, 2)}
         {marche(premier, 1)}
         {marche(troisieme, 3)}
       </ol>
-      <p className="tu-stage__l">{t('merci')}</p>
+      <p className="tu-stage__l tu-stage-podium-merci">{t('merci')}</p>
       {premier && <Celebration force={1} className="tu-celebration--podium" />}
     </div>
   );
@@ -765,6 +784,18 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
   // Mode jetons : les équipes qui ont encore des jetons (pastilles possibles, mises attendues).
   const enJeu = etat.equipes.filter((e) => (manche.jetons?.[String(e.numero)]?.restants ?? 0) > 0);
   const zones = useRef<HTMLOListElement>(null);
+  const fin = useRef<HTMLUListElement>(null);
+  const seule = useRef<HTMLDivElement>(null);
+  useAjusterTexte(
+    seule,
+    `${passage?.id}:${etape}:${etat.pilotage.indices}:${langues.join()}`,
+    '--tu-question-echelle',
+  );
+  useTenirEnLargeur(
+    fin,
+    `${etape}:${etat.equipes.map((e) => e.nom).join()}`,
+    '.tu-stage-team__nom',
+  );
   useAjusterQuiz(
     zones,
     `${passage?.id}:${etape}:${etat.pilotage.indices}:${langues.join()}:${jetons}`,
@@ -778,17 +809,27 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
       <div className="tu-stage__body" data-scene="qcm2" data-etape={etape}>
         <h1 className="tu-stage__xl">{t('finQuiz')}</h1>
         {survivants && (telephone || jetons || valide) && (
-          <ul className="tu-stage-teams" data-testid="survivants">
+          // Les cartes remplissent la scène, comme celles des équipes (inventaire du 2026-10-24 :
+          // petites, en haut, sous un grand vide).
+          <ul
+            ref={fin}
+            className={cx(
+              'tu-stage-teams tu-stage-teams--scene tu-stage-fin-quiz',
+              `tu-stage-teams--${grilleDesEquipes(etat.equipes.length).colonnes}`,
+              grilleDesEquipes(etat.equipes.length).rangees === 2 && 'tu-stage-teams--2-rangees',
+            )}
+            data-testid="survivants"
+          >
             {etat.equipes.map((e) => {
               const n = survivants[String(e.numero)] ?? 0;
               return (
                 <li key={e.id} className={cx('tu-stage-team', teamModifier(e.numero))}>
                   <span className="tu-stage-team__nom">{e.nom}</span>
-                  <span className="tu-stage-team__nombre">
+                  <span className="tu-stage-fin-quiz__nombre">
                     {t(jetons ? 'jetons' : 'survivants', { n })}
                   </span>
                   {valide && (
-                    <span className="tu-stage-team__nombre">
+                    <span className="tu-stage-fin-quiz__points">
                       {t('points', { points: n * POINTS_PAR_SURVIVANT })}
                     </span>
                   )}
@@ -823,6 +864,25 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
       const texte: unknown = Array.isArray(liste) ? liste[i] : undefined;
       return typeof texte === 'string' ? [{ langue, texte }] : [];
     });
+
+  // La question seule, avant sa première réponse : en grand, au milieu, sans les cases vides
+  // (inventaire du 2026-10-24). Les cases arrivent avec la réponse A.
+  if (etape === 'question' && affichees === 0 && !lance) {
+    return (
+      <div className="tu-stage__body" data-scene="qcm2" data-etape="question">
+        <p className="tu-stage__m tu-stage__muted" data-testid="quiz-tete">
+          {numero}
+        </p>
+        <div ref={seule} className="tu-stage-centre tu-stage-question-seule tu-stage-reveal">
+          <Multilingue
+            testId="question"
+            className="tu-stage-multi--titre tu-stage-multi--geant"
+            textes={texteParLangue(passage.public, 'question', langues)}
+          />
+        </div>
+      </div>
+    );
+  }
 
   // Mode jetons : combien d'équipes qui ont encore des jetons ont validé leur mise.
   const validees = enJeu.filter((e) => passage.mises?.[String(e.numero)]?.valide).length;
@@ -971,6 +1031,13 @@ function Mime({ etat, decalageMs }: Props) {
   );
 }
 
+/** Colonnes de la grille des photos : 2 × 2 pour quatre, 3 × 2 pour six, 4 × 2 pour huit. */
+function colonnesPhotos(n: number): number {
+  if (n <= 3) return Math.max(1, n);
+  if (n === 4) return 2;
+  return n <= 6 ? 3 : 4;
+}
+
 /**
  * Diffusion photo (spec v3, jeu 05) : un thème à la fois, toutes les photos côte à côte. La
  * gagnante, désignée à l'oral, passe au premier plan ; les autres s'effacent.
@@ -983,6 +1050,12 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
   );
   const { etape } = etat.pilotage;
   const fete = useArrivee(etape === 'gagnante');
+  const grille = useRef<HTMLUListElement>(null);
+  useTenirEnLargeur(
+    grille,
+    `${passage?.id}:${etape}:${passage?.photos?.length ?? 0}`,
+    '.tu-stage-photo .tu-team--badge',
+  );
   if (!passage) return null;
 
   const photos = passage.photos ?? [];
@@ -1001,7 +1074,11 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
       {photos.length === 0 ? (
         <p className="tu-stage__l tu-stage-centre">{t('aucunePhoto')}</p>
       ) : (
-        <ul className="tu-stage-photos">
+        <ul
+          ref={grille}
+          className="tu-stage-photos"
+          style={{ '--tu-photos-colonnes': colonnesPhotos(photos.length) } as CSSProperties}
+        >
           {photos.map((ph) => {
             const equipe = equipeDe(etat, ph.equipe_id);
             const gagnante = verdict && equipe?.numero === numeroGagnant;

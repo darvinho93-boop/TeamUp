@@ -27,6 +27,9 @@
 }
 
 .tu-expl__phrase {
+  /* La phrase garde sa taille au-dessus de 1 (la place va au décor), et se réduit en dessous. */
+  --tu-multi-taille: calc(var(--tu-size-3xl) * min(1, var(--tu-expl-echelle, 1)));
+
   max-width: var(--tu-expl-phrase-max);
 }
 
@@ -62,6 +65,7 @@
 /* ---- Le décor d'une carte ---- */
 
 .tu-expl-visuel {
+  zoom: var(--tu-expl-echelle, 1);
   display: flex;
   align-items: flex-end;
   justify-content: center;
