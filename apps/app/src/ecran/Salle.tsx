@@ -30,6 +30,7 @@ export function Salle({
   qrSvg,
   adresse,
   apercu = false,
+  projete = false,
 }: {
   etat: EtatSalle;
   decalageMs: number;
@@ -37,6 +38,8 @@ export function Salle({
   adresse: string;
   /** Rendu réduit dans la régie : même composant, même contenu que l'écran projeté. */
   apercu?: boolean;
+  /** L'écran commun : la scène à sa taille de référence, mise à l'échelle du projecteur. */
+  projete?: boolean;
 }) {
   const langue = etat.evenement.langues[0] ?? 'fr';
   const { scene, manche_id: mancheId } = etat.pilotage;
@@ -109,7 +112,7 @@ export function Salle({
     <NextIntlClientProvider locale={langue} messages={MESSAGES[langue]}>
       <SonsContexte value={sons.jouer}>
         <div
-          className={cx('tu-stage', apercu && 'tu-stage--apercu')}
+          className={cx('tu-stage', apercu && 'tu-stage--apercu', projete && 'tu-stage--projete')}
           lang={langue}
           aria-hidden={apercu || undefined}
           data-fin-de-boucle={finDeBoucle || undefined}

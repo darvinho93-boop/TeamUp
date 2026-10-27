@@ -32,6 +32,25 @@
   transform-origin: top left;
 }
 
+/* Écran commun (2026-10-27) : la même scène de référence, entière dans la fenêtre et centrée,
+   quelle que soit la taille du projecteur ; le beige remplit les bandes qui restent. */
+.tu-stage-cadre {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--tu-bg);
+}
+
+.tu-stage.tu-stage--projete {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tu-stage-width);
+  height: var(--tu-stage-height);
+  transform: translate(-50%, -50%) scale(var(--tu-stage-echelle, 1));
+}
+
 .tu-stage p,
 .tu-stage h1 {
   margin: 0;

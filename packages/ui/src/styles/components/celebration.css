@@ -98,7 +98,11 @@
 
   100% {
     opacity: 0;
-    transform: translate(calc(var(--derive) * 20vw), 110vh) rotate(calc(var(--tour) * 2turn));
+    transform: translate(
+        calc(var(--derive) * var(--tu-stage-width) * 0.2),
+        calc(var(--tu-stage-height) * 1.1)
+      )
+      rotate(calc(var(--tour) * 2turn));
   }
 }
 

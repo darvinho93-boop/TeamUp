@@ -168,3 +168,46 @@ test('8 équipes de 19 à l’écran, la Salle règle les prénoms, le capitaine
   await regie.getByRole('button', { name: 'Tous les noms' }).click();
   await expect(ecran.locator('.tu-stage-point')).toHaveCount(0, { timeout: 5000 });
 });
+
+/**
+ * Un projecteur plus petit (2026-10-27) : la scène reste composée à 1 920 × 1 080 et se réduit
+ * entière dans la fenêtre. Avant, à 1 280 × 720, les prénoms devenaient illisibles ou sortaient
+ * des cartes, le programme et le classement étaient coupés.
+ */
+test('à 1 280 × 720, la même scène, réduite entière dans la fenêtre', async ({ browser }) => {
+  const regie = await (
+    await browser.newContext({ viewport: { width: 1440, height: 900 }, isMobile: false })
+  ).newPage();
+  await regie.goto('/regie');
+  await regie.getByLabel('E-mail').fill('anna@teamup.test');
+  await regie.getByLabel('Mot de passe').fill('motdepasse');
+  await regie.getByRole('button', { name: 'Se connecter' }).click();
+  await regie.waitForURL('**/regie');
+
+  for (const [largeur, hauteur] of [
+    [1280, 720],
+    [1024, 768],
+  ] as const) {
+    const ecran = await (
+      await browser.newContext({
+        storageState: await regie.context().storageState(),
+        viewport: { width: largeur, height: hauteur },
+        isMobile: false,
+      })
+    ).newPage();
+    await ecran.goto(`/ecran/${evenement.code}`);
+    await expect(ecran.locator('[data-scene="equipes"]')).toBeVisible();
+    const scene = await ecran.locator('.tu-stage').evaluate((e) => {
+      const r = e.getBoundingClientRect();
+      return { gauche: r.left, haut: r.top, droite: r.right, bas: r.bottom, largeur: r.width };
+    });
+    const echelle = Math.min(largeur / 1920, hauteur / 1080);
+    expect(scene.largeur).toBeCloseTo(1920 * echelle, 0);
+    expect(scene.gauche).toBeGreaterThanOrEqual(-0.5);
+    expect(scene.haut).toBeGreaterThanOrEqual(-0.5);
+    expect(scene.droite).toBeLessThanOrEqual(largeur + 0.5);
+    expect(scene.bas).toBeLessThanOrEqual(hauteur + 0.5);
+    expect(await tousDansLeCadre(ecran)).toEqual([]);
+    await ecran.context().close();
+  }
+});

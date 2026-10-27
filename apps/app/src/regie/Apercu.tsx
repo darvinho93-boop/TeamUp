@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import type { EtatSalle } from '@/lib/salle';
 import { Salle } from '@/ecran/Salle';
+import { useEchelleScene } from '@/ecran/useEchelleScene';
 
 /**
  * L'écran commun en réduction, dans la régie : les mêmes composants que l'écran projeté,
@@ -14,21 +15,7 @@ export function Apercu(props: {
   qrSvg: string;
   adresse: string;
 }) {
-  const cadre = useRef<HTMLDivElement>(null);
-  const [echelle, setEchelle] = useState(0.4);
-
-  useEffect(() => {
-    const element = cadre.current;
-    if (!element) return;
-    const mesurer = () => {
-      const scene = element.firstElementChild as HTMLElement | null;
-      if (scene?.offsetWidth) setEchelle(element.clientWidth / scene.offsetWidth);
-    };
-    const observateur = new ResizeObserver(mesurer);
-    observateur.observe(element);
-    mesurer();
-    return () => observateur.disconnect();
-  }, []);
+  const [cadre, echelle] = useEchelleScene('largeur', 0.4);
 
   return (
     <div
