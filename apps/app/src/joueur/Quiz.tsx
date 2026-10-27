@@ -102,7 +102,12 @@ function QuizEnModeTelephone({
         >
           {quiz.elimine ? t('elimine') : t('enJeu')}
         </p>
-        {!quiz.elimine && <p className="tu-player__lead">{t('prochaine')}</p>}
+        {/* Avant la première question, il n'y a pas encore de « suivante ». */}
+        {!quiz.elimine && (
+          <p className="tu-player__lead">
+            {t((quiz.numero ?? 1) <= 1 && quiz.etape === 'pret' ? 'premiere' : 'prochaine')}
+          </p>
+        )}
       </div>
     );
   }

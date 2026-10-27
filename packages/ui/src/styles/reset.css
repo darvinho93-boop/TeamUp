@@ -6,8 +6,11 @@
   box-sizing: border-box;
 }
 
+/* Le fond aussi sur la racine : sous une page longue, ou quand le navigateur tire la page au-delà
+   de son bas, on voit le beige et jamais une bande blanche. */
 html {
   -webkit-text-size-adjust: 100%;
+  background: var(--tu-bg);
   scroll-behavior: smooth;
 }
 

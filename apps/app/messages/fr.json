@@ -17,7 +17,7 @@
     "aide": "Ton équipe le verra. Le prénom suffit.",
     "bouton": "C'est parti",
     "vide": "Écris ton prénom.",
-    "pris": "Le prénom {prenom} est déjà pris dans la partie. Ajoute l'initiale de ton nom, par exemple « {prenom} M. ».",
+    "pris": "Le prénom {prenom} est déjà pris dans la partie. Ajoute l'initiale de ton nom, par exemple « {prenom} M. ».",
     "complet": "La partie est complète.",
     "codeInconnu": "Cette partie n'est plus ouverte.",
     "serveur": "Ça n'a pas marché. Réessaie."
@@ -28,7 +28,7 @@
     "sansReponse": "Je préfère ne pas répondre"
   },
   "capitaine": {
-    "titre": "Capitaine ?",
+    "titre": "Capitaine ?",
     "aide": "Le capitaine choisit le nom de l'équipe, prend les photos et mise les jetons de l'équipe au quiz. On tire au sort parmi les volontaires.",
     "oui": "Je me propose",
     "non": "Non merci"
@@ -48,17 +48,17 @@
   "ajout": {
     "ouvrir": "Ajouter un invité",
     "titre": "Un invité sans téléphone",
-    "aide": "Écris son prénom : il jouera avec son équipe, en salle.",
+    "aide": "Écris son prénom : il jouera avec son équipe, en salle.",
     "champ": "Son prénom",
     "bouton": "Ajouter",
     "retour": "Retour",
     "groupeTitre": "Le groupe de {prenom}",
     "fait": "{prenom} rejoint {equipe}",
     "faitSansEquipe": "{prenom} est ajouté",
-    "faitAide": "Dis-le-lui : son équipe l'attend. Il suit le jeu sur l'écran.",
+    "faitAide": "Dis-le-lui : son équipe l'attend. Il suit le jeu sur l'écran.",
     "encore": "Ajouter un autre invité",
     "vide": "Écris son prénom.",
-    "pris": "Le prénom {prenom} est déjà pris dans la partie. Ajoute l'initiale de son nom, par exemple « {prenom} M. ».",
+    "pris": "Le prénom {prenom} est déjà pris dans la partie. Ajoute l'initiale de son nom, par exemple « {prenom} M. ».",
     "complet": "La partie est complète.",
     "interdit": "Tu ne peux plus ajouter d'invité. Demande à l'animateur.",
     "close": "La partie n'est plus ouverte.",
@@ -71,69 +71,70 @@
     "sansEquipe": "L'animateur va bientôt te placer dans une équipe."
   },
   "attente": {
-    "salut": "Salut {prenom} !",
+    "salut": "Salut {prenom} !",
     "points": "{points, plural, =0 {0 point} one {# point} other {# points}}",
-    "enCours": "En ce moment : {jeu}",
-    "prochain": "Prochain jeu : {jeu}",
+    "enCours": "En ce moment : {jeu}",
+    "prochain": "Prochain jeu : {jeu}",
     "regarde": "Regarde l'écran",
     "voirEquipe": "Voir mon équipe",
-    "termine": "La partie est terminée. Merci d'avoir joué !",
-    "capitaine": "Tu es capitaine : le nom de l'équipe, les photos et les jetons du quiz, c'est toi !"
+    "termine": "La partie est terminée. Merci d'avoir joué !",
+    "capitaine": "Tu es capitaine : le nom de l'équipe, les photos et les jetons du quiz, c'est toi !"
   },
   "horsLigne": {
     "bandeau": "Connexion perdue. On réessaie…"
   },
   "quiz": {
     "numero": "Question {n} sur {total}",
-    "choix": "Réponse {lettre} : {texte}",
-    "envoyee": "Réponse envoyée. Regarde l'écran !",
+    "choix": "Réponse {lettre} : {texte}",
+    "envoyee": "Réponse envoyée. Regarde l'écran !",
     "tropTard": "Trop tard, la question est fermée.",
-    "bonne": "Bonne réponse ! Tu restes en jeu.",
-    "elimine": "Éliminé ! Regarde la suite sur l'écran.",
+    "bonne": "Bonne réponse ! Tu restes en jeu.",
+    "elimine": "Éliminé ! Regarde la suite sur l'écran.",
     "enJeu": "Tu es toujours en jeu.",
     "prochaine": "Prépare-toi, la question suivante arrive.",
+    "premiere": "Prépare-toi, la première question arrive.",
     "fin": "Fin du quiz",
-    "survivant": "Tu as tenu jusqu'au bout. Bravo !",
-    "spectateur": "Le quiz a commencé avant ton arrivée : regarde l'écran, tu joueras au prochain jeu.",
+    "survivant": "Tu as tenu jusqu'au bout. Bravo !",
+    "spectateur": "Le quiz a commencé avant ton arrivée : regarde l'écran, tu joueras au prochain jeu.",
     "jetons": {
-      "sansEquipe": "Tu n'as pas d'équipe pour ce quiz : regarde l'écran.",
+      "sansEquipe": "Tu n'as pas d'équipe pour ce quiz : regarde l'écran.",
       "equipe": "{n, plural, =0 {Votre équipe n'a plus de jeton} one {Votre équipe a # jeton} other {Votre équipe a # jetons}}",
-      "capitaine": "Tu es capitaine : à chaque question, tu répartis les jetons de l'équipe. Restez ensemble !",
-      "coequipier": "Votre capitaine mise pour l'équipe : aidez-le à choisir !",
-      "plusDeJetons": "Plus de jetons : regardez la suite sur l'écran.",
+      "capitaine": "Tu es capitaine : à chaque question, tu répartis les jetons de l'équipe. Restez ensemble !",
+      "coequipier": "Votre capitaine mise pour l'équipe : aidez-le à choisir !",
+      "plusDeJetons": "Plus de jetons : regardez la suite sur l'écran.",
       "reste": "{n, plural, one {Reste # jeton à poser} other {Reste # jetons à poser}}",
-      "toutPose": "Tous les jetons sont posés : valide la mise.",
+      "toutPose": "Tous les jetons sont posés : valide la mise.",
       "valider": "Valider la mise",
-      "validee": "Mise validée. Regardez l'écran !",
-      "fige": "Temps écoulé : allez voir l'animateur.",
+      "validee": "Mise validée. Regardez l'écran !",
+      "fige": "Temps écoulé : allez voir l'animateur.",
       "restants": "{n, plural, =0 {Plus aucun jeton} one {Il vous reste # jeton} other {Il vous reste # jetons}}",
       "moins": "Retirer un jeton de la réponse {lettre}",
       "plus": "Ajouter un jeton sur la réponse {lettre}",
-      "ligne": "Réponse {lettre} : {texte}, {n, plural, one {# jeton} other {# jetons}}"
+      "ligne": "Réponse {lettre} : {texte}, {n, plural, one {# jeton} other {# jetons}}"
     },
-    "reponsesAVenir": "Regardez l'écran : les réponses arrivent une à une."
+    "reponsesAVenir": "Regardez l'écran : les réponses arrivent une à une."
   },
   "photos": {
-    "ouvrir": "Photos : {envoyees} sur {total}",
+    "ouvrir": "Photos : {envoyees} sur {total}",
     "titre": "Photo challenge",
-    "capitaine": "Tu es capitaine : une photo par thème, quand tu veux dans la soirée. Tu peux la remplacer jusqu'à la clôture.",
-    "equipier": "Votre capitaine envoie une photo par thème. Mettez-vous en scène ensemble !",
-    "closes": "Les envois sont clos. Rendez-vous sur l'écran pour la diffusion !",
+    "capitaine": "Tu es capitaine : une photo par thème, quand tu veux dans la soirée. Tu peux la remplacer jusqu'à la clôture.",
+    "equipier": "Votre capitaine envoie une photo par thème. Mettez-vous en scène ensemble !",
+    "closes": "Les envois sont clos. Rendez-vous sur l'écran pour la diffusion !",
     "compte": "{envoyees, plural, =0 {Aucune photo envoyée} one {# photo envoyée} other {# photos envoyées}} sur {total}",
     "numero": "Thème {n}",
     "aFaire": "Pas encore de photo",
     "envoi": "Envoi en cours…",
-    "attente": "En attente de réseau : elle partira toute seule",
+    "attente": "En attente de réseau : elle partira toute seule",
     "envoyee": "Envoyée à {heure}",
     "prendre": "Prendre la photo",
     "remplacer": "Remplacer la photo",
     "retour": "Retour",
     "refus": {
-      "session": "Non envoyée : ta session a expiré.",
-      "capitaine": "Non envoyée : tu n'es plus capitaine.",
-      "close": "Non envoyée : les envois sont clos.",
-      "theme": "Non envoyée : ce thème n'existe plus.",
-      "fichier": "Non envoyée : fichier refusé.",
+      "session": "Non envoyée : ta session a expiré.",
+      "capitaine": "Non envoyée : tu n'es plus capitaine.",
+      "close": "Non envoyée : les envois sont clos.",
+      "theme": "Non envoyée : ce thème n'existe plus.",
+      "fichier": "Non envoyée : fichier refusé.",
       "decodage": "Cette image ne peut pas être lue. Reprends la photo."
     }
   },
@@ -191,11 +192,11 @@
       "equipes": "Nombre d'équipes",
       "langues": "Langues de la soirée",
       "creer": "Créer et préparer",
-      "invalide": "Vérifie les champs : client, date, créneau (10 à 240 min), 2 à 8 équipes, au moins une langue.",
+      "invalide": "Vérifie les champs : client, date, créneau (10 à 240 min), 2 à 8 équipes, au moins une langue.",
       "echec": "L'événement n'a pas pu être créé. Réessaie.",
       "equipeParDefaut": "Équipe {numero}",
       "invites": "Invités attendus",
-      "invitesAide": "Facultatif : sert à mesurer la part des invités qui se connectent."
+      "invitesAide": "Facultatif : sert à mesurer la part des invités qui se connectent."
     },
     "preparation": {
       "titre": "Préparation",
@@ -205,8 +206,8 @@
       "enregistrerNoms": "Enregistrer les noms",
       "ajouterEquipe": "Ajouter une équipe",
       "programme": "Programme",
-      "duree": "Durée estimée : {total} min ({chronos} de jeu + {transitions} de transitions), pour un créneau de {creneau} min.",
-      "depassement": "Le programme dépasse le créneau de {minutes} min : retire un passage, un thème ou un jeu.",
+      "duree": "Durée estimée : {total} min ({chronos} de jeu + {transitions} de transitions), pour un créneau de {creneau} min.",
+      "depassement": "Le programme dépasse le créneau de {minutes} min : retire un passage, un thème ou un jeu.",
       "programmeVide": "Aucun jeu au programme pour l'instant.",
       "statut": {
         "a_venir": "à venir",
@@ -226,19 +227,19 @@
       "ajouter": "Ajouter {jeu}",
       "questions": "Questions",
       "question": "Question {numero}",
-      "filtre": "Contenus proposés : {etiquettes}, complets en {langues}.",
-      "filtreLeve": "Contenus proposés : toutes étiquettes, complets en {langues}.",
+      "filtre": "Contenus proposés : {etiquettes}, complets en {langues}.",
+      "filtreLeve": "Contenus proposés : toutes étiquettes, complets en {langues}.",
       "toutAfficher": "Tout afficher",
       "filtrer": "Filtrer selon le public",
       "beta": {
-        "titre": "Bêta : duels 1 contre 1",
-        "aide": "Hors programme par défaut (spec v3) : à garder en réserve, pour changer de registre après un jeu long.",
-        "creneauCourt": "Créneau de {minutes} min : la spec ne recommande les duels qu’à partir de 60 min.",
+        "titre": "Bêta : duels 1 contre 1",
+        "aide": "Hors programme par défaut (spec v3) : à garder en réserve, pour changer de registre après un jeu long.",
+        "creneauCourt": "Créneau de {minutes} min : la spec ne recommande les duels qu’à partir de 60 min.",
         "duels": "Duels"
       },
       "groupes": {
         "titre": "Groupes à mélanger",
-        "aide": "Facultatif. À l'arrivée, chaque invité dit son groupe (ou préfère ne pas répondre) ; l'équipe se tire parmi celles qui en comptent le moins. Rien n'est gardé sur l'invité. Vider une case retire le groupe.",
+        "aide": "Facultatif. À l'arrivée, chaque invité dit son groupe (ou préfère ne pas répondre) ; l'équipe se tire parmi celles qui en comptent le moins. Rien n'est gardé sur l'invité. Vider une case retire le groupe.",
         "nom": "Nom du groupe {numero}",
         "enregistrer": "Enregistrer les groupes",
         "exemple": {
@@ -251,7 +252,7 @@
             "2": "Ex. Comptabilité"
           }
         },
-        "facultatif": "Proposer « Je préfère ne pas répondre » aux invités"
+        "facultatif": "Proposer « Je préfère ne pas répondre » aux invités"
       }
     },
     "pilotage": {
@@ -278,7 +279,7 @@
         "annulee": "annulée"
       },
       "presenter": "Présenter",
-      "commencer": "Commencer : {jeu}",
+      "commencer": "Commencer : {jeu}",
       "choisirJeu": "Présente un jeu du programme pour le lancer.",
       "pointsCommuns": "Points communs",
       "surenchere": "Surenchère",
@@ -295,22 +296,22 @@
       "masquer": "Masquer",
       "lancer": "Lancer",
       "indice": "Indice ({n}/2)",
-      "arretIndice": "Chrono arrêté : donnez l'indice",
+      "arretIndice": "Chrono arrêté : donnez l'indice",
       "reprise": "Le chrono repart dans {s} s",
       "valider": "Valider",
       "echec": "Échec",
-      "confirmer": "Confirmer : {action}",
-      "suivant": "Passage suivant : {equipe}",
+      "confirmer": "Confirmer : {action}",
+      "suivant": "Passage suivant : {equipe}",
       "terminer": "Terminer la manche",
       "devoiler": "Dévoiler",
       "joue": "joué",
-      "adjuger": "Adjugé ! Lancer le chrono ({secondes} s)",
+      "adjuger": "Adjugé ! Lancer le chrono ({secondes} s)",
       "champion": "Équipe du champion",
       "tenu": "Tenu",
       "rate": "Raté",
       "retour": "Retour aux thèmes",
       "erreur": {
-        "perime": "La salle a changé entre-temps : vérifie l'écran et réessaie.",
+        "perime": "La salle a changé entre-temps : vérifie l'écran et réessaie.",
         "impossible": "Action impossible à cette étape."
       },
       "motifPointsCommuns": "Points communs — {equipe}",
@@ -319,7 +320,7 @@
       "motifQuiz": "{survivants, plural, =0 {Quiz – aucun survivant} one {Quiz – # survivant} other {Quiz – # survivants}}",
       "motifQuizJetons": "{jetons, plural, =0 {Quiz – aucun jeton} one {Quiz – # jeton} other {Quiz – # jetons}}",
       "motifMime": "Mime – {equipe}",
-      "motifPhoto": "Photo : {equipe}",
+      "motifPhoto": "Photo : {equipe}",
       "quiz": {
         "titre": "Quiz",
         "commencerCroix": "Commencer le quiz en mode croix",
@@ -335,30 +336,30 @@
         "terminerIci": "Terminer le quiz ici",
         "annuler": "Annuler la question",
         "reponses": "{n, plural, =0 {Aucune réponse reçue} one {# réponse reçue} other {# réponses reçues}}",
-        "survivantsCroix": "Combien de survivants par équipe ?",
+        "survivantsCroix": "Combien de survivants par équipe ?",
         "survivantsTelephone": "Survivants comptés par l’app",
         "survivantsDe": "Survivants de {equipe}",
         "survivants": "{n, plural, =0 {aucun survivant} one {# survivant} other {# survivants}}",
         "valider": "Valider les survivants",
         "commencerJetons": "Mode jetons (le capitaine mise pour l'équipe)",
         "modeJetons": "mode jetons",
-        "capitainesTitre": "Mode jetons : un capitaine par équipe",
-        "jetonsDeDepart": "{n, plural, =0 {Aucun jeton : pas encore de joueur} one {Chaque équipe part avec # jeton (l'effectif de la plus grande)} other {Chaque équipe part avec # jetons (l'effectif de la plus grande)}}",
+        "capitainesTitre": "Mode jetons : un capitaine par équipe",
+        "jetonsDeDepart": "{n, plural, =0 {Aucun jeton : pas encore de joueur} one {Chaque équipe part avec # jeton (l'effectif de la plus grande)} other {Chaque équipe part avec # jetons (l'effectif de la plus grande)}}",
         "capitaineConnecte": "téléphone connecté",
-        "capitaineHorsLigne": "téléphone hors ligne : changez-le à la Salle",
+        "capitaineHorsLigne": "téléphone hors ligne : changez-le à la Salle",
         "sansCapitaine": "Aucun capitaine",
-        "capitainesManquants": "{n, plural, one {Une équipe n'a pas de capitaine : nommez-le avant de lancer.} other {# équipes n'ont pas de capitaine : nommez-les avant de lancer.}}",
+        "capitainesManquants": "{n, plural, one {Une équipe n'a pas de capitaine : nommez-le avant de lancer.} other {# équipes n'ont pas de capitaine : nommez-les avant de lancer.}}",
         "nommerALaSalle": "Nommer ou tirer les capitaines à la Salle",
         "mises": "Mises des équipes",
         "statutMise": {
           "validee": "Mise validée",
-          "en_cours": "{n, plural, =0 {Tout est posé, pas encore validé} one {En cours : # jeton à poser} other {En cours : # jetons à poser}}",
-          "figee": "Figée : temps écoulé",
+          "en_cours": "{n, plural, =0 {Tout est posé, pas encore validé} one {En cours : # jeton à poser} other {En cours : # jetons à poser}}",
+          "figee": "Figée : temps écoulé",
           "sans_jetons": "Plus de jetons"
         },
         "jetonsRestants": "{n, plural, =0 {plus aucun jeton} one {reste # jeton} other {restent # jetons}}",
         "debloquer": "Débloquer",
-        "revelerAttend": "« Révéler » attend la mise validée de chaque équipe qui a des jetons.",
+        "revelerAttend": "« Révéler » attend la mise validée de chaque équipe qui a des jetons.",
         "revelerQuandMeme": "Révéler quand même (jetons non posés perdus)",
         "survivantsJetons": "Jetons restants, comptés par l'app (× 100 points)",
         "jetons": "{n, plural, =0 {aucun jeton} one {# jeton} other {# jetons}}",
@@ -381,7 +382,7 @@
         "theme": "Thème {n} sur {total}",
         "envois": "{n, plural, =0 {Aucune photo sur ce thème} one {# photo sur ce thème} other {# photos sur ce thème}}",
         "designer": "La gagnante, désignée par les héros de la fête",
-        "gagnante": "Gagnante : {equipe}",
+        "gagnante": "Gagnante : {equipe}",
         "aucune": "Aucune gagnante",
         "sansGagnante": "Pas de gagnante sur ce thème",
         "suivant": "Thème suivant"
@@ -395,7 +396,7 @@
         "tirer": "Tirer les duellistes",
         "retirer": "Retirer (absent)",
         "presenter": "Présenter le duel",
-        "sequence": "À annoncer, dans l’ordre (pour vous seul) :",
+        "sequence": "À annoncer, dans l’ordre (pour vous seul) :",
         "gagne": "{prenom} gagne",
         "vainqueur": "vainqueur",
         "suivant": "Duel suivant",
@@ -415,7 +416,7 @@
         "expliquerCroix": "Expliquer (croix)",
         "expliquerTelephone": "Expliquer (téléphone)",
         "expliquerJetons": "Expliquer (jetons)",
-        "enCours": "Explication à l'écran :",
+        "enCours": "Explication à l'écran :",
         "rejouer": "Rejouer",
         "arreter": "Arrêter l'explication"
       },
@@ -427,7 +428,7 @@
     "salle": {
       "titre": "Salle",
       "ouvrirEcran": "Ouvrir l'écran commun",
-      "compte": "{joueurs, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}} : {qr} par QR code {connectes, plural, one {dont # connecté} other {dont # connectés}}, {main, plural, =0 {aucun inscrit à la main} one {# inscrit à la main} other {# inscrits à la main}}",
+      "compte": "{joueurs, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}} : {qr} par QR code {connectes, plural, one {dont # connecté} other {dont # connectés}}, {main, plural, =0 {aucun inscrit à la main} one {# inscrit à la main} other {# inscrits à la main}}",
       "capitaine": "capitaine",
       "connecte": "connecté",
       "horsLigne": "hors ligne",
@@ -437,9 +438,9 @@
       "resultats": "{n, plural, =0 {Aucun invité trouvé} one {# invité trouvé} other {# invités trouvés}}",
       "fermer": "Fermer",
       "sansEquipe": "Sans équipe",
-      "groupes": "À l'arrivée : {detail}",
+      "groupes": "À l'arrivée : {detail}",
       "ajoutTitre": "Ajouter un invité sans téléphone",
-      "ajoutAide": "Son équipe se tire comme à l'arrivée. Il joue en salle comme les autres ; au quiz par téléphone, il regarde.",
+      "ajoutAide": "Son équipe se tire comme à l'arrivée. Il joue en salle comme les autres ; au quiz par téléphone, il regarde.",
       "prenom": "Prénom",
       "groupe": "Groupe",
       "sansGroupe": "Je préfère ne pas répondre",
@@ -447,7 +448,7 @@
       "ajoutInvalide": "Indiquez un prénom (40 caractères au plus).",
       "ajoutEchec": "L'invité n'a pas pu être ajouté. Réessayez.",
       "complet": "La soirée est complète (150 joueurs).",
-      "prenomPris": "Le prénom {prenom} est déjà pris dans la soirée. Ajoutez l'initiale de son nom, par exemple « {prenom} M. ».",
+      "prenomPris": "Le prénom {prenom} est déjà pris dans la soirée. Ajoutez l'initiale de son nom, par exemple « {prenom} M. ».",
       "ajoute": "{prenom} rejoint {equipe}.",
       "ajouteSansEquipe": "{prenom} est ajouté, sans équipe pour l'instant.",
       "sansTelephone": "sans téléphone",
@@ -456,7 +457,7 @@
       "retirerAjout": "Retirer l'autorisation d'ajouter",
       "retirerCapitaine": "Retirer le capitaine",
       "retirer": "Retirer de la soirée",
-      "retirerConfirmer": "Retirer {prenom} ? Il pourra revenir par le QR code",
+      "retirerConfirmer": "Retirer {prenom} ? Il pourra revenir par le QR code",
       "modeTitre": "Prénoms à l'écran",
       "modeTous": "Tous les noms",
       "modeCarrousel": "Carrousel",
@@ -490,12 +491,12 @@
     },
     "photos": {
       "titre": "Photos",
-      "aucuneManche": "Cette soirée n'a pas de photo challenge : ajoutez-le à la préparation.",
+      "aucuneManche": "Cette soirée n'a pas de photo challenge : ajoutez-le à la préparation.",
       "ouverts": "Envois ouverts",
       "closes": "Envois clos",
       "envoyees": "{n} sur {total} photos reçues",
       "clore": "Clore les envois",
-      "confirmerClore": "Confirmer : clore les envois",
+      "confirmerClore": "Confirmer : clore les envois",
       "rouvrir": "Rouvrir les envois",
       "theme": "Thème {n}",
       "envoyeeA": "Reçue à {heure}",
@@ -519,7 +520,7 @@
       "titre": "Export de la soirée",
       "scores": "Télécharger les scores (CSV)",
       "photos": "Télécharger les photos (ZIP)",
-      "aide": "Les photos sont conservées 30 jours après la soirée, puis supprimées : exportez-les avant.",
+      "aide": "Les photos sont conservées 30 jours après la soirée, puis supprimées : exportez-les avant.",
       "classement": "Classement",
       "rang": "Rang",
       "equipe": "Équipe",
@@ -540,48 +541,48 @@
     "programme": "Au programme",
     "regles": {
       "list2": "Une équipe, dos à l'écran, devine ce qui rassemble les invités debout.",
-      "qcm2": "Une question, quatre réponses. Mauvaise réponse : éliminé !",
-      "enchere2": "Un champion par équipe. Qui en dira le plus ? Tenez votre pari !",
+      "qcm2": "Une question, quatre réponses. Mauvaise réponse : éliminé !",
+      "enchere2": "Un champion par équipe. Qui en dira le plus ? Tenez votre pari !",
       "mime2": "Le mot traverse l'équipe, en mime puis à l'oreille.",
       "photo2": "Les photos de la soirée, thème par thème.",
-      "grab": "La musique part : attrapez l'objet qui va avec !",
-      "cup": "Tête, épaule… gobelet ! Le plus rapide gagne."
+      "grab": "La musique part : attrapez l'objet qui va avec !",
+      "cup": "Tête, épaule… gobelet ! Le plus rapide gagne."
     },
-    "yeuxFermes": "{equipe} : dos à l'écran, yeux fermés !",
+    "yeuxFermes": "{equipe} : dos à l'écran, yeux fermés !",
     "pointCommun": "Le point commun",
-    "ouvrezLesYeux": "{equipe}, ouvrez les yeux !",
+    "ouvrezLesYeux": "{equipe}, ouvrez les yeux !",
     "palier": "Palier {n}",
-    "arretIndice": "Chrono arrêté : place à l'indice",
+    "arretIndice": "Chrono arrêté : place à l'indice",
     "reprise": "Reprise dans {s} s",
-    "trouve": "Trouvé !",
+    "trouve": "Trouvé !",
     "rate": "Raté",
     "points": "{points, plural, =0 {0 point} one {+# point} other {+# points}}",
     "themes": "Les thèmes",
     "sujet": "Le sujet",
-    "tenu": "Pari tenu !",
+    "tenu": "Pari tenu !",
     "perdu": "Pari perdu",
     "scores": "Classement",
     "podium": "Podium",
-    "merci": "Merci à tous, et bravo !",
+    "merci": "Merci à tous, et bravo !",
     "instagram": {
-      "titre": "Suivez-nous sur Instagram !",
+      "titre": "Suivez-nous sur Instagram !",
       "appel": "Abonnez-vous pour revivre la soirée et ne rien rater de la suite.",
       "scanner": "Scannez le QR code"
     },
-    "cloture": "Merci à tous pour cette soirée !",
+    "cloture": "Merci à tous pour cette soirée !",
     "question": "Question {n} sur {total}",
-    "croix": "placez-vous dans la zone de votre réponse !",
+    "croix": "placez-vous dans la zone de votre réponse !",
     "reponses": "{n, plural, =0 {aucune réponse} one {# réponse} other {# réponses}}",
     "finQuiz": "Fin du quiz",
     "survivants": "{n, plural, =0 {aucun survivant} one {# survivant} other {# survivants}}",
-    "mimeFile": "{equipe} : en file, tous tournés du même côté !",
-    "mimeJ1": "Seul le premier de la file regarde l'écran !",
-    "mimeChaine": "Mime, oreille, mime… jusqu’au dernier !",
+    "mimeFile": "{equipe} : en file, tous tournés du même côté !",
+    "mimeJ1": "Seul le premier de la file regarde l'écran !",
+    "mimeChaine": "Mime, oreille, mime… jusqu’au dernier !",
     "leMot": "Le mot",
     "themePhoto": "Thème {n} sur {total}",
     "aucunePhoto": "Aucune photo sur ce thème",
     "photoDe": "Photo de l'équipe {equipe}",
-    "gagnante": "La gagnante !",
+    "gagnante": "La gagnante !",
     "duelProchain": "Prochain duel…",
     "contre": "contre",
     "commentJouer": "Comment on joue",
@@ -589,40 +590,40 @@
       "list2": {
         "equipe-dos": "Une équipe s'assoit dos à l'écran, les yeux fermés.",
         "ecran-cache": "L'écran montre un point commun à toute la salle, puis se cache.",
-        "salle-debout": "Les invités concernés se lèvent : l'équipe devine ce qui lie les invités debout.",
+        "salle-debout": "Les invités concernés se lèvent : l'équipe devine ce qui lie les invités debout.",
         "paliers": "Plus l'équipe trouve vite, plus elle marque. À chaque palier, le chrono s'arrête pour un indice.",
-        "paliers-durees": "Palier 1 : 1 min, points ×3. Palier 2 : 35 s, ×2. Palier 3 : 35 s, ×1."
+        "paliers-durees": "Palier 1 : 1 min, points ×3. Palier 2 : 35 s, ×2. Palier 3 : 35 s, ×1."
       },
       "qcm2": {
-        "quadrants": "Une question, quatre réponses : A, B, C, D.",
+        "quadrants": "Une question, quatre réponses : A, B, C, D.",
         "zones": "Va te placer dans la zone de ta réponse.",
-        "elimine": "Mauvaise zone : éliminé !",
+        "elimine": "Mauvaise zone : éliminé !",
         "survivants": "100 points par survivant de ton équipe."
       },
       "qcm2-telephone": {
-        "quadrants": "Une question, quatre réponses : A, B, C, D.",
-        "telephone": "Réponds sur ton téléphone : tu as 30 secondes.",
-        "elimine": "Mauvaise réponse : éliminé !",
+        "quadrants": "Une question, quatre réponses : A, B, C, D.",
+        "telephone": "Réponds sur ton téléphone : tu as 30 secondes.",
+        "elimine": "Mauvaise réponse : éliminé !",
         "survivants": "100 points par survivant de ton équipe."
       },
       "qcm2-jetons": {
-        "quadrants": "Une question, quatre réponses : l'équipe se concerte, réunie.",
-        "jetons-capitaine": "Ton capitaine a des jetons : autant que de joueurs dans la plus grande équipe.",
-        "repartition": "Il les pose tous sur son téléphone : sur une réponse, ou plusieurs en cas de doute.",
+        "quadrants": "Une question, quatre réponses : l'équipe se concerte, réunie.",
+        "jetons-capitaine": "Ton capitaine a des jetons : autant que de joueurs dans la plus grande équipe.",
+        "repartition": "Il les pose tous sur son téléphone : sur une réponse, ou plusieurs en cas de doute.",
         "jetons-perdus": "Les jetons posés sur une mauvaise réponse sont perdus.",
         "jetons-restants": "À la fin, 100 points par jeton qui reste."
       },
       "enchere2": {
         "champions": "Un champion par équipe s'avance.",
-        "encheres": "Le sujet tombe, les enchères montent : « 5 ! » « 7 ! »",
+        "encheres": "Le sujet tombe, les enchères montent : « 5 ! » « 7 ! »",
         "chrono": "Le plus offrant doit tenir son pari, chrono en main.",
-        "verdict": "Pari tenu : +100. Raté : +20 pour chaque autre équipe."
+        "verdict": "Pari tenu : +100. Raté : +20 pour chaque autre équipe."
       },
       "mime2": {
         "file": "L'équipe se met en file, sans se retourner.",
         "mot": "Le premier voit le mot et le mime au suivant.",
         "chaine": "Le 2e chuchote ce qu'il a compris à l'oreille du 3e, qui le mime au 4e… et ainsi de suite.",
-        "annonce": "Le dernier l'annonce : mot trouvé, +100 !"
+        "annonce": "Le dernier l'annonce : mot trouvé, +100 !"
       },
       "photo2": {
         "capitaine": "Toute la soirée, le capitaine envoie une photo par thème.",
@@ -633,24 +634,24 @@
       "grab": {
         "duellistes-table": "Deux duellistes, une table d'objets.",
         "musique": "La musique part…",
-        "attrape": "Attrape l'objet qui va avec, le premier !",
-        "points": "Duel gagné : +50 pour ton équipe."
+        "attrape": "Attrape l'objet qui va avec, le premier !",
+        "points": "Duel gagné : +50 pour ton équipe."
       },
       "cup": {
         "duellistes-gobelet": "Deux duellistes, un gobelet entre eux.",
-        "tete-epaule": "Touche ce que l'animateur dit : tête, épaule…",
-        "gobelet": "Au mot « gobelet », attrape-le le premier !",
-        "points": "Gare aux pièges ! Duel gagné : +50."
+        "tete-epaule": "Touche ce que l'animateur dit : tête, épaule…",
+        "gobelet": "Au mot « gobelet », attrape-le le premier !",
+        "points": "Gare aux pièges ! Duel gagné : +50."
       }
     },
     "ordre": {
       "titre": "Ordre de passage",
-      "ligne": "Ordre de passage : {ordre}"
+      "ligne": "Ordre de passage : {ordre}"
     },
     "jetons": "{n, plural, =0 {aucun jeton} one {# jeton} other {# jetons}}",
     "misesValidees": "{n, plural, =0 {aucune mise validée} one {# mise validée} other {# mises validées}} sur {total}",
-    "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}",
-    "ouLien": "Scannez le QR code, ou ouvrez ce lien :"
+    "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}",
+    "ouLien": "Scannez le QR code, ou ouvrez ce lien :"
   },
   "admin": {
     "nav": {
@@ -688,7 +689,7 @@
       "bonne": "Bonne réponse",
       "proposition": "Proposition {lettre}",
       "obligatoire": "Obligatoire.",
-      "facultative": "Facultatif : laisse vide, ou remplis tous les champs.",
+      "facultative": "Facultatif : laisse vide, ou remplis tous les champs.",
       "champs": {
         "consigne": "Consigne",
         "reponse": "Réponse",
@@ -707,10 +708,10 @@
       "corriger": "Corrige les champs signalés.",
       "echec": "Le contenu n'a pas pu être enregistré. Réessaie.",
       "enregistrer": "Enregistrer",
-      "inactif": "Ce contenu est désactivé : il n'est plus proposé à la préparation.",
+      "inactif": "Ce contenu est désactivé : il n'est plus proposé à la préparation.",
       "desactiver": "Désactiver",
       "reactiver": "Réactiver",
-      "aideDesactiver": "Un contenu ne se supprime pas : désactivé, il quitte la préparation mais reste dans les soirées qui l’utilisent.",
+      "aideDesactiver": "Un contenu ne se supprime pas : désactivé, il quitte la préparation mais reste dans les soirées qui l’utilisent.",
       "aideReactiver": "Réactivé, il sera de nouveau proposé à la préparation."
     },
     "animateurs": {
@@ -724,17 +725,17 @@
       "actif": "actif",
       "inactif": "désactivé",
       "desactiver": "Désactiver",
-      "confirmerDesactiver": "Désactiver {nom} ?",
+      "confirmerDesactiver": "Désactiver {nom} ?",
       "reactiver": "Réactiver",
       "nouveau": "Nouveau compte",
       "nom": "Nom",
       "email": "E-mail",
       "motDePasse": "Mot de passe provisoire",
-      "aideMotDePasse": "{min} caractères au moins. Transmets-le à l’animateur : il le changera depuis « Mon compte ».",
+      "aideMotDePasse": "{min} caractères au moins. Transmets-le à l’animateur : il le changera depuis « Mon compte ».",
       "role": "Rôle",
       "creer": "Créer le compte",
       "cree": "Compte créé pour {nom}.",
-      "invalide": "Vérifie les champs : nom, e-mail, mot de passe de {min} caractères au moins.",
+      "invalide": "Vérifie les champs : nom, e-mail, mot de passe de {min} caractères au moins.",
       "existe": "Un compte existe déjà avec cet e-mail.",
       "echec": "Le compte n'a pas pu être créé. Réessaie.",
       "soiMeme": "Tu ne peux pas désactiver ton propre compte.",
@@ -756,7 +757,7 @@
       "prevue": "Prévue",
       "reelle": "Réelle",
       "export": "Export",
-      "aide": "Durée prévue : chronos du programme plus 15 % de transitions. Durée réelle : du lancement de la première manche à la fin de la dernière. Connexion : joueurs inscrits ÷ invités attendus."
+      "aide": "Durée prévue : chronos du programme plus 15 % de transitions. Durée réelle : du lancement de la première manche à la fin de la dernière. Connexion : joueurs inscrits ÷ invités attendus."
     },
     "mesure": {
       "titre": "Mesure",
@@ -767,12 +768,12 @@
       "prevu": "Prévu (moyenne)",
       "reel": "Réel (moyenne)",
       "ecart": "Écart",
-      "aideDurees": "Sur toutes les manches terminées. Prévu : chronos de la spec plus 15 % de transitions.",
+      "aideDurees": "Sur toutes les manches terminées. Prévu : chronos de la spec plus 15 % de transitions.",
       "connexion": "Taux de connexion des invités",
       "connexionMoyenne": "{taux} en moyenne, sur {soirees} soirée(s) avec des invités attendus.",
       "connexionAucune": "Aucune soirée n’a renseigné ses invités attendus.",
       "vitrine": "Conversion de la vitrine",
-      "vitrineAide": "Dans Vercel Web Analytics (projet de la vitrine) : visites de la page /confirmation ÷ visiteurs."
+      "vitrineAide": "Dans Vercel Web Analytics (projet de la vitrine) : visites de la page /confirmation ÷ visiteurs."
     }
   }
 }
