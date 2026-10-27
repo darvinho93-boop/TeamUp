@@ -908,3 +908,36 @@ choix de l'animateur.
   (3,4 s au plus). Ses animations et le fondu sont avancés de `--tu-finale-depuis` ; la piste du
   reel part plus tôt ou **en route** (`dansLeSonMs`), son coup toujours sur le logo. Le QR paraît
   0,8 s après le nom (`FINALE.qr` 6,4 s, `fin` 7 s). On ne coupe toujours pas la cinématique.
+
+## Conventions posées le 2026-10-27 (passe sur les écrans)
+
+Reprise de l'inventaire du 2026-10-24 (`apps/app/e2e/inventaire.spec.ts`, hors CI :
+`INVENTAIRE=<dossier>`, 45 états de l'écran en 1 920 et 1 280, téléphones fr/ta/en).
+
+- **L'écran commun est composé à 1 920 × 1 080 et mis à l'échelle du projecteur**
+  (`EcranCommun` → `.tu-stage-cadre` + `.tu-stage--projete`, `useEchelleScene('contenir')`),
+  comme l'aperçu de la régie (`useEchelleScene('largeur')`). Bandes beiges si le format n'est pas
+  16:9. Ne plus écrire de règle « petit projecteur » (`@container tu-stage (width < …)`) : la scène
+  fait toujours 120 rem. Ce qui est en position fixe dans la scène (fête, interlude, passe finale)
+  s'y rapporte ; les confettis tombent de `--tu-stage-height`, plus de `vw`/`vh`.
+- Un nom d'équipe ou un prénom trop long se réduit **lui seul** (`useTenirEnLargeur`, jusqu'à
+  60 %, puis points de suspension) : scène Équipes, fin du quiz, classement, podium, photos.
+  Le nom et l'effectif d'une carte d'équipe restent sur une ligne.
+- Agrandis pour la salle : QR de l'accueil (`--tu-stage-qr`, 44 rem), chronos de jeu
+  (`--tu-stage-chrono`, 10 rem, réduits avec leur bloc), prénoms des duels, programme (les lignes
+  se partagent la hauteur), cartes de fin du quiz (la grille de la scène Équipes), thèmes de la
+  Surenchère (centrés), décor des explications (`--tu-expl-echelle`, 1,4 à 0,8, mesuré par
+  l'écran ; la phrase ne se réduit qu'en dessous de 1). Photos en 2 × 2, 3 × 2 ou 4 × 2. Chrono et verdict de la Surenchère sous
+  le sujet, au milieu.
+- Quiz : tant qu'aucune réponse n'est affichée, la question seule en grand
+  (`--tu-question-echelle`), sans les cases vides ; les cases arrivent avec la réponse A.
+- « Activer le son » : dans la marge du bas, au milieu, il ne couvre plus rien (il masquait le
+  chrono de la Surenchère et le « Merci » du podium). Sur un verdict plein écran, le nom du coin
+  passe en blanc.
+- Téléphone : espaces insécables avant `! ? : ;` et dans les guillemets de `messages/fr.json` ;
+  survols des boutons sous `@media (hover: hover)` (au doigt, le bouton suivant paraissait
+  enfoncé) ; « la première question arrive » avant la première ; fond beige sur `<html>` ;
+  la langue d'un joueur déjà arrivé vient de sa fiche (`etat.joueur.langue`), plus seulement du
+  cookie.
+- `e2e/ecran-equipes.spec.ts` vérifie aussi la scène entière dans la fenêtre à 1 280 × 720 et
+  1 024 × 768.
