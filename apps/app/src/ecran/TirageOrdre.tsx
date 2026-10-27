@@ -108,7 +108,7 @@ export function TirageOrdre({
 export function OrdreTire({ ordre }: { ordre: EquipeSalle[] }) {
   const t = useTranslations('ecran.ordre');
   return (
-    <p className="tu-stage__m tu-stage__muted" data-testid="ordre-intro">
+    <p className="tu-stage__m tu-stage__muted tu-stage-ordre" data-testid="ordre-intro">
       {t('ligne', { ordre: ordre.map((e, i) => `${i + 1}. ${e.nom}`).join(' · ') })}
     </p>
   );

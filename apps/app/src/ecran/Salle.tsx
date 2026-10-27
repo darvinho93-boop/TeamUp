@@ -73,8 +73,11 @@ export function Salle({
   const [finaleDe, setFinaleDe] = useState(0);
   const [depuisMs, setDepuisMs] = useState(0);
   const [termine, setTermine] = useState(0);
+  // La scène du chargement : vue telle quelle, sans sa cinématique d'arrivée (la clôture).
+  const [premiere, setPremiere] = useState(true);
   if (scene !== sceneVue) {
     setSceneVue(scene);
+    setPremiere(false);
     const sansMouvement = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (sceneVue === 'ouverture' && scene === 'accueil' && !apercu && !sansMouvement)
       setPassage((n) => n + 1);
@@ -116,6 +119,7 @@ export function Salle({
           lang={langue}
           aria-hidden={apercu || undefined}
           data-fin-de-boucle={finDeBoucle || undefined}
+          data-d-emblee={premiere || undefined}
         >
           {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
           <Scene

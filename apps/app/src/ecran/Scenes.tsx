@@ -518,7 +518,8 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
                     <Multilingue textes={texteParLangue(p.secret, 'sujet', langues)} />
                     {champion && (
                       <p className="tu-stage__m">
-                        {p.resultat['tenu'] ? t('tenu') : t('perdu')} · {champion.nom}
+                        {p.resultat['tenu'] ? t('tenu') : t('perdu')} ·{' '}
+                        <span className="tu-stage-theme__equipe">{champion.nom}</span>
                       </p>
                     )}
                   </>
@@ -904,7 +905,7 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
             departMs={depart}
             dureeS={duree ?? CHRONO_QUESTION_S}
             decalageMs={decalageMs}
-            className="tu-stage__xl"
+            className="tu-stage-quiz__chrono"
           />
         )}
       </div>

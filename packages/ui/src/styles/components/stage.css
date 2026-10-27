@@ -600,6 +600,14 @@
   font-size: calc(var(--tu-size-2xl) * var(--tu-themes-echelle));
 }
 
+/* Le nom de l'équipe du verdict passe à la ligne d'un bloc, sans césure (inventaire en ligne du
+   2026-10-27 : « Les Super Cham-pions 2026 »). */
+.tu-stage-theme__equipe {
+  display: inline-block;
+  overflow-wrap: normal;
+  hyphens: manual;
+}
+
 /* La césure automatique sert le français et l'anglais ; elle couperait le tamoul à tort. */
 .tu-stage-theme :lang(ta),
 .tu-stage-quiz__zone :lang(ta) {
@@ -974,6 +982,20 @@
   gap: var(--tu-space-8);
   /* Le chrono se range à gauche du logo, posé en haut à droite de l'écran. */
   padding-inline-end: var(--tu-stage-marque);
+}
+
+/* L'ordre de passage sous le nom du jeu : lignes équilibrées, jamais un nom seul sur la
+   dernière (inventaire en ligne du 2026-10-27). */
+.tu-stage-ordre {
+  text-wrap: balance;
+}
+
+/* Le chrono de la question, en grand comme ceux des autres jeux (inventaire en ligne du
+   2026-10-27), sans agrandir l'en-tête au-delà de sa hauteur de ligne. */
+.tu-stage-quiz__chrono {
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+  line-height: 1;
 }
 
 /* Les deux rangées de cases se partagent la hauteur qui reste. Leur texte se réduit

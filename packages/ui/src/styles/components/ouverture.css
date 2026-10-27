@@ -448,6 +448,21 @@
   pointer-events: none;
 }
 
+/* Les ronds passent derrière l'invitation, pas sur ses textes (inventaire en ligne du
+   2026-10-27) : le bloc garde le beige du fond sous lui. */
+.tu-stage-page-insta .tu-stage-insta {
+  padding: var(--tu-space-8);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-bg);
+}
+
+/* Une clôture trouvée au chargement (écran rechargé, soirée terminée) s'affiche d'emblée : le
+   logo formé, « Merci ! » et l'invitation, sans rejouer la cinématique (inventaire en ligne du
+   2026-10-27 : quatre ronds seuls pendant plusieurs secondes). */
+.tu-stage[data-d-emblee] .tu-stage-cloture * {
+  animation: none;
+}
+
 /* Le « Merci » et l'invitation gardent leur taille ; le logo prend la hauteur qui reste et s'y
    réduit (sa zone est un conteneur), au lieu de déborder sur les textes d'un petit projecteur. */
 .tu-stage-cloture {
