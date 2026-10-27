@@ -160,8 +160,11 @@
 }
 
 /* Écran d'attente. */
+/* Le nom garde ses mots entiers ; s'il ne tient pas à côté des points, les points passent dessous,
+   à droite (inventaire en ligne du 2026-10-27 : « Les / Sable » en tamoul). */
 .tu-wait-team {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--tu-space-4);
@@ -181,11 +184,15 @@
   font-family: var(--tu-font-display);
   font-size: var(--tu-size-xl);
   font-weight: 700;
-  overflow-wrap: anywhere;
+  flex: 1 0 auto;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  text-align: start;
 }
 
 .tu-wait-team__points {
   flex: none;
+  margin-inline-start: auto;
   font-family: var(--tu-font-numeric);
   font-size: var(--tu-size-xl);
   font-weight: 600;
@@ -399,10 +406,11 @@
 .tu-mise__texte {
   flex: 1 1 6rem;
   min-width: 0;
-  /* Colonne étroite sur 360 px : un mot long se coupe avec un trait d'union (langue de la page),
-     pas au milieu d'une syllabe. */
+  /* Colonne étroite sur 360 px : les mots passent à la ligne entiers (la césure hachait
+     « biblio-thèque univer-sitaire », inventaire en ligne du 2026-10-27) ; seul un mot plus large
+     que la colonne se coupe. */
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: manual;
 }
 
 .tu-mise__lettre {
