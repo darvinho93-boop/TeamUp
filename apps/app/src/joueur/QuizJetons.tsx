@@ -203,7 +203,7 @@ export function QuizJetons({
           )}
       </div>
 
-      <h1 className="tu-quiz__question">{quiz.question.question}</h1>
+      <h1 className="tu-quiz__question tu-quiz__question--compacte">{quiz.question.question}</h1>
 
       <ol className="tu-mises">
         {quiz.question.propositions.map((texte, i) => {

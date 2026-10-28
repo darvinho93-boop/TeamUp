@@ -248,6 +248,25 @@
   overflow-wrap: anywhere;
 }
 
+/* Réponses à l'écran : la question laisse la place aux quatre réponses, sans défiler. */
+.tu-quiz__question--compacte {
+  font-size: var(--tu-size-xl);
+}
+
+/* Le tamoul est plus haut et plus large que le latin : un cran de moins, question et réponses
+   (sinon, à 360 px, la réponse D passait sous le bord de l'écran). */
+:lang(ta) .tu-quiz__question--compacte {
+  font-size: var(--tu-size-lg);
+}
+
+:lang(ta) .tu-quiz-choice {
+  font-size: var(--tu-size-base);
+}
+
+:lang(ta) .tu-quiz .tu-quiz__statut {
+  font-size: var(--tu-size-lg);
+}
+
 .tu-quiz__choix {
   display: flex;
   flex-direction: column;
