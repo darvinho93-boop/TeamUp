@@ -198,6 +198,7 @@
   --tu-danger-text: #b8291e; /* 5,82:1 sur --tu-bg */
   --tu-success-text: #2c6e5b; /* 5,63:1 */
   --tu-warning-text: #8a6200; /* 5,13:1 */
+  --tu-alerte-text: #a94f04; /* 4,97:1 ; --tu-alerte y tombe à 2,7:1 */
 
   /* Texte discret sur la pierre du pied de page : --tu-text-muted y tombe à 4,2:1, celui-ci tient 4,9:1. */
   --tu-text-muted-on-stone: #52617b;

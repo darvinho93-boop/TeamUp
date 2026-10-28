@@ -2,13 +2,16 @@
 
 import { useTranslations } from 'next-intl';
 import { cx } from '@teamup/ui/react';
-import { formatChrono, tempsRestant } from '@teamup/game';
+import { formatChrono, phaseDuChrono, tempsRestant } from '@teamup/game';
 import type { QuizJoueur } from '@/lib/partie';
 import { useMaintenant } from '@/ecran/Chrono';
 
 export const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
-/** Le chrono d'une question du quiz, à l'heure de la base (décalage mesuré à chaque lecture). */
+/**
+ * Le chrono d'une question du quiz, à l'heure de la base (décalage mesuré à chaque lecture).
+ * Orange puis rouge dans les dernières secondes, comme celui de l'écran commun.
+ */
 export function ChronoQuestion({
   departMs,
   dureeS,
@@ -20,8 +23,12 @@ export function ChronoQuestion({
 }) {
   const maintenant = useMaintenant(true);
   const reste = tempsRestant(dureeS, Math.max(0, maintenant + decalageMs - departMs));
+  const phase = phaseDuChrono(reste);
   return (
-    <span className={cx('tu-quiz__chrono', reste === 0 && 'tu-quiz__chrono--zero')} role="timer">
+    <span
+      className={cx('tu-quiz__chrono', phase !== 'normal' && `tu-quiz__chrono--${phase}`)}
+      role="timer"
+    >
       {formatChrono(reste)}
     </span>
   );
