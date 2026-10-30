@@ -36,11 +36,7 @@ export function ClotureSoiree({
           <p className="tu-regie-item__title" role="status">
             {termineLe
               ? t('cloturee', {
-                  // Heure de France, comme l'export : identique côté serveur et navigateur.
-                  heure: format.dateTime(new Date(termineLe), {
-                    timeStyle: 'short',
-                    timeZone: 'Europe/Paris',
-                  }),
+                  heure: format.dateTime(new Date(termineLe), { timeStyle: 'short' }),
                 })
               : t('clotureeSansHeure')}
           </p>

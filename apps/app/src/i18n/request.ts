@@ -10,5 +10,7 @@ import { MESSAGES } from './messages';
 export default getRequestConfig(async () => {
   const choisie = (await cookies()).get(COOKIE_LANGUE)?.value;
   const locale: Langue = estLangue(choisie) ? choisie : 'fr';
-  return { locale, messages: MESSAGES[locale] };
+  // Heures de France partout (journal des points, photos reçues, clôture) : sans fuseau, le
+  // serveur (UTC en ligne) et le navigateur formataient des heures différentes (2026-10-30).
+  return { locale, messages: MESSAGES[locale], timeZone: 'Europe/Paris' };
 });

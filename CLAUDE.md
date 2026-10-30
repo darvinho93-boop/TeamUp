@@ -990,6 +990,7 @@ back-office.
   `termine` et `termine_le`, `rouvrirSoiree` remet `en_cours` (clôture faite par erreur) ; les
   deux envoient le signal `relire` (`signalerSalle`). La base refusait déjà arrivées et invités
   ajoutés d'une soirée `termine` ; le téléphone affiche « La partie est terminée ». Le pilotage
-  reste ouvert. Heure affichée en `Europe/Paris`, comme l'export. `e2e/cloture.spec.ts`.
-- Écart connu : l'heure du journal des points (page Scores) est formatée sans fuseau, donc en UTC
-  en ligne.
+  reste ouvert. `e2e/cloture.spec.ts`.
+- Fuseau : `timeZone: 'Europe/Paris'` dans la configuration de next-intl (`src/i18n/request.ts`),
+  donc pour toute heure formatée, serveur et navigateur (journal des points, photos reçues,
+  clôture). Avant, l'heure du journal sortait en UTC en ligne.

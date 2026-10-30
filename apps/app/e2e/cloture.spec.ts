@@ -36,6 +36,18 @@ test('la régie clôture la soirée, puis la rouvre', async ({ browser, request 
   await regie.getByRole('button', { name: 'Clôturer la soirée' }).click();
   await regie.getByRole('button', { name: 'Toucher encore pour clôturer' }).click();
   await expect(regie.getByTestId('cloture').getByRole('status')).toContainText('Soirée clôturée à');
+  // À l'heure de France, même quand le serveur tourne en UTC (Vercel) : la page est relue après
+  // l'action, rendue par le serveur.
+  const heure = (decalageMs: number) =>
+    new Intl.DateTimeFormat('fr', { timeStyle: 'short', timeZone: 'Europe/Paris' }).format(
+      Date.now() + decalageMs,
+    );
+  await regie.reload();
+  const affichee = await regie.getByTestId('cloture').getByRole('status').textContent();
+  expect(
+    [heure(0), heure(-60_000)].some((h) => affichee?.includes(h)),
+    affichee ?? '',
+  ).toBe(true);
 
   // Le téléphone le voit sans recharger (signal, ou relecture de sûreté de 4 s).
   await expect(invite.getByText('La partie est terminée.')).toBeVisible({ timeout: 10_000 });
