@@ -984,6 +984,12 @@ back-office.
   titre du jeu et chaque passage sur une ligne avec son menu (`--tu-regie-passage-nom`). Capitaines
   du mode jetons alignés à gauche. Pilotage hors jeu : « À l'écran : <scène> ». Mes événements :
   une soirée passée jamais clôturée dit « non clôturée ».
-- **Aucune action ne passe une soirée à `termine`** (constaté le 2026-10-30) : le téléphone a un
-  écran « soirée terminée », mais rien dans l'app ne pose ce statut. Question posée à
-  l'utilisateur.
+- **Clôture de la soirée** (tranché le 2026-10-30 : un bouton à la régie). Jusque-là, rien ne
+  passait une soirée à `termine`. Page Scores, section « Clôture de la soirée » après l'export
+  (`src/regie/ClotureSoiree.tsx`, confirmé en deux appuis) : `cloturerSoiree` pose `statut`
+  `termine` et `termine_le`, `rouvrirSoiree` remet `en_cours` (clôture faite par erreur) ; les
+  deux envoient le signal `relire` (`signalerSalle`). La base refusait déjà arrivées et invités
+  ajoutés d'une soirée `termine` ; le téléphone affiche « La partie est terminée ». Le pilotage
+  reste ouvert. Heure affichée en `Europe/Paris`, comme l'export. `e2e/cloture.spec.ts`.
+- Écart connu : l'heure du journal des points (page Scores) est formatée sans fuseau, donc en UTC
+  en ligne.
