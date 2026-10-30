@@ -197,7 +197,7 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
                 key={page}
                 className={cx(
                   'tu-stage-membres tu-stage-reveal',
-                  ajuste && 'tu-stage-membres--ajuste',
+                  ajuste ? 'tu-stage-membres--ajuste' : 'tu-stage-membres--carrousel',
                 )}
                 style={reglage}
                 data-testid={`membres-${e.numero}`}

@@ -298,6 +298,28 @@
   line-height: calc(100cqh / var(--tu-stage-membres-rangs));
 }
 
+/* Carrousel (2026-10-30) : la page de prénoms remplit la carte (elle n'en prenait que le haut),
+   le prénom grandit avec son rang, jamais sous 2 rem ni au-delà du plafond. */
+/* Les colonnes prennent la largeur de leurs prénoms : un prénom long (« Jean-Christophe ») prend
+   la place que laisse la colonne voisine au lieu de se réduire de moitié. */
+.tu-stage-membres--carrousel {
+  flex: 1;
+  grid-template-columns: repeat(var(--tu-stage-membres-colonnes, 2), minmax(0, max-content));
+  justify-content: space-between;
+  grid-template-rows: repeat(var(--tu-stage-membres-rangs), minmax(var(--tu-stage-membre-h), 1fr));
+  min-height: 0;
+  container-type: size;
+}
+
+.tu-stage-membres--carrousel .tu-stage-membre {
+  font-size: clamp(
+    var(--tu-size-2xl),
+    100cqh / var(--tu-stage-membres-rangs) * var(--tu-stage-membre-ratio),
+    var(--tu-stage-membre-max)
+  );
+  line-height: max(var(--tu-stage-membre-h), 100cqh / var(--tu-stage-membres-rangs));
+}
+
 .tu-stage-membre {
   overflow: hidden;
   font-size: var(--tu-size-2xl);
