@@ -83,7 +83,7 @@
   --tu-recompense-1: 12rem;
   /* Quiz en mode jetons : largeur d'une pastille d'équipe dans la case d'une réponse (trois par
      rangée dans une case de 1 920 × 1 080, donc huit équipes sur trois rangées). */
-  --tu-stage-mise-min: 13rem;
+  --tu-stage-mise-min: 15rem; /* agrandie le 2026-10-30 : texte en 2 rem au lieu de 1,5 */
 
   /* Ouverture de l'écran commun (2026-10-17). */
   /* Les quatre ronds de l'ouverture : un cycle (égal à CYCLE_OUVERTURE_MS, src/lib/ouverture.ts,

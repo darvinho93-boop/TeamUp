@@ -1217,7 +1217,7 @@
    se réduisent avec le texte des cases, jamais sous 70 % : elles restent lisibles de loin. */
 .tu-stage-mises {
   --tu-mises-echelle: max(var(--tu-quiz-echelle, 1), 0.7);
-  --tu-stage-mise-texte: calc(var(--tu-size-xl) * var(--tu-mises-echelle));
+  --tu-stage-mise-texte: calc(var(--tu-size-2xl) * var(--tu-mises-echelle));
   --tu-stage-mise-h: calc(
     var(--tu-stage-mise-texte) * var(--tu-leading-tight) + var(--tu-space-2) * 2
   );
