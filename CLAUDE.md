@@ -951,3 +951,24 @@ Reprise de l'inventaire du 2026-10-24 (`apps/app/e2e/inventaire.spec.ts`, hors C
   faut ; en mode jetons, les réponses passent à la ligne par mots entiers (plus de césure).
 - Pour l'inventaire en local, arrêter tout serveur resté sur `:3100` : Playwright le réutilise
   (`reuseExistingServer`), et les captures montrent alors l'ancien build.
+
+## Conventions posées le 2026-10-30 (régie sur tablette)
+
+L'inventaire (`e2e/inventaire.spec.ts`) capture aussi la régie : le pilotage à chaque état en
+portable (1 440 × 900), tablette (1 024 × 768) et tablette en portrait (768 × 1 024), ses autres
+pages (Salle avec fiche et recherche, préparation, scores, photos, compte, connexion) et le
+back-office.
+
+- En-tête de la régie et du back-office sur **une rangée** : compte, langue, back-office et
+  déconnexion sont dans « Menu » (`src/regie/MenuCompte.tsx`, un `<details>` refermé au changement
+  de page et au toucher dehors), toujours au bout de la rangée.
+- Pilotage : le panneau du jeu vient **d'abord dans la page** (`.tu-regie-pilot__jeu`) ; la grille
+  le range à droite, et sur une colonne (portrait) ses touches passent avant l'aperçu et le
+  programme. Les prénoms de l'équipe qui joue viennent sous les touches. Touches à
+  `--tu-regie-touche` (1,25 × la cible tactile). Mesuré : la dernière touche tient dans l'écran
+  aux trois tailles (Points communs, quiz, Mime).
+- Une touche **inactive** du pilotage est un contour pointillé sans fond, texte estompé : un pavé
+  plein atténué passait pour plus important qu'une touche active en contour.
+- `tests/rls.test.ts` (« accepte un code ouvert ») ajoute « Nouvelle » à `FETE24` sans la retirer :
+  il échoue au second passage sur la même base locale (prénoms uniques). `pnpm db:reset` avant ;
+  la CI part d'une base neuve.
