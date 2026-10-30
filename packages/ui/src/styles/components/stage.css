@@ -360,9 +360,21 @@
   container-type: size;
 }
 
+/* Plus de quatre jeux : deux colonnes qui remplissent la largeur, lues de haut en bas
+   (2026-10-30). --tu-programme-n est alors le nombre de rangées. */
+.tu-stage-list--2-colonnes {
+  grid-template-rows: repeat(var(--tu-programme-n), minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: column;
+  column-gap: var(--tu-space-8);
+  width: 100%;
+}
+
+/* Chaque jeu sur sa carte : la liste occupe la scène au lieu d'un texte seul sur le beige. */
 .tu-stage-list--programme .tu-stage-list__item {
   display: flex;
   align-items: center;
+  background: var(--tu-surface);
   /* En flex, l'espace qui suit le numéro (::before) disparaît : l'écart le remplace. */
   gap: 0.3em;
   max-height: calc(var(--tu-size-5xl) * 1.6);
@@ -386,7 +398,7 @@
   color: var(--tu-text-muted);
 }
 
-.tu-stage-list__item--courant {
+.tu-stage-list .tu-stage-list__item--courant {
   background: var(--tu-primary);
   color: var(--tu-on-primary);
 }
@@ -397,6 +409,13 @@
 
 .tu-stage-list__item--fait {
   color: var(--tu-text-muted);
+}
+
+/* Un jeu joué porte sa coche au bout de la ligne (2026-10-30). */
+.tu-stage-list--programme .tu-stage-list__item--fait::after {
+  content: '✓';
+  margin-inline-start: auto;
+  color: var(--tu-success);
 }
 
 /* Points communs : chrono, paliers, indices. */

@@ -238,12 +238,21 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
 function Programme({ etat }: { etat: EtatSalle }) {
   const t = useTranslations();
   const jeux = etat.programme.filter((m) => m.statut !== 'annulee');
+  // Au-delà de quatre jeux, deux colonnes (2026-10-30) : une seule laissait la moitié droite vide.
+  const colonnes = jeux.length > 4 ? 2 : 1;
   return (
     <div className="tu-stage__body" data-scene="programme">
       <h1 className="tu-stage__xl">{t('ecran.programme')}</h1>
       <ol
-        className="tu-stage-list tu-stage-list--programme"
-        style={{ '--tu-programme-n': Math.max(1, jeux.length) } as CSSProperties}
+        className={cx(
+          'tu-stage-list tu-stage-list--programme',
+          colonnes === 2 && 'tu-stage-list--2-colonnes',
+        )}
+        style={
+          {
+            '--tu-programme-n': Math.max(1, Math.ceil(jeux.length / colonnes)),
+          } as CSSProperties
+        }
       >
         {jeux.map((m) => (
           <li
