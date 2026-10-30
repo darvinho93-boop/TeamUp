@@ -984,10 +984,55 @@
   padding-inline-end: var(--tu-stage-marque);
 }
 
-/* L'ordre de passage sous le nom du jeu : lignes équilibrées, jamais un nom seul sur la
-   dernière (inventaire en ligne du 2026-10-27). */
+/* Présentation d'un jeu : la règle et le nom forment un bloc, au milieu de la scène (2026-10-30 :
+   règle en haut et nom au milieu laissaient un vide entre eux). « safe » : un bloc trop haut
+   part du haut, sous les marques, au lieu de déborder des deux côtés. */
+.tu-stage-intro {
+  justify-content: safe center;
+  gap: var(--tu-space-12);
+}
+
+.tu-stage-intro .tu-stage-regle--sous-marques {
+  margin-top: 0;
+}
+
+.tu-stage-intro .tu-stage-centre {
+  flex: none;
+}
+
+.tu-stage-intro__jeu {
+  font-size: var(--tu-stage-titre-jeu);
+}
+
+/* L'ordre de passage sous le nom du jeu : une pastille numérotée par équipe, à sa couleur, en
+   rangées centrées (2026-10-30 ; avant, une ligne de texte gris). */
 .tu-stage-ordre {
-  text-wrap: balance;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-4);
+}
+
+.tu-stage-ordre__liste {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--tu-space-4) var(--tu-space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-ordre__equipe {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-3);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+}
+
+.tu-stage-ordre__numero {
+  font-family: var(--tu-font-numeric);
 }
 
 /* Le chrono de la question, en grand comme ceux des autres jeux (inventaire en ligne du

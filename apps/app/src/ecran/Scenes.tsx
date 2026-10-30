@@ -292,7 +292,7 @@ function Intro({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   }
   // La règle encadrée en haut, dans toutes les langues de la soirée (2026-10-22), puis le nom.
   return (
-    <div className="tu-stage__body tu-stage-reveal" data-scene="intro">
+    <div className="tu-stage__body tu-stage-intro tu-stage-reveal" data-scene="intro">
       <section className="tu-stage-regle tu-stage-regle--sous-marques" data-testid="regle">
         <p className="tu-stage-regle__titre">{t('ecran.commentJouer')}</p>
         <Multilingue
@@ -303,7 +303,7 @@ function Intro({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
         />
       </section>
       <div className="tu-stage-centre">
-        <h1 className="tu-stage__giant">{t(`jeux.${manche.jeu}`)}</h1>
+        <h1 className="tu-stage__giant tu-stage-intro__jeu">{t(`jeux.${manche.jeu}`)}</h1>
         {manche.options['ordre_tire'] === true && (
           <OrdreTire ordre={ordreDesEquipes(etat, manche)} />
         )}

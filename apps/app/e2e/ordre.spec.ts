@@ -88,7 +88,7 @@ test('l’ordre se tire en direct, s’anime à l’écran et décide de la prem
   // --- Retour à l'intro fixe : l'ordre y reste rappelé.
   await regie.getByRole('button', { name: 'Expliquer', exact: true }).click();
   await regie.getByRole('button', { name: "Arrêter l'explication" }).click();
-  await expect(ecran.getByTestId('ordre-intro')).toContainText(`1. ${tire[0]}`, {
+  await expect(ecran.getByTestId('ordre-intro').locator('.tu-team')).toHaveText(tire, {
     timeout: 5_000,
   });
 

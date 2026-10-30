@@ -661,8 +661,7 @@
       }
     },
     "ordre": {
-      "titre": "Playing order",
-      "ligne": "Playing order: {ordre}"
+      "titre": "Playing order"
     },
     "jetons": "{n, plural, =0 {no tokens} one {# token} other {# tokens}}",
     "misesValidees": "{n, plural, =0 {no bets confirmed} one {# bet confirmed} other {# bets confirmed}} out of {total}",

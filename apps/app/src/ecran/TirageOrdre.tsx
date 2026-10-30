@@ -104,12 +104,25 @@ export function TirageOrdre({
   );
 }
 
-/** L'ordre tiré, en une ligne, sous la règle de l'intro fixe. */
+/**
+ * L'ordre tiré, sous le nom du jeu à l'intro fixe : une pastille numérotée par équipe, à sa
+ * couleur (2026-10-30 ; une ligne de texte gris se lisait mal du fond de la salle).
+ */
 export function OrdreTire({ ordre }: { ordre: EquipeSalle[] }) {
   const t = useTranslations('ecran.ordre');
   return (
-    <p className="tu-stage__m tu-stage__muted tu-stage-ordre" data-testid="ordre-intro">
-      {t('ligne', { ordre: ordre.map((e, i) => `${i + 1}. ${e.nom}`).join(' · ') })}
-    </p>
+    <div className="tu-stage-ordre">
+      <p className="tu-stage__m tu-stage__muted">{t('titre')}</p>
+      <ol className="tu-stage-ordre__liste" data-testid="ordre-intro">
+        {ordre.map((equipe, i) => (
+          <li key={equipe.id} className="tu-stage-ordre__equipe">
+            <span className="tu-stage-ordre__numero">{i + 1}</span>
+            <span className={cx('tu-team tu-team--badge', teamModifier(equipe.numero))}>
+              {equipe.nom}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }

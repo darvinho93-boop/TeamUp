@@ -661,8 +661,7 @@
       }
     },
     "ordre": {
-      "titre": "Ordre de passage",
-      "ligne": "Ordre de passage : {ordre}"
+      "titre": "Ordre de passage"
     },
     "jetons": "{n, plural, =0 {aucun jeton} one {# jeton} other {# jetons}}",
     "misesValidees": "{n, plural, =0 {aucune mise validée} one {# mise validée} other {# mises validées}} sur {total}",
