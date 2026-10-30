@@ -10,7 +10,8 @@ import {
 
 /**
  * Inventaire visuel (2026-10-23) : chaque état de l'écran commun et du téléphone joueur, capturé
- * en taille réelle, pour la passe qualité / agencement. Hors CI : ne tourne qu'avec
+ * en taille réelle, pour la passe qualité / agencement ; depuis le 2026-10-30, le pilotage de la
+ * régie à chaque état (portable, tablette), ses autres pages et le back-office. Hors CI : ne tourne qu'avec
  * `INVENTAIRE=<dossier>`, où les captures sont rangées.
  *   INVENTAIRE=C:/chemin pnpm exec playwright test e2e/inventaire.spec.ts --project=mobile
  */
@@ -504,10 +505,30 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
     { nom: '1920', width: 1920, height: 1080 },
     { nom: '1280', width: 1280, height: 720 },
   ];
+  // La régie : tablette ou ordinateur portable (cahier des charges § 5.3).
+  const taillesRegie = [
+    { nom: 'portable', width: 1440, height: 900 },
+    { nom: 'tablette', width: 1024, height: 768 },
+    { nom: 'tablette-portrait', width: 768, height: 1024 },
+  ];
+  const capturerPage = async (page: Page, dossier: string, nom: string, chemin: string) => {
+    for (const t of taillesRegie) {
+      await page.setViewportSize({ width: t.width, height: t.height });
+      await page.goto(chemin);
+      await page.waitForTimeout(1200);
+      await page.screenshot({ path: `${DOSSIER}/${dossier}-${t.nom}/${nom}.png`, fullPage: true });
+    }
+  };
+  const regieCode = `/regie/${evenement.code}`;
   let numero = 0;
   const capturer = async (
     nom: string,
-    options: { attente?: number; sans_rechargement?: boolean; telephones?: boolean } = {},
+    options: {
+      attente?: number;
+      sans_rechargement?: boolean;
+      telephones?: boolean;
+      regie?: boolean;
+    } = {},
   ) => {
     numero++;
     const prefixe = String(numero).padStart(2, '0');
@@ -521,6 +542,8 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
       await ecran.waitForTimeout(options.attente ?? 1500);
       await ecran.screenshot({ path: `${DOSSIER}/ecran-${t.nom}/${prefixe}-${nom}.png` });
     }
+    if (options.regie !== false)
+      await capturerPage(regie, 'regie', `${prefixe}-${nom}`, `${regieCode}/pilotage`);
     if (options.telephones) {
       for (const t of tels) {
         await t.page.goto(`/${evenement.code}`);
@@ -532,6 +555,30 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
       }
     }
   };
+
+  // ========== Régie : pages hors pilotage.
+  const horsPilotage = (nom: string, chemin: string) =>
+    capturerPage(regie, 'regie-pages', nom, chemin);
+  await horsPilotage('evenements', '/regie');
+  await horsPilotage('compte', '/regie/compte');
+  await horsPilotage('preparation', `${regieCode}/preparation`);
+  await horsPilotage('salle', `${regieCode}/salle`);
+  for (const t of taillesRegie) {
+    const prise = (n: string) =>
+      regie.screenshot({ path: `${DOSSIER}/regie-pages-${t.nom}/${n}.png`, fullPage: true });
+    await regie.setViewportSize({ width: t.width, height: t.height });
+    await regie.goto(`${regieCode}/salle`);
+    await regie.getByRole('button', { name: 'Léa Martin' }).first().click();
+    await regie.waitForTimeout(600);
+    await prise('salle-fiche');
+    await regie.getByRole('searchbox').fill('an');
+    await regie.waitForTimeout(600);
+    await prise('salle-recherche');
+  }
+  await horsPilotage('scores', `${regieCode}/scores`);
+  await horsPilotage('photos', `${regieCode}/photos`);
+  const deconnecte = await (await browser.newContext({ isMobile: false })).newPage();
+  await capturerPage(deconnecte, 'regie-pages', 'connexion', '/regie/connexion');
 
   // ========== Écran commun : hors jeu.
   await capturer('ouverture', { attente: 5000 });
@@ -628,6 +675,8 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
     manche_id: jetons.id,
     passage_id: jetons.passages[i],
   });
+  await etape({ scene: 'intro', manche_id: jetons.id, etape: null });
+  await capturer('jetons-intro');
   await etape(
     { ...jp(0), etape: 'pret', chrono: 'arreter' },
     { p_manche: { id: jetons.id, statut: 'en_cours', options: { mode: 'jetons', jetons: 15 } } },
@@ -750,6 +799,27 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
   await capturer('instagram');
   await etape({ scene: 'cloture' });
   await capturer('cloture', { attente: 12_000 });
+  await horsPilotage('scores-fin', `${regieCode}/scores`);
+  await horsPilotage('photos-fin', `${regieCode}/photos`);
+
+  // ========== Back-office.
+  const admin = await (await browser.newContext({ isMobile: false })).newPage();
+  await admin.goto('/regie');
+  await admin.getByLabel('E-mail').fill('admin@teamup.test');
+  await admin.getByLabel('Mot de passe').fill('motdepasse');
+  await admin.getByRole('button', { name: 'Se connecter' }).click();
+  await admin.waitForURL('**/regie');
+  for (const [nom, chemin] of [
+    ['accueil', '/admin'],
+    ['contenus', '/admin/contenus'],
+    ['contenu-quiz', `/admin/contenus/${questions[0]}`],
+    ['contenu-points-communs', `/admin/contenus/${pointCommun}`],
+    ['contenu-nouveau', '/admin/contenus/nouveau'],
+    ['animateurs', '/admin/animateurs'],
+    ['evenements', '/admin/evenements'],
+    ['mesure', '/admin/mesure'],
+  ] as const)
+    await capturerPage(admin, 'admin', nom, chemin);
 
   // ========== Téléphone hors jeu : arrivée, vues du capitaine, hors ligne, soirée finie.
   for (const [nom, l, w, h] of [
