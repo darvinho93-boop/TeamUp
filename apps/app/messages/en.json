@@ -534,6 +534,18 @@
       "jeu": "Game",
       "motif": "Reason",
       "correction": "Correction"
+    },
+    "cloture": {
+      "titre": "Closing the evening",
+      "aide": "Closing ends the evening: phones show “The game is over” and nobody can join any more. The control room and scores stay open.",
+      "cloturer": "Close the evening",
+      "confirmer": "Tap again to close",
+      "cloturee": "Evening closed at {heure}.",
+      "clotureeSansHeure": "Evening closed.",
+      "aideRouvrir": "Reopen the evening if it was closed by mistake: guests will be able to join again.",
+      "rouvrir": "Reopen the evening",
+      "confirmerRouvrir": "Tap again to reopen",
+      "echec": "The evening could not be updated. Try again."
     }
   },
   "ecran": {

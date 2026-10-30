@@ -13,7 +13,7 @@ export interface EvenementRegie {
   statut: 'preparation' | 'repetition' | 'en_cours' | 'termine';
 }
 
-const COLONNES = 'id, code, client_nom, type_client, creneau_minutes, langues, statut';
+const COLONNES = 'id, code, client_nom, type_client, creneau_minutes, langues, statut, termine_le';
 
 /**
  * L'événement d'une page de la régie, lu sous la session de l'animateur : un code qui n'est pas

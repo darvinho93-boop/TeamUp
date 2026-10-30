@@ -534,6 +534,18 @@
       "jeu": "Jeu",
       "motif": "Motif",
       "correction": "Correction"
+    },
+    "cloture": {
+      "titre": "Clôture de la soirée",
+      "aide": "Clôturer met fin à la soirée : les téléphones affichent « La partie est terminée » et plus personne ne peut rejoindre. Le pilotage et les scores restent ouverts.",
+      "cloturer": "Clôturer la soirée",
+      "confirmer": "Toucher encore pour clôturer",
+      "cloturee": "Soirée clôturée à {heure}.",
+      "clotureeSansHeure": "Soirée clôturée.",
+      "aideRouvrir": "Rouvrir la soirée si elle a été clôturée par erreur : les invités pourront de nouveau rejoindre.",
+      "rouvrir": "Rouvrir la soirée",
+      "confirmerRouvrir": "Toucher encore pour rouvrir",
+      "echec": "La soirée n’a pas pu être mise à jour. Réessaie."
     }
   },
   "ecran": {

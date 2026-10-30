@@ -1,6 +1,7 @@
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { TeamDot } from '@teamup/ui/react';
 import { evenementDeLaRegie } from '@/serveur/regie';
+import { ClotureSoiree } from '@/regie/ClotureSoiree';
 import { FormulaireCorrection } from '@/regie/FormulaireCorrection';
 
 export async function generateMetadata() {
@@ -11,6 +12,7 @@ export default async function Scores({ params }: PageProps<'/regie/[code]/scores
   const { supabase, evenement } = await evenementDeLaRegie((await params).code);
   const t = await getTranslations('regie.scores');
   const tExport = await getTranslations('regie.export');
+  const tCloture = await getTranslations('regie.cloture');
   const format = await getFormatter();
   const [{ data: classement }, { data: journal }] = await Promise.all([
     supabase
@@ -127,6 +129,17 @@ export default async function Scores({ params }: PageProps<'/regie/[code]/scores
             {tExport('photos')}
           </a>
         </div>
+      </section>
+
+      <section className="tu-regie__section" aria-labelledby="cloture">
+        <h2 id="cloture" className="tu-regie__section-title">
+          {tCloture('titre')}
+        </h2>
+        <ClotureSoiree
+          code={evenement.code}
+          cloturee={evenement.statut === 'termine'}
+          termineLe={evenement.termine_le}
+        />
       </section>
     </>
   );
