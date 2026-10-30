@@ -72,14 +72,15 @@
      capitaine comprise, avec une marge pour le rendu des polices d'une machine à l'autre. */
   --tu-stage-membre-largeur: 0.118;
   --tu-stage-membre-max: var(--tu-size-3xl);
-  --tu-stage-podium-1: 20rem;
-  --tu-stage-podium-2: 14rem;
-  --tu-stage-podium-3: 10rem;
+  --tu-stage-podium-marche: 30rem; /* agrandi le 2026-10-30, il tenait dans le tiers de la scène */
+  --tu-stage-podium-1: 22rem;
+  --tu-stage-podium-2: 16rem;
+  --tu-stage-podium-3: 11rem;
   --tu-stage-titre-jeu: 9rem; /* le nom du jeu à sa présentation et avant un duel */
   --tu-stage-insta-qr: 26rem;
   --tu-stage-insta-qr-petit: 15rem;
-  --tu-recompense: 6rem;
-  --tu-recompense-1: 9rem;
+  --tu-recompense: 9rem;
+  --tu-recompense-1: 12rem;
   /* Quiz en mode jetons : largeur d'une pastille d'équipe dans la case d'une réponse (trois par
      rangée dans une case de 1 920 × 1 080, donc huit équipes sur trois rangées). */
   --tu-stage-mise-min: 13rem;

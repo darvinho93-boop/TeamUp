@@ -623,7 +623,7 @@ function Scores({ etat }: { etat: EtatSalle }) {
  */
 function Podium({ etat }: { etat: EtatSalle }) {
   const t = useTranslations('ecran');
-  const [premier, deuxieme, troisieme] = classement(etat);
+  const [premier, deuxieme, troisieme, ...suite] = classement(etat);
   const marche = (equipe: EquipeSalle | undefined, place: 1 | 2 | 3) =>
     equipe && (
       <li
@@ -645,12 +645,27 @@ function Podium({ etat }: { etat: EtatSalle }) {
   );
   return (
     <div className="tu-stage__body" data-scene="podium">
-      <h1 className="tu-stage__xl">{t('podium')}</h1>
+      {/* Le titre ne se lit plus (2026-10-30) : la coupe parle d'elle-même, le podium gagne sa
+          place. */}
+      <h1 className="tu-visually-hidden">{t('podium')}</h1>
       <ol ref={marches} className="tu-stage-podium">
         {marche(deuxieme, 2)}
         {marche(premier, 1)}
         {marche(troisieme, 3)}
       </ol>
+      {suite.length > 0 && (
+        // Les équipes après la troisième, en petit : aucune n'est oubliée (2026-10-30).
+        <ol
+          className="tu-stage__m tu-stage__muted tu-stage-podium-suite"
+          data-testid="podium-suite"
+        >
+          {suite.map((e, i) => (
+            <li key={e.id}>
+              {i + 4}. {e.nom} · {e.points}
+            </li>
+          ))}
+        </ol>
+      )}
       <p className="tu-stage__l tu-stage-podium-merci">{t('merci')}</p>
       {premier && <Celebration force={1} className="tu-celebration--podium" />}
     </div>

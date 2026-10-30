@@ -773,7 +773,7 @@
   flex: 1;
   align-items: flex-end;
   justify-content: center;
-  gap: var(--tu-space-8);
+  gap: var(--tu-space-12);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -784,12 +784,13 @@
   flex-direction: column;
   align-items: center;
   gap: var(--tu-space-4);
-  width: var(--tu-stage-team-min);
+  width: var(--tu-stage-podium-marche);
 }
 
 .tu-stage-podium__points {
   font-family: var(--tu-font-numeric);
-  font-size: var(--tu-size-4xl);
+  font-size: var(--tu-size-5xl);
+  line-height: 1;
   font-weight: 700;
 }
 
@@ -820,9 +821,29 @@
   height: var(--tu-stage-podium-3);
 }
 
-/* « Merci à tous », sous le podium, au milieu. */
+/* « Merci à tous », sous le podium, au milieu : au-dessus de la fête, les confettis passent
+   derrière lui (2026-10-30). */
 .tu-stage-podium-merci {
+  position: relative;
+  z-index: 3;
   text-align: center;
+}
+
+/* Les équipes après la troisième, sur une ligne sous le podium, elle aussi devant la fête. */
+.tu-stage-podium-suite {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--tu-space-2) var(--tu-space-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-podium .tu-stage-badge--grand {
+  font-size: var(--tu-size-4xl);
 }
 
 /* Coupe et médailles (2026-10-22). */
