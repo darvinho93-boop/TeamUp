@@ -43,6 +43,13 @@ textarea.tu-field__control {
   resize: vertical;
 }
 
+/* Une ligne logique qui peut être longue : le champ suit son texte, sans le couper. */
+textarea.tu-field__control--ligne {
+  min-height: var(--tu-tap-min);
+  field-sizing: content;
+  resize: none;
+}
+
 .tu-field__hint {
   font-size: var(--tu-size-sm);
   color: var(--tu-text-muted);

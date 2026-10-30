@@ -83,7 +83,7 @@ export function FormulaireContenu({
           <p className="tu-admin-langue__aide">
             {langue === 'fr' ? t('obligatoire') : t('facultative')}
           </p>
-          <div className="tu-regie__form">
+          <div className="tu-admin-champs">
             {CHAMPS[jeu].map((champ: Champ) => {
               const nom = nomChamp(langue, champ);
               const message = erreur(nom);
@@ -103,6 +103,9 @@ export function FormulaireContenu({
                   {...(message ? { error: message } : {})}
                   lang={langue}
                   autoComplete="off"
+                  multiline
+                  // Les quatre réponses deux par deux, comme à l'écran ; tout le reste en pleine largeur.
+                  {...(estProposition(champ) ? {} : { className: 'tu-admin-champs__large' })}
                 />
               );
             })}

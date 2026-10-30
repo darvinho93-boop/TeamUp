@@ -34,6 +34,24 @@
   font-size: var(--tu-size-sm);
 }
 
+/* Les champs d'une langue : chaque texte en pleine largeur, lisible en entier ; les quatre
+   réponses du quiz deux par deux, comme à l'écran (inventaire du 2026-10-30). */
+.tu-admin-champs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tu-space-4);
+}
+
+.tu-admin-champs__large {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 40rem) {
+  .tu-admin-champs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .tu-admin-pastilles {
   display: flex;
   flex-wrap: wrap;

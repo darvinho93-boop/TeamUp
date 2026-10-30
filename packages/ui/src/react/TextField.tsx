@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import { useId } from 'react';
 import { cx } from '../classNames';
 
@@ -7,13 +7,32 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   hint?: string;
   /** Message d'erreur en toutes lettres : la couleur seule ne porte jamais l'information. */
   error?: string;
+  /**
+   * Un texte d'une ligne logique qui peut être long (question de quiz, réponse) : il passe à la
+   * ligne et le champ grandit avec lui, au lieu d'être coupé. Entrée n'y ajoute pas de saut.
+   */
+  multiline?: boolean;
 }
 
-export function TextField({ label, hint, error, className, required, ...rest }: TextFieldProps) {
+export function TextField({
+  label,
+  hint,
+  error,
+  className,
+  required,
+  multiline = false,
+  ...rest
+}: TextFieldProps) {
   const id = useId();
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
   const describedBy = cx(hint && hintId, error && errorId) || undefined;
+  const commun = {
+    id,
+    required,
+    'aria-invalid': error !== undefined,
+    'aria-describedby': describedBy,
+  };
 
   return (
     <div className={cx('tu-field', error && 'tu-field--invalid', className)}>
@@ -25,14 +44,20 @@ export function TextField({ label, hint, error, className, required, ...rest }: 
           </span>
         )}
       </label>
-      <input
-        id={id}
-        className="tu-field__control"
-        required={required}
-        aria-invalid={error !== undefined}
-        aria-describedby={describedBy}
-        {...rest}
-      />
+      {multiline ? (
+        <textarea
+          className="tu-field__control tu-field__control--ligne"
+          rows={1}
+          {...commun}
+          {...(rest as TextareaHTMLAttributes<HTMLTextAreaElement>)}
+          onKeyDown={(e) => {
+            // Une seule ligne logique : Entrée ne crée pas de saut dans le texte enregistré.
+            if (e.key === 'Enter') e.preventDefault();
+          }}
+        />
+      ) : (
+        <input className="tu-field__control" {...commun} {...rest} />
+      )}
       {hint !== undefined && (
         <p className="tu-field__hint" id={hintId}>
           {hint}
