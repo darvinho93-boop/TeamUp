@@ -241,8 +241,8 @@ export default async function Preparation({
               // Un passage par équipe (Points communs, Mime), ou un par thème, par question.
               const parEquipe = m.jeu === 'list2' || m.jeu === 'mime2';
               return (
-                <li key={m.id} className="tu-regie-item">
-                  <div className="tu-regie-item__main">
+                <li key={m.id} className="tu-regie-item tu-regie-item--manche">
+                  <div className="tu-regie-item__main tu-regie-item__grow">
                     <span className="tu-regie-item__title">
                       {i + 1}. {tJeux(m.jeu)}
                     </span>
@@ -254,8 +254,8 @@ export default async function Preparation({
                     {preparable && (
                       <ul className="tu-regie-list">
                         {m.passages.map((p) => (
-                          <li key={p.id} className="tu-regie-player">
-                            <span className="tu-regie-player__name">
+                          <li key={p.id} className="tu-regie-passage">
+                            <span className="tu-regie-passage__nom">
                               {parEquipe
                                 ? (nomEquipe.get(p.equipe_id ?? '')?.nom ?? '—')
                                 : m.jeu === 'qcm2'

@@ -275,7 +275,13 @@ export function Pilotage({
           />
         )}
         {scene !== 'jeu' && scene !== 'intro' && (
-          <p className="tu-regie__muted">{t('choisirJeu')}</p>
+          // Hors jeu, le panneau dit d'abord ce que la salle voit (inventaire du 2026-10-30).
+          <>
+            <p className="tu-regie__section-title" data-testid="regie-a-l-ecran">
+              {t('aLEcran', { scene: t(`scene.${scene}`) })}
+            </p>
+            <p className="tu-regie__muted">{t('choisirJeu')}</p>
+          </>
         )}
       </div>
       <div className="tu-regie__section tu-regie-pilot__salle">
@@ -746,7 +752,7 @@ function CapitainesJetons({ etat, code }: { etat: EtatSalle; code: string }) {
         {etat.equipes
           .filter((e) => e.joueurs > 0)
           .map((e) => (
-            <li key={e.id} className="tu-regie-item">
+            <li key={e.id} className="tu-regie-item tu-regie-item--capitaine">
               <span className={cx('tu-team tu-team--badge', teamModifier(e.numero))}>{e.nom}</span>
               {e.capitaine ? (
                 <span className="tu-regie-item__main">

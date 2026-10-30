@@ -22,6 +22,12 @@ export default async function Evenements() {
   const aVenir = (evenements ?? []).filter((e) => e.date_evenement >= aujourdhui);
   const passes = (evenements ?? []).filter((e) => e.date_evenement < aujourdhui).reverse();
 
+  // Une soirée passée que personne n'a clôturée n'est plus « en cours » (inventaire du 2026-10-30).
+  const statut = (e: (typeof aVenir)[number]) =>
+    e.date_evenement < aujourdhui && e.statut !== 'termine'
+      ? t('nonCloturee')
+      : t(`statut.${e.statut}`);
+
   const liste = (lignes: typeof aVenir) =>
     lignes.length === 0 ? (
       <p className="tu-regie__muted">{t('aucun')}</p>
@@ -33,7 +39,7 @@ export default async function Evenements() {
               <span className="tu-regie-item__title">{e.client_nom}</span>
               <span className="tu-regie-item__meta">
                 {format.dateTime(new Date(e.date_evenement), { dateStyle: 'full' })} ·{' '}
-                {t('creneau', { minutes: e.creneau_minutes })} · {t(`statut.${e.statut}`)}
+                {t('creneau', { minutes: e.creneau_minutes })} · {statut(e)}
               </span>
             </div>
             <div className="tu-regie-item__actions">

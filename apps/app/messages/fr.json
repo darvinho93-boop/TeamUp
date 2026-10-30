@@ -178,6 +178,7 @@
       "aucun": "Aucun événement.",
       "ouvrir": "Ouvrir",
       "creneau": "{minutes} min",
+      "nonCloturee": "non clôturée",
       "statut": {
         "preparation": "en préparation",
         "repetition": "en répétition",
@@ -282,6 +283,7 @@
       "presenter": "Présenter",
       "commencer": "Commencer : {jeu}",
       "choisirJeu": "Présente un jeu du programme pour le lancer.",
+      "aLEcran": "À l’écran : {scene}",
       "pointsCommuns": "Points communs",
       "surenchere": "Surenchère",
       "reponse": "Réponse (toi seul la vois)",

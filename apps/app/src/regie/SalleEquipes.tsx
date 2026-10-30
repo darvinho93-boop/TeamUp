@@ -118,7 +118,7 @@ export function SalleEquipes({
               </button>
             </form>
           ) : (
-            <div className="tu-cluster">
+            <div className="tu-regie-team__nom">
               <button
                 type="button"
                 className="tu-btn tu-btn--ghost"
@@ -140,7 +140,7 @@ export function SalleEquipes({
             </div>
           ))}
         {equipe?.groupes && (
-          <p className="tu-regie__muted" data-testid="groupes">
+          <p className="tu-regie-item__meta" data-testid="groupes">
             {t('groupes', { detail: equipe.groupes })}
           </p>
         )}

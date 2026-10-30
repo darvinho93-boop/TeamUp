@@ -29,6 +29,8 @@
      tablette (1 024 × 768). Menu de l'en-tête : largeur de son panneau. */
   --tu-regie-touche: calc(var(--tu-tap-min) * 1.25);
   --tu-regie-menu-min: 14rem;
+  /* Préparation : colonne du nom d'un passage (équipe, « Question 1 »), en face de son menu. */
+  --tu-regie-passage-nom: 12rem;
   /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
   --tu-tracking-code: 0.08em;
 

@@ -236,11 +236,63 @@
   gap: var(--tu-space-2);
 }
 
+/* Capitaines avant le mode jetons : l'équipe puis son capitaine, à gauche pour toutes les
+   équipes (un texte court partait à droite, un long à la ligne à gauche). */
+.tu-regie-item--capitaine {
+  justify-content: flex-start;
+}
+
+/* Préparation : un jeu du programme. Ses commandes (↑ ↓ Retirer) restent en face de son titre,
+   pas au milieu d'une longue liste de passages (inventaire du 2026-10-30). */
+.tu-regie-item--manche {
+  align-items: flex-start;
+}
+
+/* Un passage (équipe, question, thème) et son contenu sur une ligne : le menu prend la place
+   qui reste, une longue question s'y lit. Sur une colonne étroite, l'un sous l'autre. */
+.tu-regie-passage {
+  display: grid;
+  grid-template-columns: var(--tu-regie-passage-nom) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--tu-space-2) var(--tu-space-4);
+}
+
+.tu-regie-passage__nom {
+  min-width: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.tu-regie-passage > select {
+  width: 100%;
+}
+
+@media (max-width: 40rem) {
+  .tu-regie-passage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Colonnes d'équipes (salle). */
+/* Chaque carte garde sa hauteur : la fiche d'un invité ouverte n'allonge pas ses voisines de
+   rangée (inventaire du 2026-10-30). */
 .tu-regie-teams {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--tu-regie-team-min), 1fr));
+  align-items: start;
   gap: var(--tu-space-4);
+}
+
+/* « Renommer » et « Bloquer le nom » côte à côte ; un libellé long passe à la ligne dans sa
+   touche plutôt que d'empiler les deux. */
+.tu-regie-team__nom {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tu-space-2);
+}
+
+.tu-regie-team__nom > .tu-btn {
+  padding-inline: var(--tu-space-3);
 }
 
 .tu-regie-team {

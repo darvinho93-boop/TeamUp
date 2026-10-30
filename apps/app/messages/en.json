@@ -178,6 +178,7 @@
       "aucun": "No events.",
       "ouvrir": "Open",
       "creneau": "{minutes} min",
+      "nonCloturee": "not closed",
       "statut": {
         "preparation": "in preparation",
         "repetition": "in rehearsal",
@@ -282,6 +283,7 @@
       "presenter": "Present",
       "commencer": "Start: {jeu}",
       "choisirJeu": "Present a game from the programme to start it.",
+      "aLEcran": "On screen: {scene}",
       "pointsCommuns": "Common ground",
       "surenchere": "Bidding war",
       "reponse": "Answer (only you can see it)",
