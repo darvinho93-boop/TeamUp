@@ -972,3 +972,10 @@ back-office.
 - `tests/rls.test.ts` (« accepte un code ouvert ») ajoute « Nouvelle » à `FETE24` sans la retirer :
   il échoue au second passage sur la même base locale (prénoms uniques). `pnpm db:reset` avant ;
   la CI part d'une base neuve.
+- Suite du relevé (même jour). Back-office : les textes d'un contenu sont des `TextField multiline`
+  (un `<textarea>` qui suit son texte, `field-sizing: content` ; Entrée n'y ajoute aucun saut),
+  chacun en pleine largeur, les quatre réponses du quiz deux par deux. Pilotage : programme
+  numéroté comme à la préparation, avec le mode d'un quiz une fois lancé ; mises des jetons sur
+  une grille par équipe, selon la place du panneau (requête de conteneur à 28 rem), un nom long
+  coupé ; à la Surenchère, « Touche d'abord l'équipe du champion » tant que « Tenu » et « Raté »
+  sont grisés.
