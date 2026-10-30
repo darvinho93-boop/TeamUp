@@ -33,7 +33,7 @@ function suivreMouvement(rappel: () => void): () => void {
 }
 
 /** `prefers-reduced-motion` du navigateur qui affiche l'écran ; non au rendu serveur. */
-function useMouvementReduit(): boolean {
+export function useMouvementReduit(): boolean {
   return useSyncExternalStore(
     suivreMouvement,
     () => window.matchMedia(REQUETE_MOUVEMENT).matches,

@@ -49,7 +49,7 @@ import { Explication } from './Explication';
 import { useAjusterQuiz } from './useAjusterQuiz';
 import { useAjusterTexte } from './useAjusterTexte';
 import { useTenirEnLargeur } from './useTenirEnLargeur';
-import { OrdreTire, ordreDesEquipes, TirageOrdre } from './TirageOrdre';
+import { OrdreTire, ordreDesEquipes, TirageOrdre, useMouvementReduit } from './TirageOrdre';
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
 
@@ -1150,12 +1150,38 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
   );
 }
 
+/** Le rythme du défilement des prénoms avant un duel. */
+const PAS_MYSTERE_MS = 250;
+
+/**
+ * Une place du duel à venir : les prénoms de la salle y défilent, comme une machine à sous,
+ * jusqu'à « Présenter ». Pris dans toute la salle, jamais parmi les seuls tirés : rien ne fuite.
+ * Un « ? » fixe au premier rendu et sous `prefers-reduced-motion`.
+ */
+function Mystere({ etat, place }: { etat: EtatSalle; place: 0 | 1 }) {
+  const prenoms = etat.equipes.flatMap((e) => e.prenoms);
+  const monte = useMonte();
+  const reduit = useMouvementReduit();
+  const defile = monte && !reduit && prenoms.length > 1;
+  const pas = Math.floor(useMaintenant(defile) / PAS_MYSTERE_MS);
+  // Deux suites décalées d'une demi-salle : les deux places ne montrent jamais le même prénom
+  // au même moment.
+  const decalage = place * Math.floor(prenoms.length / 2);
+  const prenom = defile ? prenoms[(pas * 7 + decalage) % prenoms.length] : null;
+  return (
+    <span className="tu-stage-duel__mystere" data-defile={defile}>
+      {prenom ?? '?'}
+    </span>
+  );
+}
+
 /**
  * Duel en bêta (cahier des charges § 5.2) : les noms des deux duellistes et le chrono. Rien
  * avant « Présenter » : la régie peut encore retirer un duelliste absent.
  */
 function Duel({ etat, decalageMs, jeu }: Props & { jeu: 'grab' | 'cup' }) {
   const t = useTranslations('ecran');
+  const tJeux = useTranslations('jeux');
   const passage = passageCourant(etat);
   const { etape, chrono_depart_ms: depart } = etat.pilotage;
   const duellistes = passage ? duellistesDe(passage.resultat) : null;
@@ -1163,8 +1189,19 @@ function Duel({ etat, decalageMs, jeu }: Props & { jeu: 'grab' | 'cup' }) {
 
   if (etape === 'tirage' || !duellistes) {
     return (
-      <div className="tu-stage__body tu-stage-centre" data-scene="duel" data-etape="tirage">
-        <p className="tu-stage__xl">{t('duelProchain')}</p>
+      <div
+        className="tu-stage__body tu-stage-centre tu-stage-reveal"
+        data-scene="duel"
+        data-etape="tirage"
+      >
+        <p className="tu-stage__l tu-stage__muted">{t('duelProchain')}</p>
+        <h1 className="tu-stage__giant tu-stage-intro__jeu">{tJeux(jeu)}</h1>
+        {/* Deux places à pourvoir, le temps du tirage (2026-10-30) : le face-à-face qui vient. */}
+        <div className="tu-stage-duel" aria-hidden="true">
+          <Mystere etat={etat} place={0} />
+          <p className="tu-stage__l">{t('contre')}</p>
+          <Mystere etat={etat} place={1} />
+        </div>
       </div>
     );
   }

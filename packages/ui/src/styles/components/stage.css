@@ -1414,6 +1414,25 @@
   line-height: 1.1;
 }
 
+/* Avant le tirage, deux places à pourvoir où défilent les prénoms de la salle : largeur fixe,
+   le prénom le plus long s'y coupe plutôt que de faire bouger le face-à-face. */
+.tu-stage-duel__mystere {
+  display: block;
+  width: var(--tu-stage-mystere);
+  overflow: hidden;
+  padding: var(--tu-space-8) var(--tu-space-6);
+  border: var(--tu-stage-cadre) dashed var(--tu-primary);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tu-stage-duel__joueur--efface {
   opacity: 0.35;
 }

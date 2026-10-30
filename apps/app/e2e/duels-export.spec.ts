@@ -108,9 +108,13 @@ test('un duel donne +50 au vainqueur ; l’export porte les scores et les photos
   await regie.getByRole('button', { name: 'Tirer les duellistes' }).click();
   await expect(regie.getByTestId('duellistes')).toContainText('Zoé');
   await expect(regie.getByTestId('duellistes')).toContainText('Malik');
-  // Tant que la régie n'a pas présenté le duel, la salle ne voit pas les noms.
+  // Tant que la régie n'a pas présenté le duel, la salle ne voit pas les noms : seuls les
+  // prénoms de toute la salle défilent dans les deux places (2026-10-30), Zoé parmi eux.
   await expect(scene('tirage')).toBeVisible();
-  await expect(ecran.getByText('Zoé')).toHaveCount(0);
+  await expect(ecran.getByTestId('duel')).toHaveCount(0);
+  await expect(
+    ecran.getByText('Zoé').and(ecran.locator(':not(.tu-stage-duel__mystere)')),
+  ).toHaveCount(0);
 
   await regie.getByRole('button', { name: 'Présenter le duel' }).click();
   await expect(scene('face_a_face')).toBeVisible({ timeout: 10_000 });
