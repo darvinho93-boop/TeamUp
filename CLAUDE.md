@@ -994,3 +994,21 @@ back-office.
 - Fuseau : `timeZone: 'Europe/Paris'` dans la configuration de next-intl (`src/i18n/request.ts`),
   donc pour toute heure formatée, serveur et navigateur (journal des points, photos reçues,
   clôture). Avant, l'heure du journal sortait en UTC en ligne.
+- Écran commun, retouches du même jour (inventaire relu) :
+  - **Présentation d'un jeu** : règle et nom du jeu en un bloc centré (`.tu-stage-intro`,
+    `justify-content: safe center`), nom en `--tu-stage-titre-jeu` ; l'ordre de passage en
+    pastilles numérotées à la couleur des équipes (`OrdreTire`, `data-testid="ordre-intro"` sur
+    la liste).
+  - **Programme** : au-delà de quatre jeux, deux colonnes lues de haut en bas
+    (`--tu-programme-n` = nombre de rangées) ; chaque jeu sur une carte, coche verte sur un jeu joué.
+  - **Podium** : titre masqué (lu par les lecteurs d'écran), marches et médailles agrandies ; les
+    équipes après la 3e sur une ligne dessous (`data-testid="podium-suite"`). Elle et le « Merci »
+    sont devant la fête (`z-index: 3`).
+  - **Jetons** : texte des mises en 2xl, pastilles de 15 rem au moins.
+  - **Carrousel** (`.tu-stage-membres--carrousel`) : la page remplit la carte, le prénom grandit
+    avec son rang (2 rem au moins), colonnes à la largeur de leurs prénoms.
+  - **Avant un duel** : le nom du duel en grand, puis deux places où défilent **les prénoms de
+    toute la salle** (`Mystere`, 250 ms par pas, décalées d'une demi-salle). Jamais les seuls
+    tirés : rien ne fuite avant « Présenter ». « ? » fixe au premier rendu et sous
+    `prefers-reduced-motion`. Un e2e qui vérifie qu'un prénom n'est pas à l'écran avant
+    « Présenter » doit exclure `.tu-stage-duel__mystere`.
