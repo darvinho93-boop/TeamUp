@@ -979,3 +979,11 @@ back-office.
   une grille par équipe, selon la place du panneau (requête de conteneur à 28 rem), un nom long
   coupé ; à la Surenchère, « Touche d'abord l'équipe du champion » tant que « Tenu » et « Raté »
   sont grisés.
+- Et ensuite : à la Salle, une carte garde sa hauteur (fiche ouverte sans allonger ses voisines),
+  « Renommer » et « Bloquer le nom » côte à côte. À la préparation, ↑ ↓ « Retirer » en face du
+  titre du jeu et chaque passage sur une ligne avec son menu (`--tu-regie-passage-nom`). Capitaines
+  du mode jetons alignés à gauche. Pilotage hors jeu : « À l'écran : <scène> ». Mes événements :
+  une soirée passée jamais clôturée dit « non clôturée ».
+- **Aucune action ne passe une soirée à `termine`** (constaté le 2026-10-30) : le téléphone a un
+  écran « soirée terminée », mais rien dans l'app ne pose ce statut. Question posée à
+  l'utilisateur.
