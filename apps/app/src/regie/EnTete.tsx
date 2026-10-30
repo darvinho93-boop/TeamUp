@@ -5,6 +5,7 @@ import { Wordmark } from '@teamup/ui/react';
 import { deconnecter } from '@/app/regie/actions';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { ChoixLangue } from './ChoixLangue';
+import { MenuCompte } from './MenuCompte';
 import { NavEvenement } from './NavEvenement';
 
 /**
@@ -39,7 +40,9 @@ export async function EnTete({
         </>
       )}
       {nav}
-      <div className="tu-regie__tools">
+      {/* Compte, langue et déconnexion repliés dans un menu : l'en-tête tient sur une rangée et
+          les touches du pilotage restent dans l'écran d'une tablette (inventaire du 2026-10-30). */}
+      <MenuCompte libelle={t('menu')}>
         {admin && (
           <Link href="/admin" className="tu-btn tu-btn--ghost">
             {t('backOffice')}
@@ -50,11 +53,11 @@ export async function EnTete({
         </Link>
         <ChoixLangue />
         <form action={deconnecter}>
-          <button type="submit" className="tu-btn tu-btn--ghost">
+          <button type="submit" className="tu-btn tu-btn--ghost tu-btn--block">
             {t('deconnexion')}
           </button>
         </form>
-      </div>
+      </MenuCompte>
     </header>
   );
 }

@@ -25,6 +25,10 @@
   --tu-regie-chip-h: 1.875rem;
   --tu-regie-chip-point: 0.625rem;
   --tu-regie-estompe: 0.3;
+  /* Touches du pilotage : au-dessus de la cible tactile, sans pousser les dernières hors d'une
+     tablette (1 024 × 768). Menu de l'en-tête : largeur de son panneau. */
+  --tu-regie-touche: calc(var(--tu-tap-min) * 1.25);
+  --tu-regie-menu-min: 14rem;
   /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
   --tu-tracking-code: 0.08em;
 
@@ -36,6 +40,7 @@
   --tu-chargement-barre: 11rem;
   --tu-z-chargement: 50;
   --tu-z-consentement: 30; /* la demande de consentement de la vitrine, au-dessus de l'en-tête */
+  --tu-z-menu: 20; /* le menu de l'en-tête de la régie, au-dessus de la page */
   /* Place du logo en haut à droite de l'écran commun : ce qu'un en-tête pleine largeur lui laisse. */
   --tu-stage-marque: 21rem;
   /* … et sa hauteur sous le haut de la scène (son retrait, le pictogramme, un écart, moins la

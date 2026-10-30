@@ -12,8 +12,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--tu-space-3) var(--tu-space-6);
-  padding: var(--tu-space-3) var(--tu-space-6);
+  gap: var(--tu-space-2) var(--tu-space-4);
+  padding: var(--tu-space-2) var(--tu-space-6);
   border-bottom: var(--tu-border-width) solid var(--tu-border);
   background: var(--tu-surface);
   --tu-wordmark-size: var(--tu-size-xl);
@@ -54,7 +54,7 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--tu-tap-min);
-  padding-inline: var(--tu-space-4);
+  padding-inline: var(--tu-space-2);
   border-radius: var(--tu-radius-pill);
   color: var(--tu-text-muted);
   font-weight: 600;
@@ -66,11 +66,40 @@
   color: var(--tu-text);
 }
 
+/* Compte, langue, déconnexion : repliés dans un menu, l'en-tête tient sur une rangée. */
+/* Toujours au bout de sa rangée : son panneau, calé à droite, reste dans l'écran. */
+.tu-regie__menu {
+  position: relative;
+  margin-inline-start: auto;
+}
+
+.tu-regie__menu > summary {
+  list-style: none;
+}
+
+.tu-regie__menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tu-regie__menu[open] > summary {
+  background: var(--tu-surface-muted);
+}
+
 .tu-regie__tools {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + var(--tu-space-2));
+  z-index: var(--tu-z-menu);
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--tu-space-3);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--tu-space-2);
+  min-width: var(--tu-regie-menu-min);
+  padding: var(--tu-space-3);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+  box-shadow: var(--tu-shadow-md);
 }
 
 .tu-regie__main {
@@ -363,7 +392,8 @@ button.tu-regie-chip:hover,
   overflow-wrap: anywhere;
 }
 
-/* Pilotage : l'aperçu de l'écran à gauche, les touches à droite. */
+/* Pilotage : l'aperçu de l'écran à gauche, les touches à droite. Le jeu vient d'abord dans la
+   page : sur une colonne (tablette en portrait), ses touches passent avant l'aperçu. */
 .tu-regie-pilot {
   display: grid;
   grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
@@ -371,9 +401,25 @@ button.tu-regie-chip:hover,
   align-items: start;
 }
 
+.tu-regie-pilot__jeu {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.tu-regie-pilot__salle {
+  grid-column: 1;
+  grid-row: 1;
+}
+
 @media (max-width: 60rem) {
   .tu-regie-pilot {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tu-regie-pilot__jeu,
+  .tu-regie-pilot__salle {
+    grid-column: auto;
+    grid-row: auto;
   }
 }
 
@@ -392,8 +438,19 @@ button.tu-regie-chip:hover,
 }
 
 .tu-regie-keys .tu-btn {
-  min-height: calc(var(--tu-tap-min) * 1.5);
+  min-height: var(--tu-regie-touche);
   font-size: var(--tu-size-lg);
+}
+
+/* Touche inactive : un simple contour pointillé, texte estompé. Un pavé plein, même atténué,
+   passait pour plus important qu'une touche active en contour (inventaire du 2026-10-30). */
+.tu-regie-keys .tu-btn:disabled,
+.tu-regie-keys .tu-btn[aria-disabled='true'] {
+  border-color: var(--tu-border-strong);
+  border-style: dashed;
+  background: transparent;
+  color: var(--tu-text-muted);
+  opacity: 1;
 }
 
 .tu-regie-keys__wide {

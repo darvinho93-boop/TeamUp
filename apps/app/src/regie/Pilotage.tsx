@@ -179,55 +179,9 @@ export function Pilotage({
 
   return (
     <div className="tu-regie-pilot" aria-busy={occupe}>
-      <div className="tu-regie__section">
-        <Apercu etat={etat} decalageMs={decalageMs} qrSvg={qrSvg} adresse={adresse} />
-        <p className="tu-regie__muted" role="status">
-          {enDirect ? t('enDirect') : t('reconnexion')} · {t('connectes', { n: etat.connectes })}
-          {' · '}
-          <a href={`/ecran/${code}`} target="_blank" rel="noopener" className="tu-regie__lien">
-            {t('ouvrirEcran')}
-          </a>
-        </p>
-        <ReglageSon
-          evenementId={etat.evenement.id}
-          reglage={reglageDe(etat)}
-          apresEcriture={async () => {
-            signaler();
-            await relire();
-          }}
-        />
-        <div className="tu-cluster" role="group" aria-label={t('scenes')}>
-          {SCENES_LIBRES.map((s) => (
-            <Button
-              key={s}
-              variant={scene === s ? 'primary' : 'ghost'}
-              aria-pressed={scene === s}
-              onClick={() => agir({ type: 'scene', scene: s })}
-            >
-              {t(`scene.${s}`)}
-            </Button>
-          ))}
-        </div>
-        <ol className="tu-regie-list" aria-label={t('programme')}>
-          {etat.programme.map((m) => (
-            <li
-              key={m.id}
-              className={cx('tu-regie-item', m.id === manche?.id && 'tu-regie-item--courant')}
-            >
-              <span className="tu-regie-item__title">
-                {tJeux(m.jeu)} · {t(`statut.${m.statut}`)}
-              </span>
-              {m.statut !== 'terminee' && m.statut !== 'annulee' && PILOTABLES.includes(m.jeu) && (
-                <Button variant="ghost" onClick={() => agir({ type: 'intro', mancheId: m.id })}>
-                  {t('presenter')}
-                </Button>
-              )}
-            </li>
-          ))}
-        </ol>
-      </div>
-
-      <div className="tu-regie__section">
+      {/* Le jeu d'abord : sur une tablette en portrait, les touches passent avant l'aperçu et le
+          programme ; plus large, la grille le range à droite. */}
+      <div className="tu-regie__section tu-regie-pilot__jeu">
         {alerte && (
           <p className="tu-regie__alert" role="alert">
             {alerte}
@@ -313,6 +267,53 @@ export function Pilotage({
         {scene !== 'jeu' && scene !== 'intro' && (
           <p className="tu-regie__muted">{t('choisirJeu')}</p>
         )}
+      </div>
+      <div className="tu-regie__section tu-regie-pilot__salle">
+        <Apercu etat={etat} decalageMs={decalageMs} qrSvg={qrSvg} adresse={adresse} />
+        <p className="tu-regie__muted" role="status">
+          {enDirect ? t('enDirect') : t('reconnexion')} · {t('connectes', { n: etat.connectes })}
+          {' · '}
+          <a href={`/ecran/${code}`} target="_blank" rel="noopener" className="tu-regie__lien">
+            {t('ouvrirEcran')}
+          </a>
+        </p>
+        <ReglageSon
+          evenementId={etat.evenement.id}
+          reglage={reglageDe(etat)}
+          apresEcriture={async () => {
+            signaler();
+            await relire();
+          }}
+        />
+        <div className="tu-cluster" role="group" aria-label={t('scenes')}>
+          {SCENES_LIBRES.map((s) => (
+            <Button
+              key={s}
+              variant={scene === s ? 'primary' : 'ghost'}
+              aria-pressed={scene === s}
+              onClick={() => agir({ type: 'scene', scene: s })}
+            >
+              {t(`scene.${s}`)}
+            </Button>
+          ))}
+        </div>
+        <ol className="tu-regie-list" aria-label={t('programme')}>
+          {etat.programme.map((m) => (
+            <li
+              key={m.id}
+              className={cx('tu-regie-item', m.id === manche?.id && 'tu-regie-item--courant')}
+            >
+              <span className="tu-regie-item__title">
+                {tJeux(m.jeu)} · {t(`statut.${m.statut}`)}
+              </span>
+              {m.statut !== 'terminee' && m.statut !== 'annulee' && PILOTABLES.includes(m.jeu) && (
+                <Button variant="ghost" onClick={() => agir({ type: 'intro', mancheId: m.id })}>
+                  {t('presenter')}
+                </Button>
+              )}
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   );
@@ -509,7 +510,6 @@ function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) 
       <p className={cx('tu-team tu-team--badge tu-team--lg', teamModifier(equipe.numero))}>
         {equipe.nom}
       </p>
-      <MembresEquipe equipe={equipe} />
       <div className="tu-regie-secret">
         <p className="tu-regie__muted">{t('reponse')}</p>
         <p className="tu-regie-item__title" data-testid="regie-reponse">
@@ -586,6 +586,7 @@ function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) 
           </Button>
         )}
       </div>
+      <MembresEquipe equipe={equipe} />
     </section>
   );
 }
@@ -1021,7 +1022,6 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
       <p className={cx('tu-team tu-team--badge tu-team--lg', teamModifier(equipe.numero))}>
         {equipe.nom}
       </p>
-      <MembresEquipe equipe={equipe} />
 
       {motOuvert && (
         // Le mot, pour J1 seul : il vient le lire sur l'écran de régie (spec v3, jeu 04).
@@ -1124,6 +1124,7 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
           </Button>
         )}
       </div>
+      <MembresEquipe equipe={equipe} />
     </section>
   );
 }
