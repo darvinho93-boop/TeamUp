@@ -74,6 +74,16 @@ const PILOTABLES: readonly GameCode[] = [
 ];
 const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
+/** Libellé du mode d'un quiz, fixé au lancement ; rien avant, ni pour un autre jeu. */
+function libelleMode(manche: MancheSalle): 'modeJetons' | 'modeTelephone' | 'modeCroix' | null {
+  if (manche.jeu !== 'qcm2') return null;
+  const mode = manche.options['mode'];
+  if (mode === 'jetons') return 'modeJetons';
+  if (mode === 'telephone') return 'modeTelephone';
+  if (mode === 'croix') return 'modeCroix';
+  return null;
+}
+
 const SCENES_LIBRES: Exclude<Scene, 'intro' | 'jeu'>[] = [
   'ouverture',
   'accueil',
@@ -304,7 +314,13 @@ export function Pilotage({
               className={cx('tu-regie-item', m.id === manche?.id && 'tu-regie-item--courant')}
             >
               <span className="tu-regie-item__title">
-                {tJeux(m.jeu)} · {t(`statut.${m.statut}`)}
+                {/* Numéroté comme à la préparation, et le mode d'un quiz une fois choisi : deux
+                    quiz au programme ne se confondent plus (inventaire du 2026-10-30). */}
+                {[
+                  `${m.ordre}. ${tJeux(m.jeu)}`,
+                  ...[libelleMode(m)].flatMap((mode) => (mode ? [t(`quiz.${mode}`)] : [])),
+                  t(`statut.${m.statut}`),
+                ].join(' · ')}
               </span>
               {m.statut !== 'terminee' && m.statut !== 'annulee' && PILOTABLES.includes(m.jeu) && (
                 <Button variant="ghost" onClick={() => agir({ type: 'intro', mancheId: m.id })}>
@@ -670,6 +686,12 @@ function PanneauSurenchere({ etat, manche, decalageMs, agir }: PanneauProps) {
               </Button>
             ))}
           </fieldset>
+          {/* Sans équipe choisie, les deux touches restent grisées : on dit pourquoi. */}
+          {champion === null && (
+            <p className="tu-regie__muted" role="status" data-testid="regie-champion-avant">
+              {t('championAvant')}
+            </p>
+          )}
           <div className="tu-regie-keys">
             <BoutonConfirme
               disabled={champion === null}
@@ -912,15 +934,22 @@ function PanneauQuiz({
         </p>
       )}
       {jetons && (etape === 'question' || etape === 'reponse') && (
-        <ul className="tu-regie-list" aria-label={tq('mises')} data-testid="regie-mises">
+        <ul
+          className="tu-regie-list tu-regie-mises"
+          aria-label={tq('mises')}
+          data-testid="regie-mises"
+        >
           {mises.map((m) => (
             <li
               key={m.equipe.id}
-              className="tu-regie-item"
+              className="tu-regie-item tu-regie-item--mise"
               data-testid={`regie-mise-${m.equipe.numero}`}
               data-statut={m.statut}
             >
-              <span className={cx('tu-team tu-team--badge', teamModifier(m.equipe.numero))}>
+              <span
+                className={cx('tu-team tu-team--badge', teamModifier(m.equipe.numero))}
+                title={m.equipe.nom}
+              >
                 {m.equipe.nom}
               </span>
               <span className="tu-regie-mise">

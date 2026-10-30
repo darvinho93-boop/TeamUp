@@ -538,6 +538,52 @@ button.tu-regie-chip:hover,
 }
 
 /* Quiz en mode jetons : la mise de chaque équipe, A B C D, et où elle en est. */
+/* Une ligne de mise, la même pour chaque équipe quel que soit son nom (inventaire du
+   2026-10-30) : à l'étroit (tablette), l'équipe, ses quatre cases, puis le statut et
+   « Débloquer » ; avec la place, l'équipe et ses cases sur une ligne. Un nom trop long se
+   raccourcit, il ne renvoie plus les cases à la ligne. */
+.tu-regie-mises {
+  container-type: inline-size;
+}
+
+.tu-regie-item--mise {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.tu-regie-item--mise > .tu-team,
+.tu-regie-item--mise > .tu-regie-mise {
+  grid-column: 1 / -1;
+}
+
+.tu-regie-item--mise > .tu-team {
+  justify-self: start;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tu-regie-item--mise > .tu-btn {
+  grid-column: 2;
+}
+
+/* Sans « Débloquer » à côté, le statut prend toute la ligne. */
+.tu-regie-item--mise > .tu-regie-mise__statut:last-child {
+  grid-column: 1 / -1;
+}
+
+@container (min-width: 28rem) {
+  .tu-regie-item--mise > .tu-team {
+    grid-column: 1;
+  }
+
+  .tu-regie-item--mise > .tu-regie-mise {
+    grid-column: 2;
+  }
+}
+
 .tu-regie-mise {
   display: flex;
   flex-wrap: wrap;

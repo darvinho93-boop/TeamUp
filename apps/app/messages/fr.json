@@ -308,6 +308,7 @@
       "joue": "joué",
       "adjuger": "Adjugé ! Lancer le chrono ({secondes} s)",
       "champion": "Équipe du champion",
+      "championAvant": "Touche d’abord l’équipe du champion : « Tenu » et « Raté » s’ouvrent ensuite.",
       "tenu": "Tenu",
       "rate": "Raté",
       "retour": "Retour aux thèmes",
