@@ -1012,3 +1012,20 @@ back-office.
     tirés : rien ne fuite avant « Présenter ». « ? » fixe au premier rendu et sous
     `prefers-reduced-motion`. Un e2e qui vérifie qu'un prénom n'est pas à l'écran avant
     « Présenter » doit exclure `.tu-stage-duel__mystere`.
+
+## Conventions posées le 2026-10-31 (charge du quiz)
+
+Essai en ligne à 100 téléphones (soirée, compte et questions jetables, supprimés après) : les deux
+quiz tiennent sans erreur, mais l'écran suivait la régie à ~1 s et les relectures montaient à 6 s
+au lancement d'un quiz. Goulot : le processeur de la base, chaque touche de régie déclenchant
+100 relectures simultanées.
+
+- **Une relecture de téléphone ne calcule que ce qui concerne ce joueur.** `quiz_du_joueur` passe
+  par `quiz_elimination(manche, joueur)` (mêmes règles que `quiz_joueurs`, qui reste la référence
+  de l'écran, de la régie et de la validation) ; `etat_joueur` somme les points de la seule équipe
+  du joueur au lieu de joindre la vue `classement` (agrégée sur toute la base). Migration
+  `20261031090000`. Mesuré dans Postgres à 150 joueurs : l'élimination de tous passe de 542 à 22 ms.
+- Ne jamais appeler, dans une fonction relue par chaque téléphone, une fonction qui parcourt tous
+  les joueurs de la soirée : le coût d'une rafale devient quadratique.
+- Sur le poste, une rafale de 150 relectures reste lente (la machine sature avant la base) : pour
+  juger la charge, mesurer dans Postgres (`docker exec supabase_db_teamup psql …`) ou en ligne.
