@@ -202,6 +202,7 @@ export type Database = {
       evenements: {
         Row: {
           animateur_id: string;
+          carte_visible: boolean;
           client_nom: string;
           code: string;
           code_expire_le: string | null;
@@ -221,10 +222,12 @@ export type Database = {
           photos_closes_le: string | null;
           statut: Database['public']['Enums']['statut_evenement'];
           termine_le: string | null;
+          titre_public: string | null;
           type_client: Database['public']['Enums']['type_client'];
         };
         Insert: {
           animateur_id: string;
+          carte_visible?: boolean;
           client_nom: string;
           code?: string;
           code_expire_le?: string | null;
@@ -244,10 +247,12 @@ export type Database = {
           photos_closes_le?: string | null;
           statut?: Database['public']['Enums']['statut_evenement'];
           termine_le?: string | null;
+          titre_public?: string | null;
           type_client?: Database['public']['Enums']['type_client'];
         };
         Update: {
           animateur_id?: string;
+          carte_visible?: boolean;
           client_nom?: string;
           code?: string;
           code_expire_le?: string | null;
@@ -267,6 +272,7 @@ export type Database = {
           photos_closes_le?: string | null;
           statut?: Database['public']['Enums']['statut_evenement'];
           termine_le?: string | null;
+          titre_public?: string | null;
           type_client?: Database['public']['Enums']['type_client'];
         };
         Relationships: [
@@ -1074,6 +1080,7 @@ export type Database = {
         };
         Returns: Json;
       };
+      soirees_du_jour: { Args: never; Returns: Json };
       survivants_quiz: { Args: { p_manche: string }; Returns: Json };
       texte_rempli: { Args: { p_valeur: Json }; Returns: boolean };
       tirer_capitaines: { Args: { p_evenement: string }; Returns: number };
