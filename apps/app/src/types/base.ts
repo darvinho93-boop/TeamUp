@@ -209,6 +209,7 @@ export type Database = {
           cree_le: string;
           creneau_minutes: number;
           date_evenement: string;
+          equipes_prevues: number;
           groupe_facultatif: boolean;
           id: string;
           invites_attendus: number | null;
@@ -231,6 +232,7 @@ export type Database = {
           cree_le?: string;
           creneau_minutes: number;
           date_evenement: string;
+          equipes_prevues?: number;
           groupe_facultatif?: boolean;
           id?: string;
           invites_attendus?: number | null;
@@ -253,6 +255,7 @@ export type Database = {
           cree_le?: string;
           creneau_minutes?: number;
           date_evenement?: string;
+          equipes_prevues?: number;
           groupe_facultatif?: boolean;
           id?: string;
           invites_attendus?: number | null;
@@ -337,9 +340,11 @@ export type Database = {
           capitaine: boolean;
           equipe_id: string | null;
           evenement_id: string;
+          groupe_id: string | null;
           id: string;
           jeton_hash: string | null;
           langue: Database['public']['Enums']['langue'];
+          nom_propose: string | null;
           peut_ajouter: boolean;
           prenom: string;
           rejoint_le: string;
@@ -351,9 +356,11 @@ export type Database = {
           capitaine?: boolean;
           equipe_id?: string | null;
           evenement_id: string;
+          groupe_id?: string | null;
           id?: string;
           jeton_hash?: string | null;
           langue?: Database['public']['Enums']['langue'];
+          nom_propose?: string | null;
           peut_ajouter?: boolean;
           prenom: string;
           rejoint_le?: string;
@@ -365,9 +372,11 @@ export type Database = {
           capitaine?: boolean;
           equipe_id?: string | null;
           evenement_id?: string;
+          groupe_id?: string | null;
           id?: string;
           jeton_hash?: string | null;
           langue?: Database['public']['Enums']['langue'];
+          nom_propose?: string | null;
           peut_ajouter?: boolean;
           prenom?: string;
           rejoint_le?: string;
@@ -396,6 +405,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'evenements';
             referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'joueurs_groupe_id_evenement_id_fkey';
+            columns: ['groupe_id', 'evenement_id'];
+            isOneToOne: false;
+            referencedRelation: 'groupes';
+            referencedColumns: ['id', 'evenement_id'];
           },
         ];
       };
@@ -933,6 +949,10 @@ export type Database = {
       etat_joueur: { Args: { p_jeton_hash: string }; Returns: Json };
       evenement_public: { Args: { p_code: string }; Returns: Json };
       expiration_photo: { Args: { p_evenement: string }; Returns: string };
+      former_equipes: {
+        Args: { p_equipes: Json; p_evenement: string; p_passages: Json };
+        Returns: number;
+      };
       jetons_quiz: {
         Args: { p_manche: string };
         Returns: {
@@ -966,6 +986,7 @@ export type Database = {
           p_groupe: string;
           p_jeton_hash: string;
           p_langue: Database['public']['Enums']['langue'];
+          p_nom_propose?: string;
           p_prenom: string;
           p_volontaire?: boolean;
         };
@@ -976,9 +997,20 @@ export type Database = {
         Args: { p_code: string; p_prenom: string };
         Returns: boolean;
       };
+      proposer_nom: {
+        Args: { p_jeton_hash: string; p_nom: string };
+        Returns: Json;
+      };
       quiz_du_joueur: {
         Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
         Returns: Json;
+      };
+      quiz_elimination: {
+        Args: {
+          p_joueur: Database['public']['Tables']['joueurs']['Row'];
+          p_manche: string;
+        };
+        Returns: boolean;
       };
       quiz_jetons_du_joueur: {
         Args: {
@@ -1010,6 +1042,7 @@ export type Database = {
           p_groupe?: string;
           p_jeton_hash: string;
           p_langue: Database['public']['Enums']['langue'];
+          p_nom_propose?: string;
           p_prenom: string;
           p_volontaire?: boolean;
         };

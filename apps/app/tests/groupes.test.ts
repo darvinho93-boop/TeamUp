@@ -191,16 +191,34 @@ avecBase('les groupes à mélanger', () => {
     expect(erreur).toBeNull();
   });
 
-  it('aucun joueur ne porte de groupe', async () => {
+  // Revu au lot 14 (2026-11-01) : le groupe reste sur l'inscrit tant que la régie peut (re)former
+  // les équipes, et s'efface au premier jeu commencé. Au-delà, plus aucun joueur n'en porte.
+  it('le groupe d’un joueur s’efface au premier jeu commencé', async () => {
     const { id, code, groupes } = await soireeAGroupes(2, ['Côté A']);
     await rejoindre(code, groupes.get('Côté A')!);
-    const { data } = await clientService()
-      .from('joueurs')
-      .select('*')
-      .eq('evenement_id', id)
+    const lire = async () =>
+      (await clientService().from('joueurs').select('*').eq('evenement_id', id).single())
+        .data as Record<string, unknown>;
+    expect((await lire())['groupe_id']).toBe(groupes.get('Côté A'));
+
+    const { data: manche } = await clientService()
+      .from('manches')
+      .insert({ evenement_id: id, jeu: 'qcm2', ordre: 1, options: {} })
+      .select('id')
       .single();
-    expect(Object.keys(data!).filter((cle) => /groupe/i.test(cle))).toEqual([]);
-    expect(Object.values(data!)).not.toContain(groupes.get('Côté A'));
+    await clientService()
+      .from('manches')
+      .update({ statut: 'en_cours' })
+      .eq('id', (manche as { id: string }).id);
+    expect(Object.values(await lire())).not.toContain(groupes.get('Côté A'));
+
+    // Arrivé après le premier jeu : son groupe compte pour l'équipe, rien n'est gardé sur lui.
+    await rejoindre(code, groupes.get('Côté A')!);
+    const { data: tous } = await clientService()
+      .from('joueurs')
+      .select('groupe_id')
+      .eq('evenement_id', id);
+    expect((tous as { groupe_id: string | null }[]).every((j) => j.groupe_id === null)).toBe(true);
   });
 
   it("l'animateur lit la répartition mais ne l'écrit pas ; un autre ne voit rien", async () => {
