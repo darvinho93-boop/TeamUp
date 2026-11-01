@@ -654,7 +654,7 @@ function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) 
             className="tu-regie-keys__wide"
             onClick={() => agir({ type: 'suivant' })}
           >
-            {t('suivant', { equipe: equipeSuivante?.nom ?? '' })}
+            {t('suivant', { equipe: equipeSuivante?.nom ?? t('sansEquipe.titre') })}
           </Button>
         )}
         {fini && (
@@ -1206,7 +1206,7 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
             className="tu-regie-keys__wide"
             onClick={() => agir({ type: 'suivant' })}
           >
-            {t('suivant', { equipe: equipeSuivante?.nom ?? '' })}
+            {t('suivant', { equipe: equipeSuivante?.nom ?? t('sansEquipe.titre') })}
           </Button>
         )}
         {fini && (
