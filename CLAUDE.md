@@ -1062,3 +1062,12 @@ contenus de Points communs et du Mime sont **tirés au hasard dans une réserve*
   passage », 0 point, retour à l'intro), l'écran affiche « Un instant… ».
 - Écran : la scène « Équipes » avant la formation compte les inscrits (`EquipesAVenir`).
 - Machine sur place et réconciliation : lots 15 et 16 (`docs/lots.md`), à planifier.
+
+## Conventions posées le 2026-11-01 (langue du téléphone)
+
+- Le joueur **change de langue à tout moment** : un sélecteur en face du logo
+  (`src/joueur/ChoixLangueJoueur.tsx`, `outil` de `Cadre`), parmi les langues de la soirée,
+  absent quand elle n'en a qu'une. Pendant l'arrivée, il paraît une fois la langue choisie.
+- Joueur arrivé : `POST /api/partie/[code]/langue` → `changer_langue` (rôle de service, migration
+  `20261101120000`) écrit `joueurs.langue`, puis le cookie et `router.refresh()`. La fiche fait
+  foi (page `[code]`), donc ses contenus suivent et un autre navigateur garde la langue.
