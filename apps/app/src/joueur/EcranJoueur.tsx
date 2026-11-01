@@ -6,13 +6,15 @@ import { Button, cx, teamModifier } from '@teamup/ui/react';
 import type { EtatJoueur, GroupePublic } from '@/lib/partie';
 import { AjoutInvite } from './AjoutInvite';
 import { Cadre } from './Cadre';
+import { Explication } from './Explication';
 import { NomEquipe } from './NomEquipe';
+import { NomPropose } from './NomPropose';
 import { Photos } from './Photos';
 import { Quiz } from './Quiz';
 import { useEtatJoueur } from './useEtatJoueur';
 import { useFilePhotos } from './useFilePhotos';
 
-type Vue = 'equipe' | 'attente' | 'photos' | 'ajout' | 'nom';
+type Vue = 'equipe' | 'attente' | 'photos' | 'ajout' | 'nom' | 'explication' | 'propose';
 
 /** Le joueur a rejoint : « Mon équipe », puis l'attente, tenus à jour en continu. */
 export function EcranJoueur({
@@ -102,6 +104,28 @@ export function EcranJoueur({
     );
   }
 
+  if (vue === 'explication') {
+    return (
+      <Cadre bandeau={bandeau}>
+        <Explication programme={etat.programme ?? []} retour={() => setVue('attente')} />
+      </Cadre>
+    );
+  }
+
+  // Le volontaire change son nom proposé ; dès la formation des équipes, la vue se ferme.
+  if (vue === 'propose' && joueur.volontaire && !equipe) {
+    return (
+      <Cadre bandeau={bandeau}>
+        <NomPropose
+          code={code}
+          nomActuel={joueur.nom_propose ?? ''}
+          remplacer={remplacer}
+          retour={() => setVue('attente')}
+        />
+      </Cadre>
+    );
+  }
+
   if (vue === 'photos' && photos) {
     return (
       <Cadre bandeau={bandeau}>
@@ -137,7 +161,18 @@ export function EcranJoueur({
             </span>
           </button>
         ) : (
-          <p className="tu-player__lead">{t('equipe.sansEquipe')}</p>
+          <>
+            <p className="tu-player__lead" data-testid="sans-equipe">
+              {t('equipe.sansEquipe')}
+            </p>
+            {joueur.volontaire && (
+              <p className="tu-player__lead" data-testid="nom-propose">
+                {joueur.nom_propose
+                  ? t('proposition.actuel', { nom: joueur.nom_propose })
+                  : t('proposition.aucun')}
+              </p>
+            )}
+          </>
         )}
 
         {evenement.statut === 'termine' ? (
@@ -181,6 +216,14 @@ export function EcranJoueur({
                 {t('ajout.ouvrir')}
               </Button>
             )}
+            {joueur.volontaire && !equipe && (
+              <Button variant="outline" size="lg" block onClick={() => setVue('propose')}>
+                {t('proposition.ouvrir')}
+              </Button>
+            )}
+            <Button variant="ghost" size="lg" block onClick={() => setVue('explication')}>
+              {t('explication.revoir')}
+            </Button>
           </div>
         )}
       </div>

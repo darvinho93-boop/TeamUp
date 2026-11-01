@@ -102,6 +102,10 @@ export interface EtatJoueur {
     capitaine: boolean;
     /** Autorisé à la régie à ajouter des invités sans téléphone. */
     peut_ajouter: boolean;
+    /** S'est proposé comme capitaine à l'inscription (lot 14). */
+    volontaire?: boolean;
+    /** Nom d'équipe proposé par un volontaire, jusqu'au premier jeu commencé. */
+    nom_propose?: string | null;
   };
   evenement: {
     /** Canal du signal temps réel de la salle ; ne donne accès à rien d'autre. */
@@ -121,6 +125,8 @@ export interface EtatJoueur {
   } | null;
   manche: { jeu: GameCode; ordre: number } | null;
   prochaine: { jeu: GameCode; ordre: number } | null;
+  /** Les jeux de la soirée, dans l'ordre : la page d'explication de l'inscription (lot 14). */
+  programme?: GameCode[];
   quiz: QuizJoueur | null;
   /** `null` tant que la soirée n'a pas de manche photo. */
   photos: PhotosJoueur | null;

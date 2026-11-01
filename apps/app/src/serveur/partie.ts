@@ -52,10 +52,12 @@ export async function rejoindre(
   prenom: string,
   langue: Langue,
   jeton: string,
-  /** Le groupe ne sert qu'au tirage de l'équipe : la base ne le range pas sur le joueur. */
+  /** Groupe d'origine : sert à former les équipes, effacé au premier jeu commencé (lot 14). */
   groupe: string | null = null,
   /** S'est proposé comme capitaine : prioritaire au tirage de la régie. */
   volontaire = false,
+  /** Nom d'équipe proposé par un volontaire : celui de son équipe s'il est tiré capitaine. */
+  nomPropose: string | null = null,
 ): Promise<ResultatArrivee> {
   const { error } = await supabaseService().rpc('rejoindre_evenement', {
     p_code: code,
@@ -64,6 +66,7 @@ export async function rejoindre(
     p_jeton_hash: hacher(jeton),
     ...(groupe ? { p_groupe: groupe } : {}),
     p_volontaire: volontaire,
+    ...(volontaire && nomPropose ? { p_nom_propose: nomPropose } : {}),
   });
   if (!error) return { ok: true };
   if (/déjà pris/.test(error.message)) return { ok: false, erreur: 'prenom_pris' };
@@ -216,5 +219,39 @@ export async function renommerEquipe(
   }
   // Aucun signal de régie ne couvre ce changement : l'écran commun le reçoit du serveur.
   await signalerSalle(etat.evenement.id);
+  return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
+}
+
+export type RefusNomPropose = 'session' | 'volontaire' | 'formees' | 'nom';
+
+/**
+ * Le volontaire de ce cookie change le nom d'équipe qu'il propose, tant que la régie n'a pas
+ * formé les équipes (lot 14). Vide : il n'en propose plus. Renvoie l'état à jour.
+ */
+export async function proposerNom(
+  code: string,
+  nom: string,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusNomPropose }> {
+  const jeton = await jetonDe(code);
+  const etat = jeton ? await etatPourJeton(code, jeton) : null;
+  if (!jeton || !etat) return { ok: false, refus: 'session' };
+
+  const { error } = await supabaseService().rpc('proposer_nom', {
+    p_jeton_hash: hacher(jeton),
+    p_nom: nom,
+  });
+  if (error) {
+    const refus: RefusNomPropose | null = /volontaires/.test(error.message)
+      ? 'volontaire'
+      : /formées/.test(error.message)
+        ? 'formees'
+        : /trop long/.test(error.message)
+          ? 'nom'
+          : /session/.test(error.message)
+            ? 'session'
+            : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
   return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
 }

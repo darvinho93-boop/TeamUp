@@ -31,7 +31,11 @@
     "titre": "Capitaine ?",
     "aide": "Le capitaine choisit le nom de l'équipe, prend les photos et mise les jetons de l'équipe au quiz. On tire au sort parmi les volontaires.",
     "oui": "Je me propose",
-    "non": "Non merci"
+    "non": "Non merci",
+    "nomTitre": "Ton nom d’équipe",
+    "nomAide": "Si tu es tiré capitaine, ton équipe portera ce nom. Tu pourras le changer jusqu’à la formation des équipes.",
+    "nomChamp": "Nom d’équipe (facultatif)",
+    "nomBouton": "C’est parti"
   },
   "nomEquipe": {
     "ouvrir": "Renommer l'équipe",
@@ -68,7 +72,7 @@
     "surtitre": "Ton équipe",
     "aide": "Retrouve les joueurs de cette couleur dans la salle.",
     "bouton": "Compris",
-    "sansEquipe": "L'animateur va bientôt te placer dans une équipe."
+    "sansEquipe": "L’animateur va former les équipes. Reste dans le coin !"
   },
   "attente": {
     "salut": "Salut {prenom} !",
@@ -822,5 +826,27 @@
       "vitrine": "Conversion de la vitrine",
       "vitrineAide": "Dans Vercel Web Analytics (projet de la vitrine) : visites de la page /confirmation ÷ visiteurs."
     }
+  },
+  "explication": {
+    "titre": "Comment ça se passe",
+    "deroule": "L’animateur va former des équipes mélangées, puis vous enchaînerez les jeux. Tout se passe sur le grand écran : suivez-le !",
+    "jeux": "Les jeux de la soirée",
+    "telephone": "Et ton téléphone ?",
+    "telephoneAide": "Il t’indique ton équipe et tes points, et il sert au quiz si l’animateur le décide. Le capitaine y choisit le nom de l’équipe, envoie les photos et mise les jetons du quiz.",
+    "reseau": "Pour jouer, reste connecté (au wifi de la soirée s’il y en a un). Entre deux jeux, tu peux faire ce que tu veux de ton téléphone, puis revenir ici.",
+    "bouton": "C’est parti",
+    "revoir": "Revoir les explications"
+  },
+  "proposition": {
+    "titre": "Ton nom d’équipe",
+    "aide": "Si tu es tiré capitaine, ton équipe portera ce nom. Laisse vide pour ne rien proposer.",
+    "champ": "Nom d’équipe",
+    "bouton": "Enregistrer",
+    "retour": "Retour",
+    "formees": "Les équipes viennent d’être formées : le nom ne se propose plus.",
+    "serveur": "Le nom n’a pas pu s’enregistrer. Réessaie.",
+    "actuel": "Nom d’équipe proposé : « {nom} »",
+    "aucun": "Tu es volontaire pour être capitaine.",
+    "ouvrir": "Changer le nom proposé"
   }
 }

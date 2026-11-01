@@ -9,6 +9,8 @@ const Arrivee = z.object({
   langue: z.enum(LANGUES),
   groupe: z.uuid().nullish(),
   volontaire: z.boolean().optional(),
+  /** Nom d'équipe proposé par un volontaire (lot 14). */
+  nom: z.string().trim().max(24).nullish(),
 });
 
 const STATUT = {
@@ -34,8 +36,16 @@ export async function POST(req: Request, { params }: RouteContext<'/api/partie/[
   if (!saisie.success) return reponse({ erreur: 'prenom' }, 422);
 
   const jeton = await nouvelleSession(code);
-  const { prenom, langue, groupe, volontaire } = saisie.data;
-  const resultat = await rejoindre(code, prenom, langue, jeton, groupe ?? null, volontaire);
+  const { prenom, langue, groupe, volontaire, nom } = saisie.data;
+  const resultat = await rejoindre(
+    code,
+    prenom,
+    langue,
+    jeton,
+    groupe ?? null,
+    volontaire,
+    nom || null,
+  );
   if (!resultat.ok) return reponse({ erreur: resultat.erreur }, STATUT[resultat.erreur]);
 
   return reponse(await etatPourJeton(code, jeton));

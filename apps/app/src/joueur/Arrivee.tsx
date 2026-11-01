@@ -22,9 +22,9 @@ const TITRES: Record<Langue, string> = {
 type Erreur = 'vide' | 'pris' | 'complet' | 'codeInconnu' | 'serveur';
 
 /**
- * Langue, puis prénom, puis groupe si la soirée en a (lot 11), puis « Capitaine ? », puis
- * « Mon équipe ». Le groupe et le volontariat ne partent qu'avec l'arrivée : le groupe sert au
- * tirage de l'équipe (rien ne le garde), le volontariat au tirage des capitaines par la régie.
+ * Langue, puis prénom, puis groupe si la soirée en a (lot 11), puis « Capitaine ? » et, pour un
+ * volontaire, le nom d'équipe qu'il propose (lot 14). Ensuite « Mon équipe » si la soirée a déjà
+ * ses équipes, sinon la page d'explication puis l'attente de la formation par la régie.
  */
 export function Arrivee({
   code,
@@ -53,6 +53,8 @@ export function Arrivee({
   const [prenom, setPrenom] = useState('');
   const [etapeGroupe, setEtapeGroupe] = useState(false);
   const [etapeCapitaine, setEtapeCapitaine] = useState(false);
+  const [etapeNom, setEtapeNom] = useState(false);
+  const [nomPropose, setNomPropose] = useState('');
   const [groupe, setGroupe] = useState<string | null>(null);
   const [erreur, setErreur] = useState<Erreur>();
   const [envoi, setEnvoi] = useState(false);
@@ -103,13 +105,20 @@ export function Arrivee({
       const reponse = await fetch(`/api/partie/${code}/rejoindre`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ prenom, langue, groupe, volontaire }),
+        body: JSON.stringify({
+          prenom,
+          langue,
+          groupe,
+          volontaire,
+          nom: volontaire && nomPropose.trim() ? nomPropose.trim() : null,
+        }),
       });
       if (reponse.ok) return setRejoint((await reponse.json()) as EtatJoueur);
       const { erreur: code_ } = (await reponse.json().catch(() => ({}))) as { erreur?: string };
       if (code_ === 'prenom_pris') {
         // Pris entre-temps par un autre : retour au prénom, le choix du groupe sera redemandé.
         setEtapeCapitaine(false);
+        setEtapeNom(false);
         setEtapeGroupe(false);
         return setErreur('pris');
       }
@@ -124,7 +133,48 @@ export function Arrivee({
   };
 
   if (rejoint) {
-    return <EcranJoueur code={code} etatInitial={rejoint} vueInitiale="equipe" groupes={groupes} />;
+    return (
+      <EcranJoueur
+        code={code}
+        etatInitial={rejoint}
+        // Sans équipe (lot 14) : la page d'explication, puis l'attente de la formation.
+        vueInitiale={rejoint.equipe ? 'equipe' : 'explication'}
+        groupes={groupes}
+      />
+    );
+  }
+
+  if (etapeNom) {
+    return (
+      <Cadre>
+        <form
+          className="tu-player__body"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void envoyer(true);
+          }}
+          noValidate
+        >
+          <h1 className="tu-player__title">{tCapitaine('nomTitre')}</h1>
+          <p className="tu-player__lead">{tCapitaine('nomAide')}</p>
+          <TextField
+            label={tCapitaine('nomChamp')}
+            value={nomPropose}
+            onChange={(e) => setNomPropose(e.target.value)}
+            maxLength={24}
+            autoComplete="off"
+            autoCapitalize="words"
+            enterKeyHint="go"
+            {...(erreur ? { error: t(erreur, { prenom: prenom.trim() }) } : {})}
+          />
+          <div className="tu-player__actions">
+            <Button type="submit" variant="accent" size="lg" block disabled={envoi}>
+              {tCapitaine('nomBouton')}
+            </Button>
+          </div>
+        </form>
+      </Cadre>
+    );
   }
 
   if (!langue) {
@@ -192,7 +242,10 @@ export function Arrivee({
                 size="lg"
                 block
                 disabled={envoi}
-                onClick={() => void envoyer(true)}
+                onClick={() => {
+                  setEtapeCapitaine(false);
+                  setEtapeNom(true);
+                }}
               >
                 {tCapitaine('oui')}
               </Button>
