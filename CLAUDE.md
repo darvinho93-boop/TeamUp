@@ -1029,3 +1029,36 @@ au lancement d'un quiz. Goulot : le processeur de la base, chaque touche de rég
   les joueurs de la soirée : le coût d'une rafale devient quadratique.
 - Sur le poste, une rafale de 150 relectures reste lente (la machine sature avant la base) : pour
   juger la charge, mesurer dans Postgres (`docker exec supabase_db_teamup psql …`) ou en ligne.
+
+## Conventions posées au lot 14 (inscription en amont, formation des équipes)
+
+Tranché le 2026-11-01, après la panne d'ABXNJK (deux équipes supprimées en soirée : leurs passages
+de Points communs et de Mime restaient sans équipe, le tirage échouait sans rien dire, puis régie
+et écran restaient blancs). Les invités **s'inscrivent sans équipe** ; la **régie forme les
+équipes** à la Salle ; un **capitaine volontaire** par équipe donne **son nom** à l'équipe ; les
+contenus de Points communs et du Mime sont **tirés au hasard dans une réserve**.
+
+- **Écarts assumés** : au lot 5 et au cahier des charges (plus d'équipe donnée à l'arrivée dans
+  une soirée sans équipe) ; au lot 11 (le groupe est gardé sur l'inscrit, `joueurs.groupe_id`,
+  **jusqu'au premier jeu commencé**, puis effacé par le déclencheur `manches_oublier_inscription`,
+  avec `nom_propose`). Une soirée qui a déjà ses équipes garde le comportement du lot 5.
+- La création d'une soirée ne crée plus d'équipes : `evenements.equipes_prevues` (2 à 8) sert à la
+  durée prévue et à la valeur proposée à la formation. La préparation ne gère plus les équipes.
+- Points communs et Mime : `manches.options.reserve` (identifiants de contenus, taille au choix de
+  l'animateur, 24 au plus). Pas de passages avant la formation (la régie dit « Formez d'abord les
+  équipes »). Une manche préparée avant le lot 14 prend ses contenus pour réserve.
+- Calcul pur dans `packages/game/src/formation.ts` (`formerEquipes`, `tirerContenus`), hasard du
+  navigateur de la régie (`src/regie/FormationEquipes.tsx`), écriture d'un bloc par
+  `former_equipes` (security definer + `anime()`, sous le verrou d'arrivée) : équipes, capitaines,
+  noms, `equipes_groupes` recalculé, passages ; un inscrit arrivé entre-temps va dans la moins
+  remplie. **Refaire** remplace tout, refusé (`PT409`) dès qu'un jeu a commencé ou qu'une photo
+  ou un point existe (ils partiraient en cascade).
+- Téléphone : « Je me propose » ouvre le nom d'équipe proposé (24 caractères, facultatif), puis,
+  sans équipe, la page d'explication (`src/joueur/Explication.tsx` : règles des jeux du programme,
+  `etat_joueur.programme`), puis l'attente ; `proposer_nom` (rôle de service) jusqu'à la formation.
+- Garde-fous de la panne : supprimer une équipe supprime ses passages à venir de Points communs et
+  du Mime (déclencheur `equipes_retirer_passages`) ; `ordreDesPassages` range en dernier un passage
+  sans équipe ; le tirage affiche son échec ; un passage sans équipe se **passe** (« Passer ce
+  passage », 0 point, retour à l'intro), l'écran affiche « Un instant… ».
+- Écran : la scène « Équipes » avant la formation compte les inscrits (`EquipesAVenir`).
+- Machine sur place et réconciliation : lots 15 et 16 (`docs/lots.md`), à planifier.
