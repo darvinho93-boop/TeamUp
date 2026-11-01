@@ -70,6 +70,24 @@ export async function enregistrerGroupes(code: string, donnees: FormData) {
 }
 
 /**
+ * Carte Team Up! (2026-11-01) : la soirée paraît le jour même sur `/soirees`, sous un titre
+ * public. Cochée sans titre, elle ne paraît pas (la page de préparation le dit).
+ */
+export async function enregistrerCarte(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const brut = donnees.get('titre_public');
+  const titre = typeof brut === 'string' ? brut.trim().slice(0, 60) : '';
+  await supabase
+    .from('evenements')
+    .update({
+      titre_public: titre || null,
+      carte_visible: donnees.get('carte_visible') === 'on' && titre !== '',
+    })
+    .eq('id', evenement.id);
+  rafraichir();
+}
+
+/**
  * Les contenus de la banque que cette soirée n'utilise pas encore, adaptés à son public et
  * complets dans toutes ses langues.
  */

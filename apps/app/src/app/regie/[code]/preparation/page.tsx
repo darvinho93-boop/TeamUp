@@ -24,6 +24,7 @@ import {
   ajouterSurenchere,
   choisirContenuReserve,
   deplacerManche,
+  enregistrerCarte,
   enregistrerEquipesPrevues,
   enregistrerGroupes,
   retirerManche,
@@ -75,7 +76,11 @@ export default async function Preparation({
       .order('cree_le'),
     supabase.from('photos').select('theme_id').eq('evenement_id', evenement.id),
     supabase.from('groupes').select('ordre, nom').eq('evenement_id', evenement.id),
-    supabase.from('evenements').select('groupe_facultatif').eq('id', evenement.id).maybeSingle(),
+    supabase
+      .from('evenements')
+      .select('groupe_facultatif, carte_visible, titre_public')
+      .eq('id', evenement.id)
+      .maybeSingle(),
   ]);
   // Sans la migration 20261022100000, la lecture échoue : proposé, comme avant.
   const groupeFacultatif = reglageGroupes?.groupe_facultatif ?? true;
@@ -185,6 +190,39 @@ export default async function Preparation({
           </label>
           <div className="tu-cluster">
             <Button type="submit">{t('groupes.enregistrer')}</Button>
+          </div>
+        </form>
+      </section>
+
+      <section className="tu-regie__section" aria-labelledby="carte">
+        <h2 id="carte" className="tu-regie__section-title">
+          {t('carte.titre')}
+        </h2>
+        <p className="tu-regie__muted">{t('carte.aide')}</p>
+        <form action={enregistrerCarte.bind(null, code)} className="tu-regie__section">
+          <label className="tu-field">
+            <span className="tu-field__label">{t('carte.titrePublic')}</span>
+            <input
+              className="tu-field__control"
+              name="titre_public"
+              defaultValue={reglageGroupes?.titre_public ?? ''}
+              placeholder={t(`carte.exemple.${evenement.type_client}`)}
+              maxLength={60}
+            />
+          </label>
+          <label className="tu-regie__choices">
+            <input
+              type="checkbox"
+              name="carte_visible"
+              defaultChecked={reglageGroupes?.carte_visible ?? false}
+            />
+            {t('carte.visible')}
+          </label>
+          <p className="tu-regie__muted" data-testid="carte-statut">
+            {reglageGroupes?.carte_visible ? t('carte.statutVisible') : t('carte.statutCachee')}
+          </p>
+          <div className="tu-cluster">
+            <Button type="submit">{t('carte.enregistrer')}</Button>
           </div>
         </form>
       </section>
