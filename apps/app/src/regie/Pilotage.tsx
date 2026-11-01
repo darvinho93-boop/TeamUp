@@ -197,22 +197,45 @@ export function Pilotage({
             {alerte}
           </p>
         )}
-        {scene === 'intro' && manche && jeuParEquipe(manche.jeu) && manche.statut === 'a_venir' && (
-          <PanneauTirage manche={manche} agir={agir} />
-        )}
+        {scene === 'intro' &&
+          manche &&
+          jeuParEquipe(manche.jeu) &&
+          manche.passages.length === 0 && (
+            // Lot 14 : les passages se tirent à la formation des équipes, à la Salle.
+            <p className="tu-regie__alert" role="status" data-testid="former-dabord">
+              {t('sansEquipe.former')}{' '}
+              <Link href={`/regie/${code}/salle`} className="tu-regie__lien">
+                {t('sansEquipe.salle')}
+              </Link>
+            </p>
+          )}
+        {scene === 'intro' &&
+          manche &&
+          jeuParEquipe(manche.jeu) &&
+          manche.statut === 'a_venir' &&
+          manche.passages.length > 0 && (
+            <PanneauTirage
+              manche={manche}
+              agir={agir}
+              echec={() => setAlerte(t('tirage.erreur'))}
+            />
+          )}
         {scene === 'intro' && manche && (
           <PanneauExplication etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
-        {scene === 'intro' && manche && manche.jeu !== 'qcm2' && (
-          <Button
-            variant="accent"
-            size="lg"
-            className="tu-regie-keys__wide"
-            onClick={() => agir({ type: 'commencer' })}
-          >
-            {t('commencer', { jeu: tJeux(manche.jeu) })}
-          </Button>
-        )}
+        {scene === 'intro' &&
+          manche &&
+          manche.jeu !== 'qcm2' &&
+          !(jeuParEquipe(manche.jeu) && manche.passages.length === 0) && (
+            <Button
+              variant="accent"
+              size="lg"
+              className="tu-regie-keys__wide"
+              onClick={() => agir({ type: 'commencer' })}
+            >
+              {t('commencer', { jeu: tJeux(manche.jeu) })}
+            </Button>
+          )}
         {scene === 'intro' && manche?.jeu === 'qcm2' && (
           // Le mode se choisit au lancement de la manche ; la croix d'abord, le téléphone
           // seulement quand la salle ne permet pas de tracer une croix (spec v3).
@@ -357,14 +380,26 @@ function aleaCrypto(): number {
  * Tirage de l'ordre de passage en direct (lot 13) : la régie tire, l'écran anime. Les équipes
  * sont celles des passages de la manche ; chaque tour reprend l'ordre tiré.
  */
-function PanneauTirage({ manche, agir }: Pick<PanneauProps, 'manche' | 'agir'>) {
+function PanneauTirage({
+  manche,
+  agir,
+  echec,
+}: Pick<PanneauProps, 'manche' | 'agir'> & { echec: () => void }) {
   const t = useTranslations('regie.pilotage.tirage');
   const tirer = () => {
     const equipes = [
       ...new Set(manche.passages.flatMap((p) => (p.equipe_id ? [p.equipe_id] : []))),
     ];
     const ordre = tirerOrdre(equipes, aleaCrypto);
-    agir({ type: 'tirerOrdre', passages: ordreDesPassages(manche.passages, ordre) });
+    // Le 2026-10-31, une erreur ici restait muette : la régie le dit désormais.
+    let passages: string[];
+    try {
+      passages = ordreDesPassages(manche.passages, ordre);
+    } catch {
+      echec();
+      return;
+    }
+    agir({ type: 'tirerOrdre', passages });
   };
   return (
     <div className="tu-cluster">
@@ -492,13 +527,37 @@ function ReglageSon({
   );
 }
 
+/**
+ * Un passage de Points communs ou de Mime dont l'équipe a été supprimée (panne du 2026-10-31) :
+ * plus une page vide, mais une touche pour le passer, sans points.
+ */
+function PassageSansEquipe({ agir }: Pick<PanneauProps, 'agir'>) {
+  const t = useTranslations('regie.pilotage.sansEquipe');
+  return (
+    <section
+      className="tu-regie__section"
+      aria-label={t('titre')}
+      data-testid="passage-sans-equipe"
+    >
+      <p className="tu-regie-item__title">{t('titre')}</p>
+      <p className="tu-regie__muted">{t('aide')}</p>
+      <div className="tu-regie-keys">
+        <Button className="tu-regie-keys__wide" onClick={() => agir({ type: 'passer' })}>
+          {t('passer')}
+        </Button>
+      </div>
+    </section>
+  );
+}
+
 function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) {
   const t = useTranslations('regie.pilotage');
   const passage = passageCourant(etat);
   const equipe = equipeDe(etat, passage?.equipe_id ?? null);
   const etape = etat.pilotage.etape as EtapePointsCommuns;
   const maintenant = useMaintenant(etape === 'lance');
-  if (!passage || !equipe) return null;
+  if (!passage) return null;
+  if (!equipe) return <PassageSansEquipe agir={agir} />;
 
   const ecoule = ecouleMs(etat, decalageMs, maintenant);
   const indicesMs = indicesMsDe(passage);
@@ -1041,7 +1100,8 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
   const passage = passageCourant(etat);
   const equipe = equipeDe(etat, passage?.equipe_id ?? null);
   const etape = etat.pilotage.etape as EtapeMime;
-  if (!passage || !equipe) return null;
+  if (!passage) return null;
+  if (!equipe) return <PassageSansEquipe agir={agir} />;
 
   const permises = actionsMime(etape);
   const mots = texteParLangue(passage.secret, 'mot', etat.evenement.langues);

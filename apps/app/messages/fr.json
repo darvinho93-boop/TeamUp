@@ -426,7 +426,15 @@
       },
       "tirage": {
         "tirer": "Tirer l'ordre de passage",
-        "retirer": "Tirer à nouveau"
+        "retirer": "Tirer à nouveau",
+        "erreur": "Le tirage n’a pas pu se faire. Rechargez la page et réessayez."
+      },
+      "sansEquipe": {
+        "former": "Formez d’abord les équipes : ce jeu tire ses passages à la formation.",
+        "salle": "Aller à la Salle",
+        "titre": "Équipe retirée",
+        "aide": "L’équipe de ce passage n’existe plus. Passez-le : il ne compte aucun point.",
+        "passer": "Passer ce passage"
       }
     },
     "salle": {
@@ -666,7 +674,8 @@
     "jetons": "{n, plural, =0 {aucun jeton} one {# jeton} other {# jetons}}",
     "misesValidees": "{n, plural, =0 {aucune mise validée} one {# mise validée} other {# mises validées}} sur {total}",
     "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}",
-    "ouLien": "Scannez le QR code, ou ouvrez ce lien :"
+    "ouLien": "Scannez le QR code, ou ouvrez ce lien :",
+    "unInstant": "Un instant…"
   },
   "admin": {
     "nav": {

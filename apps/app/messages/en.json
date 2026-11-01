@@ -426,7 +426,15 @@
       },
       "tirage": {
         "tirer": "Draw the playing order",
-        "retirer": "Draw the order again"
+        "retirer": "Draw the order again",
+        "erreur": "The draw could not be made. Reload the page and try again."
+      },
+      "sansEquipe": {
+        "former": "Form the teams first: this game draws its turns when teams are formed.",
+        "salle": "Go to the Room",
+        "titre": "Team removed",
+        "aide": "This turn’s team no longer exists. Skip it: it scores no points.",
+        "passer": "Skip this turn"
       }
     },
     "salle": {
@@ -666,7 +674,8 @@
     "jetons": "{n, plural, =0 {no tokens} one {# token} other {# tokens}}",
     "misesValidees": "{n, plural, =0 {no bets confirmed} one {# bet confirmed} other {# bets confirmed}} out of {total}",
     "miseEquipe": "{equipe}: {n, plural, one {# token} other {# tokens}}",
-    "ouLien": "Scan the QR code, or open this link:"
+    "ouLien": "Scan the QR code, or open this link:",
+    "unInstant": "One moment…"
   },
   "admin": {
     "nav": {

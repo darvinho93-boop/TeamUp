@@ -344,6 +344,16 @@ function SonDeLArret({ palier }: { palier: number | null }) {
   return null;
 }
 
+/** Ce que voit la salle pendant que la régie passe un passage resté sans équipe. */
+function UnInstant() {
+  const t = useTranslations('ecran');
+  return (
+    <div className="tu-stage__body" data-testid="un-instant">
+      <p className="tu-stage__xl tu-stage-centre">{t('unInstant')}</p>
+    </div>
+  );
+}
+
 function PointsCommuns({ etat, decalageMs }: Props) {
   const t = useTranslations('ecran');
   const passage = passageCourant(etat);
@@ -371,7 +381,9 @@ function PointsCommuns({ etat, decalageMs }: Props) {
     `${passage?.id}:${etape}:${etat.pilotage.indices}:${langues.join()}:${jeu.arret !== null}`,
     '--tu-pc-echelle',
   );
-  if (!passage || !equipe) return null;
+  if (!passage) return null;
+  // Équipe supprimée (panne du 2026-10-31) : plus une scène vide ; la régie peut passer.
+  if (!equipe) return <UnInstant />;
 
   const { palier, restesS } = etatPaliers(jeu.jeuMs);
   const palierArrete = etape === 'lance' ? (jeu.arret?.palier ?? null) : null;
@@ -994,7 +1006,9 @@ function Mime({ etat, decalageMs }: Props) {
   const passage = passageCourant(etat);
   const equipe = equipeDe(etat, passage?.equipe_id ?? null);
   const { etape, chrono_depart_ms: depart } = etat.pilotage;
-  if (!passage || !equipe) return null;
+  if (!passage) return null;
+  // Équipe supprimée (panne du 2026-10-31) : plus une scène vide ; la régie peut passer.
+  if (!equipe) return <UnInstant />;
 
   if (etape === 'trouve' || etape === 'rate') {
     // Plein écran vert si le mot est trouvé, rouge sinon (spec v3, jeu 04).

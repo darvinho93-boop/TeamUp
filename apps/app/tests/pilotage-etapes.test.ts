@@ -613,3 +613,46 @@ describe("le tirage de l'ordre de passage", () => {
     expect(etape(intro('pc'), { type: 'expliquer' })?.ordre).toBeNull();
   });
 });
+
+describe('un passage resté sans équipe (panne du 2026-10-31)', () => {
+  /** Points communs, passage 1 ouvert alors que son équipe a été supprimée. */
+  function orphelin(): EtatSalle {
+    const e = etat({ scene: 'jeu', manche_id: 'pc', passage_id: 'p1', etape: 'pret' });
+    const pc = e.programme[0]!;
+    pc.statut = 'en_cours';
+    pc.passages[0] = { ...pc.passages[0]!, equipe_id: null, statut: 'en_cours' };
+    return e;
+  }
+
+  it('« Passer » le clôt sans points et revient à l’intro, d’où l’on reprend', () => {
+    const ecriture = etape(orphelin(), { type: 'passer' });
+    expect(ecriture?.passage).toEqual({
+      id: 'p1',
+      statut: 'termine',
+      resultat: { passe: true },
+      points: 0,
+    });
+    expect(ecriture?.scores).toEqual([]);
+    expect(ecriture?.manche).toBeNull();
+    expect(ecriture?.pilotage).toMatchObject({ scene: 'intro', manche_id: 'pc', passage_id: null });
+  });
+
+  it('dernier passage : la manche se termine', () => {
+    const e = orphelin();
+    e.programme[0]!.passages[1]!.statut = 'termine';
+    const ecriture = etape(e, { type: 'passer' });
+    expect(ecriture?.manche).toEqual({ id: 'pc', statut: 'terminee' });
+    expect(ecriture?.pilotage.scene).toBe('programme');
+  });
+
+  it('refusé quand le passage a son équipe', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'pc', passage_id: 'p1', etape: 'pret' });
+    expect(etape(e, { type: 'passer' })).toBeNull();
+  });
+
+  it('le tirage de l’ordre range le passage sans équipe à la fin', () => {
+    const e = etat({ scene: 'intro', manche_id: 'pc' });
+    e.programme[0]!.passages[0] = { ...e.programme[0]!.passages[0]!, equipe_id: null };
+    expect(etape(e, { type: 'tirerOrdre', passages: ['p2', 'p1'] })).not.toBeNull();
+  });
+});

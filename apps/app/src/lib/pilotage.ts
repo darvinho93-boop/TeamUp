@@ -71,6 +71,8 @@ export type Commande =
         Omit<Extract<ActionPhoto, { type: 'gagnante' }>, 'equipesAvecPhoto'> | { type: 'aucune' };
     }
   | { type: 'suivant' }
+  /** Un passage de Points communs ou de Mime resté sans équipe (panne du 2026-10-31) : 0 point. */
+  | { type: 'passer' }
   | { type: 'devoiler'; passageId: string }
   | { type: 'adjuger' }
   | { type: 'verdict'; tenu: boolean; equipeChampion: number }
@@ -378,6 +380,31 @@ export function calculerEtape(
           chrono: 'arreter',
         });
         ecriture.passage = { id: suivant.id, statut: 'en_cours' };
+        return ecriture;
+      }
+
+      case 'passer': {
+        // L'équipe du passage a été supprimée : on le clôt sans points et on revient à l'intro,
+        // d'où « Commencer » reprend au passage suivant ; ou, s'il n'en reste pas, la manche finit.
+        const courant = passageCourant(etat);
+        if (!manche || !courant || !jeuParEquipe(manche.jeu)) return null;
+        if (etat.equipes.some((e) => e.id === courant.equipe_id)) return null;
+        ecriture.passage = {
+          id: courant.id,
+          statut: 'termine',
+          resultat: { passe: true },
+          points: 0,
+        };
+        const reste = manche.passages.some((pa) => pa.id !== courant.id && pa.statut !== 'termine');
+        if (!reste) ecriture.manche = { id: manche.id, statut: 'terminee' };
+        ecriture.pilotage = {
+          scene: reste ? 'intro' : 'programme',
+          manche_id: reste ? manche.id : null,
+          passage_id: null,
+          etape: null,
+          indices: 0,
+          chrono: 'arreter',
+        };
         return ecriture;
       }
 
