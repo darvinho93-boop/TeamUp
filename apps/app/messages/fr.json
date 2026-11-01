@@ -32,10 +32,10 @@
     "aide": "Le capitaine choisit le nom de l'équipe, prend les photos et mise les jetons de l'équipe au quiz. On tire au sort parmi les volontaires.",
     "oui": "Je me propose",
     "non": "Non merci",
-    "nomTitre": "Ton nom d’équipe",
-    "nomAide": "Si tu es tiré capitaine, ton équipe portera ce nom. Tu pourras le changer jusqu’à la formation des équipes.",
-    "nomChamp": "Nom d’équipe (facultatif)",
-    "nomBouton": "C’est parti"
+    "nomTitre": "Ton nom d'équipe",
+    "nomAide": "Si tu es tiré capitaine, ton équipe portera ce nom. Tu pourras le changer jusqu'à la formation des équipes.",
+    "nomChamp": "Nom d'équipe (facultatif)",
+    "nomBouton": "C'est parti"
   },
   "nomEquipe": {
     "ouvrir": "Renommer l'équipe",
@@ -72,7 +72,7 @@
     "surtitre": "Ton équipe",
     "aide": "Retrouve les joueurs de cette couleur dans la salle.",
     "bouton": "Compris",
-    "sansEquipe": "L’animateur va former les équipes. Reste dans le coin !"
+    "sansEquipe": "L'animateur va former les équipes. Reste dans le coin !"
   },
   "attente": {
     "salut": "Salut {prenom} !",
@@ -440,13 +440,13 @@
       "tirage": {
         "tirer": "Tirer l'ordre de passage",
         "retirer": "Tirer à nouveau",
-        "erreur": "Le tirage n’a pas pu se faire. Rechargez la page et réessayez."
+        "erreur": "Le tirage n'a pas pu se faire. Rechargez la page et réessayez."
       },
       "sansEquipe": {
-        "former": "Formez d’abord les équipes : ce jeu tire ses passages à la formation.",
+        "former": "Formez d'abord les équipes : ce jeu tire ses passages à la formation.",
         "salle": "Aller à la Salle",
         "titre": "Équipe retirée",
-        "aide": "L’équipe de ce passage n’existe plus. Passez-le : il ne compte aucun point.",
+        "aide": "L'équipe de ce passage n'existe plus. Passez-le : il ne compte aucun point.",
         "passer": "Passer ce passage"
       }
     },
@@ -500,15 +500,15 @@
         "titre": "Former les équipes",
         "titreRefaire": "Refaire les équipes",
         "inscrits": "{n} inscrits, dont {volontaires} volontaires pour être capitaine.",
-        "nombre": "Nombre d’équipes",
+        "nombre": "Nombre d'équipes",
         "former": "Former les équipes",
         "confirmer": "Confirmer : {n} équipes",
         "refaire": "Refaire les équipes",
         "confirmerRefaire": "Confirmer : tout refaire",
-        "tropPeu": "Moins d’inscrits que d’équipes : baissez le nombre d’équipes.",
-        "reserve": "La réserve de Points communs ou de Mime est trop petite pour ce nombre d’équipes : complétez-la à la préparation.",
+        "tropPeu": "Moins d'inscrits que d'équipes : baissez le nombre d'équipes.",
+        "reserve": "La réserve de Points communs ou de Mime est trop petite pour ce nombre d'équipes : complétez-la à la préparation.",
         "tropTard": "Un jeu a commencé, ou des photos et des points existent déjà : les équipes ne se refont plus.",
-        "echec": "La formation n’a pas pu s’enregistrer. Réessayez."
+        "echec": "La formation n'a pas pu s'enregistrer. Réessayez."
       }
     },
     "scores": {
@@ -830,23 +830,23 @@
   },
   "explication": {
     "titre": "Comment ça se passe",
-    "deroule": "L’animateur va former des équipes mélangées, puis vous enchaînerez les jeux. Tout se passe sur le grand écran : suivez-le !",
+    "deroule": "L'animateur va former des équipes mélangées, puis vous enchaînerez les jeux. Tout se passe sur le grand écran : suivez-le !",
     "jeux": "Les jeux de la soirée",
     "telephone": "Et ton téléphone ?",
-    "telephoneAide": "Il t’indique ton équipe et tes points, et il sert au quiz si l’animateur le décide. Le capitaine y choisit le nom de l’équipe, envoie les photos et mise les jetons du quiz.",
-    "reseau": "Pour jouer, reste connecté (au wifi de la soirée s’il y en a un). Entre deux jeux, tu peux faire ce que tu veux de ton téléphone, puis revenir ici.",
-    "bouton": "C’est parti",
+    "telephoneAide": "Il t'indique ton équipe et tes points, et il sert au quiz si l'animateur le décide. Le capitaine y choisit le nom de l'équipe, envoie les photos et mise les jetons du quiz.",
+    "reseau": "Pour jouer, reste connecté (au wifi de la soirée s'il y en a un). Entre deux jeux, tu peux faire ce que tu veux de ton téléphone, puis revenir ici.",
+    "bouton": "C'est parti",
     "revoir": "Revoir les explications"
   },
   "proposition": {
-    "titre": "Ton nom d’équipe",
+    "titre": "Ton nom d'équipe",
     "aide": "Si tu es tiré capitaine, ton équipe portera ce nom. Laisse vide pour ne rien proposer.",
-    "champ": "Nom d’équipe",
+    "champ": "Nom d'équipe",
     "bouton": "Enregistrer",
     "retour": "Retour",
-    "formees": "Les équipes viennent d’être formées : le nom ne se propose plus.",
-    "serveur": "Le nom n’a pas pu s’enregistrer. Réessaie.",
-    "actuel": "Nom d’équipe proposé : « {nom} »",
+    "formees": "Les équipes viennent d'être formées : le nom ne se propose plus.",
+    "serveur": "Le nom n'a pas pu s'enregistrer. Réessaie.",
+    "actuel": "Nom d'équipe proposé : « {nom} »",
     "aucun": "Tu es volontaire pour être capitaine.",
     "ouvrir": "Changer le nom proposé"
   }

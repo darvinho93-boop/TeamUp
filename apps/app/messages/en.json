@@ -35,7 +35,7 @@
     "nomTitre": "Your team name",
     "nomAide": "If you are drawn as captain, your team will carry this name. You can change it until the teams are formed.",
     "nomChamp": "Team name (optional)",
-    "nomBouton": "Let’s go"
+    "nomBouton": "Let's go"
   },
   "nomEquipe": {
     "ouvrir": "Rename the team",
@@ -446,7 +446,7 @@
         "former": "Form the teams first: this game draws its turns when teams are formed.",
         "salle": "Go to the Room",
         "titre": "Team removed",
-        "aide": "This turn’s team no longer exists. Skip it: it scores no points.",
+        "aide": "This turn's team no longer exists. Skip it: it scores no points.",
         "passer": "Skip this turn"
       }
     },
@@ -831,11 +831,11 @@
   "explication": {
     "titre": "How it works",
     "deroule": "The host will form mixed teams, then you will play one game after another. Everything happens on the big screen: keep an eye on it!",
-    "jeux": "Tonight’s games",
+    "jeux": "Tonight's games",
     "telephone": "And your phone?",
     "telephoneAide": "It shows your team and your points, and it is used for the quiz if the host decides so. The captain uses it to name the team, send photos and bet the quiz tokens.",
     "reseau": "To play, stay connected (to the party Wi-Fi if there is one). Between games, use your phone as you like, then come back here.",
-    "bouton": "Let’s go",
+    "bouton": "Let's go",
     "revoir": "See the explanations again"
   },
   "proposition": {
