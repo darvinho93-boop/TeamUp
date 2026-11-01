@@ -702,7 +702,8 @@
     "misesValidees": "{n, plural, =0 {no bets confirmed} one {# bet confirmed} other {# bets confirmed}} out of {total}",
     "miseEquipe": "{equipe}: {n, plural, one {# token} other {# tokens}}",
     "ouLien": "Scan the QR code, or open this link:",
-    "unInstant": "One moment…"
+    "unInstant": "One moment…",
+    "equipesAVenir": "Teams are on their way…"
   },
   "admin": {
     "nav": {

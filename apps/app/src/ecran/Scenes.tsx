@@ -70,7 +70,12 @@ export function Scene(props: Props) {
     case 'accueil':
       return <Accueil {...props} />;
     case 'equipes':
-      return <Equipes etat={etat} decalageMs={props.decalageMs} />;
+      // Lot 14 : avant la formation par la régie, les inscrits attendent leurs équipes.
+      return etat.equipes.length === 0 ? (
+        <EquipesAVenir etat={etat} />
+      ) : (
+        <Equipes etat={etat} decalageMs={props.decalageMs} />
+      );
     case 'programme':
       return <Programme etat={etat} />;
     case 'intro':
@@ -143,6 +148,17 @@ function Accueil({ etat, qrSvg, adresse }: Props) {
  * Les pages tournent seules et toutes ensemble : la page se déduit de l'heure de la base, donc
  * deux écrans montrent la même.
  */
+/** Scène « Équipes » avant la formation : le nombre d'inscrits, les équipes arrivent. */
+function EquipesAVenir({ etat }: { etat: EtatSalle }) {
+  const t = useTranslations('ecran');
+  return (
+    <div className="tu-stage__body" data-testid="equipes-a-venir">
+      <p className="tu-stage__xl tu-stage-centre">{t('joueurs', { n: etat.joueurs })}</p>
+      <p className="tu-stage__m tu-stage-centre tu-stage__muted">{t('equipesAVenir')}</p>
+    </div>
+  );
+}
+
 function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   const t = useTranslations('ecran');
   const grille = grilleDesEquipes(etat.equipes.length);

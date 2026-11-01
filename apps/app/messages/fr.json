@@ -702,7 +702,8 @@
     "misesValidees": "{n, plural, =0 {aucune mise validée} one {# mise validée} other {# mises validées}} sur {total}",
     "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}",
     "ouLien": "Scannez le QR code, ou ouvrez ce lien :",
-    "unInstant": "Un instant…"
+    "unInstant": "Un instant…",
+    "equipesAVenir": "Les équipes arrivent…"
   },
   "admin": {
     "nav": {

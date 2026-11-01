@@ -702,7 +702,8 @@
     "misesValidees": "{total} இல் {n} பந்தயங்கள் உறுதியானவை",
     "miseEquipe": "{equipe}: {n, plural, one {# வில்லை} other {# வில்லைகள்}}",
     "ouLien": "QR குறியீட்டை ஸ்கேன் செய்யுங்கள், அல்லது இந்த இணைப்பைத் திறக்கவும்:",
-    "unInstant": "ஒரு நிமிடம்…"
+    "unInstant": "ஒரு நிமிடம்…",
+    "equipesAVenir": "அணிகள் வருகின்றன…"
   },
   "admin": {
     "nav": {
