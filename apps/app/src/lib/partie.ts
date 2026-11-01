@@ -37,6 +37,17 @@ export interface EvenementPublic {
   groupe_facultatif?: boolean;
 }
 
+/** Une soirée de la carte Team Up! (`/soirees`) : rien d'autre ne sort de la base. */
+export interface SoireeDuJour {
+  code: string;
+  /** Titre public, rédigé par l'animateur à la préparation. */
+  titre: string;
+  langues: Langue[];
+  statut: 'preparation' | 'repetition' | 'en_cours';
+  /** Jeux des manches non annulées, dans l'ordre du programme. */
+  programme: GameCode[];
+}
+
 export interface GroupePublic {
   id: string;
   nom: string;

@@ -33,6 +33,7 @@ export function Arrivee({
   groupes,
   groupeFacultatif = true,
   langueCourante,
+  langueDejaChoisie = false,
 }: {
   code: string;
   langues: Langue[];
@@ -41,6 +42,8 @@ export function Arrivee({
   groupeFacultatif?: boolean;
   /** Langue des textes affichés, d'après le cookie. */
   langueCourante: Langue;
+  /** Venu de la carte Team Up!, où la langue est déjà choisie (une langue de la soirée). */
+  langueDejaChoisie?: boolean;
 }) {
   const t = useTranslations('prenom');
   const tGroupe = useTranslations('groupe');
@@ -49,7 +52,10 @@ export function Arrivee({
   const [langue, setLangue] = useState<Langue | null>(
     // Une seule langue, déjà celle des textes : aucun choix à faire. Sinon on demande, même
     // avec un seul bouton, pour que le cookie et les textes suivent.
-    langues.length === 1 && langues[0] === langueCourante ? langueCourante : null,
+    // Venu de la carte, la langue choisie là-bas vaut choix.
+    langueDejaChoisie || (langues.length === 1 && langues[0] === langueCourante)
+      ? langueCourante
+      : null,
   );
   const [prenom, setPrenom] = useState('');
   const [etapeGroupe, setEtapeGroupe] = useState(false);

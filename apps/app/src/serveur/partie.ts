@@ -1,5 +1,12 @@
 import 'server-only';
-import type { EtatJoueur, EvenementPublic, Langue, RefusMise, RefusQuiz } from '@/lib/partie';
+import type {
+  EtatJoueur,
+  EvenementPublic,
+  Langue,
+  RefusMise,
+  RefusQuiz,
+  SoireeDuJour,
+} from '@/lib/partie';
 import { hacher, jetonDe } from './session';
 import { signalerSalle } from './signal';
 import { supabaseService } from './supabase';
@@ -9,6 +16,13 @@ export async function evenementPublic(code: string): Promise<EvenementPublic | n
   const { data, error } = await supabaseService().rpc('evenement_public', { p_code: code });
   if (error) throw new Error(error.message);
   return (data as EvenementPublic | null) ?? null;
+}
+
+/** Les soirées de la carte Team Up! aujourd'hui (heure de Paris), cochées et titrées. */
+export async function soireesDuJour(): Promise<SoireeDuJour[]> {
+  const { data, error } = await supabaseService().rpc('soirees_du_jour');
+  if (error) throw new Error(error.message);
+  return (data as SoireeDuJour[] | null) ?? [];
 }
 
 /**

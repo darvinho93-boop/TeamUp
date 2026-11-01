@@ -14,7 +14,7 @@ export const metadata: Metadata = { robots: { index: false } };
  * `app.teamup-game.fr/K7P2M9` : l'adresse du QR code. Un joueur qui a déjà sa session dans cette
  * salle retrouve son écran d'attente sans rien ressaisir ; les autres commencent l'arrivée.
  */
-export default async function Partie({ params }: PageProps<'/[code]'>) {
+export default async function Partie({ params, searchParams }: PageProps<'/[code]'>) {
   const code = normaliserCode((await params).code);
   if (!code) return <SaisieCode erreurInitiale="codeInconnu" />;
 
@@ -35,13 +35,18 @@ export default async function Partie({ params }: PageProps<'/[code]'>) {
 
   if (!evenement) return <SaisieCode erreurInitiale="codeInconnu" />;
 
+  // Venu de la carte Team Up! (`/soirees`) : la langue y est déjà choisie, l'arrivée la reprend
+  // si la soirée la propose.
+  const langueCourante = await getLocale();
+  const depuisCarte = (await searchParams)['carte'] === '1';
   return (
     <Arrivee
       code={code}
       langues={evenement.langues}
       groupes={evenement.groupes}
       groupeFacultatif={evenement.groupe_facultatif ?? true}
-      langueCourante={await getLocale()}
+      langueCourante={langueCourante}
+      langueDejaChoisie={depuisCarte && evenement.langues.includes(langueCourante)}
     />
   );
 }

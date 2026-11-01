@@ -269,6 +269,19 @@
         "retirerLigne": "Retirer de la réserve",
         "ajouter": "Ajouter à la réserve",
         "taille": "Réserve"
+      },
+      "carte": {
+        "titre": "Carte Team Up!",
+        "aide": "Le jour de la soirée, elle paraît sur la page des cartes Team Up! (un seul QR code, le même pour toutes les soirées), sous le titre ci-dessous : les invités s'y inscrivent sans taper de code. Le code devient visible de qui a la carte ce jour-là ; la Salle permet de retirer un intrus.",
+        "titrePublic": "Titre affiché sur la carte",
+        "exemple": {
+          "particulier": "Ex. Mariage de Léa & Sam",
+          "entreprise": "Ex. Soirée d'équipe"
+        },
+        "visible": "Visible sur la carte Team Up! le jour de la soirée",
+        "statutVisible": "La soirée paraîtra sur la carte le jour J.",
+        "statutCachee": "La soirée ne paraît pas sur la carte (il lui faut la case cochée et un titre).",
+        "enregistrer": "Enregistrer la carte"
       }
     },
     "pilotage": {
@@ -850,5 +863,23 @@
     "actuel": "Nom d'équipe proposé : « {nom} »",
     "aucun": "Tu es volontaire pour être capitaine.",
     "ouvrir": "Changer le nom proposé"
+  },
+  "carte": {
+    "titre": "Soirées Team Up!",
+    "bienvenue": "Bienvenue chez Team Up!",
+    "presentation": "Une soirée de jeux en équipes mélangées, menée par un animateur, sur grand écran. On rit, on se découvre, on fait gagner son équipe.",
+    "telephone": "Ton téléphone sert à t'inscrire, à connaître ton équipe et à quelques moments du jeu. Le jeu, lui, se passe dans la salle.",
+    "aujourdhui": "Les soirées d'aujourd'hui",
+    "auProgramme": "Au programme",
+    "inscrire": "Je m'inscris",
+    "commentTitre": "Comment ça se passe",
+    "etape1": "Choisis ta soirée et donne ton prénom.",
+    "etape2": "Propose-toi capitaine si tu veux mener ton équipe.",
+    "etape3": "L'animateur forme les équipes avec les inscrits : la tienne arrive sur ton téléphone.",
+    "appel": "Inscris-toi dès maintenant : seuls les inscrits sont placés dans une équipe.",
+    "videTitre": "Pas encore de soirée ouverte aujourd'hui",
+    "videAide": "L'animateur ouvre la soirée le jour même : elle paraîtra ici. Si tu as un code (sur l'écran de la salle), tu peux aussi le taper.",
+    "code": "J'ai un code",
+    "actualiser": "Actualiser"
   }
 }

@@ -269,6 +269,19 @@
         "retirerLigne": "Remove from reserve",
         "ajouter": "Add to reserve",
         "taille": "Reserve"
+      },
+      "carte": {
+        "titre": "Team Up! card",
+        "aide": "On the day, the event appears on the Team Up! card page (one QR code, the same for every event) under the title below: guests sign up without typing a code. The code is visible to anyone with the card that day; you can remove an intruder from the Room.",
+        "titrePublic": "Title shown on the card",
+        "exemple": {
+          "particulier": "E.g. Léa & Sam's wedding",
+          "entreprise": "E.g. Team night"
+        },
+        "visible": "Visible on the Team Up! card on the day",
+        "statutVisible": "The event will appear on the card on the day.",
+        "statutCachee": "The event does not appear on the card (it needs the box ticked and a title).",
+        "enregistrer": "Save card"
       }
     },
     "pilotage": {
@@ -850,5 +863,23 @@
     "actuel": "Suggested team name: “{nom}”",
     "aucun": "You volunteered to be captain.",
     "ouvrir": "Change the suggested name"
+  },
+  "carte": {
+    "titre": "Team Up! events",
+    "bienvenue": "Welcome to Team Up!",
+    "presentation": "A night of team games with mixed teams, led by a host, on the big screen. Laugh, get to know each other, and help your team win.",
+    "telephone": "Your phone lets you sign up, see your team and join in at a few moments. The game itself happens in the room.",
+    "aujourdhui": "Today's events",
+    "auProgramme": "On the programme",
+    "inscrire": "Sign me up",
+    "commentTitre": "How it works",
+    "etape1": "Pick your event and enter your first name.",
+    "etape2": "Volunteer as captain if you want to lead your team.",
+    "etape3": "The host forms the teams from everyone signed up: yours shows up on your phone.",
+    "appel": "Sign up now: only people who are signed up get a team.",
+    "videTitre": "No event open yet today",
+    "videAide": "The host opens the event on the day: it will appear here. If you have a code (on the screen in the room), you can type it too.",
+    "code": "I have a code",
+    "actualiser": "Refresh"
   }
 }
