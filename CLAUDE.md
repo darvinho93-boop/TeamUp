@@ -1071,3 +1071,24 @@ contenus de Points communs et du Mime sont **tirés au hasard dans une réserve*
 - Joueur arrivé : `POST /api/partie/[code]/langue` → `changer_langue` (rôle de service, migration
   `20261101120000`) écrit `joueurs.langue`, puis le cookie et `router.refresh()`. La fiche fait
   foi (page `[code]`), donc ses contenus suivent et un autre navigateur garde la langue.
+
+## Conventions posées le 2026-11-01 (carte Team Up!)
+
+Tranché le 2026-11-01 : des **cartes Team Up! imprimées** portent **un seul QR code**
+(`https://app.teamup-game.fr/soirees`, `apps/app/public/qr-carte.svg`, refait par
+`node scripts/qr-carte.mjs`) qui liste **les soirées du jour** ; chacune sous un **titre public**
+rédigé par l'animateur (jamais le nom du client) ; seulement les soirées **cochées**, **le jour
+même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** à l'arrivée.
+
+- **Écart assumé** : le code d'une soirée cochée est visible de qui a la carte, ce jour-là. La
+  Salle permet de retirer un intrus. Non cochée (défaut), rien ne change.
+- Base (migration `20261102090000`) : `evenements.carte_visible`, `evenements.titre_public`
+  (1 à 60 caractères) ; `soirees_du_jour()` (rôle de service seul) ne sort que code, titre,
+  langues, statut et programme. Cochée sans titre, la préparation enregistre « non visible ».
+- Préparation : section « Carte Team Up! » (`enregistrerCarte`), avec l'état en clair.
+- Page `/soirees` (`src/carte/Soirees.tsx`, lue à chaque visite) : bienvenue, soirées et leurs jeux
+  (`jeux.*`, `ecran.regles.*`), trois étapes, appel à s'inscrire ; liste vide : aide, « J'ai un
+  code » et « Actualiser ». Sélecteur des trois langues en tête.
+- « Je m'inscris » → `/<CODE>?carte=1` : l'arrivée saute l'étape Langue si celle choisie sur la
+  carte est une langue de la soirée (`langueDejaChoisie`).
+- Textes : espace `carte` et `regie.preparation.carte` ; le tamoul est à faire relire.
