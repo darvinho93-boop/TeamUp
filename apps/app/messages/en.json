@@ -491,7 +491,21 @@
       "annuler": "Cancel",
       "figer": "Lock the name",
       "defiger": "Unlock the name",
-      "nomFige": "name locked"
+      "nomFige": "name locked",
+      "formation": {
+        "titre": "Form the teams",
+        "titreRefaire": "Redo the teams",
+        "inscrits": "{n} signed up, {volontaires} of them volunteering to be captain.",
+        "nombre": "Number of teams",
+        "former": "Form the teams",
+        "confirmer": "Confirm: {n} teams",
+        "refaire": "Redo the teams",
+        "confirmerRefaire": "Confirm: redo everything",
+        "tropPeu": "Fewer guests than teams: lower the number of teams.",
+        "reserve": "The Common points or Mime reserve is too small for this number of teams: add to it in Preparation.",
+        "tropTard": "A game has started, or photos and points already exist: teams can no longer be redone.",
+        "echec": "The teams could not be saved. Try again."
+      }
     },
     "scores": {
       "titre": "Scores",

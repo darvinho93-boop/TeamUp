@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { evenementDeLaRegie } from '@/serveur/regie';
+import { FormationEquipes } from '@/regie/FormationEquipes';
 import { FormulaireInvite } from '@/regie/FormulaireInvite';
 import { ModeMembres } from '@/regie/ModeMembres';
 import { RafraichirAuto } from '@/regie/RafraichirAuto';
@@ -28,6 +29,9 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
     { data: groupes },
     { data: repartition },
     { data: pilotage },
+    { data: manches },
+    { count: photos },
+    { count: scores },
   ] = await Promise.all([
     supabase
       .from('equipes')
@@ -37,7 +41,7 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
     supabase
       .from('joueurs')
       .select(
-        'id, prenom, langue, capitaine, equipe_id, vu_le, sans_telephone, peut_ajouter, volontaire',
+        'id, prenom, langue, capitaine, equipe_id, vu_le, sans_telephone, peut_ajouter, volontaire, groupe_id, nom_propose',
       )
       .eq('evenement_id', evenement.id)
       .order('rejoint_le'),
@@ -47,7 +51,34 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
       .select('equipe_id, groupe_id, effectif')
       .eq('evenement_id', evenement.id),
     supabase.from('pilotage').select('membres_mode').eq('evenement_id', evenement.id).maybeSingle(),
+    supabase
+      .from('manches')
+      .select('id, jeu, statut, options, passages(contenu_id, ordre)')
+      .eq('evenement_id', evenement.id),
+    supabase
+      .from('photos')
+      .select('*', { count: 'exact', head: true })
+      .eq('evenement_id', evenement.id),
+    supabase
+      .from('scores')
+      .select('*', { count: 'exact', head: true })
+      .eq('evenement_id', evenement.id),
   ]);
+  // Lot 14 : la formation des équipes. Une manche par équipe tire ses contenus dans sa réserve ;
+  // préparée avant le lot 14, ses contenus actuels en tiennent lieu (comme en base).
+  const manchesParEquipe = (manches ?? [])
+    .filter((m) => m.jeu === 'list2' || m.jeu === 'mime2')
+    .map((m) => {
+      const options = (m.options ?? {}) as Record<string, unknown>;
+      const reserve = Array.isArray(options['reserve'])
+        ? (options['reserve'] as unknown[]).filter((x): x is string => typeof x === 'string')
+        : [...(m.passages ?? [])]
+            .sort((a, b) => a.ordre - b.ordre)
+            .flatMap((p) => (p.contenu_id ? [p.contenu_id] : []));
+      return { id: m.id, tours: Number(options['passages_par_equipe'] ?? 1) || 1, reserve };
+    });
+  const verrouillee =
+    (manches ?? []).some((m) => m.statut !== 'a_venir') || (photos ?? 0) > 0 || (scores ?? 0) > 0;
   // Répartition comptée à l'arrivée (lot 11) : un déplacement à la régie ne la change pas,
   // on ne sait pas de quel groupe est le joueur, et c'est voulu.
   const detailGroupes = (equipeId: string) =>
@@ -89,7 +120,22 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
           main: (joueurs ?? []).length - parQr,
         })}
       </p>
-      <TirerCapitaines code={evenement.code} />
+      <FormationEquipes
+        evenementId={evenement.id}
+        equipesPrevues={evenement.equipes_prevues}
+        inscrits={(joueurs ?? []).map((j) => ({
+          id: j.id,
+          prenom: j.prenom,
+          groupe_id: j.groupe_id,
+          volontaire: j.volontaire,
+          nom_propose: j.nom_propose,
+          sansTelephone: j.sans_telephone === true,
+        }))}
+        manches={manchesParEquipe}
+        formees={(equipes ?? []).length > 0}
+        verrouillee={verrouillee}
+      />
+      {(equipes ?? []).length > 0 && <TirerCapitaines code={evenement.code} />}
       <ModeMembres
         code={evenement.code}
         mode={pilotage?.membres_mode === 'carrousel' ? 'carrousel' : 'tous'}
