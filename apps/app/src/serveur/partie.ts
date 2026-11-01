@@ -255,3 +255,33 @@ export async function proposerNom(
   }
   return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
 }
+
+export type RefusLangue = 'session' | 'langue';
+
+/**
+ * Le joueur de ce cookie passe dans une autre langue de la soirée. Ses contenus suivent à la
+ * relecture ; le cookie de langue, lui, est posé par le navigateur. Renvoie l'état à jour.
+ */
+export async function changerLangue(
+  code: string,
+  langue: Langue,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusLangue }> {
+  const jeton = await jetonDe(code);
+  const etat = jeton ? await etatPourJeton(code, jeton) : null;
+  if (!jeton || !etat) return { ok: false, refus: 'session' };
+
+  const { error } = await supabaseService().rpc('changer_langue', {
+    p_jeton_hash: hacher(jeton),
+    p_langue: langue,
+  });
+  if (error) {
+    const refus: RefusLangue | null = /non proposée/.test(error.message)
+      ? 'langue'
+      : /session/.test(error.message)
+        ? 'session'
+        : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
+}

@@ -37,6 +37,23 @@
 
 .tu-player__head {
   --tu-wordmark-size: var(--tu-size-xl);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-3);
+}
+
+/* Langue du téléphone, changeable en cours de soirée : discrète, mais sous le pouce. */
+.tu-player__langue {
+  min-height: var(--tu-tap-min);
+  padding-inline: var(--tu-space-4);
+  border: var(--tu-btn-border-width) solid var(--tu-primary);
+  border-radius: var(--tu-radius-pill);
+  background: transparent;
+  color: var(--tu-text);
+  font: inherit;
+  font-size: var(--tu-size-sm);
 }
 
 /* Occupe la hauteur restante : l'action principale tombe en bas de l'écran. */

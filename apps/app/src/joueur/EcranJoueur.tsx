@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
-import type { EtatJoueur, GroupePublic } from '@/lib/partie';
+import { memoriserLangue } from '@/lib/langue-navigateur';
+import type { EtatJoueur, GroupePublic, Langue } from '@/lib/partie';
 import { AjoutInvite } from './AjoutInvite';
 import { Cadre } from './Cadre';
+import { ChoixLangueJoueur } from './ChoixLangueJoueur';
 import { Explication } from './Explication';
 import { NomEquipe } from './NomEquipe';
 import { NomPropose } from './NomPropose';
@@ -34,6 +37,30 @@ export function EcranJoueur({
   const [vue, setVue] = useState<Vue>(vueInitiale);
   // La file vit ici, pas dans la vue Photos : elle se vide même quand le capitaine en sort.
   const file = useFilePhotos(code, remplacer);
+  const router = useRouter();
+
+  // Changer de langue en cours de soirée : la fiche du joueur d'abord (ses contenus suivent),
+  // puis le cookie et les textes de l'écran.
+  const changerLangue = async (langue: Langue) => {
+    memoriserLangue(langue);
+    try {
+      const reponse = await fetch(`/api/partie/${code}/langue`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ langue }),
+      });
+      if (reponse.ok) remplacer((await reponse.json()) as EtatJoueur);
+    } catch {
+      // Hors ligne : la page garde la langue de la fiche, on pourra réessayer.
+    }
+    router.refresh();
+  };
+  const outil = (
+    <ChoixLangueJoueur
+      langues={etat.evenement.langues}
+      choisir={(langue) => void changerLangue(langue)}
+    />
+  );
 
   const bandeau = horsLigne ? (
     <p className="tu-banner" role="status">
@@ -64,7 +91,7 @@ export function EcranJoueur({
   // Quiz en mode téléphone : le seul moment où le téléphone sert à jouer (spec v3).
   if (quiz) {
     return (
-      <Cadre bandeau={bandeau}>
+      <Cadre bandeau={bandeau} outil={outil}>
         <div className="tu-player__body">
           <Quiz
             code={code}
@@ -81,7 +108,7 @@ export function EcranJoueur({
   // L'autorisation peut être retirée pendant la saisie : la vue se ferme d'elle-même.
   if (vue === 'ajout' && joueur.peut_ajouter && evenement.statut !== 'termine') {
     return (
-      <Cadre bandeau={bandeau}>
+      <Cadre bandeau={bandeau} outil={outil}>
         <AjoutInvite code={code} groupes={groupes} retour={() => setVue('attente')} />
       </Cadre>
     );
@@ -93,7 +120,7 @@ export function EcranJoueur({
     joueur.capitaine && !!equipe && !equipe.nom_fige && evenement.statut !== 'termine';
   if (vue === 'nom' && peutRenommer) {
     return (
-      <Cadre bandeau={bandeau}>
+      <Cadre bandeau={bandeau} outil={outil}>
         <NomEquipe
           code={code}
           nomActuel={equipe.nom}
@@ -106,7 +133,7 @@ export function EcranJoueur({
 
   if (vue === 'explication') {
     return (
-      <Cadre bandeau={bandeau}>
+      <Cadre bandeau={bandeau} outil={outil}>
         <Explication programme={etat.programme ?? []} retour={() => setVue('attente')} />
       </Cadre>
     );
@@ -115,7 +142,7 @@ export function EcranJoueur({
   // Le volontaire change son nom proposé ; dès la formation des équipes, la vue se ferme.
   if (vue === 'propose' && joueur.volontaire && !equipe) {
     return (
-      <Cadre bandeau={bandeau}>
+      <Cadre bandeau={bandeau} outil={outil}>
         <NomPropose
           code={code}
           nomActuel={joueur.nom_propose ?? ''}
@@ -128,7 +155,7 @@ export function EcranJoueur({
 
   if (vue === 'photos' && photos) {
     return (
-      <Cadre bandeau={bandeau}>
+      <Cadre bandeau={bandeau} outil={outil}>
         <div className="tu-player__body">
           <Photos
             photos={photos}
@@ -144,7 +171,7 @@ export function EcranJoueur({
   }
 
   return (
-    <Cadre bandeau={bandeau}>
+    <Cadre bandeau={bandeau} outil={outil}>
       <div className="tu-player__body">
         <h1 className="tu-player__title">{t('attente.salut', { prenom: joueur.prenom })}</h1>
 

@@ -1,6 +1,7 @@
 {
   "commun": {
-    "marque": "Team Up!"
+    "marque": "Team Up!",
+    "langue": "Langue"
   },
   "rejoindre": {
     "titre": "Rejoins la partie",

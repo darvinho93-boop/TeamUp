@@ -7,6 +7,7 @@ import { Button, TextField } from '@teamup/ui/react';
 import { memoriserLangue, NOMS_LANGUES } from '@/lib/langue-navigateur';
 import type { EtatJoueur, GroupePublic, Langue } from '@/lib/partie';
 import { Cadre } from './Cadre';
+import { ChoixLangueJoueur } from './ChoixLangueJoueur';
 import { EcranJoueur } from './EcranJoueur';
 
 /**
@@ -66,6 +67,8 @@ export function Arrivee({
     // Les textes suivants arrivent dans la langue choisie, sans quitter l'écran.
     router.refresh();
   };
+  // Une fois la langue choisie, elle reste changeable à chaque étape de l'arrivée.
+  const outilLangue = langue ? <ChoixLangueJoueur langues={langues} choisir={choisir} /> : null;
 
   const validerPrenom = async (e: FormEvent) => {
     e.preventDefault();
@@ -146,7 +149,7 @@ export function Arrivee({
 
   if (etapeNom) {
     return (
-      <Cadre>
+      <Cadre outil={outilLangue}>
         <form
           className="tu-player__body"
           onSubmit={(e) => {
@@ -179,7 +182,7 @@ export function Arrivee({
 
   if (!langue) {
     return (
-      <Cadre>
+      <Cadre outil={outilLangue}>
         <div className="tu-player__body">
           <h1 className="tu-player__title">
             {langues.map((l) => (
@@ -204,7 +207,7 @@ export function Arrivee({
 
   if (etapeGroupe) {
     return (
-      <Cadre>
+      <Cadre outil={outilLangue}>
         <div className="tu-player__body">
           <h1 className="tu-player__title">{tGroupe('titre')}</h1>
           <p className="tu-player__lead">{tGroupe('aide')}</p>
@@ -231,7 +234,7 @@ export function Arrivee({
 
   if (etapeCapitaine) {
     return (
-      <Cadre>
+      <Cadre outil={outilLangue}>
         <div className="tu-player__body">
           <h1 className="tu-player__title">{tCapitaine('titre')}</h1>
           <p className="tu-player__lead">{tCapitaine('aide')}</p>
@@ -273,7 +276,7 @@ export function Arrivee({
   }
 
   return (
-    <Cadre>
+    <Cadre outil={outilLangue}>
       <form className="tu-player__body" onSubmit={(e) => void validerPrenom(e)} noValidate>
         <h1 className="tu-player__title">{t('titre')}</h1>
         <TextField
