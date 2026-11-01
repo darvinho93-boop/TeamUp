@@ -204,8 +204,14 @@ export async function choisirContenuReserve(
 ) {
   await ecrireReserve(code, mancheId, (reserve) => {
     const suite = [...reserve];
-    if (contenuId && !suite.includes(contenuId)) suite[index] = contenuId;
-    else if (!contenuId) suite.splice(index, 1);
+    if (!contenuId) {
+      suite.splice(index, 1);
+    } else {
+      // Déjà ailleurs dans la réserve : les deux lignes s'échangent.
+      const ailleurs = suite.indexOf(contenuId);
+      if (ailleurs >= 0) suite[ailleurs] = suite[index]!;
+      suite[index] = contenuId;
+    }
     return suite.filter(Boolean).slice(0, MAX_RESERVE);
   });
 }
