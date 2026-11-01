@@ -19,14 +19,22 @@ export function tirerOrdre<T>(elements: readonly T[], alea: Alea): T[] {
 /**
  * Les passages d'une manche dans le nouvel ordre : un tour par équipe, et chaque tour reprend
  * l'ordre tiré (décision du 2026-10-03). Le k-ième passage d'une équipe va au tour k.
+ *
+ * Un passage resté sans équipe (équipe supprimée, panne du 2026-10-31) part en fin de liste, dans
+ * son ordre : la base exige tous les passages de la manche, et la régie pourra le passer.
  */
 export function ordreDesPassages(
   passages: readonly { id: string; ordre: number; equipe_id: string | null }[],
   ordreEquipes: readonly string[],
 ): string[] {
   const parEquipe = new Map<string, string[]>();
+  const sansEquipe: string[] = [];
   for (const p of [...passages].sort((a, b) => a.ordre - b.ordre)) {
-    if (!p.equipe_id || !ordreEquipes.includes(p.equipe_id)) {
+    if (!p.equipe_id) {
+      sansEquipe.push(p.id);
+      continue;
+    }
+    if (!ordreEquipes.includes(p.equipe_id)) {
       throw new RangeError(`passage ${p.id} hors des équipes tirées`);
     }
     parEquipe.set(p.equipe_id, [...(parEquipe.get(p.equipe_id) ?? []), p.id]);
@@ -39,7 +47,7 @@ export function ordreDesPassages(
       if (id) resultat.push(id);
     }
   }
-  return resultat;
+  return [...resultat, ...sansEquipe];
 }
 
 /** Animation du tirage à l'écran : 3 s de mélange, puis une équipe rangée tous les quarts de seconde. */

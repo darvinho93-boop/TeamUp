@@ -71,10 +71,17 @@ describe('ordre des passages', () => {
     expect(ids).toEqual(['p2', 'p1', 'p4', 'p3']);
   });
 
-  it('refuse un passage sans équipe ou hors du tirage', () => {
-    expect(() => ordreDesPassages([{ id: 'q', ordre: 1, equipe_id: null }], ['e1'])).toThrow(
-      RangeError,
-    );
+  it('range en dernier un passage resté sans équipe (panne du 2026-10-31)', () => {
+    const ps = [
+      { id: 'p1', ordre: 1, equipe_id: null },
+      { id: 'p2', ordre: 2, equipe_id: 'e2' },
+      { id: 'p3', ordre: 3, equipe_id: 'e3' },
+      { id: 'p4', ordre: 4, equipe_id: null },
+    ];
+    expect(ordreDesPassages(ps, ['e3', 'e2'])).toEqual(['p3', 'p2', 'p1', 'p4']);
+  });
+
+  it("refuse un passage dont l'équipe est hors du tirage", () => {
     expect(() => ordreDesPassages(passages(3, 1), ['e1', 'e2'])).toThrow(RangeError);
   });
 });
