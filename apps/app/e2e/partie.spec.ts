@@ -101,6 +101,14 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
     expect(reponse.status()).toBe(200);
   }
 
+  // --- Lot 14 : la soirée n'a pas d'équipes d'office ; la régie les forme à la Salle (le nombre
+  // prévu à la création est proposé), ce qui tire aussi les passages de Points communs.
+  await regie.goto(`/regie/${code}/salle`);
+  await expect(regie.getByTestId('nombre-equipes')).toHaveValue('3');
+  await regie.getByTestId('former-equipes').click();
+  await regie.getByRole('button', { name: 'Confirmer : 3 équipes' }).click();
+  await expect(regie.getByTestId('refaire-equipes')).toBeVisible({ timeout: 15_000 });
+
   // --- L'écran commun : une seconde fenêtre, visible, avec la session de l'animateur. Un onglet
   // en arrière-plan du même contexte verrait ses minuteries bridées par Chromium, ce qui
   // n'arrive pas à la fenêtre projetée en salle.
