@@ -888,6 +888,13 @@ export type Database = {
           role: Database['public']['Enums']['role_animateur'];
         }[];
       };
+      changer_langue: {
+        Args: {
+          p_jeton_hash: string;
+          p_langue: Database['public']['Enums']['langue'];
+        };
+        Returns: Json;
+      };
       cle_prenom: { Args: { p_prenom: string }; Returns: string };
       contenu_bien_forme: {
         Args: {
