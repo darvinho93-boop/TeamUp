@@ -203,10 +203,7 @@
     "preparation": {
       "titre": "Preparation",
       "equipes": "Teams",
-      "nomEquipe": "Name of team {numero}",
       "retirer": "Remove",
-      "enregistrerNoms": "Save names",
-      "ajouterEquipe": "Add a team",
       "programme": "Programme",
       "duree": "Estimated length: {total} min ({chronos} of play + {transitions} of transitions), for a {creneau} min slot.",
       "depassement": "The programme runs {minutes} min over the slot: remove a turn, a theme or a game.",
@@ -255,6 +252,18 @@
           }
         },
         "facultatif": "Offer guests “I'd rather not say”"
+      },
+      "equipesFormees": "Teams formed: {n}.",
+      "equipesAFormer": "Teams are formed in the Room, once guests have signed up.",
+      "versSalle": "Go to the Room",
+      "equipesPrevues": "Planned teams",
+      "enregistrer": "Save",
+      "reserve": {
+        "titre": "Reserve: {n} items, drawn at random when teams are formed ({besoin} needed).",
+        "ligne": "Reserve {numero}",
+        "retirerLigne": "Remove from reserve",
+        "ajouter": "Add to reserve",
+        "taille": "Reserve"
       }
     },
     "pilotage": {

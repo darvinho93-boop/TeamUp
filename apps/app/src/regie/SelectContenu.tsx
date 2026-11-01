@@ -8,10 +8,14 @@ export interface OptionContenu {
   libelle: string;
 }
 
-/** Choix du contenu d'un passage dans la banque ; enregistré dès qu'il change. */
+/**
+ * Choix du contenu d'un passage dans la banque ; enregistré dès qu'il change. Avec `enregistrer`
+ * (une action serveur déjà liée), il écrit ailleurs : une ligne de la réserve (lot 14).
+ */
 export function SelectContenu({
   code,
   passageId,
+  enregistrer,
   valeur,
   options,
   desactive,
@@ -19,7 +23,8 @@ export function SelectContenu({
   aucun,
 }: {
   code: string;
-  passageId: string;
+  passageId?: string;
+  enregistrer?: (contenu: string) => Promise<void>;
   valeur: string | null;
   options: OptionContenu[];
   desactive: boolean;
@@ -34,7 +39,13 @@ export function SelectContenu({
       disabled={desactive || enCours}
       onChange={(e) => {
         const contenu = e.target.value;
-        demarrer(() => choisirContenu(code, passageId, contenu));
+        demarrer(() =>
+          enregistrer
+            ? enregistrer(contenu)
+            : passageId
+              ? choisirContenu(code, passageId, contenu)
+              : Promise.resolve(),
+        );
       }}
     >
       <option value="">{aucun}</option>

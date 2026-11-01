@@ -97,19 +97,12 @@ export async function creerEvenement(
       creneau_minutes: saisie.data.creneau,
       langues: saisie.data.langues,
       invites_attendus: saisie.data.invites === '' ? null : saisie.data.invites,
+      // Lot 14 : les équipes ne se créent plus ici, la régie les forme à la Salle.
+      equipes_prevues: saisie.data.equipes,
     })
     .select('id, code')
     .single();
   if (error) return { erreur: t('echec') };
-
-  const { error: erreurEquipes } = await supabase.from('equipes').insert(
-    Array.from({ length: saisie.data.equipes }, (_, i) => ({
-      evenement_id: evenement.id,
-      numero: i + 1,
-      nom: t('equipeParDefaut', { numero: i + 1 }),
-    })),
-  );
-  if (erreurEquipes) return { erreur: t('echec') };
 
   redirect(`/regie/${evenement.code}/preparation`);
 }

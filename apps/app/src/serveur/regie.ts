@@ -11,9 +11,12 @@ export interface EvenementRegie {
   creneau_minutes: number;
   langues: Langue[];
   statut: 'preparation' | 'repetition' | 'en_cours' | 'termine';
+  /** Nombre d'équipes prévu à la création : durée prévue, valeur proposée à la formation. */
+  equipes_prevues: number;
 }
 
-const COLONNES = 'id, code, client_nom, type_client, creneau_minutes, langues, statut, termine_le';
+const COLONNES =
+  'id, code, client_nom, type_client, creneau_minutes, langues, statut, termine_le, equipes_prevues';
 
 /**
  * L'événement d'une page de la régie, lu sous la session de l'animateur : un code qui n'est pas

@@ -203,10 +203,7 @@
     "preparation": {
       "titre": "Préparation",
       "equipes": "Équipes",
-      "nomEquipe": "Nom de l'équipe {numero}",
       "retirer": "Retirer",
-      "enregistrerNoms": "Enregistrer les noms",
-      "ajouterEquipe": "Ajouter une équipe",
       "programme": "Programme",
       "duree": "Durée estimée : {total} min ({chronos} de jeu + {transitions} de transitions), pour un créneau de {creneau} min.",
       "depassement": "Le programme dépasse le créneau de {minutes} min : retire un passage, un thème ou un jeu.",
@@ -255,6 +252,18 @@
           }
         },
         "facultatif": "Proposer « Je préfère ne pas répondre » aux invités"
+      },
+      "equipesFormees": "Équipes formées : {n}.",
+      "equipesAFormer": "Les équipes se forment à la Salle, une fois les invités inscrits.",
+      "versSalle": "Aller à la Salle",
+      "equipesPrevues": "Équipes prévues",
+      "enregistrer": "Enregistrer",
+      "reserve": {
+        "titre": "Réserve : {n} contenus, tirés au hasard à la formation des équipes (il en faut {besoin}).",
+        "ligne": "Réserve {numero}",
+        "retirerLigne": "Retirer de la réserve",
+        "ajouter": "Ajouter à la réserve",
+        "taille": "Réserve"
       }
     },
     "pilotage": {

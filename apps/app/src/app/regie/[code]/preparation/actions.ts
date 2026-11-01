@@ -1,13 +1,14 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getTranslations } from 'next-intl/server';
 import { z } from 'zod';
+import { randomInt } from 'node:crypto';
 import {
   CHRONO_SURENCHERE_DEFAUT_S,
   DUELS_DEFAUT,
   QUESTIONS_QUIZ,
   QUESTIONS_QUIZ_DEFAUT,
+  tirerContenus,
   type GameCode,
 } from '@teamup/game';
 import { etiquettesDe, proposable } from '@/lib/contenus';
@@ -16,63 +17,27 @@ import { evenementDeLaRegie, type EvenementRegie } from '@/serveur/regie';
 import type { ClientAnimateur } from '@/serveur/supabase-animateur';
 
 /**
- * Préparation d'une soirée : équipes et programme. Tout passe par la session de l'animateur,
+ * Préparation d'une soirée : équipes prévues, groupes et programme (les équipes se forment à la
+ * Salle, lot 14). Tout passe par la session de l'animateur,
  * donc par la RLS : il ne prépare que ses propres événements.
  */
 
-const MAX_EQUIPES = 8;
-const MIN_EQUIPES = 2;
+/** Au plus 8 équipes et 3 tours : 24 contenus suffisent toujours. */
+const MAX_RESERVE = 24;
 
 async function contexte(code: string) {
   const ctx = await evenementDeLaRegie(code);
   return { ...ctx, rafraichir: () => revalidatePath(`/regie/${ctx.evenement.code}`, 'layout') };
 }
 
-export async function renommerEquipes(code: string, donnees: FormData) {
-  const { supabase, evenement, rafraichir } = await contexte(code);
-  const { data: equipes } = await supabase
-    .from('equipes')
-    .select('id')
-    .eq('evenement_id', evenement.id);
-  for (const { id } of equipes ?? []) {
-    const brut = donnees.get(`nom-${id}`);
-    const nom = typeof brut === 'string' ? brut.trim() : '';
-    if (nom.length >= 1 && nom.length <= 60) {
-      await supabase.from('equipes').update({ nom }).eq('id', id);
-    }
-  }
-  rafraichir();
-}
+const EquipesPrevues = z.coerce.number().int().min(2).max(8);
 
-export async function ajouterEquipe(code: string) {
+/** Lot 14 : le nombre d'équipes prévu, pour la durée du programme et la formation à la Salle. */
+export async function enregistrerEquipesPrevues(code: string, donnees: FormData) {
   const { supabase, evenement, rafraichir } = await contexte(code);
-  const t = await getTranslations('regie.evenements');
-  const { data: equipes } = await supabase
-    .from('equipes')
-    .select('numero')
-    .eq('evenement_id', evenement.id);
-  const numeros = new Set((equipes ?? []).map((e) => e.numero));
-  if (numeros.size >= MAX_EQUIPES) return;
-  const numero = Array.from({ length: MAX_EQUIPES }, (_, i) => i + 1).find((n) => !numeros.has(n))!;
-  await supabase
-    .from('equipes')
-    .insert({ evenement_id: evenement.id, numero, nom: t('equipeParDefaut', { numero }) });
-  rafraichir();
-}
-
-/** Retire la dernière équipe, seulement si personne ne l'a encore rejointe. */
-export async function retirerEquipe(code: string, equipeId: string) {
-  const { supabase, evenement, rafraichir } = await contexte(code);
-  const { count: equipes } = await supabase
-    .from('equipes')
-    .select('*', { count: 'exact', head: true })
-    .eq('evenement_id', evenement.id);
-  const { count: joueurs } = await supabase
-    .from('joueurs')
-    .select('*', { count: 'exact', head: true })
-    .eq('equipe_id', equipeId);
-  if ((equipes ?? 0) <= MIN_EQUIPES || (joueurs ?? 0) > 0) return;
-  await supabase.from('equipes').delete().eq('id', equipeId).eq('evenement_id', evenement.id);
+  const saisie = EquipesPrevues.safeParse(donnees.get('equipes_prevues'));
+  if (!saisie.success) return;
+  await supabase.from('evenements').update({ equipes_prevues: saisie.data }).eq('id', evenement.id);
   rafraichir();
 }
 
@@ -124,7 +89,16 @@ async function contenusLibres(
     .from('passages')
     .select('contenu_id')
     .eq('evenement_id', evenement.id);
-  const pris = new Set((utilises ?? []).map((p) => p.contenu_id));
+  // Les contenus en réserve d'une manche par équipe (lot 14) sont pris eux aussi.
+  const { data: reserves } = await supabase
+    .from('manches')
+    .select('options')
+    .eq('evenement_id', evenement.id)
+    .in('jeu', ['list2', 'mime2']);
+  const pris = new Set([
+    ...(utilises ?? []).map((p) => p.contenu_id),
+    ...(reserves ?? []).flatMap((m) => reserveDe(m.options)),
+  ]);
   return (banque ?? [])
     .filter((c) => proposable(c, evenement))
     .map((c) => c.id)
@@ -135,7 +109,7 @@ async function nouvelleManche(
   supabase: ClientAnimateur,
   evenement: EvenementRegie,
   jeu: GameCode,
-  options: Record<string, number>,
+  options: Record<string, number | string[]>,
 ) {
   const { data: dernieres } = await supabase
     .from('manches')
@@ -154,31 +128,99 @@ async function nouvelleManche(
 }
 
 const Tours = z.coerce.number().int().min(1).max(3);
+/** Taille de la réserve d'une manche par équipe, au choix de l'animateur (2026-11-01). */
+const TailleReserve = z.coerce.number().int().min(1).max(MAX_RESERVE);
 
-/** Jeux séquentiels (Points communs, Mime) : un passage par équipe et par tour. */
+/** La réserve d'une manche par équipe : des identifiants de contenus, dans l'ordre affiché. */
+function reserveDe(options: unknown): string[] {
+  const reserve = (options as Record<string, unknown> | null)?.['reserve'];
+  return Array.isArray(reserve) ? reserve.filter((x): x is string => typeof x === 'string') : [];
+}
+
+/** Le hasard du serveur, pour un tirage fait à la préparation. */
+const aleaServeur = () => randomInt(0, 2 ** 32) / 2 ** 32;
+
+/**
+ * Jeux séquentiels (Points communs, Mime) : une réserve de contenus (lot 14). La formation des
+ * équipes, à la Salle, y tire un contenu par équipe et par tour. Si la soirée a déjà ses
+ * équipes, le tirage se fait tout de suite.
+ */
 async function ajouterParEquipe(code: string, donnees: FormData, jeu: 'list2' | 'mime2') {
   const { supabase, evenement, rafraichir } = await contexte(code);
   const tours = Tours.catch(1).parse(donnees.get('tours'));
+  const taille = TailleReserve.catch(evenement.equipes_prevues * tours).parse(
+    donnees.get('reserve'),
+  );
+  const libres = await contenusLibres(supabase, evenement, jeu);
+  const reserve = libres.slice(0, taille);
+  const mancheId = await nouvelleManche(supabase, evenement, jeu, {
+    passages_par_equipe: tours,
+    reserve,
+  });
   const { data: equipes } = await supabase
     .from('equipes')
     .select('id')
     .eq('evenement_id', evenement.id)
     .order('numero');
-  const mancheId = await nouvelleManche(supabase, evenement, jeu, {
-    passages_par_equipe: tours,
-  });
-  const libres = await contenusLibres(supabase, evenement, jeu);
-  const passages = Array.from({ length: tours }, () => equipes ?? [])
-    .flat()
-    .map((equipe, i) => ({
+  const ids = (equipes ?? []).map((e) => e.id);
+  if (ids.length && reserve.length >= ids.length * tours) {
+    const passages = tirerContenus(reserve, ids, tours, aleaServeur).map((p) => ({
       manche_id: mancheId,
       evenement_id: evenement.id,
-      equipe_id: equipe.id,
-      ordre: i + 1,
-      contenu_id: libres[i] ?? null,
+      equipe_id: p.equipe,
+      ordre: p.ordre,
+      contenu_id: p.contenu,
     }));
-  if (passages.length) await supabase.from('passages').insert(passages);
+    await supabase.from('passages').insert(passages);
+  }
   rafraichir();
+}
+
+async function ecrireReserve(code: string, mancheId: string, modifier: (r: string[]) => string[]) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const { data: manche } = await supabase
+    .from('manches')
+    .select('options')
+    .eq('id', mancheId)
+    .eq('evenement_id', evenement.id)
+    .eq('statut', 'a_venir')
+    .maybeSingle();
+  if (!manche) return;
+  const options = (manche.options ?? {}) as Record<string, unknown>;
+  await supabase
+    .from('manches')
+    .update({ options: { ...options, reserve: modifier(reserveDe(options)) } })
+    .eq('id', mancheId)
+    .eq('statut', 'a_venir');
+  rafraichir();
+}
+
+/** Change un contenu de la réserve ; vide, la ligne reste à remplir. */
+export async function choisirContenuReserve(
+  code: string,
+  mancheId: string,
+  index: number,
+  contenuId: string,
+) {
+  await ecrireReserve(code, mancheId, (reserve) => {
+    const suite = [...reserve];
+    if (contenuId && !suite.includes(contenuId)) suite[index] = contenuId;
+    else if (!contenuId) suite.splice(index, 1);
+    return suite.filter(Boolean).slice(0, MAX_RESERVE);
+  });
+}
+
+/** Une ligne de plus dans la réserve (le premier contenu libre), ou la dernière en moins. */
+export async function ajusterReserve(code: string, mancheId: string, jeu: GameCode, sens: 1 | -1) {
+  const { supabase, evenement } = await contexte(code);
+  const libres = sens === 1 ? await contenusLibres(supabase, evenement, jeu) : [];
+  await ecrireReserve(code, mancheId, (reserve) =>
+    sens === 1
+      ? libres[0] && reserve.length < MAX_RESERVE
+        ? [...reserve, libres[0]]
+        : reserve
+      : reserve.slice(0, -1),
+  );
 }
 
 /** Points communs : un passage par équipe et par tour, chacun avec un contenu de la banque. */

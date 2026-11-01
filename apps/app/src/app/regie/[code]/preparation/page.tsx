@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { Button, TeamDot } from '@teamup/ui/react';
+import { Button } from '@teamup/ui/react';
 import {
   CHRONO_SURENCHERE_DEFAUT_S,
   DUELS_DEFAUT,
@@ -16,16 +16,16 @@ import { evenementDeLaRegie } from '@/serveur/regie';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
 import {
   ajouterDuels,
-  ajouterEquipe,
+  ajusterReserve,
   ajouterMime,
   ajouterPhoto,
   ajouterPointsCommuns,
   ajouterQuiz,
   ajouterSurenchere,
+  choisirContenuReserve,
   deplacerManche,
+  enregistrerEquipesPrevues,
   enregistrerGroupes,
-  renommerEquipes,
-  retirerEquipe,
   retirerManche,
 } from './actions';
 
@@ -52,7 +52,6 @@ export default async function Preparation({
     { data: equipes },
     { data: manches },
     { data: banque },
-    { data: joueurs },
     { data: photos },
     { data: groupes },
     { data: reglageGroupes },
@@ -74,7 +73,6 @@ export default async function Preparation({
       )
       .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2'])
       .order('cree_le'),
-    supabase.from('joueurs').select('equipe_id').eq('evenement_id', evenement.id),
     supabase.from('photos').select('theme_id').eq('evenement_id', evenement.id),
     supabase.from('groupes').select('ordre, nom').eq('evenement_id', evenement.id),
     supabase.from('evenements').select('groupe_facultatif').eq('id', evenement.id).maybeSingle(),
@@ -84,7 +82,10 @@ export default async function Preparation({
   const groupeDeRang = new Map((groupes ?? []).map((g) => [g.ordre, g.nom]));
 
   const nomEquipe = new Map((equipes ?? []).map((e) => [e.id, e]));
-  const peuplees = new Set((joueurs ?? []).map((j) => j.equipe_id));
+  const reserveDe = (options: Valeur): string[] =>
+    Array.isArray(options['reserve'])
+      ? (options['reserve'] as unknown[]).filter((x): x is string => typeof x === 'string')
+      : [];
   // Un thème qui a déjà reçu des photos ne change plus : elles resteraient sans thème.
   const themesPhotographies = new Set((photos ?? []).map((p) => p.theme_id));
   // Les contenus actifs qui conviennent à la soirée (langues, public), plus celui déjà choisi
@@ -106,7 +107,15 @@ export default async function Preparation({
   }));
   const duree = dureeProgramme(
     programme.map((m) =>
-      elementDuProgramme({ jeu: m.jeu, options: m.options, passages: m.passages.length }),
+      elementDuProgramme({
+        jeu: m.jeu,
+        options: m.options,
+        // Lot 14 : avant la formation, une manche par équipe n'a pas encore ses passages.
+        passages:
+          m.passages.length > 0 || !(m.jeu === 'list2' || m.jeu === 'mime2')
+            ? m.passages.length
+            : evenement.equipes_prevues * Number(m.options['passages_par_equipe'] ?? 1),
+      }),
     ),
     { creneauMin: evenement.creneau_minutes },
   );
@@ -119,47 +128,28 @@ export default async function Preparation({
         <h2 id="equipes" className="tu-regie__section-title">
           {t('equipes')}
         </h2>
-        <form action={renommerEquipes.bind(null, code)} className="tu-regie__section">
-          <ul className="tu-regie-list">
-            {(equipes ?? []).map((e) => (
-              <li key={e.id} className="tu-regie-item">
-                <TeamDot index={e.numero} name="" aria-hidden="true" />
-                <label className="tu-field tu-regie-item__grow">
-                  <span className="tu-visually-hidden">{t('nomEquipe', { numero: e.numero })}</span>
-                  <input
-                    className="tu-field__control"
-                    name={`nom-${e.id}`}
-                    defaultValue={e.nom}
-                    maxLength={60}
-                    required
-                  />
-                </label>
-                {(equipes ?? []).length > 2 && !peuplees.has(e.id) && (
-                  <Button
-                    type="submit"
-                    variant="ghost"
-                    formAction={retirerEquipe.bind(null, code, e.id)}
-                    formNoValidate
-                  >
-                    {t('retirer')}
-                  </Button>
-                )}
-              </li>
-            ))}
-          </ul>
-          <div className="tu-cluster">
-            <Button type="submit">{t('enregistrerNoms')}</Button>
-            {(equipes ?? []).length < 8 && (
-              <Button
-                type="submit"
-                variant="ghost"
-                formAction={ajouterEquipe.bind(null, code)}
-                formNoValidate
-              >
-                {t('ajouterEquipe')}
-              </Button>
-            )}
-          </div>
+        <p className="tu-regie__muted" data-testid="etat-equipes">
+          {(equipes ?? []).length > 0
+            ? t('equipesFormees', { n: (equipes ?? []).length })
+            : t('equipesAFormer')}{' '}
+          <Link href={`/regie/${code}/salle`} className="tu-regie__lien">
+            {t('versSalle')}
+          </Link>
+        </p>
+        <form action={enregistrerEquipesPrevues.bind(null, code)} className="tu-regie-item">
+          <label className="tu-field">
+            <span className="tu-field__label">{t('equipesPrevues')}</span>
+            <input
+              className="tu-field__control"
+              name="equipes_prevues"
+              type="number"
+              min={2}
+              max={8}
+              defaultValue={evenement.equipes_prevues}
+              required
+            />
+          </label>
+          <Button type="submit">{t('enregistrer')}</Button>
         </form>
       </section>
 
@@ -251,7 +241,49 @@ export default async function Preparation({
                       {m.jeu === 'enchere2' &&
                         ` · ${t('chrono', { secondes: Number(m.options['chrono_s'] ?? CHRONO_SURENCHERE_DEFAUT_S) })}`}
                     </span>
-                    {preparable && (
+                    {parEquipe &&
+                      (m.options['reserve'] !== undefined || m.passages.length === 0) && (
+                        <div className="tu-regie__section" data-testid={`reserve-${m.jeu}`}>
+                          <p className="tu-regie__muted">
+                            {t('reserve.titre', {
+                              n: reserveDe(m.options).length,
+                              besoin:
+                                ((equipes ?? []).length || evenement.equipes_prevues) *
+                                Number(m.options['passages_par_equipe'] ?? 1),
+                            })}
+                          </p>
+                          <ul className="tu-regie-list">
+                            {reserveDe(m.options).map((contenu, index) => (
+                              <li key={contenu} className="tu-regie-passage">
+                                <span className="tu-regie-passage__nom">
+                                  {t('reserve.ligne', { numero: index + 1 })}
+                                </span>
+                                <SelectContenu
+                                  code={code}
+                                  enregistrer={choisirContenuReserve.bind(null, code, m.id, index)}
+                                  valeur={contenu}
+                                  options={options(m.jeu, contenu)}
+                                  desactive={!modifiable}
+                                  libelle={t('contenu')}
+                                  aucun={t('reserve.retirerLigne')}
+                                />
+                              </li>
+                            ))}
+                          </ul>
+                          {modifiable && (
+                            <form className="tu-cluster">
+                              <Button
+                                type="submit"
+                                variant="ghost"
+                                formAction={ajusterReserve.bind(null, code, m.id, m.jeu, 1)}
+                              >
+                                {t('reserve.ajouter')}
+                              </Button>
+                            </form>
+                          )}
+                        </div>
+                      )}
+                    {preparable && m.passages.length > 0 && (
                       <ul className="tu-regie-list">
                         {m.passages.map((p) => (
                           <li key={p.id} className="tu-regie-passage">
@@ -328,6 +360,17 @@ export default async function Preparation({
                 defaultValue={1}
               />
             </label>
+            <label className="tu-field">
+              <span className="tu-field__label">{t('reserve.taille')}</span>
+              <input
+                className="tu-field__control"
+                name="reserve"
+                type="number"
+                min={1}
+                max={24}
+                defaultValue={evenement.equipes_prevues}
+              />
+            </label>
             <Button type="submit">{t('ajouter', { jeu: tJeux('list2') })}</Button>
           </form>
           <form action={ajouterSurenchere.bind(null, code)} className="tu-regie-item">
@@ -383,6 +426,17 @@ export default async function Preparation({
                 min={1}
                 max={3}
                 defaultValue={1}
+              />
+            </label>
+            <label className="tu-field">
+              <span className="tu-field__label">{t('reserve.taille')}</span>
+              <input
+                className="tu-field__control"
+                name="reserve"
+                type="number"
+                min={1}
+                max={24}
+                defaultValue={evenement.equipes_prevues}
               />
             </label>
             <Button type="submit">{t('ajouter', { jeu: tJeux('mime2') })}</Button>
