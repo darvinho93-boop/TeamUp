@@ -653,9 +653,9 @@
 }
 
 /* Carte Team Up! (/soirees, revue le 2026-11-02) : la page du QR code des cartes imprimées.
-   Deux onglets : les soirées du jour (l'accroche de la carte, puis une carte par soirée avec son
-   seul bouton d'inscription) et les jeux (comment on joue, la règle de chacun). Au pied, les
-   personnages du jeu autour du pictogramme. Rien d'autre : que l'utile. */
+   Quatre onglets sur une ligne : ce soir (l'accroche de la carte, une carte par soirée avec le
+   seul bouton d'inscription, puis ce qui attend l'invité), les jeux, comment jouer, à propos.
+   Rien d'autre : que l'utile. */
 .tu-player__body.tu-carte {
   gap: var(--tu-space-7);
 }
@@ -984,8 +984,9 @@
   color: var(--tu-text);
 }
 
-/* ---- Les jeux : le pictogramme et la teinte de la vitrine, le nom, la règle ---- */
-.tu-carte-regles {
+/* ---- Cartes illustrées (les jeux, « Ce qui t'attend ») : le pictogramme et la teinte de la
+   vitrine, un nom, une phrase ---- */
+.tu-carte-items {
   display: flex;
   flex-direction: column;
   gap: var(--tu-space-3);
@@ -994,7 +995,7 @@
   list-style: none;
 }
 
-.tu-carte-regle {
+.tu-carte-item {
   display: flex;
   align-items: flex-start;
   gap: var(--tu-space-4);
@@ -1004,7 +1005,7 @@
   background: var(--tu-surface);
 }
 
-.tu-carte-regle__icone {
+.tu-carte-item__icone {
   display: flex;
   flex: none;
   align-items: center;
@@ -1015,7 +1016,7 @@
   color: var(--tu-primary);
 }
 
-.tu-carte-regle__icone svg {
+.tu-carte-item__icone svg {
   width: var(--tu-space-6);
   height: var(--tu-space-6);
   fill: none;
@@ -1025,75 +1026,41 @@
   stroke-width: 2;
 }
 
-.tu-carte-regle__icone--navy {
+.tu-carte-item__icone--navy {
   background: var(--tu-navy-50);
 }
 
-.tu-carte-regle__icone--sage {
+.tu-carte-item__icone--sage {
   background: var(--tu-sage-50);
   color: var(--tu-success-text);
 }
 
-.tu-carte-regle__icone--ambre {
+.tu-carte-item__icone--ambre {
   background: var(--tu-amber-50);
   color: var(--tu-warning-text);
 }
 
-.tu-carte-regle__icone--menthe {
+.tu-carte-item__icone--menthe {
   background: var(--tu-sage-200);
 }
 
-.tu-carte-regle__icone--pierre {
+.tu-carte-item__icone--pierre {
   background: var(--tu-stone-200);
 }
 
-.tu-carte-regle__nom {
+.tu-carte-item__nom {
   margin: 0;
   font-size: var(--tu-size-lg);
   line-height: var(--tu-leading-tight);
 }
 
-.tu-carte-regle__texte {
+.tu-carte-item__texte {
   margin: var(--tu-space-1) 0 0;
   line-height: var(--tu-leading-normal);
   color: var(--tu-text-muted);
 }
 
-/* ---- Pied : les personnages du jeu autour du pictogramme, debout sur un socle marine ---- */
-.tu-carte-pied {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.tu-carte-persos {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: var(--tu-space-2);
-}
-
-.tu-carte-persos__logo {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: var(--tu-carte-logo);
-  height: var(--tu-carte-logo);
-  margin-inline: var(--tu-space-1);
-  border: var(--tu-border-width) solid var(--tu-border);
-  border-radius: var(--tu-radius-pill);
-  background: var(--tu-surface);
-  box-shadow: var(--tu-shadow-md);
-}
-
-.tu-carte-sol {
-  align-self: stretch;
-  height: var(--tu-space-3);
-  border-radius: var(--tu-radius-pill);
-  background: var(--tu-navy-900);
-}
-
+/* ---- Les personnages de l'attente (aucune soirée ouverte) ---- */
 /* Un personnage des explications du jeu (explication.css), à l'échelle du téléphone. */
 .tu-carte-perso {
   --tu-carte-perso-taille: var(--tu-carte-perso);

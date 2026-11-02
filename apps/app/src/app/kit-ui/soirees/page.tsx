@@ -3,9 +3,8 @@ import { CadreCarte } from '@/carte/CadreCarte';
 import { CommentJouer } from '@/carte/CommentJouer';
 import { Jeux } from '@/carte/Jeux';
 import { QuiSommesNous } from '@/carte/QuiSommesNous';
-import { cibleInscription } from '@/carte/liens';
 import { Soirees } from '@/carte/Soirees';
-import { estLangue, type SoireeDuJour } from '@/lib/partie';
+import type { SoireeDuJour } from '@/lib/partie';
 
 export const metadata = { title: 'Carte Team Up! (contrôle)' };
 
@@ -40,18 +39,17 @@ export default async function KitSoirees({ searchParams }: PageProps<'/kit-ui/so
   const etat = typeof parametres['etat'] === 'string' ? parametres['etat'] : 'une';
   const soirees = ETATS[etat] ?? [];
   const langue = await getLocale();
-  const inscription = cibleInscription(soirees, estLangue(langue) ? langue : 'fr');
   switch (parametres['page']) {
     case 'jeux':
       return (
         <CadreCarte actif="jeux">
-          <Jeux inscription={inscription} />
+          <Jeux />
         </CadreCarte>
       );
     case 'comment':
       return (
         <CadreCarte actif="comment">
-          <CommentJouer inscription={inscription} />
+          <CommentJouer />
         </CadreCarte>
       );
     case 'nous':

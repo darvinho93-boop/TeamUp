@@ -1,7 +1,5 @@
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
-import { Fleche } from './decor';
 
 /** Les quatre temps de la soirée, aux couleurs des équipes 1, 3, 4 et 6 (jamais le corail). */
 const ETAPES = [
@@ -13,10 +11,10 @@ const ETAPES = [
 
 /**
  * L'onglet « Comment on y joue » de la carte Team Up! (`/soirees/comment-jouer`) : la soirée en
- * quatre temps, de l'inscription au podium. `inscription` : où mène « Je m'inscris »
- * (`cibleInscription`), rien quand aucune soirée n'est ouverte.
+ * quatre temps, de l'inscription au podium. « Je m'inscris » n'est que sur l'onglet de
+ * l'événement du jour.
  */
-export function CommentJouer({ inscription }: { inscription: string | null }) {
+export function CommentJouer() {
   const t = useTranslations('carte');
 
   return (
@@ -36,13 +34,6 @@ export function CommentJouer({ inscription }: { inscription: string | null }) {
           ))}
         </ol>
       </section>
-
-      {inscription && (
-        <Link className="tu-btn tu-btn--accent tu-btn--lg tu-btn--block" href={inscription}>
-          {t('inscrire')}
-          <Fleche />
-        </Link>
-      )}
     </div>
   );
 }

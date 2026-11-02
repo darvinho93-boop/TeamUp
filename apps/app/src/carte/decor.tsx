@@ -3,9 +3,6 @@ import { cx, teamModifier, type TeamIndex } from '@teamup/ui/react';
 /** Un personnage des explications du jeu, debout : son équipe (jamais 2, le corail) et sa taille. */
 export type Perso = { equipe: TeamIndex; grand?: boolean };
 
-/** Autour du pictogramme, au pied des pages de la carte. */
-export const PERSOS_GAUCHE: Perso[] = [{ equipe: 3 }, { equipe: 1, grand: true }, { equipe: 4 }];
-export const PERSOS_DROITE: Perso[] = [{ equipe: 6 }, { equipe: 8, grand: true }, { equipe: 5 }];
 /** Ceux qui attendent qu'une soirée ouvre. */
 export const PERSOS_ATTENTE: Perso[] = [{ equipe: 4 }, { equipe: 3, grand: true }, { equipe: 1 }];
 

@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -8,6 +8,7 @@ import { Button, cx, Wordmark } from '@teamup/ui/react';
 import { estLangue, type SoireeDuJour } from '@/lib/partie';
 import { Fleche, Personnages, PERSOS_ATTENTE } from './decor';
 import { lienInscription } from './liens';
+import { ListeIllustree, type Teinte } from './ListeIllustree';
 
 /**
  * Confettis de l'accroche, comme sur la carte imprimée : posés autour du titre, jamais dessus
@@ -29,11 +30,50 @@ const CONFETTIS: { x: number; y: number; r: number; point?: boolean }[] = [
   { x: 0.97, y: 0.6, r: 0.18 },
 ];
 
+/** Ce qui attend l'invité : les équipes mélangées, le grand écran, le podium. */
+const ATOUTS: {
+  titre: `atout${1 | 2 | 3}Titre`;
+  texte: `atout${1 | 2 | 3}Texte`;
+  teinte: Teinte;
+  trace: ReactNode;
+}[] = [
+  {
+    titre: 'atout1Titre',
+    texte: 'atout1Texte',
+    teinte: 'navy',
+    // Mélanger : deux flèches qui se croisent.
+    trace: <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />,
+  },
+  {
+    titre: 'atout2Titre',
+    texte: 'atout2Texte',
+    teinte: 'sage',
+    trace: (
+      <>
+        <rect x="3" y="4" width="18" height="12" rx="2" />
+        <path d="M8 20h8M12 16v4" />
+      </>
+    ),
+  },
+  {
+    titre: 'atout3Titre',
+    texte: 'atout3Texte',
+    teinte: 'ambre',
+    trace: (
+      <>
+        <path d="M8 21h8M12 17v4" />
+        <path d="M7 4h10v5a5 5 0 0 1-10 0z" />
+        <path d="M17 5h2a2 2 0 0 1 0 4h-2M7 5H5a2 2 0 0 0 0 4h2" />
+      </>
+    ),
+  },
+];
+
 /**
  * Page de la carte Team Up! (`/soirees`), là où mène le QR code des cartes imprimées : l'accroche
- * de la carte, puis les soirées du jour, chacune avec son seul bouton « Je m'inscris ». Les règles
- * sont sur l'onglet des jeux (`Jeux.tsx`). « Je m'inscris » mène à l'arrivée habituelle de la
- * soirée, la langue déjà choisie ici (`?carte=1`).
+ * de la carte, puis les soirées du jour, chacune avec le seul bouton « Je m'inscris » de la carte,
+ * puis ce qui attend l'invité. Les règles sont sur l'onglet des jeux (`Jeux.tsx`). « Je m'inscris »
+ * mène à l'arrivée habituelle de la soirée, la langue déjà choisie ici (`?carte=1`).
  */
 export function Soirees({ soirees, langue }: { soirees: SoireeDuJour[]; langue: string }) {
   const t = useTranslations('carte');
@@ -93,6 +133,22 @@ export function Soirees({ soirees, langue }: { soirees: SoireeDuJour[]; langue: 
           </ul>
         )}
       </div>
+
+      <section className="tu-carte-section" aria-labelledby="titre-attend">
+        <h2 className="tu-carte-section__titre" id="titre-attend">
+          {t('attendTitre')}
+        </h2>
+        <ListeIllustree
+          niveau="h3"
+          elements={ATOUTS.map((a) => ({
+            id: a.titre,
+            teinte: a.teinte,
+            trace: a.trace,
+            nom: t(a.titre),
+            texte: t(a.texte),
+          }))}
+        />
+      </section>
     </div>
   );
 }

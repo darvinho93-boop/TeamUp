@@ -13,13 +13,3 @@ export const DEVIS_DEPUIS_CARTE = 'https://teamup-game.fr/devis?via=carte';
 export function lienInscription(soiree: SoireeDuJour, langue: Langue): string {
   return soiree.langues.includes(langue) ? `/${soiree.code}?carte=1` : `/${soiree.code}`;
 }
-
-/**
- * Où mène « Je m'inscris » depuis les onglets d'explication : droit à l'arrivée s'il n'y a
- * qu'une soirée ce jour-là, à la liste s'il y en a plusieurs, nulle part s'il n'y en a pas.
- */
-export function cibleInscription(soirees: SoireeDuJour[], langue: Langue): string | null {
-  if (soirees.length === 0) return null;
-  const [seule] = soirees;
-  return soirees.length === 1 && seule ? lienInscription(seule, langue) : '/soirees';
-}

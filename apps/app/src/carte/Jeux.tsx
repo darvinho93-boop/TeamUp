@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { cx } from '@teamup/ui/react';
-import { Fleche } from './decor';
+import { ListeIllustree, type Teinte } from './ListeIllustree';
 
 type Jeu = 'list2' | 'qcm2' | 'enchere2' | 'mime2' | 'photo2';
 
@@ -10,11 +8,7 @@ type Jeu = 'list2' | 'qcm2' | 'enchere2' | 'mime2' | 'photo2';
  * Les cinq jeux, chacun avec le pictogramme et la teinte de la page Les jeux de la vitrine
  * (`apps/site/src/data/jeux.ts`, `Icon.astro`) : on les reconnaît d'un site à l'autre.
  */
-const JEUX: {
-  jeu: Jeu;
-  teinte: 'navy' | 'sage' | 'ambre' | 'menthe' | 'pierre';
-  trace: ReactNode;
-}[] = [
+const JEUX: { jeu: Jeu; teinte: Teinte; trace: ReactNode }[] = [
   {
     jeu: 'list2',
     teinte: 'navy',
@@ -78,10 +72,10 @@ const JEUX: {
 
 /**
  * L'onglet « Les jeux » de la carte Team Up! (`/soirees/jeux`) : la règle de chacun des cinq
- * jeux, en une phrase (celle de l'écran commun). `inscription` : où mène « Je m'inscris »
- * (`cibleInscription`), rien quand aucune soirée n'est ouverte.
+ * jeux, en une phrase (celle de l'écran commun). « Je m'inscris » n'est que sur l'onglet de
+ * l'événement du jour.
  */
-export function Jeux({ inscription }: { inscription: string | null }) {
+export function Jeux() {
   const t = useTranslations();
 
   return (
@@ -90,30 +84,16 @@ export function Jeux({ inscription }: { inscription: string | null }) {
         <h1 className="tu-carte-section__titre tu-carte-section__titre--page" id="titre-jeux">
           {t('carte.jeuxTitre')}
         </h1>
-        <ul className="tu-carte-regles">
-          {JEUX.map(({ jeu, teinte, trace }) => (
-            <li key={jeu} className="tu-carte-regle">
-              <span
-                className={cx('tu-carte-regle__icone', `tu-carte-regle__icone--${teinte}`)}
-                aria-hidden="true"
-              >
-                <svg viewBox="0 0 24 24">{trace}</svg>
-              </span>
-              <div>
-                <h2 className="tu-carte-regle__nom">{t(`jeux.${jeu}`)}</h2>
-                <p className="tu-carte-regle__texte">{t(`ecran.regles.${jeu}`)}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <ListeIllustree
+          elements={JEUX.map(({ jeu, teinte, trace }) => ({
+            id: jeu,
+            teinte,
+            trace,
+            nom: t(`jeux.${jeu}`),
+            texte: t(`ecran.regles.${jeu}`),
+          }))}
+        />
       </section>
-
-      {inscription && (
-        <Link className="tu-btn tu-btn--accent tu-btn--lg tu-btn--block" href={inscription}>
-          {t('carte.inscrire')}
-          <Fleche />
-        </Link>
-      )}
     </div>
   );
 }

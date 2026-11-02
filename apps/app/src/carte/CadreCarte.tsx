@@ -8,8 +8,6 @@ import { memoriserLangue } from '@/lib/langue-navigateur';
 import { LANGUES, type Langue } from '@/lib/partie';
 import { Cadre } from '@/joueur/Cadre';
 import { ChoixLangueJoueur } from '@/joueur/ChoixLangueJoueur';
-import { Pictogramme } from '@/marque/Pictogramme';
-import { Personnages, PERSOS_DROITE, PERSOS_GAUCHE } from './decor';
 import type { OngletCarte } from './liens';
 
 /** Les onglets, chacun avec son pictogramme au trait (`currentColor`). */
@@ -72,8 +70,7 @@ const ONGLETS: {
 
 /**
  * Gabarit des pages de la carte Team Up! : la langue en tête (drapeaux), les quatre onglets
- * (l'événement du jour, les jeux, comment on y joue, qui sommes-nous), la page, puis les
- * personnages du jeu autour du pictogramme.
+ * (l'événement du jour, les jeux, comment on y joue, qui sommes-nous), puis la page.
  */
 export function CadreCarte({ actif, children }: { actif: OngletCarte; children: ReactNode }) {
   const t = useTranslations('carte');
@@ -101,16 +98,6 @@ export function CadreCarte({ actif, children }: { actif: OngletCarte; children: 
         ))}
       </nav>
       {children}
-      <div className="tu-carte-pied" aria-hidden="true">
-        <div className="tu-carte-persos">
-          <Personnages persos={PERSOS_GAUCHE} />
-          <span className="tu-carte-persos__logo">
-            <Pictogramme />
-          </span>
-          <Personnages persos={PERSOS_DROITE} />
-        </div>
-        <span className="tu-carte-sol" />
-      </div>
     </Cadre>
   );
 }
