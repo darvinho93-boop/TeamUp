@@ -18,6 +18,17 @@
   /* Écran joueur : colonne unique, même sur une tablette posée à plat. */
   --tu-player-max: 30rem;
 
+  /* Carte Team Up! (/soirees, 2026-11-02) : interligne du grand « Team Up! » de l'accroche,
+     confettis (rectangle, rayon, point), personnages debout, disque du logo, pastilles d'étape. */
+  --tu-carte-nom-leading: 1.05;
+  --tu-carte-confetti-w: 0.4375rem;
+  --tu-carte-confetti-h: 1rem;
+  --tu-carte-confetti-rayon: 0.1875rem;
+  --tu-carte-confetti-point: 0.375rem;
+  --tu-carte-perso: 1.625rem;
+  --tu-carte-logo: 3.5rem;
+  --tu-carte-etape: 2.5rem;
+
   /* Régie : largeur minimale d'un champ de formulaire et d'une colonne d'équipe. */
   --tu-regie-field-min: 14rem;
   --tu-regie-team-min: 16rem;

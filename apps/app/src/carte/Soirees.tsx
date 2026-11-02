@@ -1,87 +1,98 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Button } from '@teamup/ui/react';
-import { memoriserLangue } from '@/lib/langue-navigateur';
-import { estLangue, LANGUES, type Langue, type SoireeDuJour } from '@/lib/partie';
-import { Cadre } from '@/joueur/Cadre';
-import { ChoixLangueJoueur } from '@/joueur/ChoixLangueJoueur';
+import { Button, cx, Wordmark } from '@teamup/ui/react';
+import { estLangue, type SoireeDuJour } from '@/lib/partie';
+import { Fleche, Personnages, PERSOS_ATTENTE } from './decor';
+import { lienInscription } from './liens';
 
 /**
- * Page de la carte Team Up! : ce qu'est Team Up!, les soirées du jour et leurs jeux, comment
- * s'inscrire. Un appui sur « Je m'inscris » mène à l'arrivée habituelle de la soirée, la langue
- * déjà choisie ici (`?carte=1`).
+ * Confettis de l'accroche, comme sur la carte imprimée : posés autour du titre, jamais dessus
+ * (x, y : parts de la largeur et de la hauteur de l'accroche ; r : tour). Couleurs d'équipe par
+ * rang (`player.css`), jamais le corail.
+ */
+const CONFETTIS: { x: number; y: number; r: number; point?: boolean }[] = [
+  { x: 0.03, y: 0.04, r: 0.07 },
+  { x: 0.12, y: 0.01, r: -0.1 },
+  { x: 0.22, y: 0.13, r: 0, point: true },
+  { x: 0.09, y: 0.19, r: 0.15 },
+  { x: 0.8, y: 0.02, r: 0.12 },
+  { x: 0.93, y: 0.09, r: -0.08 },
+  { x: 0.66, y: 0, r: 0, point: true },
+  { x: 0.965, y: 0.27, r: 0, point: true },
+  { x: 0.005, y: 0.38, r: -0.12 },
+  { x: 0.965, y: 0.43, r: 0.1 },
+  { x: 0.02, y: 0.6, r: 0, point: true },
+  { x: 0.97, y: 0.6, r: 0.18 },
+];
+
+/**
+ * Page de la carte Team Up! (`/soirees`), là où mène le QR code des cartes imprimées : l'accroche
+ * de la carte, puis les soirées du jour, chacune avec son seul bouton « Je m'inscris ». Les règles
+ * sont sur l'onglet des jeux (`Jeux.tsx`). « Je m'inscris » mène à l'arrivée habituelle de la
+ * soirée, la langue déjà choisie ici (`?carte=1`).
  */
 export function Soirees({ soirees, langue }: { soirees: SoireeDuJour[]; langue: string }) {
-  const t = useTranslations();
+  const t = useTranslations('carte');
   const router = useRouter();
-  const choisir = (choisie: Langue) => {
-    memoriserLangue(choisie);
-    router.refresh();
-  };
   const courante = estLangue(langue) ? langue : 'fr';
 
   return (
-    <Cadre outil={<ChoixLangueJoueur langues={[...LANGUES]} choisir={choisir} />}>
-      <div className="tu-player__body" data-testid="soirees">
-        <h1 className="tu-player__title">{t('carte.bienvenue')}</h1>
-        <p className="tu-player__lead">{t('carte.presentation')}</p>
+    <div className="tu-player__body tu-carte" data-testid="soirees">
+      <section className="tu-carte-accroche">
+        <div className="tu-carte-confettis" aria-hidden="true">
+          {CONFETTIS.map((c, i) => (
+            <span
+              key={i}
+              className={cx('tu-carte-confetti', c.point && 'tu-carte-confetti--point')}
+              style={{ '--x': c.x, '--y': c.y, '--r': c.r, '--i': i } as CSSProperties}
+            />
+          ))}
+        </div>
+        <h1 className="tu-carte-accroche__titre">
+          {t.rich('accroche', { nom: () => <Wordmark className="tu-carte-accroche__nom" /> })}
+        </h1>
+        <p className="tu-carte-accroche__slogan">{t('slogan')}</p>
+      </section>
 
-        <h2 className="tu-player__subtitle">{t('carte.aujourdhui')}</h2>
+      {/* L'onglet dit déjà « L'événement du jour » : pas d'intertitre, la carte suffit. */}
+      <div className="tu-carte-section">
         {soirees.length === 0 ? (
           <div className="tu-carte-vide" data-testid="soirees-vide">
-            <p className="tu-carte-vide__titre">{t('carte.videTitre')}</p>
-            <p className="tu-player__lead">{t('carte.videAide')}</p>
-            <div className="tu-player__actions">
+            <div className="tu-carte-vide__persos" aria-hidden="true">
+              <Personnages persos={PERSOS_ATTENTE} />
+            </div>
+            <p className="tu-carte-vide__titre">{t('videTitre')}</p>
+            <p className="tu-carte-vide__aide">{t('videAide')}</p>
+            <div className="tu-carte-vide__actions">
               <Link className="tu-btn tu-btn--outline tu-btn--lg tu-btn--block" href="/">
-                {t('carte.code')}
+                {t('code')}
               </Link>
               <Button variant="ghost" size="lg" block onClick={() => router.refresh()}>
-                {t('carte.actualiser')}
+                {t('actualiser')}
               </Button>
             </div>
           </div>
         ) : (
           <ul className="tu-carte-liste">
-            {soirees.map((s) => {
-              const jeux = [...new Set(s.programme)];
-              // La langue choisie ici sert à l'arrivée si la soirée la propose.
-              const lien = s.langues.includes(courante) ? `/${s.code}?carte=1` : `/${s.code}`;
-              return (
-                <li key={s.code} className="tu-carte-soiree" data-testid="soiree">
-                  <h3 className="tu-carte-soiree__titre">{s.titre}</h3>
-                  {jeux.length > 0 && (
-                    <>
-                      <p className="tu-carte-soiree__surtitre">{t('carte.auProgramme')}</p>
-                      <ul className="tu-player__list">
-                        {jeux.map((jeu) => (
-                          <li key={jeu}>
-                            <strong>{t(`jeux.${jeu}`)}</strong> — {t(`ecran.regles.${jeu}`)}
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
-                  <Link className="tu-btn tu-btn--accent tu-btn--lg tu-btn--block" href={lien}>
-                    {t('carte.inscrire')}
-                  </Link>
-                </li>
-              );
-            })}
+            {soirees.map((s) => (
+              <li key={s.code} className="tu-carte-soiree" data-testid="soiree">
+                <h2 className="tu-carte-soiree__titre">{s.titre}</h2>
+                <Link
+                  className="tu-btn tu-btn--accent tu-btn--lg tu-btn--block"
+                  href={lienInscription(s, courante)}
+                >
+                  {t('inscrire')}
+                  <Fleche />
+                </Link>
+              </li>
+            ))}
           </ul>
         )}
-
-        <h2 className="tu-player__subtitle">{t('carte.commentTitre')}</h2>
-        <ol className="tu-player__list tu-carte-etapes">
-          <li>{t('carte.etape1')}</li>
-          <li>{t('carte.etape2')}</li>
-          <li>{t('carte.etape3')}</li>
-        </ol>
-        <p className="tu-player__lead">{t('carte.telephone')}</p>
-        <p className="tu-carte-appel">{t('carte.appel')}</p>
       </div>
-    </Cadre>
+    </div>
   );
 }

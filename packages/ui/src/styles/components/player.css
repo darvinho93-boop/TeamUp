@@ -652,7 +652,208 @@
   outline-offset: var(--tu-focus-width);
 }
 
-/* Carte Team Up! (/soirees) : les soirées du jour, une carte chacune, l'inscription en corail. */
+/* Carte Team Up! (/soirees, revue le 2026-11-02) : la page du QR code des cartes imprimées.
+   Deux onglets : les soirées du jour (l'accroche de la carte, puis une carte par soirée avec son
+   seul bouton d'inscription) et les jeux (comment on joue, la règle de chacun). Au pied, les
+   personnages du jeu autour du pictogramme. Rien d'autre : que l'utile. */
+.tu-player__body.tu-carte {
+  gap: var(--tu-space-7);
+}
+
+/* ---- Onglets : une seule ligne, comme la barre d'une app. Chaque onglet, son pictogramme et
+   dessous un libellé court (le titre entier est en tête de la page), sur une ligne. Les onglets
+   prennent la largeur de leur libellé, la place qui reste se partage. ---- */
+.tu-carte-nav {
+  display: flex;
+  padding: var(--tu-space-1);
+  overflow-x: auto;
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+  scrollbar-width: none;
+}
+
+.tu-carte-nav__lien {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-1);
+  min-height: var(--tu-tap-min);
+  padding: var(--tu-space-1);
+  border-radius: var(--tu-radius-md);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-xs);
+  font-weight: 600;
+  line-height: var(--tu-leading-tight);
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--tu-text);
+}
+
+.tu-carte-nav__lien[aria-current='page'] {
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+@media (hover: hover) {
+  .tu-carte-nav__lien:not([aria-current='page']):hover {
+    background: var(--tu-navy-50);
+  }
+}
+
+.tu-carte-nav__icone {
+  flex: none;
+  width: var(--tu-space-5);
+  height: var(--tu-space-5);
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+/* Tamoul : ni Poppins ni Inter n'ont ses glyphes, Noto Sans Tamil d'abord (player.css, en tête). */
+:lang(ta)
+  :is(
+    .tu-carte-nav__lien,
+    .tu-carte-accroche__slogan,
+    .tu-carte-vide__titre,
+    .tu-carte-citation,
+    .tu-carte-encart__titre,
+    .tu-carte-encart__texte
+  ) {
+  font-family: var(--tu-font-display-ta);
+  letter-spacing: normal;
+}
+
+/* ---- Accroche ---- */
+.tu-carte-accroche {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-2);
+  padding-top: var(--tu-space-2);
+  text-align: center;
+}
+
+.tu-carte-accroche__titre {
+  margin: 0;
+  font-size: var(--tu-size-2xl);
+  line-height: var(--tu-leading-tight);
+  letter-spacing: var(--tu-tracking-display);
+  text-wrap: balance;
+}
+
+:lang(ta) .tu-carte-accroche__titre {
+  font-size: var(--tu-size-xl);
+}
+
+.tu-carte-accroche__nom {
+  --tu-wordmark-size: var(--tu-size-4xl);
+
+  display: block;
+  line-height: var(--tu-carte-nom-leading);
+}
+
+/* Le slogan, en capitales espacées comme sous le logo empilé. */
+.tu-carte-accroche__slogan {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-xs);
+  font-weight: 600;
+  letter-spacing: var(--tu-tracking-code);
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--tu-primary);
+}
+
+:lang(ta) .tu-carte-accroche__slogan {
+  font-size: var(--tu-size-sm);
+  letter-spacing: normal;
+}
+
+.tu-carte-confettis {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.tu-carte-confetti {
+  position: absolute;
+  top: calc(var(--y) * 100%);
+  left: calc(var(--x) * 100%);
+  width: var(--tu-carte-confetti-w);
+  height: var(--tu-carte-confetti-h);
+  border-radius: var(--tu-carte-confetti-rayon);
+  background: var(--tu-team-1);
+  rotate: calc(var(--r) * 1turn);
+}
+
+.tu-carte-confetti--point {
+  width: var(--tu-carte-confetti-point);
+  height: var(--tu-carte-confetti-point);
+  border-radius: var(--tu-radius-pill);
+}
+
+/* Les couleurs de la fête de l'écran commun (celebration.css), jamais le corail. */
+.tu-carte-confetti:nth-child(6n + 2) {
+  background: var(--tu-team-4);
+}
+
+.tu-carte-confetti:nth-child(6n + 3) {
+  background: var(--tu-team-3);
+}
+
+.tu-carte-confetti:nth-child(6n + 4) {
+  background: var(--tu-team-5);
+}
+
+.tu-carte-confetti:nth-child(6n + 5) {
+  background: var(--tu-team-6);
+}
+
+.tu-carte-confetti:nth-child(6n + 6) {
+  background: var(--tu-team-8);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-carte-confetti {
+    animation: tu-carte-confetti var(--tu-dur-reveal) var(--tu-ease) both;
+    animation-delay: calc(var(--i) * var(--tu-dur-cascade));
+  }
+}
+
+@keyframes tu-carte-confetti {
+  from {
+    opacity: 0;
+    scale: 0;
+    translate: 0 calc(var(--tu-carte-confetti-h) * -2);
+  }
+}
+
+/* ---- Sections ---- */
+.tu-carte-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+}
+
+.tu-carte-section__titre {
+  margin: 0;
+  font-size: var(--tu-size-xl);
+  line-height: var(--tu-leading-tight);
+}
+
+.tu-carte-section__titre--page {
+  font-size: var(--tu-size-2xl);
+}
+
+/* ---- Les soirées du jour : une carte chacune, le titre et l'inscription ---- */
 .tu-carte-liste {
   display: flex;
   flex-direction: column;
@@ -665,11 +866,12 @@
 .tu-carte-soiree {
   display: flex;
   flex-direction: column;
-  gap: var(--tu-space-3);
-  padding: var(--tu-space-6);
+  gap: var(--tu-space-4);
+  padding: var(--tu-space-5);
   border: var(--tu-border-width) solid var(--tu-border);
   border-radius: var(--tu-radius-lg);
   background: var(--tu-surface);
+  box-shadow: var(--tu-shadow-md);
 }
 
 .tu-carte-soiree__titre {
@@ -678,35 +880,335 @@
   font-size: var(--tu-size-2xl);
   line-height: var(--tu-leading-tight);
   overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
-.tu-carte-soiree__surtitre {
-  margin: 0;
-  font-weight: 600;
-  color: var(--tu-text-muted);
+/* La flèche d'un bouton d'action, au trait. */
+.tu-btn__icone {
+  flex: none;
+  width: var(--tu-space-6);
+  height: var(--tu-space-6);
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.25;
 }
 
+/* ---- Aucune soirée ouverte ---- */
 .tu-carte-vide {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-3);
+  padding: var(--tu-space-6) var(--tu-space-5) var(--tu-space-5);
+  border: var(--tu-btn-border-width) dashed var(--tu-border-strong);
+  border-radius: var(--tu-radius-lg);
+  text-align: center;
+}
+
+.tu-carte-vide__persos {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--tu-space-2);
+}
+
+.tu-carte-vide__titre {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-lg);
+  font-weight: 600;
+  line-height: var(--tu-leading-tight);
+  color: var(--tu-primary);
+}
+
+.tu-carte-vide__aide {
+  margin: 0;
+  color: var(--tu-text-muted);
+}
+
+.tu-carte-vide__actions {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: var(--tu-space-3);
+  margin-top: var(--tu-space-2);
+}
+
+/* ---- Comment on joue : trois pastilles aux couleurs d'équipe, reliées ---- */
+.tu-carte-etapes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-carte-etape {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
   gap: var(--tu-space-3);
 }
 
-.tu-carte-vide__titre,
-.tu-carte-appel {
+.tu-carte-etape:not(:last-child)::before {
+  position: absolute;
+  top: var(--tu-carte-etape);
+  bottom: calc(var(--tu-space-4) * -1);
+  left: calc(var(--tu-carte-etape) / 2 - var(--tu-border-width));
+  border-left: var(--tu-btn-border-width) dashed var(--tu-border-strong);
+  content: '';
+}
+
+.tu-carte-etape__num {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--tu-carte-etape);
+  height: var(--tu-carte-etape);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-lg);
+  font-weight: 700;
+}
+
+.tu-carte-etape__texte {
+  margin: 0;
+  padding-top: var(--tu-space-2);
+  font-size: var(--tu-type-body-lg);
+  line-height: var(--tu-leading-normal);
+  color: var(--tu-text);
+}
+
+/* ---- Les jeux : le pictogramme et la teinte de la vitrine, le nom, la règle ---- */
+.tu-carte-regles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-carte-regle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--tu-space-4);
+  padding: var(--tu-space-4);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+}
+
+.tu-carte-regle__icone {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--tu-space-12);
+  height: var(--tu-space-12);
+  border-radius: var(--tu-radius-md);
+  color: var(--tu-primary);
+}
+
+.tu-carte-regle__icone svg {
+  width: var(--tu-space-6);
+  height: var(--tu-space-6);
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.tu-carte-regle__icone--navy {
+  background: var(--tu-navy-50);
+}
+
+.tu-carte-regle__icone--sage {
+  background: var(--tu-sage-50);
+  color: var(--tu-success-text);
+}
+
+.tu-carte-regle__icone--ambre {
+  background: var(--tu-amber-50);
+  color: var(--tu-warning-text);
+}
+
+.tu-carte-regle__icone--menthe {
+  background: var(--tu-sage-200);
+}
+
+.tu-carte-regle__icone--pierre {
+  background: var(--tu-stone-200);
+}
+
+.tu-carte-regle__nom {
   margin: 0;
   font-size: var(--tu-size-lg);
-  font-weight: 600;
+  line-height: var(--tu-leading-tight);
+}
+
+.tu-carte-regle__texte {
+  margin: var(--tu-space-1) 0 0;
+  line-height: var(--tu-leading-normal);
+  color: var(--tu-text-muted);
+}
+
+/* ---- Pied : les personnages du jeu autour du pictogramme, debout sur un socle marine ---- */
+.tu-carte-pied {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tu-carte-persos {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--tu-space-2);
+}
+
+.tu-carte-persos__logo {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--tu-carte-logo);
+  height: var(--tu-carte-logo);
+  margin-inline: var(--tu-space-1);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface);
+  box-shadow: var(--tu-shadow-md);
+}
+
+.tu-carte-sol {
+  align-self: stretch;
+  height: var(--tu-space-3);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-navy-900);
+}
+
+/* Un personnage des explications du jeu (explication.css), à l'échelle du téléphone. */
+.tu-carte-perso {
+  --tu-carte-perso-taille: var(--tu-carte-perso);
+
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--tu-carte-perso-taille) * 0.08);
+  width: var(--tu-carte-perso-taille);
+}
+
+.tu-carte-perso::before {
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-team-color);
+  content: '';
+}
+
+.tu-carte-perso::after {
+  width: 100%;
+  height: calc(var(--tu-carte-perso) * 1.1);
+  border-radius: calc(var(--tu-carte-perso-taille) * 0.25) calc(var(--tu-carte-perso-taille) * 0.25)
+    calc(var(--tu-carte-perso-taille) * 0.08) calc(var(--tu-carte-perso-taille) * 0.08);
+  background: var(--tu-team-color);
+  content: '';
+}
+
+.tu-carte-perso--grand {
+  --tu-carte-perso-taille: calc(var(--tu-carte-perso) * 1.5);
+}
+
+.tu-carte-perso--grand::after {
+  height: calc(var(--tu-carte-perso) * 1.6);
+}
+
+/* ---- Qui sommes-nous : le texte de la vidéo de présentation, Instagram, le devis ---- */
+.tu-carte-texte {
+  margin: 0;
+  font-size: var(--tu-type-body-lg);
+  line-height: var(--tu-leading-normal);
+  text-wrap: pretty;
   color: var(--tu-text);
 }
 
-/* Les trois étapes de l'inscription, numérotées. */
-.tu-carte-etapes {
-  list-style: decimal;
-}
-
-.tu-carte-etapes ::marker {
+/* Ce qu'on fait, en une phrase mise en avant, filet sauge à gauche comme une citation. */
+.tu-carte-citation {
+  margin: 0;
+  padding-left: var(--tu-space-4);
+  border-left: var(--tu-btn-border-width) solid var(--tu-sage-500);
   font-family: var(--tu-font-display);
-  font-weight: 700;
+  font-size: var(--tu-size-lg);
+  font-weight: 600;
+  line-height: var(--tu-leading-tight);
+  text-wrap: balance;
+  color: var(--tu-primary);
+}
+
+.tu-carte-encart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-4);
+  padding: var(--tu-space-6) var(--tu-space-5);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+  text-align: center;
+}
+
+.tu-carte-encart--marine {
+  border-color: var(--tu-navy-900);
+  background: var(--tu-navy-900);
+}
+
+.tu-carte-encart__titre {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-lg);
+  font-weight: 600;
+  line-height: var(--tu-leading-tight);
   color: var(--tu-text);
+}
+
+.tu-carte-encart__texte {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+  line-height: var(--tu-leading-tight);
+  text-wrap: balance;
+  color: var(--tu-navy-200);
+}
+
+.tu-carte-insta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  min-height: var(--tu-tap-min);
+  padding-inline: var(--tu-space-6);
+  border: var(--tu-btn-border-width) solid var(--tu-sage-500);
+  border-radius: var(--tu-radius-pill);
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--tu-text-invert);
+}
+
+@media (hover: hover) {
+  .tu-carte-insta:hover {
+    background: var(--tu-navy-700);
+  }
+}
+
+/* Sa taille vient de .tu-icone-insta (brand.css) ; ici, la couleur. */
+.tu-carte-insta__icone {
+  color: var(--tu-sage-500);
 }

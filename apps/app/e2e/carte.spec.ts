@@ -18,8 +18,22 @@ test('la carte Team Up! : cochée à la préparation, la soirée paraît et on s
   // --- Rien de coché : l'aide et le lien vers la saisie du code.
   const telephone = await (await browser.newContext()).newPage();
   await telephone.goto('/soirees');
-  await expect(telephone.getByRole('heading', { name: 'Bienvenue chez Team Up!' })).toBeVisible();
+  await expect(telephone.getByRole('heading', { name: 'Ce soir, on Team Up!' })).toBeVisible();
   await expect(telephone.getByTestId('soiree').filter({ hasText: 'Soirée e2e' })).toHaveCount(0);
+
+  // --- Les onglets : les jeux, comment jouer, à propos, puis retour à la soirée.
+  const onglets = telephone.getByRole('navigation');
+  await onglets.getByRole('link', { name: 'Les jeux' }).click();
+  await expect(telephone.getByRole('heading', { level: 1, name: 'Les jeux' })).toBeVisible();
+  await expect(telephone.getByRole('heading', { name: 'Points communs' })).toBeVisible();
+  await onglets.getByRole('link', { name: 'Comment jouer' }).click();
+  await expect(
+    telephone.getByRole('heading', { level: 1, name: 'Comment on y joue' }),
+  ).toBeVisible();
+  await onglets.getByRole('link', { name: 'À propos' }).click();
+  await expect(telephone.getByRole('heading', { level: 1, name: /Qui sommes/ })).toBeVisible();
+  await onglets.getByRole('link', { name: 'Ce soir' }).click();
+  await expect(telephone.getByRole('heading', { name: 'Ce soir, on Team Up!' })).toBeVisible();
 
   // --- L'animatrice donne un titre et coche la carte.
   const regie = await (await browser.newContext()).newPage();
@@ -44,7 +58,7 @@ test('la carte Team Up! : cochée à la préparation, la soirée paraît et on s
   const carte = telephone.getByTestId('soiree').filter({ hasText: 'Soirée e2e de Léa & Sam' });
   await expect(carte).toHaveCount(1);
   await telephone.getByLabel('Langue').selectOption('en');
-  await expect(telephone.getByRole('heading', { name: 'Welcome to Team Up!' })).toBeVisible();
+  await expect(telephone.getByRole('heading', { name: 'Tonight, we Team Up!' })).toBeVisible();
   await carte.getByRole('link', { name: 'Sign me up' }).click();
   await expect(telephone).toHaveURL(`/${evenement.code}?carte=1`);
   await expect(telephone.getByRole('heading', { name: 'Your first name' })).toBeVisible();
