@@ -110,6 +110,11 @@ export default async function Preparation({
     passages: [...(m.passages ?? [])].sort((a, b) => a.ordre - b.ordre),
     options: (m.options ?? {}) as Valeur,
   }));
+  // Audit du 2026-11-02 : une question ou un thème sans contenu ne se voyait qu'en soirée, sur
+  // l'écran (la banque en ligne n'avait aucun thème photo). La préparation le dit.
+  const sansContenu = programme
+    .filter((m) => m.statut === 'a_venir' && ['enchere2', 'qcm2', 'photo2'].includes(m.jeu))
+    .reduce((n, m) => n + m.passages.filter((p) => p.contenu_id === null).length, 0);
   const duree = dureeProgramme(
     programme.map((m) =>
       elementDuProgramme({
@@ -242,6 +247,11 @@ export default async function Preparation({
         {duree.depassement && (
           <p className="tu-regie__alert" role="status">
             {t('depassement', { minutes: duree.depassement.ecartMin })}
+          </p>
+        )}
+        {sansContenu > 0 && (
+          <p className="tu-regie__alert" role="status" data-testid="sans-contenu">
+            {t('sansContenu', { n: sansContenu })}
           </p>
         )}
         <p className="tu-regie__muted" data-testid="filtre">

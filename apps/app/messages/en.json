@@ -212,6 +212,7 @@
       "programme": "Programme",
       "duree": "Estimated length: {total} min ({chronos} of play + {transitions} of transitions), for a {creneau} min slot.",
       "depassement": "The programme runs {minutes} min over the slot: remove a turn, a theme or a game.",
+      "sansContenu": "{n, plural, one {# question or theme has no content: pick it before the event, or the screen will stay empty.} other {# questions or themes have no content: pick them before the event, or the screen will stay empty.}}",
       "programmeVide": "No games in the programme yet.",
       "statut": {
         "a_venir": "upcoming",

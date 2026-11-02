@@ -212,6 +212,7 @@
       "programme": "Programme",
       "duree": "Durée estimée : {total} min ({chronos} de jeu + {transitions} de transitions), pour un créneau de {creneau} min.",
       "depassement": "Le programme dépasse le créneau de {minutes} min : retire un passage, un thème ou un jeu.",
+      "sansContenu": "{n, plural, one {# question ou thème sans contenu : choisis-le avant la soirée, sinon l’écran restera vide.} other {# questions ou thèmes sans contenu : choisis-les avant la soirée, sinon l’écran restera vide.}}",
       "programmeVide": "Aucun jeu au programme pour l'instant.",
       "statut": {
         "a_venir": "à venir",
