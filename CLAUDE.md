@@ -1107,7 +1107,14 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
     onglet.** Liste vide : une phrase, « J'ai un code » et « Actualiser ».
   - « Les jeux », `/soirees/jeux` (`Jeux.tsx`) : les cinq jeux, chacun avec le pictogramme et la
     teinte de la page Les jeux de la vitrine et sa règle en une phrase (`ecran.regles.*`). Même
-    forme que « Ce qui t'attend » : `ListeIllustree.tsx`.
+    forme que « Ce qui t'attend » : `ListeIllustree.tsx`. **« Voir la vidéo »** (toute la carte se
+    touche) ouvre `VideoJeu.tsx` : l'**explication animée de l'écran commun** (lot 12), rejouée sur
+    le téléphone dans un `<dialog>` modal (Échap ou ✕ referme). Le décor de chaque carte
+    (`VisuelCarte`), à sa taille d'écran, est réduit dans un cadre 16:9 (`useEchelleScene`, comme
+    l'aperçu de la régie) et agrandi jusqu'à toucher un bord (au plus × 2) ; la phrase passe
+    **dessous, en sous-titre lisible**, dans la langue du téléphone ; barre d'avancement par carte ;
+    Lecture, Pause (les animations du décor s'arrêtent aussi), Revoir. Horloge locale, rien en
+    base. Le Quiz montre son script de base (croix).
   - « Comment jouer », `/soirees/comment-jouer` (`CommentJouer.tsx`) : « Comment on y joue », la
     soirée en quatre pastilles aux couleurs d'équipe 1, 3, 4 et 6, de l'inscription au podium.
   - « À propos », `/soirees/qui-sommes-nous` (`QuiSommesNous.tsx`) : « Qui sommes-nous », l'idée
