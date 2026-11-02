@@ -1068,6 +1068,11 @@ contenus de Points communs et du Mime sont **tirés au hasard dans une réserve*
 - Le joueur **change de langue à tout moment** : un sélecteur en face du logo
   (`src/joueur/ChoixLangueJoueur.tsx`, `outil` de `Cadre`), parmi les langues de la soirée,
   absent quand elle n'en a qu'une. Pendant l'arrivée, il paraît une fois la langue choisie.
+- Drapeaux (2026-11-02, pour trouver d'un coup d'œil où changer la langue) : 🇫🇷 et 🇬🇧 devant
+  « Français » et « English », dans ce sélecteur et sur les boutons de l'étape Langue ; **rien
+  pour le tamoul** (parlé dans plusieurs pays, son écriture suffit). `DRAPEAUX` et
+  `libelleLangue` dans `src/lib/langue-navigateur.ts`. Ce sont des émojis : un téléphone les
+  dessine, Windows affiche « FR » et « GB » à la place.
 - Joueur arrivé : `POST /api/partie/[code]/langue` → `changer_langue` (rôle de service, migration
   `20261101120000`) écrit `joueurs.langue`, puis le cookie et `router.refresh()`. La fiche fait
   foi (page `[code]`), donc ses contenus suivent et un autre navigateur garde la langue.
@@ -1086,9 +1091,32 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
   (1 à 60 caractères) ; `soirees_du_jour()` (rôle de service seul) ne sort que code, titre,
   langues, statut et programme. Cochée sans titre, la préparation enregistre « non visible ».
 - Préparation : section « Carte Team Up! » (`enregistrerCarte`), avec l'état en clair.
-- Page `/soirees` (`src/carte/Soirees.tsx`, lue à chaque visite) : bienvenue, soirées et leurs jeux
-  (`jeux.*`, `ecran.regles.*`), trois étapes, appel à s'inscrire ; liste vide : aide, « J'ai un
-  code » et « Actualiser ». Sélecteur des trois langues en tête.
+- Pages de la carte, **revues le 2026-11-02** sur le modèle de la carte imprimée, **concises :
+  seulement l'utile** (demande de l'utilisateur : ni programme, ni statut, ni langues de la
+  soirée, ni « 30 secondes », ni relance). Gabarit commun `src/carte/CadreCarte.tsx` : la langue
+  en tête, **quatre onglets sur une ligne** (demandé : la barre « prenait trop de place »), comme la
+  barre d'une app : un pictogramme et dessous un **libellé court** (« Ce soir », « Les jeux »,
+  « Comment jouer », « À propos » ; le titre entier est en tête de chaque page), largeur selon le
+  libellé, `aria-current` ; tient dès 320 px en fr et en, 360 px en ta (sinon la barre défile) ;
+  la page ; au pied, les personnages des explications autour du pictogramme, sur un socle marine
+  (décor, `aria-hidden`).
+  - « L'événement du jour », `/soirees` (`Soirees.tsx`, lue à chaque visite) : l'accroche « Ce
+    soir, on Team Up! » (`carte.accroche`, le logotype par `t.rich`, `<nom>`), le slogan en
+    capitales, des confettis fixes (couleurs de la fête, jamais le corail) ; puis une carte par
+    soirée : son titre et « Je m'inscris » (tient dans un écran de 360 × 640). Liste vide : une
+    phrase, « J'ai un code » et « Actualiser ».
+  - « Les jeux », `/soirees/jeux` (`Jeux.tsx`) : les cinq jeux, chacun avec le pictogramme et la
+    teinte de la page Les jeux de la vitrine et sa règle en une phrase (`ecran.regles.*`).
+  - « Comment on y joue », `/soirees/comment-jouer` (`CommentJouer.tsx`) : la soirée en quatre
+    pastilles aux couleurs d'équipe 1, 3, 4 et 6, de l'inscription (capitaine) au podium.
+  - « Qui sommes-nous », `/soirees/qui-sommes-nous` (`QuiSommesNous.tsx`) : textes repris de la
+    **vidéo de présentation** de l'utilisateur (l'idée née en famille, ce qu'on y fait, Mino et
+    l'équipe), Instagram, puis « Demander un devis » vers `teamup-game.fr/devis?via=carte`
+    (provenance « carte » dans l'e-mail de l'équipe).
+  - Sur les deux onglets d'explication, « Je m'inscris » mène à l'arrivée s'il n'y a qu'une
+    soirée ce jour-là, à la liste s'il y en a plusieurs, et disparaît s'il n'y en a pas
+    (`cibleInscription`, `src/carte/liens.ts`).
+  - Page de contrôle sans base : `/kit-ui/soirees?etat=une|deux|vide`, `&page=jeux|comment|nous`.
 - « Je m'inscris » → `/<CODE>?carte=1` : l'arrivée saute l'étape Langue si celle choisie sur la
   carte est une langue de la soirée (`langueDejaChoisie`).
 - Textes : espace `carte` et `regie.preparation.carte` ; le tamoul est à faire relire.
