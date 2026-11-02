@@ -55,4 +55,9 @@ test('un code inconnu renvoie à la saisie, avec un message', async ({ page }) =
   await page.goto('/ZZZZZZ');
   // En production, Next ajoute son propre annonceur de route (role=alert) : on vise le texte.
   await expect(page.getByText("Ce code n'ouvre aucune partie")).toBeVisible();
+
+  // La langue se choisit dès cet écran, comme sur la carte Team Up!.
+  await page.getByLabel('Langue').selectOption('en');
+  await expect(page.getByRole('heading', { name: 'Join the game' })).toBeVisible();
+  await expect(page.getByText("This code doesn't open any game")).toBeVisible();
 });

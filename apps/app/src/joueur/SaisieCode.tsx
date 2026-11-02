@@ -4,17 +4,26 @@ import { useRef, useState, type ClipboardEvent, type FormEvent, type KeyboardEve
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@teamup/ui/react';
-import { normaliserCode } from '@/lib/partie';
+import { memoriserLangue } from '@/lib/langue-navigateur';
+import { LANGUES, normaliserCode, type Langue } from '@/lib/partie';
 import { Cadre } from './Cadre';
+import { ChoixLangueJoueur } from './ChoixLangueJoueur';
 
 const CASES = 6;
 
 type Erreur = 'codeIncomplet' | 'codeInconnu';
 
-/** Écran Rejoindre : le filet de sécurité quand on n'arrive pas par le QR code. */
+/**
+ * Écran Rejoindre : le filet de sécurité quand on n'arrive pas par le QR code. La langue se
+ * choisit en tête, comme sur la carte : la soirée n'est pas encore connue, les trois sont proposées.
+ */
 export function SaisieCode({ erreurInitiale }: { erreurInitiale?: Erreur }) {
   const t = useTranslations('rejoindre');
   const router = useRouter();
+  const choisirLangue = (langue: Langue) => {
+    memoriserLangue(langue);
+    router.refresh();
+  };
   const [valeurs, setValeurs] = useState(() => Array.from({ length: CASES }, () => ''));
   const [erreur, setErreur] = useState<Erreur | undefined>(erreurInitiale);
   const cases = useRef<(HTMLInputElement | null)[]>([]);
@@ -57,7 +66,7 @@ export function SaisieCode({ erreurInitiale }: { erreurInitiale?: Erreur }) {
   };
 
   return (
-    <Cadre>
+    <Cadre outil={<ChoixLangueJoueur langues={[...LANGUES]} choisir={choisirLangue} />}>
       <form className="tu-player__body" onSubmit={valider} noValidate>
         <h1 className="tu-player__title">{t('titre')}</h1>
         <p className="tu-player__lead">{t('aide')}</p>
