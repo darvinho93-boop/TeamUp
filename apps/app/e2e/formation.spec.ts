@@ -57,6 +57,10 @@ async function inscrire(browser: Browser, prenom: string, nom?: string): Promise
   // Pas d'équipe encore : la page d'explication, puis l'attente.
   await expect(page.getByTestId('explication')).toBeVisible();
   await expect(page.getByTestId('explication')).toContainText('Points communs');
+  // Les jeux de la soirée présentés comme sur la carte Team Up!, chacun avec sa vidéo.
+  await expect(
+    page.getByTestId('explication').getByRole('button', { name: /Voir la vidéo.*Points communs/ }),
+  ).toBeVisible();
   await page.getByTestId('c-est-parti').click();
   await expect(page.getByTestId('sans-equipe')).toBeVisible();
   return page;

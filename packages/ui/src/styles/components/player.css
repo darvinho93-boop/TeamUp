@@ -79,24 +79,11 @@
   color: var(--tu-text-muted);
 }
 
-/* Page d'explication de l'inscription (lot 14) : un intertitre, la liste des jeux. */
+/* Page d'explication de l'inscription (lot 14) : un intertitre ; les jeux sont les cartes de la
+   carte Team Up! (`.tu-carte-items`). */
 .tu-player__subtitle {
   margin: 0;
   font-size: var(--tu-size-xl);
-}
-
-.tu-player__list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tu-space-3);
-  margin: 0;
-  padding-left: var(--tu-space-6);
-  font-size: var(--tu-size-lg);
-  color: var(--tu-text-muted);
-}
-
-.tu-player__list strong {
-  color: var(--tu-text);
 }
 
 .tu-player__error {
