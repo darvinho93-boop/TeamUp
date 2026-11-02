@@ -27,6 +27,8 @@
   --tu-carte-confetti-point: 0.375rem;
   --tu-carte-perso: 1.625rem;
   --tu-carte-etape: 2.5rem;
+  /* Voile derrière une fenêtre (la vidéo d'un jeu) : le marine profond, à 60 %. */
+  --tu-voile: rgba(7, 26, 56, 0.6);
 
   /* Régie : largeur minimale d'un champ de formulaire et d'une colonne d'équipe. */
   --tu-regie-field-min: 14rem;

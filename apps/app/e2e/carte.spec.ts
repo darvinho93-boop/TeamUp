@@ -26,6 +26,13 @@ test('la carte Team Up! : cochée à la préparation, la soirée paraît et on s
   await onglets.getByRole('link', { name: 'Les jeux' }).click();
   await expect(telephone.getByRole('heading', { level: 1, name: 'Les jeux' })).toBeVisible();
   await expect(telephone.getByRole('heading', { name: 'Points communs' })).toBeVisible();
+  // La vidéo d'un jeu : l'explication animée, sa phrase en sous-titre, puis on referme.
+  await telephone.getByRole('button', { name: /Voir la vidéo.*Points communs/ }).click();
+  const video = telephone.getByRole('dialog');
+  await expect(video.getByRole('heading', { name: 'Points communs' })).toBeVisible();
+  await expect(telephone.getByTestId('phrase-video')).not.toBeEmpty();
+  await video.getByRole('button', { name: 'Fermer' }).click();
+  await expect(video).toBeHidden();
   await onglets.getByRole('link', { name: 'Comment jouer' }).click();
   await expect(
     telephone.getByRole('heading', { level: 1, name: 'Comment on y joue' }),

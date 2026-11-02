@@ -1060,6 +1060,202 @@
   color: var(--tu-text-muted);
 }
 
+/* Une carte qui s'ouvre (la vidéo d'un jeu) : toute la carte répond au doigt, par le ::after
+   de son bouton ; l'anneau de focus entoure la carte. */
+.tu-carte-item--action {
+  position: relative;
+}
+
+.tu-carte-item__action {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tu-space-1) var(--tu-space-2);
+  margin-top: var(--tu-space-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-sm);
+  font-weight: 600;
+  color: var(--tu-primary);
+  cursor: pointer;
+}
+
+.tu-carte-item__action::after {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--tu-radius-lg);
+  content: '';
+}
+
+.tu-carte-item__action:focus-visible {
+  outline: none;
+}
+
+.tu-carte-item:has(.tu-carte-item__action:focus-visible) {
+  outline: var(--tu-focus-width) solid var(--tu-focus);
+  outline-offset: var(--tu-focus-width);
+}
+
+@media (hover: hover) {
+  .tu-carte-item--action:hover {
+    border-color: var(--tu-primary);
+  }
+}
+
+.tu-carte-item__lecture {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--tu-space-6);
+  height: var(--tu-space-6);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-primary);
+  color: var(--tu-on-primary);
+}
+
+.tu-carte-item__lecture svg {
+  width: var(--tu-space-3);
+  height: var(--tu-space-3);
+  fill: currentcolor;
+}
+
+.tu-carte-item__detail {
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--tu-text-muted);
+}
+
+/* ---- La vidéo d'un jeu : une fenêtre, le décor de l'explication dans un cadre 16:9, la
+   barre d'avancement, la phrase en sous-titre, lecture et pause ---- */
+.tu-carte-dialogue {
+  width: min(100% - var(--tu-space-8), var(--tu-player-max));
+  max-height: calc(100dvh - var(--tu-space-8));
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-bg);
+  color: var(--tu-text);
+  box-shadow: var(--tu-shadow-lift);
+}
+
+.tu-carte-dialogue::backdrop {
+  background: var(--tu-voile);
+}
+
+.tu-carte-video {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  padding: var(--tu-space-5);
+}
+
+.tu-carte-video__tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-3);
+}
+
+.tu-carte-video__titre {
+  margin: 0;
+  font-size: var(--tu-size-xl);
+  line-height: var(--tu-leading-tight);
+}
+
+.tu-carte-video__fermer {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--tu-tap-min);
+  height: var(--tu-tap-min);
+  margin: calc(var(--tu-space-3) * -1);
+  padding: 0;
+  border: 0;
+  border-radius: var(--tu-radius-pill);
+  background: transparent;
+  color: var(--tu-text);
+  cursor: pointer;
+}
+
+.tu-carte-video__fermer svg {
+  width: var(--tu-space-6);
+  height: var(--tu-space-6);
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-width: 2.25;
+}
+
+@media (hover: hover) {
+  .tu-carte-video__fermer:hover {
+    background: var(--tu-surface-muted);
+  }
+}
+
+/* La scène de l'écran commun (1 920 × 1 080), réduite à la largeur du cadre (useEchelleScene). */
+.tu-carte-video__cadre {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-bg);
+}
+
+.tu-carte-video__cadre--pause * {
+  animation-play-state: paused;
+}
+
+.tu-carte-video__progression {
+  display: flex;
+  gap: var(--tu-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-carte-video__segment {
+  flex: 1;
+  height: var(--tu-space-1);
+  overflow: hidden;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface-muted);
+}
+
+.tu-carte-video__plein {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tu-primary);
+  transform-origin: left;
+}
+
+/* Le sous-titre garde la hauteur de trois lignes : rien ne saute d'une carte à l'autre. */
+.tu-carte-video__phrase {
+  min-height: calc(var(--tu-type-body-lg) * var(--tu-leading-normal) * 3);
+  margin: 0;
+  font-size: var(--tu-type-body-lg);
+  font-weight: 600;
+  line-height: var(--tu-leading-normal);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.tu-carte-video__icone {
+  flex: none;
+  width: var(--tu-space-6);
+  height: var(--tu-space-6);
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 /* ---- Les personnages de l'attente (aucune soirée ouverte) ---- */
 /* Un personnage des explications du jeu (explication.css), à l'échelle du téléphone. */
 .tu-carte-perso {

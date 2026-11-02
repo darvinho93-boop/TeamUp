@@ -1,6 +1,10 @@
-import type { ReactNode } from 'react';
+'use client';
+
+import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
+import { dureeExplicationS, scriptExplication } from '@teamup/game';
 import { ListeIllustree, type Teinte } from './ListeIllustree';
+import { VideoJeu } from './VideoJeu';
 
 type Jeu = 'list2' | 'qcm2' | 'enchere2' | 'mime2' | 'photo2';
 
@@ -72,11 +76,12 @@ const JEUX: { jeu: Jeu; teinte: Teinte; trace: ReactNode }[] = [
 
 /**
  * L'onglet « Les jeux » de la carte Team Up! (`/soirees/jeux`) : la règle de chacun des cinq
- * jeux, en une phrase (celle de l'écran commun). « Je m'inscris » n'est que sur l'onglet de
- * l'événement du jour.
+ * jeux, en une phrase (celle de l'écran commun), et sa vidéo explicative (`VideoJeu`) d'un appui
+ * sur la carte. « Je m'inscris » n'est que sur l'onglet de l'événement du jour.
  */
 export function Jeux() {
   const t = useTranslations();
+  const [video, setVideo] = useState<Jeu | null>(null);
 
   return (
     <div className="tu-player__body tu-carte" data-testid="jeux">
@@ -91,9 +96,15 @@ export function Jeux() {
             trace,
             nom: t(`jeux.${jeu}`),
             texte: t(`ecran.regles.${jeu}`),
+            action: {
+              libelle: t('carte.voirVideo'),
+              detail: t('carte.duree', { s: dureeExplicationS(scriptExplication(jeu)) }),
+              surClic: () => setVideo(jeu),
+            },
           }))}
         />
       </section>
+      <VideoJeu jeu={video} fermer={() => setVideo(null)} />
     </div>
   );
 }
