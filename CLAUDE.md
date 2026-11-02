@@ -1139,3 +1139,16 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
     mène à la carte, au lieu de « Ce code n'ouvre aucune partie » ;
   - la vitrine nomme `via=carte` dans l'e-mail de devis (« carte Team Up! »).
 - Textes : espace `carte` et `regie.preparation.carte` ; le tamoul est à faire relire.
+
+## Conventions posées le 2026-11-02 (audit du jeu)
+
+- **Un jeu quitté par une scène libre** (les scores en plein jeu, avant « Terminer la manche »)
+  se reprend par « Présenter ». `commencer` garde le mode du quiz fixé au lancement (jetons de
+  départ compris, sans recontrôler les capitaines) ; toutes ses questions jouées, il revient aux
+  survivants. Un jeu dont tout est joué (`mancheATerminer`, quiz validé compris) ne propose plus
+  que « Terminer la manche ». Avant, « Commencer » était refusé (jeu jamais coché au programme,
+  points d'un quiz perdus) ou un quiz changeait de mode. `e2e/scenarios-regie.spec.ts`, scénario 4.
+- Régie : les survivants d'un quiz validé se lisent dans `manches.options.survivants` (la saisie
+  à la croix ne survit pas à un rechargement).
+- Préparation : une alerte compte les questions et thèmes sans contenu (Quiz, Surenchère, Photo
+  challenge) ; sans elle, on ne le découvrait qu'en soirée, sur l'écran vide.
