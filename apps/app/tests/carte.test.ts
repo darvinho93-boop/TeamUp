@@ -13,13 +13,13 @@ const avecBase = describe.skipIf(!baseDisponible);
 const crees: string[] = [];
 afterAll(() => supprimerEvenements(crees));
 
-/** Le jour en France, celui que lit `soirees_du_jour`. */
-const aujourdhui = () =>
-  new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());
-const hier = () =>
+/** Le jour en France il y a `heures` heures ; `soirees_du_jour` lit l'heure de Paris. */
+const jourIlYA = (heures: number) =>
   new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(
-    new Date(Date.now() - 24 * 3600 * 1000),
+    new Date(Date.now() - heures * 3600 * 1000),
   );
+const aujourdhui = () => jourIlYA(0);
+const hier = () => jourIlYA(24);
 
 async function soiree(reglage: Record<string, unknown>) {
   const evenement = await creerEvenementJetable({ langues: ['fr', 'ta'] });
@@ -52,6 +52,11 @@ avecBase('la carte Team Up!', () => {
       titre_public: 'Hier',
       date_evenement: hier(),
     });
+    const avantHier = await soiree({
+      carte_visible: true,
+      titre_public: 'Avant-hier',
+      date_evenement: jourIlYA(48),
+    });
     const close = await soiree({ carte_visible: true, titre_public: 'Close', statut: 'termine' });
     const expiree = await soiree({
       carte_visible: true,
@@ -62,9 +67,12 @@ avecBase('la carte Team Up!', () => {
     const liste = await lister();
     const codes = liste.map((s) => s['code']);
     expect(codes).toContain(visible.code);
-    for (const e of [nonCochee, sansTitre, dHier, close, expiree]) {
+    for (const e of [nonCochee, sansTitre, avantHier, close, expiree]) {
       expect(codes).not.toContain(e.code);
     }
+    // La soirée de la veille reste jusqu'à 6 h, heure de Paris (la fête passe minuit), pas après.
+    const avantSixHeures = jourIlYA(6) === hier();
+    expect(codes.includes(dHier.code)).toBe(avantSixHeures);
 
     const s = liste.find((x) => x['code'] === visible.code)!;
     // Rien d'autre que ce que la page affiche : ni client, ni lieu, ni animateur.
