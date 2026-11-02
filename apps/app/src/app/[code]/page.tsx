@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
+import { estAdresseCarte } from '@/carte/liens';
 import { MESSAGES } from '@/i18n/messages';
 import { normaliserCode } from '@/lib/partie';
 import { Arrivee } from '@/joueur/Arrivee';
@@ -15,7 +17,10 @@ export const metadata: Metadata = { robots: { index: false } };
  * salle retrouve son écran d'attente sans rien ressaisir ; les autres commencent l'arrivée.
  */
 export default async function Partie({ params, searchParams }: PageProps<'/[code]'>) {
-  const code = normaliserCode((await params).code);
+  const segment = (await params).code;
+  // L'adresse du flyer mal tapée (« Soirées ») : la carte, pas un code inconnu.
+  if (estAdresseCarte(segment)) redirect('/soirees');
+  const code = normaliserCode(segment);
   if (!code) return <SaisieCode erreurInitiale="codeInconnu" />;
 
   const [etat, evenement] = await Promise.all([etatDuJoueur(code), evenementPublic(code)]);

@@ -70,4 +70,9 @@ test('la carte Team Up! : cochée à la préparation, la soirée paraît et on s
   await expect(telephone).toHaveURL(`/${evenement.code}?carte=1`);
   await expect(telephone.getByRole('heading', { name: 'Your first name' })).toBeVisible();
   await expect(telephone.getByRole('button', { name: 'English' })).toHaveCount(0);
+
+  // --- L'adresse du flyer tapée avec un accent et une majuscule mène quand même à la carte.
+  await telephone.goto('/Soirées');
+  await expect(telephone).toHaveURL('/soirees');
+  await expect(telephone.getByRole('heading', { name: 'Tonight, we Team Up!' })).toBeVisible();
 });
