@@ -13,3 +13,19 @@ export const NOMS_LANGUES: Record<Langue, string> = {
   en: 'English',
   ta: 'தமிழ்',
 };
+
+/**
+ * Le drapeau d'une langue, pour trouver d'un coup d'œil où la changer (2026-11-02). Le tamoul
+ * n'en a pas : il se parle dans plusieurs pays, son écriture suffit à le reconnaître.
+ */
+export const DRAPEAUX: Record<Langue, string | null> = {
+  fr: '🇫🇷',
+  en: '🇬🇧',
+  ta: null,
+};
+
+/** Le nom d'une langue, précédé de son drapeau quand elle en a un (menu de la langue). */
+export function libelleLangue(langue: Langue): string {
+  const drapeau = DRAPEAUX[langue];
+  return drapeau ? `${drapeau} ${NOMS_LANGUES[langue]}` : NOMS_LANGUES[langue];
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { NOMS_LANGUES } from '@/lib/langue-navigateur';
+import { libelleLangue } from '@/lib/langue-navigateur';
 import { estLangue, type Langue } from '@/lib/partie';
 
 /**
@@ -30,7 +30,7 @@ export function ChoixLangueJoueur({
     >
       {langues.map((l) => (
         <option key={l} value={l} lang={l}>
-          {NOMS_LANGUES[l]}
+          {libelleLangue(l)}
         </option>
       ))}
     </select>

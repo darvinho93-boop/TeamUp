@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button, TextField } from '@teamup/ui/react';
-import { memoriserLangue, NOMS_LANGUES } from '@/lib/langue-navigateur';
+import { DRAPEAUX, memoriserLangue, NOMS_LANGUES } from '@/lib/langue-navigateur';
 import type { EtatJoueur, GroupePublic, Langue } from '@/lib/partie';
 import { Cadre } from './Cadre';
 import { ChoixLangueJoueur } from './ChoixLangueJoueur';
@@ -201,6 +201,7 @@ export function Arrivee({
             {langues.map((l) => (
               <li key={l}>
                 <Button variant="outline" size="lg" block lang={l} onClick={() => choisir(l)}>
+                  {DRAPEAUX[l] && <span aria-hidden="true">{DRAPEAUX[l]}</span>}
                   {NOMS_LANGUES[l]}
                 </Button>
               </li>
