@@ -1093,29 +1093,28 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
 - Préparation : section « Carte Team Up! » (`enregistrerCarte`), avec l'état en clair.
 - Pages de la carte, **revues le 2026-11-02** sur le modèle de la carte imprimée, **concises :
   seulement l'utile** (demande de l'utilisateur : ni programme, ni statut, ni langues de la
-  soirée, ni « 30 secondes », ni relance). Gabarit commun `src/carte/CadreCarte.tsx` : la langue
-  en tête, **quatre onglets sur une ligne** (demandé : la barre « prenait trop de place »), comme la
-  barre d'une app : un pictogramme et dessous un **libellé court** (« Ce soir », « Les jeux »,
-  « Comment jouer », « À propos » ; le titre entier est en tête de chaque page), largeur selon le
-  libellé, `aria-current` ; tient dès 320 px en fr et en, 360 px en ta (sinon la barre défile) ;
-  la page ; au pied, les personnages des explications autour du pictogramme, sur un socle marine
-  (décor, `aria-hidden`).
-  - « L'événement du jour », `/soirees` (`Soirees.tsx`, lue à chaque visite) : l'accroche « Ce
-    soir, on Team Up! » (`carte.accroche`, le logotype par `t.rich`, `<nom>`), le slogan en
-    capitales, des confettis fixes (couleurs de la fête, jamais le corail) ; puis une carte par
-    soirée : son titre et « Je m'inscris » (tient dans un écran de 360 × 640). Liste vide : une
-    phrase, « J'ai un code » et « Actualiser ».
+  soirée, ni « 30 secondes », ni relance, ni décor en bas de page). Gabarit commun
+  `src/carte/CadreCarte.tsx` : la langue en tête, puis **quatre onglets sur une ligne** (demandé :
+  la barre « prenait trop de place »), comme la barre d'une app : un pictogramme et dessous un
+  **libellé court** (« Ce soir », « Les jeux », « Comment jouer », « À propos » ; le titre entier
+  est en tête de chaque page), largeur selon le libellé, `aria-current` ; tient dès 320 px en fr
+  et en, 360 px en ta (sinon la barre défile) ; puis la page.
+  - « Ce soir », `/soirees` (`Soirees.tsx`, lue à chaque visite) : l'accroche « Ce soir, on Team
+    Up! » (`carte.accroche`, le logotype par `t.rich`, `<nom>`), le slogan en capitales, des
+    confettis fixes (couleurs de la fête, jamais le corail) ; une carte par soirée, son titre et
+    « Je m'inscris » (tient dans un écran de 360 × 640) ; puis « Ce qui t'attend » en trois
+    cartes (équipes mélangées, grand écran, podium). **« Je m'inscris » n'est que sur cet
+    onglet.** Liste vide : une phrase, « J'ai un code » et « Actualiser ».
   - « Les jeux », `/soirees/jeux` (`Jeux.tsx`) : les cinq jeux, chacun avec le pictogramme et la
-    teinte de la page Les jeux de la vitrine et sa règle en une phrase (`ecran.regles.*`).
-  - « Comment on y joue », `/soirees/comment-jouer` (`CommentJouer.tsx`) : la soirée en quatre
-    pastilles aux couleurs d'équipe 1, 3, 4 et 6, de l'inscription (capitaine) au podium.
-  - « Qui sommes-nous », `/soirees/qui-sommes-nous` (`QuiSommesNous.tsx`) : textes repris de la
-    **vidéo de présentation** de l'utilisateur (l'idée née en famille, ce qu'on y fait, Mino et
-    l'équipe), Instagram, puis « Demander un devis » vers `teamup-game.fr/devis?via=carte`
-    (provenance « carte » dans l'e-mail de l'équipe).
-  - Sur les deux onglets d'explication, « Je m'inscris » mène à l'arrivée s'il n'y a qu'une
-    soirée ce jour-là, à la liste s'il y en a plusieurs, et disparaît s'il n'y en a pas
-    (`cibleInscription`, `src/carte/liens.ts`).
+    teinte de la page Les jeux de la vitrine et sa règle en une phrase (`ecran.regles.*`). Même
+    forme que « Ce qui t'attend » : `ListeIllustree.tsx`.
+  - « Comment jouer », `/soirees/comment-jouer` (`CommentJouer.tsx`) : « Comment on y joue », la
+    soirée en quatre pastilles aux couleurs d'équipe 1, 3, 4 et 6, de l'inscription au podium.
+  - « À propos », `/soirees/qui-sommes-nous` (`QuiSommesNous.tsx`) : « Qui sommes-nous », l'idée
+    née en famille et ce qu'on y fait (textes de la **vidéo de présentation**), **une équipe de
+    cinq sur le projet depuis début 2026** (aucun nom : l'utilisateur a fait retirer « Mino, à
+    l'origine du projet »), Instagram, puis « Demander un devis » vers
+    `teamup-game.fr/devis?via=carte` (provenance « carte » dans l'e-mail de l'équipe).
   - Page de contrôle sans base : `/kit-ui/soirees?etat=une|deux|vide`, `&page=jeux|comment|nous`.
 - « Je m'inscris » → `/<CODE>?carte=1` : l'arrivée saute l'étape Langue si celle choisie sur la
   carte est une langue de la soirée (`langueDejaChoisie`).
