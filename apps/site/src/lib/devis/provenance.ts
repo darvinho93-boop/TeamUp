@@ -17,6 +17,8 @@ const VIA: Record<string, string> = {
   instagram: 'Instagram',
   lien: 'lien copié depuis le site',
   partage: 'partage depuis un téléphone',
+  // « Demander un devis » de la carte Team Up! (app.teamup-game.fr/soirees, le QR des tables).
+  carte: 'carte Team Up! (QR code des tables)',
 };
 
 const propre = (valeur: unknown) =>

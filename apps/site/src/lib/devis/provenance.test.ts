@@ -32,6 +32,10 @@ describe('libelleProvenance', () => {
     );
   });
 
+  it('nomme la carte Team Up!, dont le lien de devis porte via=carte', () => {
+    expect(libelleProvenance({ via: 'carte' })).toBe('carte Team Up! (QR code des tables)');
+  });
+
   it("garde telle quelle une étiquette qu'il ne connaît pas", () => {
     expect(libelleProvenance({ via: 'flyer-salon' })).toBe('flyer-salon');
   });
