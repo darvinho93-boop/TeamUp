@@ -28,6 +28,8 @@ import {
 import {
   calculerEtape,
   jeuParEquipe,
+  mancheATerminer,
+  modeDuQuiz,
   modeExpliqueDe,
   scriptEnCours,
   type Commande,
@@ -223,9 +225,21 @@ export function Pilotage({
         {scene === 'intro' && manche && (
           <PanneauExplication etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
+        {scene === 'intro' && manche && mancheATerminer(manche) && (
+          // Jeu joué en entier, quitté par une scène libre avant la fin : il reste à le terminer.
+          <Button
+            variant="accent"
+            size="lg"
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'terminer' })}
+          >
+            {t('terminer')}
+          </Button>
+        )}
         {scene === 'intro' &&
           manche &&
           manche.jeu !== 'qcm2' &&
+          !mancheATerminer(manche) &&
           !(jeuParEquipe(manche.jeu) && manche.passages.length === 0) && (
             <Button
               variant="accent"
@@ -236,36 +250,54 @@ export function Pilotage({
               {t('commencer', { jeu: tJeux(manche.jeu) })}
             </Button>
           )}
-        {scene === 'intro' && manche?.jeu === 'qcm2' && (
-          // Le mode se choisit au lancement de la manche ; la croix d'abord, le téléphone
-          // seulement quand la salle ne permet pas de tracer une croix (spec v3).
-          <div className="tu-regie-keys">
+        {scene === 'intro' &&
+          manche?.jeu === 'qcm2' &&
+          !mancheATerminer(manche) &&
+          modeDuQuiz(manche) !== null &&
+          manche.statut === 'en_cours' && (
+            // Quiz quitté en cours de route : il reprend au mode choisi à son lancement.
             <Button
               variant="accent"
               size="lg"
               className="tu-regie-keys__wide"
-              onClick={() => agir({ type: 'commencer', mode: 'croix' })}
+              onClick={() => agir({ type: 'commencer' })}
             >
-              {t('quiz.commencerCroix')}
+              {`${t('commencer', { jeu: tJeux(manche.jeu) })} · ${t(`quiz.${libelleMode(manche)!}`)}`}
             </Button>
-            <Button
-              variant="ghost"
-              className="tu-regie-keys__wide"
-              onClick={() => agir({ type: 'commencer', mode: 'telephone' })}
-            >
-              {t('quiz.commencerTelephone')}
-            </Button>
-            <Button
-              variant="ghost"
-              className="tu-regie-keys__wide"
-              disabled={capitainesManquants(etat).length > 0}
-              onClick={() => agir({ type: 'commencer', mode: 'jetons' })}
-            >
-              {t('quiz.commencerJetons')}
-            </Button>
-          </div>
-        )}
-        {scene === 'intro' && manche?.jeu === 'qcm2' && (
+          )}
+        {scene === 'intro' &&
+          manche?.jeu === 'qcm2' &&
+          !mancheATerminer(manche) &&
+          !(modeDuQuiz(manche) !== null && manche.statut === 'en_cours') && (
+            // Le mode se choisit au lancement de la manche ; la croix d'abord, le téléphone
+            // seulement quand la salle ne permet pas de tracer une croix (spec v3).
+            <div className="tu-regie-keys">
+              <Button
+                variant="accent"
+                size="lg"
+                className="tu-regie-keys__wide"
+                onClick={() => agir({ type: 'commencer', mode: 'croix' })}
+              >
+                {t('quiz.commencerCroix')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="tu-regie-keys__wide"
+                onClick={() => agir({ type: 'commencer', mode: 'telephone' })}
+              >
+                {t('quiz.commencerTelephone')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="tu-regie-keys__wide"
+                disabled={capitainesManquants(etat).length > 0}
+                onClick={() => agir({ type: 'commencer', mode: 'jetons' })}
+              >
+                {t('quiz.commencerJetons')}
+              </Button>
+            </div>
+          )}
+        {scene === 'intro' && manche?.jeu === 'qcm2' && manche.statut === 'a_venir' && (
           <CapitainesJetons etat={etat} code={code} />
         )}
         {scene === 'jeu' && manche?.jeu === 'list2' && (
@@ -913,6 +945,13 @@ function PanneauQuiz({
 
   if (etape === 'survivants' || etape === 'resultat') {
     const fini = etape === 'resultat';
+    // Validés, les survivants sont ceux gardés dans la manche : la saisie à la croix, elle, ne
+    // survit pas à un rechargement de la régie (elle affichait alors 0 partout).
+    const valides = manche.options['survivants'];
+    const affiches = (numero: number): number =>
+      fini && valides && typeof valides === 'object'
+        ? Number((valides as Record<string, unknown>)[String(numero)] ?? 0) || 0
+        : (survivants[numero] ?? 0);
     return (
       <section className="tu-regie__section" aria-label={tq('titre')}>
         <p className="tu-regie-item__title">
@@ -924,7 +963,7 @@ function PanneauQuiz({
               <span className={cx('tu-team tu-team--badge', teamModifier(e.numero))}>{e.nom}</span>
               {telephone || jetons || fini ? (
                 <span className="tu-regie-item__title" data-testid={`survivants-${e.numero}`}>
-                  {tq(jetons ? 'jetons' : 'survivants', { n: survivants[e.numero] ?? 0 })}
+                  {tq(jetons ? 'jetons' : 'survivants', { n: affiches(e.numero) })}
                 </span>
               ) : (
                 <input

@@ -19,6 +19,7 @@ import {
   CHRONO_SURENCHERE_DEFAUT_S,
   dureeExplicationS,
   DUREE_TIRAGE_S,
+  MODES_QUIZ,
   passageSuivant,
   scriptExplication,
   type ActionDuel,
@@ -162,6 +163,26 @@ export function duellistesDe(resultat: Record<string, unknown>): [Duelliste, Due
   return Array.isArray(d) && d.length === 2 ? (d as [Duelliste, Duelliste]) : null;
 }
 
+/** Le mode d'un quiz, fixé à son lancement ; `null` avant, ou pour un autre jeu. */
+export function modeDuQuiz(manche: MancheSalle): ModeQuiz | null {
+  const mode = manche.options['mode'];
+  return manche.jeu === 'qcm2' && (MODES_QUIZ as readonly unknown[]).includes(mode)
+    ? (mode as ModeQuiz)
+    : null;
+}
+
+/**
+ * Une manche lancée dont tout est joué, mais pas terminée : la régie l'a quittée par une scène
+ * libre (les scores, le programme) avant « Terminer la manche ». Il ne reste qu'à la terminer :
+ * la présentation le propose, et « Commencer » n'y rejoue rien (un quiz validé ne se valide pas
+ * deux fois). La Surenchère n'en a pas besoin : sa grille des thèmes garde « Terminer ».
+ */
+export function mancheATerminer(manche: MancheSalle): boolean {
+  if (manche.statut !== 'en_cours' || manche.jeu === 'enchere2') return false;
+  if (manche.jeu === 'qcm2') return manche.options['survivants'] !== undefined;
+  return passageSuivant(manche) === null;
+}
+
 function chronoDe(chrono: Chrono): Pick<Ecriture['pilotage'], 'chrono' | 'chrono_duree_s'> {
   return typeof chrono === 'string'
     ? { chrono }
@@ -263,6 +284,9 @@ export function calculerEtape(
 
       case 'commencer': {
         if (!manche || manche.statut === 'terminee' || manche.statut === 'annulee') return null;
+        if (mancheATerminer(manche)) return null;
+        // Une manche reprise (quittée en cours de jeu) garde le mode choisi à son lancement.
+        const modeFixe = manche.statut === 'en_cours' ? modeDuQuiz(manche) : null;
         const base = {
           ...ecriture.pilotage,
           scene: 'jeu' as const,
@@ -291,22 +315,40 @@ export function calculerEtape(
         } else if (manche.jeu === 'qcm2') {
           // La question attend « Afficher » pour s'ouvrir : elle reste à venir jusque-là.
           const premiere = passageSuivant(manche);
-          if (!premiere) return null;
-          ecriture.pilotage = { ...base, passage_id: premiere.id, etape: 'pret' };
+          const derniereJouee = manche.passages
+            .filter((x) => x.statut === 'termine')
+            .sort((a, b) => b.ordre - a.ordre)[0];
+          // « Terminer le quiz ici » déjà demandé : les questions restantes ne se jouent plus.
+          const finDemandee = manche.options['fin'] === true;
+          if (premiere && !finDemandee) {
+            ecriture.pilotage = { ...base, passage_id: premiere.id, etape: 'pret' };
+          } else if (modeFixe && derniereJouee) {
+            // Quitté après sa dernière question, avant la validation : on revient aux
+            // survivants, sans quoi les points du quiz seraient perdus.
+            ecriture.pilotage = { ...base, passage_id: derniereJouee.id, etape: 'survivants' };
+          } else {
+            return null;
+          }
         } else {
           return null;
         }
-        const mode = commande.mode ?? 'croix';
+        const mode = modeFixe ?? commande.mode ?? 'croix';
         // Mode jetons : chaque équipe mise par son capitaine ; toutes partent avec l'effectif de
-        // la plus grande (2026-10-18).
-        if (manche.jeu === 'qcm2' && mode === 'jetons' && capitainesManquants(etat).length > 0) {
+        // la plus grande (2026-10-18). Une reprise ne refait ni ce contrôle ni ce compte.
+        if (
+          manche.jeu === 'qcm2' &&
+          !modeFixe &&
+          mode === 'jetons' &&
+          capitainesManquants(etat).length > 0
+        ) {
           return null;
         }
         ecriture.manche = {
           id: manche.id,
           statut: 'en_cours',
-          // Le mode du quiz se choisit au lancement de la manche (spec v3), la croix d'abord.
-          ...(manche.jeu === 'qcm2'
+          // Le mode du quiz se choisit au lancement de la manche (spec v3), la croix d'abord ;
+          // une reprise le garde, jetons de départ compris.
+          ...(manche.jeu === 'qcm2' && !modeFixe
             ? {
                 options: mode === 'jetons' ? { mode, jetons: jetonsDeDepartDe(etat) } : { mode },
               }
@@ -447,6 +489,9 @@ export function calculerEtape(
             ecriture.pilotage.passage_id = suivante.id;
             break;
           case 'fin':
+            // Gardé dans la manche : une reprise (la régie a montré les scores avant de valider)
+            // revient aux survivants au lieu d'ouvrir la question suivante.
+            ecriture.manche = { id: manche.id, statut: 'en_cours', options: { fin: true } };
             break;
           case 'valider':
             ecriture.manche = {

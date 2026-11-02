@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculerEtape, scriptEnCours, type Commande } from '../src/lib/pilotage';
+import { calculerEtape, mancheATerminer, scriptEnCours, type Commande } from '../src/lib/pilotage';
 import type { EtatSalle, MancheSalle, PassageSalle } from '../src/lib/salle';
 
 const motifs = {
@@ -352,6 +352,90 @@ describe('une touche de la régie', () => {
       id: 'qz',
       statut: 'en_cours',
       options: { survivants },
+    });
+  });
+
+  // Audit du 2026-11-02 : la régie quitte un jeu par une scène libre (les scores) avant
+  // « Terminer la manche », puis le présente à nouveau.
+  describe('un jeu quitté en cours de route, puis présenté à nouveau', () => {
+    const quizRepris = (options: Record<string, unknown>, joues: number) => {
+      const e = etat({ scene: 'intro', manche_id: 'qz' }, undefined);
+      e.evenement.statut = 'en_cours';
+      const quiz = e.programme[2]!;
+      quiz.statut = 'en_cours';
+      quiz.options = { questions: 2, ...options };
+      quiz.passages.slice(0, joues).forEach((p) => (p.statut = 'termine'));
+      return e;
+    };
+
+    it('le quiz reprend à la question suivante, au mode fixé au lancement', () => {
+      const e = quizRepris({ mode: 'telephone' }, 1);
+      // Même si la touche demande un autre mode : il ne change pas en cours de quiz.
+      const reprise = etape(e, { type: 'commencer', mode: 'croix' });
+      expect(reprise?.pilotage).toMatchObject({ scene: 'jeu', passage_id: 'q2', etape: 'pret' });
+      expect(reprise?.manche).toEqual({ id: 'qz', statut: 'en_cours' });
+      expect(reprise?.ouvrirLaSoiree).toBe(false);
+    });
+
+    it('en mode jetons, ni nouveaux jetons de départ ni capitaine exigé', () => {
+      const e = quizRepris({ mode: 'jetons', jetons: 2 }, 1);
+      // Personne n'est capitaine : un lancement serait refusé, une reprise ne l'est pas.
+      expect(e.equipes.every((x) => !x.capitaine)).toBe(true);
+      const reprise = etape(e, { type: 'commencer', mode: 'jetons' });
+      expect(reprise?.manche).toEqual({ id: 'qz', statut: 'en_cours' });
+    });
+
+    it('toutes les questions jouées sans validation : retour aux survivants', () => {
+      const reprise = etape(quizRepris({ mode: 'croix' }, 2), { type: 'commencer' });
+      expect(reprise?.pilotage).toMatchObject({ passage_id: 'q2', etape: 'survivants' });
+      expect(reprise?.passage).toBeNull();
+    });
+
+    it('arrêté avant la dernière question puis quitté : retour aux survivants', () => {
+      const reponse = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'reponse' });
+      reponse.programme[2]!.passages[0]!.statut = 'termine';
+      // « Terminer le quiz ici » se garde dans la manche…
+      expect(etape(reponse, { type: 'quiz', action: 'fin' })?.manche).toEqual({
+        id: 'qz',
+        statut: 'en_cours',
+        options: { fin: true },
+      });
+      // … et la reprise y revient, sans ouvrir la question 2.
+      const reprise = etape(quizRepris({ mode: 'telephone', fin: true }, 1), {
+        type: 'commencer',
+      });
+      expect(reprise?.pilotage).toMatchObject({ passage_id: 'q1', etape: 'survivants' });
+    });
+
+    it('un quiz déjà validé ne se rejoue pas : il ne reste qu’à le terminer', () => {
+      // Arrêté après la première question : la seconde reste, mais les points sont donnés.
+      const e = quizRepris({ mode: 'croix', survivants: { 1: 2 } }, 1);
+      expect(mancheATerminer(e.programme[2]!)).toBe(true);
+      expect(etape(e, { type: 'commencer' })).toBeNull();
+      expect(etape(e, { type: 'terminer' })?.manche).toEqual({ id: 'qz', statut: 'terminee' });
+    });
+
+    it('Points communs joué en entier : terminer, pas recommencer', () => {
+      const e = etat({ scene: 'intro', manche_id: 'pc' });
+      const pc = e.programme[0]!;
+      pc.statut = 'en_cours';
+      pc.passages.forEach((p) => (p.statut = 'termine'));
+      expect(mancheATerminer(pc)).toBe(true);
+      expect(etape(e, { type: 'commencer' })).toBeNull();
+      expect(etape(e, { type: 'terminer' })?.manche).toEqual({ id: 'pc', statut: 'terminee' });
+      // Un passage restant : la manche se reprend, elle n'est pas à terminer.
+      pc.passages[1]!.statut = 'a_venir';
+      expect(mancheATerminer(pc)).toBe(false);
+      expect(etape(e, { type: 'commencer' })?.pilotage).toMatchObject({ passage_id: 'p2' });
+    });
+
+    it('la Surenchère n’est jamais « à terminer » : sa grille des thèmes le propose', () => {
+      const e = etat({ scene: 'intro', manche_id: 'se' });
+      const se = e.programme[1]!;
+      se.statut = 'en_cours';
+      se.passages.forEach((p) => (p.statut = 'termine'));
+      expect(mancheATerminer(se)).toBe(false);
+      expect(etape(e, { type: 'commencer' })?.pilotage).toMatchObject({ etape: 'themes' });
     });
   });
 

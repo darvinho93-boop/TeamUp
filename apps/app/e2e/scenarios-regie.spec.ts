@@ -1,4 +1,4 @@
-import { expect, test, type Browser, type Page } from '@playwright/test';
+import { expect, request, test, type Browser, type Page } from '@playwright/test';
 import {
   appeler,
   clientService,
@@ -17,6 +17,9 @@ import {
  * 2. La même suppression d'équipes faite aujourd'hui : les passages partent avec les équipes,
  *    le tirage et les jeux se déroulent sur les 5 équipes restantes.
  * 3. Ce qu'on fera désormais : former 7 équipes, puis les refaire à 5 avant le premier jeu.
+ * 4. Audit du 2026-11-02 : la régie montre les scores en plein jeu, avant « Terminer la manche »,
+ *    puis revient au jeu par « Présenter ». Le quiz reprend à son mode et ses points comptent une
+ *    fois ; un jeu joué en entier se termine au lieu de rester bloqué.
  */
 
 const crees: string[] = [];
@@ -471,4 +474,190 @@ test('3. désormais : former 7 équipes, puis les refaire à 5 avant le premier 
   // Un jeu a commencé : la Salle ne propose plus de refaire, et la base le refuserait.
   await regie.goto(`/regie/${ev.code}/salle`);
   await expect(regie.getByTestId('formation')).toHaveCount(0);
+});
+
+/** La bonne réponse d'une question, lue en base : les invités simulés répondent juste. */
+async function bonneDe(service: Service, passageId: string): Promise<number> {
+  const { data: passage } = await service
+    .from('passages')
+    .select('contenu_id')
+    .eq('id', passageId)
+    .single();
+  const { data: secret } = await service
+    .from('contenus_secrets')
+    .select('valeur')
+    .eq('contenu_id', (passage as { contenu_id: string }).contenu_id)
+    .eq('langue', 'fr')
+    .single();
+  return (secret as { valeur: { bonne: number } }).valeur.bonne;
+}
+
+test('4. les scores en plein jeu : le quiz reprend à son mode, puis chaque jeu se termine', async ({
+  browser,
+  baseURL,
+}) => {
+  test.setTimeout(240_000);
+  const service = clientService();
+  const ev = await creerEvenementJetable({ equipes: 2, langues: ['fr'] });
+  crees.push(ev.id);
+
+  // Un invité par équipe, arrivé avant la première question : il répondra juste partout.
+  const invites = await Promise.all(
+    ['Ana', 'Bao'].map(async (prenom) => {
+      const api = await request.newContext({
+        baseURL: baseURL!,
+        extraHTTPHeaders: { connection: 'close' },
+      });
+      const r = await api.post(`/api/partie/${ev.code}/rejoindre`, {
+        data: { prenom, langue: 'fr' },
+      });
+      expect(r.status()).toBe(200);
+      return api;
+    }),
+  );
+
+  // Un quiz de deux questions, puis Points communs déjà joué en entier mais jamais terminé.
+  const { data: questions } = await service
+    .from('contenus')
+    .select('id')
+    .eq('jeu', 'qcm2')
+    .eq('actif', true)
+    .order('cree_le')
+    .limit(2);
+  const { data: quiz } = await service
+    .from('manches')
+    .insert({ evenement_id: ev.id, jeu: 'qcm2', ordre: 1, options: { questions: 2 } })
+    .select('id')
+    .single();
+  const mancheQuiz = (quiz as { id: string }).id;
+  await service.from('passages').insert(
+    (questions as { id: string }[]).map((q, i) => ({
+      manche_id: mancheQuiz,
+      evenement_id: ev.id,
+      ordre: i + 1,
+      contenu_id: q.id,
+    })),
+  );
+  const { data: equipes } = await service
+    .from('equipes')
+    .select('id')
+    .eq('evenement_id', ev.id)
+    .order('numero');
+  const consignes = await contenus(service, 'list2', 2);
+  const { data: pc } = await service
+    .from('manches')
+    .insert({
+      evenement_id: ev.id,
+      jeu: 'list2',
+      ordre: 2,
+      statut: 'en_cours',
+      options: { passages_par_equipe: 1 },
+    })
+    .select('id')
+    .single();
+  const manchePC = (pc as { id: string }).id;
+  const { error } = await service.from('passages').insert(
+    (equipes as { id: string }[]).map((e, i) => ({
+      manche_id: manchePC,
+      evenement_id: ev.id,
+      equipe_id: e.id,
+      ordre: i + 1,
+      contenu_id: consignes[i],
+      statut: 'termine',
+      points: 0,
+    })),
+  );
+  expect(error).toBeNull();
+
+  const regie = await connecter(browser);
+  const ecran = await ouvrirEcran(browser, regie, ev.code);
+  await regie.goto(`/regie/${ev.code}/pilotage`);
+  const scene = (nom: string, etape = '') =>
+    ecran.locator(`[data-scene="${nom}"]${etape ? `[data-etape="${etape}"]` : ''}`);
+  const scenes = regie.getByRole('group', { name: 'Scènes' });
+  const reprise = regie.getByRole('button', { name: 'Commencer : Quiz · mode téléphone' });
+
+  /** Les scores à l'écran en plein jeu, puis retour au jeu par « Présenter ». */
+  const scoresPuisRetour = async () => {
+    await scenes.getByRole('button', { name: 'Scores' }).click();
+    await expect(scene('scores')).toBeVisible({ timeout: 10_000 });
+    await regie.getByRole('button', { name: 'Présenter' }).first().click();
+    await expect(scene('intro')).toBeVisible({ timeout: 10_000 });
+  };
+
+  /** Une question jusqu'à sa réponse révélée, les deux invités répondant juste. */
+  const jouerLaQuestion = async () => {
+    await regie.getByRole('button', { name: 'Afficher la question' }).click();
+    for (const lettre of ['A', 'B', 'C', 'D']) {
+      await regie.getByRole('button', { name: `Afficher la réponse ${lettre}` }).click();
+    }
+    await regie.getByRole('button', { name: 'Lancer le chrono' }).click();
+    const reveler = regie.getByRole('button', { name: 'Révéler la réponse' });
+    await expect(reveler).toBeEnabled({ timeout: 10_000 });
+    const { data: pilotage } = await service
+      .from('pilotage')
+      .select('passage_id')
+      .eq('evenement_id', ev.id)
+      .single();
+    const bonne = await bonneDe(service, (pilotage as { passage_id: string }).passage_id);
+    for (const api of invites) {
+      const r = await api.post(`/api/partie/${ev.code}/quiz`, { data: { choix: bonne } });
+      expect(r.status()).toBe(200);
+    }
+    await expect(regie.getByTestId('regie-reponses')).toHaveText(/^2 réponses reçues/);
+    await reveler.click();
+    await expect(ecran.getByTestId('bonne-reponse')).toBeVisible({ timeout: 10_000 });
+  };
+
+  // --- Le quiz, lancé en mode téléphone : première question.
+  await regie.getByRole('button', { name: 'Présenter' }).first().click();
+  await expect(scene('intro')).toBeVisible({ timeout: 10_000 });
+  await regie.getByRole('button', { name: 'Mode téléphone (salle sans croix)' }).click();
+  await expect(scene('qcm2', 'pret')).toBeVisible({ timeout: 10_000 });
+  await jouerLaQuestion();
+
+  // Les scores entre deux questions. De retour, une seule touche : reprendre, au même mode.
+  await scoresPuisRetour();
+  await expect(regie.getByRole('button', { name: 'Commencer le quiz en mode croix' })).toHaveCount(
+    0,
+  );
+  await reprise.click();
+  await expect(scene('qcm2', 'pret')).toBeVisible({ timeout: 10_000 });
+  const { data: manche } = await service
+    .from('manches')
+    .select('options')
+    .eq('id', mancheQuiz)
+    .single();
+  expect((manche as { options: Record<string, unknown> }).options['mode']).toBe('telephone');
+
+  // Seconde et dernière question, puis les scores avant la validation : on y revient.
+  await jouerLaQuestion();
+  await scoresPuisRetour();
+  await reprise.click();
+  await expect(scene('qcm2', 'survivants')).toBeVisible({ timeout: 10_000 });
+  await expect(regie.getByTestId('survivants-1')).toHaveText('1 survivant');
+  await confirmer(regie, 'Valider les survivants');
+  await expect(scene('qcm2', 'resultat')).toBeVisible({ timeout: 10_000 });
+
+  // Validé : le quiz ne se rejoue pas, il se termine ; ses points ne comptent qu'une fois.
+  await scoresPuisRetour();
+  await expect(regie.getByRole('button', { name: /^Commencer/ })).toHaveCount(0);
+  await regie.getByRole('button', { name: 'Terminer la manche' }).click();
+  await expect(scene('programme')).toBeVisible({ timeout: 10_000 });
+  await expect.poll(() => statutManche(service, mancheQuiz)).toBe('terminee');
+  const { data: points } = await service
+    .from('scores')
+    .select('points')
+    .eq('manche_id', mancheQuiz);
+  expect((points as { points: number }[]).map((p) => p.points)).toEqual([100, 100]);
+
+  // Points communs, joué en entier : « Terminer la manche » à la place de « Commencer ».
+  await regie.getByRole('button', { name: 'Présenter' }).first().click();
+  await expect(scene('intro')).toBeVisible({ timeout: 10_000 });
+  await expect(regie.getByRole('button', { name: 'Commencer : Points communs' })).toHaveCount(0);
+  await regie.getByRole('button', { name: 'Terminer la manche' }).click();
+  await expect.poll(() => statutManche(service, manchePC)).toBe('terminee');
+  await expect(scene('programme')).toBeVisible({ timeout: 10_000 });
+  await expect(ecran.locator('.tu-stage-list__item--fait')).toHaveCount(2);
+  await expect(regie.getByRole('button', { name: 'Présenter' })).toHaveCount(0);
 });
