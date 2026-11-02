@@ -31,13 +31,15 @@ const ETATS: Record<string, SoireeDuJour[]> = {
 };
 
 /**
- * Page de contrôle des pages de la carte, sans base : `?etat=une` (défaut), `deux` ou `vide`, et
- * `?page=jeux`, `comment` ou `nous` pour les autres onglets. La langue se change comme sur la vraie page.
+ * Page de contrôle des pages de la carte, sans base : `?etat=une` (défaut), `deux` ou `vide`,
+ * `&inscrit=1` pour un téléphone déjà inscrit à la première, et `?page=jeux`, `comment` ou `nous`
+ * pour les autres onglets. La langue se change comme sur la vraie page.
  */
 export default async function KitSoirees({ searchParams }: PageProps<'/kit-ui/soirees'>) {
   const parametres = await searchParams;
   const etat = typeof parametres['etat'] === 'string' ? parametres['etat'] : 'une';
   const soirees = ETATS[etat] ?? [];
+  const inscrites = parametres['inscrit'] === '1' && soirees[0] ? [soirees[0].code] : [];
   const langue = await getLocale();
   switch (parametres['page']) {
     case 'jeux':
@@ -61,7 +63,7 @@ export default async function KitSoirees({ searchParams }: PageProps<'/kit-ui/so
   }
   return (
     <CadreCarte actif="soirees">
-      <Soirees soirees={soirees} langue={langue} />
+      <Soirees soirees={soirees} inscrites={inscrites} langue={langue} />
     </CadreCarte>
   );
 }

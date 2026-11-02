@@ -71,6 +71,17 @@ test('la carte Team Up! : cochée à la préparation, la soirée paraît et on s
   await expect(telephone.getByRole('heading', { name: 'Your first name' })).toBeVisible();
   await expect(telephone.getByRole('button', { name: 'English' })).toHaveCount(0);
 
+  // --- Inscrite, elle rescanne la carte restée sur la table : le bouton le dit et la ramène à
+  // son écran, sans repasser par l'inscription.
+  await telephone.getByLabel('First name').fill('Léa');
+  await telephone.getByRole('button', { name: "Let's go" }).click();
+  await telephone.getByRole('button', { name: 'No thanks' }).click();
+  await expect(telephone.getByTestId('explication')).toBeVisible();
+  await telephone.goto('/soirees');
+  await expect(carte.getByRole('link', { name: 'Sign me up' })).toHaveCount(0);
+  await carte.getByRole('link', { name: 'Back to my game' }).click();
+  await expect(telephone.getByRole('heading', { name: 'Hi Léa!' })).toBeVisible();
+
   // --- L'adresse du flyer tapée avec un accent et une majuscule mène quand même à la carte.
   await telephone.goto('/Soirées');
   await expect(telephone).toHaveURL('/soirees');

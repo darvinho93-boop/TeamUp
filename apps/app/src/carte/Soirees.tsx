@@ -73,9 +73,19 @@ const ATOUTS: {
  * Page de la carte Team Up! (`/soirees`), là où mène le QR code des cartes imprimées : l'accroche
  * de la carte, puis les soirées du jour, chacune avec le seul bouton « Je m'inscris » de la carte,
  * puis ce qui attend l'invité. Les règles sont sur l'onglet des jeux (`Jeux.tsx`). « Je m'inscris »
- * mène à l'arrivée habituelle de la soirée, la langue déjà choisie ici (`?carte=1`).
+ * mène à l'arrivée habituelle de la soirée, la langue déjà choisie ici (`?carte=1`). Déjà inscrit
+ * (`inscrites` : le téléphone a sa session de la soirée), il devient « Retrouver ma partie ».
  */
-export function Soirees({ soirees, langue }: { soirees: SoireeDuJour[]; langue: string }) {
+export function Soirees({
+  soirees,
+  inscrites = [],
+  langue,
+}: {
+  soirees: SoireeDuJour[];
+  /** Codes des soirées où ce téléphone est déjà inscrit. */
+  inscrites?: string[];
+  langue: string;
+}) {
   const t = useTranslations('carte');
   const router = useRouter();
   const courante = estLangue(langue) ? langue : 'fr';
@@ -125,7 +135,7 @@ export function Soirees({ soirees, langue }: { soirees: SoireeDuJour[]; langue: 
                   className="tu-btn tu-btn--accent tu-btn--lg tu-btn--block"
                   href={lienInscription(s, courante)}
                 >
-                  {t('inscrire')}
+                  {t(inscrites.includes(s.code) ? 'retrouver' : 'inscrire')}
                   <Fleche />
                 </Link>
               </li>
