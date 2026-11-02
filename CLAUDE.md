@@ -1090,6 +1090,8 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
 - Base (migration `20261102090000`) : `evenements.carte_visible`, `evenements.titre_public`
   (1 à 60 caractères) ; `soirees_du_jour()` (rôle de service seul) ne sort que code, titre,
   langues, statut et programme. Cochée sans titre, la préparation enregistre « non visible ».
+  Une soirée pas encore close reste listée **jusqu'à 6 h le lendemain** (migration
+  `20261102100000`) : avant, elle disparaissait à minuit, en pleine fête.
 - Préparation : section « Carte Team Up! » (`enregistrerCarte`), avec l'état en clair.
 - Pages de la carte, **revues le 2026-11-02** sur le modèle de la carte imprimée, **concises :
   seulement l'utile** (demande de l'utilisateur : ni programme, ni statut, ni langues de la
@@ -1104,10 +1106,12 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
     confettis fixes (couleurs de la fête, jamais le corail) ; une carte par soirée, son titre et
     « Je m'inscris » (tient dans un écran de 360 × 640) ; puis « Ce qui t'attend » en trois
     cartes (équipes mélangées, grand écran, podium). **« Je m'inscris » n'est que sur cet
-    onglet.** Liste vide : une phrase, « J'ai un code » et « Actualiser ».
+    onglet.** Liste vide : une phrase, « J'ai un code » et « Actualiser ». Un téléphone déjà
+    inscrit à une soirée (sa session `tu_j_<CODE>`) y lit « Retrouver ma partie » à la place.
   - « Les jeux », `/soirees/jeux` (`Jeux.tsx`) : les cinq jeux, chacun avec le pictogramme et la
     teinte de la page Les jeux de la vitrine et sa règle en une phrase (`ecran.regles.*`). Même
-    forme que « Ce qui t'attend » : `ListeIllustree.tsx`. **« Voir la vidéo »** (toute la carte se
+    forme que « Ce qui t'attend » : `ListeIllustree.tsx`, par `ListeJeux.tsx` (qui donne aussi
+    un pictogramme aux deux duels). **« Voir la vidéo »** (toute la carte se
     touche) ouvre `VideoJeu.tsx` : l'**explication animée de l'écran commun** (lot 12), rejouée sur
     le téléphone dans un `<dialog>` modal (Échap ou ✕ referme). Le décor de chaque carte
     (`VisuelCarte`), à sa taille d'écran, est réduit dans un cadre 16:9 (`useEchelleScene`, comme
@@ -1125,4 +1129,13 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
   - Page de contrôle sans base : `/kit-ui/soirees?etat=une|deux|vide`, `&page=jeux|comment|nous`.
 - « Je m'inscris » → `/<CODE>?carte=1` : l'arrivée saute l'étape Langue si celle choisie sur la
   carte est une langue de la soirée (`langueDejaChoisie`).
+- **Mêmes repères par toutes les entrées** (revue du 2026-11-02 : QR de l'écran, carte et flyer,
+  lien ou code tapé, page Rejoindre de la vitrine ; toutes mènent à la même arrivée) :
+  - la page d'explication de l'inscription présente les jeux de la soirée avec `ListeJeux`
+    (pictogramme, règle, vidéo), comme l'onglet Les jeux : un invité venu par le QR de l'écran
+    voit la même chose qu'un invité venu par la carte ;
+  - l'écran du code (`/`, et un code inconnu) a le sélecteur de langue de la carte (les trois) ;
+  - l'adresse du flyer mal tapée (« Soirées », « soirée » : `estAdresseCarte`, `src/carte/liens.ts`)
+    mène à la carte, au lieu de « Ce code n'ouvre aucune partie » ;
+  - la vitrine nomme `via=carte` dans l'e-mail de devis (« carte Team Up! »).
 - Textes : espace `carte` et `regie.preparation.carte` ; le tamoul est à faire relire.
