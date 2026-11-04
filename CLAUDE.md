@@ -1203,11 +1203,13 @@ machine à sous** (revu le même jour : un premier tourbillon de prénoms a ét�
   indépendante de son texte (`contain: inline-size`) : des prénoms longs poussaient sinon le QR
   hors de la scène. Seulement les arrivées vues par l'écran (`useArrivees`), avec le son d'arrivée
   existant ; au-delà de trois prénoms, « et N autres ».
-- Dévoilement : touche « Dévoiler les équipes » au pilotage, visible dès que les équipes existent,
-  rejouable, **hors du groupe des scènes** (le bouton « Équipes » doit y rester seul de son nom).
-  Étape `formation` de la scène Équipes, chrono de la salle sur 5 s : la cymbale du roulement
-  tombe quand tout est posé. Aucune migration. La Salle rappelle la touche une fois les équipes
-  formées.
+- Dévoilement : **former (ou refaire) les équipes à la Salle le lance aussitôt à l'écran**
+  (`src/regie/devoilerEquipes.ts` : relit l'état, puis la même écriture que la touche ; revu le
+  2026-11-04, il avait formé les équipes sans rien voir, la touche seule ne suffisait pas). La touche
+  « Dévoiler les équipes » du pilotage le rejoue ; visible dès que les équipes existent, **hors du
+  groupe des scènes** (le bouton « Équipes » doit y rester seul de son nom). Étape `formation` de
+  la scène Équipes, chrono de la salle sur 5 s : la cymbale du roulement tombe quand tout est posé.
+  Aucune migration.
 - Écran (`EquipesDevoilees` et `Equipes` dans `Scenes.tsx`, minutage pur `src/lib/devoilement.ts`,
   styles `stage.css`) : la grille, remontée au départ (clé : l'instant), première page tenue.
   Chaque carte fait tourner une bande floue de prénoms de la salle par colonne (`Rouleaux`, tirée
