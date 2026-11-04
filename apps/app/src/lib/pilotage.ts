@@ -42,6 +42,7 @@ import {
   type ScoresParEquipe,
   type ScriptExplication,
 } from '@teamup/game';
+import { DUREE_DEVOILEMENT_MS } from './devoilement';
 import { capitainesManquants, jetonsDeDepartDe } from './jetons';
 import {
   indicesMsDe,
@@ -78,7 +79,9 @@ export type Commande =
   | { type: 'adjuger' }
   | { type: 'verdict'; tenu: boolean; equipeChampion: number }
   | { type: 'retour' }
-  | { type: 'terminer' };
+  | { type: 'terminer' }
+  /** Le dévoilement animé des équipes formées (2026-11-04), rejouable. */
+  | { type: 'devoilerEquipes' };
 
 export interface Ecriture {
   pilotage: {
@@ -150,6 +153,12 @@ export function scriptEnCours(
 
 /** Tirage de l'ordre de passage en direct (lot 13) : une étape de l'intro, animée à l'écran. */
 export const ETAPE_TIRAGE_ORDRE = 'tirage-ordre';
+
+/**
+ * Dévoilement des équipes (2026-11-04) : une étape de la scène Équipes, animée à l'écran tant que
+ * le chrono de la salle court (`src/lib/devoilement.ts`). Rien en base ne la distingue d'une autre.
+ */
+export const ETAPE_FORMATION = 'formation';
 
 /** Les jeux qui se jouent une équipe à la fois : leur ordre de passage se tire. */
 export const jeuParEquipe = (jeu: string | undefined): boolean =>
@@ -227,6 +236,14 @@ export function calculerEtape(
     switch (commande.type) {
       case 'scene':
         ecriture.pilotage.scene = commande.scene;
+        return ecriture;
+
+      case 'devoilerEquipes':
+        // Rejouer, c'est la même touche : un nouveau départ, posé par la base, relance tout.
+        if (etat.equipes.length === 0) return null;
+        ecriture.pilotage.scene = 'equipes';
+        ecriture.pilotage.etape = ETAPE_FORMATION;
+        Object.assign(ecriture.pilotage, chronoDe({ demarrer: DUREE_DEVOILEMENT_MS / 1000 }));
         return ecriture;
 
       case 'intro': {

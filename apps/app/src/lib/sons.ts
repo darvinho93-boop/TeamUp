@@ -1,6 +1,6 @@
 import type { GameCode } from '@teamup/game';
 import { FINALE } from './ouverture';
-import { ETAPE_TIRAGE_ORDRE } from './pilotage';
+import { ETAPE_FORMATION, ETAPE_TIRAGE_ORDRE } from './pilotage';
 import { mancheCourante, type EtatSalle } from './salle';
 
 /**
@@ -119,6 +119,8 @@ export interface Instant {
   passageId: string | null;
   jeu: GameCode | null;
   joueurs: number;
+  /** Le départ du chrono de la salle : un dévoilement rejoué en pose un nouveau. */
+  chronoDepartMs: number | null;
 }
 
 export function instantDe(etat: EtatSalle): Instant {
@@ -130,6 +132,7 @@ export function instantDe(etat: EtatSalle): Instant {
     passageId,
     jeu: mancheCourante(etat)?.jeu ?? null,
     joueurs: etat.joueurs,
+    chronoDepartMs: etat.pilotage.chrono_depart_ms,
   };
 }
 
@@ -156,6 +159,15 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
   if (apres.scene === 'podium' && avant.scene !== 'podium') sons.push('fanfare');
   // La clôture (2026-10-22) : la piste du reel, sur le logo qui se forme.
   if (apres.scene === 'cloture' && avant.scene !== 'cloture') sons.push('finale');
+  // Le dévoilement des équipes (2026-11-04) : le roulement, dont la cymbale tombe quand tout est
+  // posé. Seulement à un nouveau départ : revenir sur la scène après coup ne le relance pas.
+  if (
+    apres.scene === 'equipes' &&
+    apres.etape === ETAPE_FORMATION &&
+    apres.chronoDepartMs !== avant.chronoDepartMs
+  ) {
+    sons.push('roulement');
+  }
 
   if (apres.scene === 'intro') {
     const nouveauJeu = avant.scene !== 'intro' || avant.mancheId !== apres.mancheId;

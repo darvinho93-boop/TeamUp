@@ -301,6 +301,7 @@
         "instagram": "Instagram",
         "cloture": "Clôture"
       },
+      "devoilerEquipes": "Dévoiler les équipes",
       "programme": "Programme de la soirée",
       "statut": {
         "a_venir": "à venir",
@@ -523,7 +524,8 @@
         "tropPeu": "Moins d'inscrits que d'équipes : baissez le nombre d'équipes.",
         "reserve": "La réserve de Points communs ou de Mime est trop petite pour ce nombre d'équipes : complétez-la à la préparation.",
         "tropTard": "Un jeu a commencé, ou des photos et des points existent déjà : les équipes ne se refont plus.",
-        "echec": "La formation n'a pas pu s'enregistrer. Réessayez."
+        "echec": "La formation n'a pas pu s'enregistrer. Réessayez.",
+        "devoilerAuPilotage": "Pour les montrer à la salle : « Dévoiler les équipes », au pilotage."
       }
     },
     "scores": {

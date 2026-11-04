@@ -477,6 +477,34 @@
   margin-inline-end: var(--tu-space-2);
 }
 
+/* Dévoilement des équipes (2026-11-04) : une couche sur la scène Équipes, dont les prénoms sont
+   masqués le temps du vol ; chaque prénom volant prend la taille et la place du sien, et le
+   rejoint posé (l'écran le déplace image par image). */
+.tu-stage-equipes {
+  position: relative;
+}
+
+.tu-stage-equipes--en-vol .tu-stage-membres .tu-stage-membre {
+  visibility: hidden;
+}
+
+.tu-devoilement {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tu-devoilement__prenom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  opacity: 0;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
 /* Repère de page : un point par page, celui de la page affichée à la couleur de l'équipe. */
 .tu-stage-points {
   display: flex;

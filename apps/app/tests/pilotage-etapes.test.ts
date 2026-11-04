@@ -740,3 +740,28 @@ describe('un passage resté sans équipe (panne du 2026-10-31)', () => {
     expect(etape(e, { type: 'tirerOrdre', passages: ['p2', 'p1'] })).not.toBeNull();
   });
 });
+
+describe('le dévoilement des équipes (2026-11-04)', () => {
+  it('passe l’écran sur les équipes, à l’étape « formation », sur 5 s', () => {
+    const ecriture = etape(etat({ scene: 'accueil' }), { type: 'devoilerEquipes' });
+    expect(ecriture?.pilotage).toMatchObject({
+      scene: 'equipes',
+      etape: 'formation',
+      chrono: 'demarrer',
+      chrono_duree_s: 5,
+    });
+    expect([ecriture?.passage, ecriture?.manche, ecriture?.ordre]).toEqual([null, null, null]);
+    expect(ecriture?.scores).toEqual([]);
+  });
+
+  it('se rejoue, même depuis la scène Équipes', () => {
+    const deja = etat({ scene: 'equipes', etape: 'formation', chrono_depart_ms: 1000 });
+    expect(etape(deja, { type: 'devoilerEquipes' })?.pilotage.chrono).toBe('demarrer');
+  });
+
+  it('refuse tant que les équipes ne sont pas formées', () => {
+    const sansEquipes = etat({ scene: 'accueil' });
+    sansEquipes.equipes = [];
+    expect(etape(sansEquipes, { type: 'devoilerEquipes' })).toBeNull();
+  });
+});

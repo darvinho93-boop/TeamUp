@@ -301,6 +301,7 @@
         "instagram": "Instagram",
         "cloture": "Closing"
       },
+      "devoilerEquipes": "Reveal the teams",
       "programme": "Tonight's programme",
       "statut": {
         "a_venir": "upcoming",
@@ -523,7 +524,8 @@
         "tropPeu": "Fewer guests than teams: lower the number of teams.",
         "reserve": "The Common points or Mime reserve is too small for this number of teams: add to it in Preparation.",
         "tropTard": "A game has started, or photos and points already exist: teams can no longer be redone.",
-        "echec": "The teams could not be saved. Try again."
+        "echec": "The teams could not be saved. Try again.",
+        "devoilerAuPilotage": "To show them to the room: “Reveal the teams”, under Control."
       }
     },
     "scores": {

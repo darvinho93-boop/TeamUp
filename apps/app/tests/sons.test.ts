@@ -27,6 +27,7 @@ const instant = (extra: Partial<Instant> = {}): Instant => ({
   passageId: null,
   jeu: null,
   joueurs: 0,
+  chronoDepartMs: null,
   ...extra,
 });
 const enJeu = (jeu: Instant['jeu'], etape: string, passageId = 'p1') =>
@@ -78,6 +79,16 @@ describe('le son d’un changement d’état', () => {
     expect(
       sonsPour({ ...intro, etape: 'tirage-ordre' }, { ...intro, etape: 'tirage-ordre' }),
     ).toEqual([]);
+  });
+
+  it('lance le roulement au dévoilement des équipes, et quand on le rejoue', () => {
+    const devoilement = instant({ scene: 'equipes', etape: 'formation', chronoDepartMs: 1000 });
+    expect(sonsPour(instant(), devoilement)).toEqual(['roulement']);
+    // Rejoué : un nouveau départ posé par la base.
+    expect(sonsPour(devoilement, { ...devoilement, chronoDepartMs: 9000 })).toEqual(['roulement']);
+    // Relu tel quel, ou retrouvé après un détour par une autre scène : rien.
+    expect(sonsPour(devoilement, devoilement)).toEqual([]);
+    expect(sonsPour({ ...devoilement, scene: 'programme' }, devoilement)).toEqual([]);
   });
 
   it('sonne la fanfare au podium', () => {

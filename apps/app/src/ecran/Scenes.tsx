@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useRef, type CSSProperties } from 'react';
+import { useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier, Wordmark } from '@teamup/ui/react';
 import {
@@ -27,7 +27,8 @@ import {
   type PassageSalle,
   indicesMsDe,
 } from '@/lib/salle';
-import { duellistesDe, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
+import { duellistesDe, ETAPE_FORMATION, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
+import { DUREE_DEVOILEMENT_MS } from '@/lib/devoilement';
 import { MESSAGES } from '@/i18n/messages';
 import type { Langue } from '@/lib/partie';
 import { IconeInstagram } from '@/marque/IconeInstagram';
@@ -40,9 +41,11 @@ import {
   membresTries,
   pageA,
   pagesDe,
+  type Membre,
 } from '@/lib/membres';
 import { BandeauPrenoms, MessageBienvenue, useArrivees } from './BandeauPrenoms';
 import { Celebration, useArrivee, type Force } from './Celebration';
+import { VolDesPrenoms } from './Devoilement';
 import { Chrono, useMaintenant, useMonte } from './Chrono';
 import { Recompense } from './Recompense';
 import { SonsContexte } from './sons/useSons';
@@ -75,7 +78,7 @@ export function Scene(props: Props) {
       return etat.equipes.length === 0 ? (
         <EquipesAVenir etat={etat} />
       ) : (
-        <Equipes etat={etat} decalageMs={props.decalageMs} />
+        <EquipesDevoilees etat={etat} decalageMs={props.decalageMs} />
       );
     case 'programme':
       return <Programme etat={etat} />;
@@ -170,7 +173,70 @@ function EquipesAVenir({ etat }: { etat: EtatSalle }) {
   );
 }
 
-function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
+/**
+ * La scène Équipes, et son dévoilement (2026-11-04) : à l'étape « formation », tant que le
+ * roulement court, les prénoms tourbillonnent puis filent vers leurs cartes (`VolDesPrenoms`),
+ * et la fête quand tout est posé sous les yeux de l'écran. Toujours la même grille dessous :
+ * rien ne clignote quand le vol se termine. Sous `prefers-reduced-motion`, la grille d'emblée.
+ */
+function EquipesDevoilees({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
+  const reduit = useMouvementReduit();
+  const monte = useMonte();
+  const { etape, chrono_depart_ms: departMs } = etat.pilotage;
+  /** Le dévoilement (son départ) que cet écran a commencé à montrer, et celui qu'il a fini. */
+  const [vuDe, setVuDe] = useState<number | null>(null);
+  const [finDe, setFinDe] = useState<number | null>(null);
+  const [feteDe, setFeteDe] = useState<number | null>(null);
+  const attendu = !reduit && etape === ETAPE_FORMATION && departMs !== null && finDe !== departMs;
+  const maintenant = useMaintenant(attendu) + decalageMs;
+  // La fin, vue par le vol image par image ou par l'heure qui avance : la fête si cet écran a
+  // montré le vol ; rien pour un dévoilement trouvé déjà fini (écran ouvert après coup).
+  const finir = (depart: number) => {
+    setFinDe(depart);
+    if (vuDe === depart) setFeteDe(depart);
+  };
+  const termine = attendu && monte && maintenant - departMs >= DUREE_DEVOILEMENT_MS;
+  if (termine) finir(departMs);
+  const enVol = attendu && monte && !termine;
+  if (enVol && vuDe !== departMs) setVuDe(departMs);
+  return (
+    <Equipes
+      etat={etat}
+      decalageMs={decalageMs}
+      vol={
+        enVol
+          ? (membres) => (
+              <VolDesPrenoms
+                equipes={membres}
+                departMs={departMs}
+                decalageMs={decalageMs}
+                graine={`${etat.evenement.id}-${departMs}`}
+                surFin={() => finir(departMs)}
+              />
+            )
+          : undefined
+      }
+    >
+      {feteDe !== null && feteDe === departMs && <Celebration force={2} />}
+    </Equipes>
+  );
+}
+
+function Equipes({
+  etat,
+  decalageMs,
+  vol,
+  children,
+}: {
+  etat: EtatSalle;
+  decalageMs: number;
+  /**
+   * Le dévoilement : la couche des prénoms volants, qui reçoit ceux de chaque carte. Pendant le
+   * vol, les cartes restent sur leur première page et leurs prénoms sont masqués.
+   */
+  vol?: ((membres: Membre[][]) => ReactNode) | undefined;
+  children?: ReactNode;
+}) {
   const t = useTranslations('ecran');
   const grille = grilleDesEquipes(etat.equipes.length);
   const { colonnes, rangees } = grille;
@@ -190,10 +256,11 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
     ...e,
     pages: pagesDe(membresTries(e.prenoms, e.capitaine), parPage),
   }));
-  const maintenant = useMaintenant(equipes.some((e) => e.pages.length > 1)) + decalageMs;
+  const maintenant = useMaintenant(!vol && equipes.some((e) => e.pages.length > 1)) + decalageMs;
   // Au premier rendu, la première page : le serveur et le navigateur n'ont pas la même heure.
+  // Pendant un dévoilement aussi : les prénoms volent vers des places qui ne bougent pas.
   const monte = useMonte();
-  const pages = equipes.map((e) => (monte ? pageA(maintenant, e.pages.length) : 0));
+  const pages = equipes.map((e) => (monte && !vol ? pageA(maintenant, e.pages.length) : 0));
   // Un nom d'équipe ou un prénom trop long pour sa ligne se réduit, lui seul.
   const grilleRef = useRef<HTMLUListElement>(null);
   const cleGrille = `${pages.join()}:${equipes.map((e) => `${e.nom}:${e.prenoms.length}`).join()}:${ajuste}`;
@@ -202,7 +269,10 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
   // depuis un téléphone).
   useTenirEnLargeur(grilleRef, cleGrille, '.tu-stage-team__nom', 0.5);
   return (
-    <div className="tu-stage__body" data-scene="equipes">
+    <div
+      className={cx('tu-stage__body tu-stage-equipes', vol && 'tu-stage-equipes--en-vol')}
+      data-scene="equipes"
+    >
       <h1 className="tu-stage__xl">{t('equipes')}</h1>
       <ul
         ref={grilleRef}
@@ -258,6 +328,8 @@ function Equipes({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) 
           );
         })}
       </ul>
+      {vol?.(equipes.map((e, n) => e.pages[pages[n] ?? 0] ?? []))}
+      {children}
     </div>
   );
 }

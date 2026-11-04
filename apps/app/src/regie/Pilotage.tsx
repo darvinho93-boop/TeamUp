@@ -368,6 +368,19 @@ export function Pilotage({
             </Button>
           ))}
         </div>
+        {/* Les équipes formées à la Salle se dévoilent ici, quand l'animateur le décide ;
+            rejouable (2026-11-04). Une action, pas une scène : hors du groupe des scènes. */}
+        {etat.equipes.length > 0 && (
+          <div className="tu-cluster">
+            <Button
+              variant="ghost"
+              onClick={() => agir({ type: 'devoilerEquipes' })}
+              data-testid="devoiler-equipes"
+            >
+              {t('devoilerEquipes')}
+            </Button>
+          </div>
+        )}
         <ol className="tu-regie-list" aria-label={t('programme')}>
           {etat.programme.map((m) => (
             <li

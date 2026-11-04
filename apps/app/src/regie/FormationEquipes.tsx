@@ -118,6 +118,11 @@ export function FormationEquipes({
       <p className="tu-regie__muted">
         {t('inscrits', { n: inscrits.length, volontaires: volontaires.length })}
       </p>
+      {formees && (
+        <p className="tu-regie__muted" data-testid="devoiler-au-pilotage">
+          {t('devoilerAuPilotage')}
+        </p>
+      )}
       {volontaires.length > 0 && (
         <p className="tu-regie__muted" data-testid="noms-proposes">
           {volontaires
