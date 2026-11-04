@@ -599,114 +599,114 @@
     }
   },
   "ecran": {
-    "rejoindre": "Rejoignez la partie",
+    "rejoindre": "Rejoignez la partie !",
     "joueurs": "{n, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}}",
-    "equipes": "Les équipes",
+    "equipes": "Voici les équipes !",
     "capitaine": "Capitaine",
     "activerSon": "Activer le son",
     "programme": "Au programme",
     "regles": {
-      "list2": "Une équipe, dos à l'écran, devine ce qui rassemble les invités debout.",
-      "qcm2": "Une question, quatre réponses. Mauvaise réponse : éliminé !",
+      "list2": "Dos à l'écran, une équipe devine ce qui rassemble les personnes debout !",
+      "qcm2": "Une question, quatre réponses : une seule est la bonne !",
       "enchere2": "Un champion par équipe. Qui en dira le plus ? Tenez votre pari !",
       "mime2": "Le mot traverse l'équipe, en mime puis à l'oreille.",
-      "photo2": "Les photos de la soirée, thème par thème.",
+      "photo2": "Vos photos de la soirée, thème par thème : laquelle gagnera ?",
       "grab": "La musique part : attrapez l'objet qui va avec !",
-      "cup": "Tête, épaule… gobelet ! Le plus rapide gagne."
+      "cup": "Tête, épaule… gobelet ! Attrapez-le en premier !"
     },
     "yeuxFermes": "{equipe} : dos à l'écran, yeux fermés !",
     "pointCommun": "Le point commun",
     "ouvrezLesYeux": "{equipe}, ouvrez les yeux !",
     "palier": "Palier {n}",
-    "arretIndice": "Chrono arrêté : place à l'indice",
+    "arretIndice": "Chrono arrêté : place à l'indice !",
     "reprise": "Reprise dans {s} s",
     "trouve": "Trouvé !",
-    "rate": "Raté",
+    "rate": "Raté !",
     "points": "{points, plural, =0 {0 point} one {+# point} other {+# points}}",
     "themes": "Les thèmes",
     "sujet": "Le sujet",
     "tenu": "Pari tenu !",
-    "perdu": "Pari perdu",
+    "perdu": "Pari raté !",
     "scores": "Classement",
     "podium": "Podium",
-    "merci": "Merci à tous, et bravo !",
+    "merci": "Bravo et merci à toutes et à tous !",
     "instagram": {
       "titre": "Suivez-nous sur Instagram !",
-      "appel": "Abonnez-vous pour revivre la soirée et ne rien rater de la suite.",
+      "appel": "Abonnez-vous pour ne rien rater de la suite !",
       "scanner": "Scannez le QR code"
     },
-    "cloture": "Merci à tous pour cette soirée !",
+    "cloture": "Merci à toutes et à tous pour cette soirée !",
     "question": "Question {n} sur {total}",
     "croix": "placez-vous dans la zone de votre réponse !",
     "reponses": "{n, plural, =0 {aucune réponse} one {# réponse} other {# réponses}}",
     "finQuiz": "Fin du quiz",
     "survivants": "{n, plural, =0 {aucun survivant} one {# survivant} other {# survivants}}",
-    "mimeFile": "{equipe} : en file, tous tournés du même côté !",
-    "mimeJ1": "Seul le premier de la file regarde l'écran !",
-    "mimeChaine": "Mime, oreille, mime… jusqu’au dernier !",
+    "mimeFile": "{equipe} : en file, sans vous retourner !",
+    "mimeJ1": "Seule la tête de file regarde l'écran !",
+    "mimeChaine": "Mime, oreille, mime… jusqu'au bout de la file !",
     "leMot": "Le mot",
     "themePhoto": "Thème {n} sur {total}",
     "aucunePhoto": "Aucune photo sur ce thème",
-    "photoDe": "Photo de l'équipe {equipe}",
+    "photoDe": "Photo : {equipe}",
     "gagnante": "La gagnante !",
-    "duelProchain": "Prochain duel…",
+    "duelProchain": "Qui va s'affronter ?",
     "contre": "contre",
-    "commentJouer": "Comment on joue",
+    "commentJouer": "Comment jouer",
     "explications": {
       "list2": {
         "equipe-dos": "Une équipe s'assoit dos à l'écran, les yeux fermés.",
         "ecran-cache": "L'écran montre un point commun à toute la salle, puis se cache.",
-        "salle-debout": "Les invités concernés se lèvent : l'équipe devine ce qui lie les invités debout.",
+        "salle-debout": "Les personnes concernées se lèvent : l'équipe devine ce qui les rassemble.",
         "paliers": "Plus l'équipe trouve vite, plus elle marque. À chaque palier, le chrono s'arrête pour un indice.",
-        "paliers-durees": "Palier 1 : 1 min, points ×3. Palier 2 : 35 s, ×2. Palier 3 : 35 s, ×1."
+        "paliers-durees": "Palier 1 : points ×3. Palier 2 : ×2. Palier 3 : ×1. Vite !"
       },
       "qcm2": {
         "quadrants": "Une question, quatre réponses : A, B, C, D.",
-        "zones": "Va te placer dans la zone de ta réponse.",
-        "elimine": "Mauvaise zone : éliminé !",
-        "survivants": "100 points par survivant de ton équipe."
+        "zones": "Placez-vous dans la zone de votre réponse.",
+        "elimine": "Mauvaise zone : hors jeu !",
+        "survivants": "100 points par survivant de votre équipe !"
       },
       "qcm2-telephone": {
         "quadrants": "Une question, quatre réponses : A, B, C, D.",
-        "telephone": "Réponds sur ton téléphone : tu as 30 secondes.",
-        "elimine": "Mauvaise réponse : éliminé !",
-        "survivants": "100 points par survivant de ton équipe."
+        "telephone": "Répondez sur votre téléphone : 30 secondes chrono !",
+        "elimine": "Mauvaise réponse : hors jeu !",
+        "survivants": "100 points par survivant de votre équipe !"
       },
       "qcm2-jetons": {
-        "quadrants": "Une question, quatre réponses : l'équipe se concerte, réunie.",
-        "jetons-capitaine": "Ton capitaine a des jetons : autant que de joueurs dans la plus grande équipe.",
-        "repartition": "Il les pose tous sur son téléphone : sur une réponse, ou plusieurs en cas de doute.",
+        "quadrants": "Une question, quatre réponses : l'équipe se réunit et se concerte.",
+        "jetons-capitaine": "Votre capitaine reçoit des jetons : autant que de joueurs dans la plus grande équipe.",
+        "repartition": "Sur son téléphone, le capitaine les pose tous : sur une réponse, ou sur plusieurs en cas de doute.",
         "jetons-perdus": "Les jetons posés sur une mauvaise réponse sont perdus.",
-        "jetons-restants": "À la fin, 100 points par jeton qui reste."
+        "jetons-restants": "À la fin, chaque jeton restant vaut 100 points !"
       },
       "enchere2": {
         "champions": "Un champion par équipe s'avance.",
         "encheres": "Le sujet tombe, les enchères montent : « 5 ! » « 7 ! »",
-        "chrono": "Le plus offrant doit tenir son pari, chrono en main.",
-        "verdict": "Pari tenu : +100. Raté : +20 pour chaque autre équipe."
+        "chrono": "Qui promet le plus doit tenir son pari, chrono en main !",
+        "verdict": "Pari tenu : +100 ! Pari raté : +20 pour chaque autre équipe."
       },
       "mime2": {
         "file": "L'équipe se met en file, sans se retourner.",
-        "mot": "Le premier voit le mot et le mime au suivant.",
-        "chaine": "Le 2e chuchote ce qu'il a compris à l'oreille du 3e, qui le mime au 4e… et ainsi de suite.",
-        "annonce": "Le dernier l'annonce : mot trouvé, +100 !"
+        "mot": "La tête de file lit le mot, puis le mime à la personne suivante.",
+        "chaine": "La 2e personne chuchote ce qu'elle a compris à la 3e, qui le mime à la 4e… et ainsi de suite !",
+        "annonce": "La dernière personne l'annonce : mot trouvé, +100 !"
       },
       "photo2": {
         "capitaine": "Toute la soirée, le capitaine envoie une photo par thème.",
-        "diaporama": "Ce soir, on les découvre thème par thème.",
-        "gagnante": "Les héros de la fête choisissent la gagnante.",
+        "diaporama": "Puis on les découvre ensemble, thème par thème.",
+        "gagnante": "Les stars de la fête choisissent la gagnante.",
         "points-photo": "+100 par thème gagné."
       },
       "grab": {
         "duellistes-table": "Deux duellistes, une table d'objets.",
         "musique": "La musique part…",
-        "attrape": "Attrape l'objet qui va avec, le premier !",
-        "points": "Duel gagné : +50 pour ton équipe."
+        "attrape": "Attrapez en premier l'objet qui va avec !",
+        "points": "Duel gagné : +50 pour votre équipe !"
       },
       "cup": {
         "duellistes-gobelet": "Deux duellistes, un gobelet entre eux.",
-        "tete-epaule": "Touche ce que l'animateur dit : tête, épaule…",
-        "gobelet": "Au mot « gobelet », attrape-le le premier !",
+        "tete-epaule": "Touchez ce que dit l'animateur : tête, épaule…",
+        "gobelet": "Au mot « gobelet », attrapez-le en premier !",
         "points": "Gare aux pièges ! Duel gagné : +50."
       }
     },
@@ -718,7 +718,7 @@
     "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}",
     "ouLien": "Scannez le QR code, ou ouvrez ce lien :",
     "unInstant": "Un instant…",
-    "equipesAVenir": "Les équipes arrivent…"
+    "equipesAVenir": "Les équipes se forment…"
   },
   "admin": {
     "nav": {

@@ -599,40 +599,40 @@
     }
   },
   "ecran": {
-    "rejoindre": "Join the game",
+    "rejoindre": "Join the game!",
     "joueurs": "{n, plural, =0 {No players} one {# player} other {# players}}",
-    "equipes": "The teams",
+    "equipes": "Here are the teams!",
     "capitaine": "Captain",
     "activerSon": "Turn sound on",
     "programme": "Tonight's games",
     "regles": {
-      "list2": "One team, back to the screen, guesses what the standing guests have in common.",
-      "qcm2": "One question, four answers. Wrong answer: you're out!",
+      "list2": "Back to the screen, one team guesses what the people standing have in common!",
+      "qcm2": "One question, four answers: only one is right!",
       "enchere2": "One champion per team. Who can say the most? Keep your bet!",
       "mime2": "The word travels down the team, mimed then whispered.",
-      "photo2": "The evening's photos, theme by theme.",
+      "photo2": "Your photos of the evening, theme by theme: which one will win?",
       "grab": "The music starts: grab the matching object!",
-      "cup": "Head, shoulders… cup! Fastest hand wins."
+      "cup": "Head, shoulders… cup! Grab it first!"
     },
     "yeuxFermes": "{equipe}: back to the screen, eyes closed!",
     "pointCommun": "What they have in common",
     "ouvrezLesYeux": "{equipe}, open your eyes!",
     "palier": "Stage {n}",
-    "arretIndice": "Timer stopped: here comes a clue",
+    "arretIndice": "Timer stopped: here comes the clue!",
     "reprise": "Back in {s} s",
     "trouve": "Found it!",
-    "rate": "Missed",
+    "rate": "Missed!",
     "points": "{points, plural, =0 {0 points} one {+# point} other {+# points}}",
     "themes": "The themes",
     "sujet": "The topic",
     "tenu": "Bet kept!",
-    "perdu": "Bet lost",
+    "perdu": "Bet missed!",
     "scores": "Standings",
     "podium": "Podium",
-    "merci": "Thank you all, and well done!",
+    "merci": "Well done, and thank you all!",
     "instagram": {
       "titre": "Follow us on Instagram!",
-      "appel": "Follow us to relive the evening and catch what comes next.",
+      "appel": "Follow us so you don't miss what comes next!",
       "scanner": "Scan the QR code"
     },
     "cloture": "Thank you all for this evening!",
@@ -641,59 +641,59 @@
     "reponses": "{n, plural, =0 {no answers} one {# answer} other {# answers}}",
     "finQuiz": "End of the quiz",
     "survivants": "{n, plural, =0 {no survivors} one {# survivor} other {# survivors}}",
-    "mimeFile": "{equipe}: line up, all facing the same way!",
-    "mimeJ1": "Only the first in line looks at the screen!",
-    "mimeChaine": "Mime, whisper, mime… all the way to the last one!",
+    "mimeFile": "{equipe}: line up, no turning around!",
+    "mimeJ1": "Only the person at the front looks at the screen!",
+    "mimeChaine": "Mime, whisper, mime… all the way down the line!",
     "leMot": "The word",
     "themePhoto": "Theme {n} of {total}",
     "aucunePhoto": "No photos on this theme",
-    "photoDe": "Photo from team {equipe}",
+    "photoDe": "Photo: {equipe}",
     "gagnante": "The winner!",
-    "duelProchain": "Next duel…",
+    "duelProchain": "Who will face off?",
     "contre": "versus",
     "commentJouer": "How to play",
     "explications": {
       "list2": {
         "equipe-dos": "One team sits with its back to the screen, eyes closed.",
         "ecran-cache": "The screen shows the room something some guests have in common, then hides it.",
-        "salle-debout": "Those guests stand up: the team guesses what links the standing guests.",
+        "salle-debout": "The people it applies to stand up: the team guesses what they have in common.",
         "paliers": "The faster the team finds it, the more points it scores. At each stage, the timer stops for a clue.",
-        "paliers-durees": "Stage 1: 1 min, points ×3. Stage 2: 35 s, ×2. Stage 3: 35 s, ×1."
+        "paliers-durees": "Stage 1: points ×3. Stage 2: ×2. Stage 3: ×1. Be quick!"
       },
       "qcm2": {
         "quadrants": "One question, four answers: A, B, C, D.",
-        "zones": "Go and stand in the zone of your answer.",
+        "zones": "Stand in the zone of your answer.",
         "elimine": "Wrong zone: you're out!",
-        "survivants": "100 points for each survivor in your team."
+        "survivants": "100 points for each survivor in your team!"
       },
       "qcm2-telephone": {
         "quadrants": "One question, four answers: A, B, C, D.",
-        "telephone": "Answer on your phone: you have 30 seconds.",
+        "telephone": "Answer on your phone: 30 seconds on the clock!",
         "elimine": "Wrong answer: you're out!",
-        "survivants": "100 points for each survivor in your team."
+        "survivants": "100 points for each survivor in your team!"
       },
       "qcm2-jetons": {
-        "quadrants": "One question, four answers: the team talks it over, together.",
-        "jetons-capitaine": "Your captain has tokens: as many as there are players in the largest team.",
-        "repartition": "They place them all on their phone: on one answer, or spread over several if unsure.",
+        "quadrants": "One question, four answers: the team gets together and talks it over.",
+        "jetons-capitaine": "Your captain gets tokens: as many as there are players in the largest team.",
+        "repartition": "On their phone, the captain places them all: on one answer, or on several if unsure.",
         "jetons-perdus": "Tokens placed on a wrong answer are lost.",
-        "jetons-restants": "At the end, 100 points for each token left."
+        "jetons-restants": "At the end, every token left is worth 100 points!"
       },
       "enchere2": {
         "champions": "Each team sends one champion forward.",
         "encheres": "The topic is revealed, the bids go up: “5!” “7!”",
-        "chrono": "The highest bidder must deliver, against the clock.",
-        "verdict": "Bid made: +100. Missed: +20 for every other team."
+        "chrono": "Whoever promises the most must keep their bet, against the clock!",
+        "verdict": "Bet kept: +100! Bet missed: +20 for every other team."
       },
       "mime2": {
         "file": "The team stands in a line, without turning around.",
-        "mot": "The first player sees the word and mimes it to the second.",
-        "chaine": "The 2nd whispers what they understood to the 3rd, who mimes it to the 4th… and so on.",
-        "annonce": "The last player says the word out loud: if it's right, +100!"
+        "mot": "The person at the front reads the word, then mimes it to the next person.",
+        "chaine": "The 2nd person whispers what they understood to the 3rd, who mimes it to the 4th… and so on!",
+        "annonce": "The last person says it out loud: word found, +100!"
       },
       "photo2": {
         "capitaine": "All evening, the captain sends one photo per theme.",
-        "diaporama": "Tonight, we reveal them theme by theme.",
+        "diaporama": "Then we discover them together, theme by theme.",
         "gagnante": "The guests of honour pick the winner.",
         "points-photo": "+100 for each theme won."
       },
@@ -701,7 +701,7 @@
         "duellistes-table": "Two duellists, a table of objects.",
         "musique": "The music starts…",
         "attrape": "Be the first to grab the matching object!",
-        "points": "Duel won: +50 for your team."
+        "points": "Duel won: +50 for your team!"
       },
       "cup": {
         "duellistes-gobelet": "Two duellists, a cup between them.",
@@ -718,7 +718,7 @@
     "miseEquipe": "{equipe}: {n, plural, one {# token} other {# tokens}}",
     "ouLien": "Scan the QR code, or open this link:",
     "unInstant": "One moment…",
-    "equipesAVenir": "Teams are on their way…"
+    "equipesAVenir": "The teams are being formed…"
   },
   "admin": {
     "nav": {
