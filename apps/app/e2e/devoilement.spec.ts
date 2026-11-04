@@ -2,8 +2,8 @@ import { expect, test, type Browser, type BrowserContext, type Page } from '@pla
 import { clientService, creerEvenementJetable, supprimerEvenements } from '../tests/base';
 
 /**
- * « Dévoiler les équipes » au pilotage (2026-11-04) : sur le roulement de tambour, les prénoms
- * tourbillonnent puis filent vers leurs cartes ; à la cymbale, la grille et la fête.
+ * « Dévoiler les équipes » au pilotage (2026-11-04), en machine à sous : sur le roulement de
+ * tambour, les cartes s'arrêtent une à une ; à la cymbale, la grille et la fête.
  */
 
 const EQUIPES: Record<number, string[]> = {
@@ -74,7 +74,7 @@ const sonsJoues = (ecran: Page) =>
       ).__tuLecteur?.journal.map((j) => j.son) ?? [],
   );
 
-test('les prénoms tourbillonnent, filent vers leurs cartes, puis la fête', async ({ browser }) => {
+test('la machine à sous : les cartes s’arrêtent une à une, puis la fête', async ({ browser }) => {
   test.setTimeout(120_000);
   const { session, regie } = await connecter(browser);
 
@@ -89,17 +89,17 @@ test('les prénoms tourbillonnent, filent vers leurs cartes, puis la fête', asy
   await regie.goto(`/regie/${evenement.code}/pilotage`);
   await regie.getByTestId('devoiler-equipes').click();
 
-  // Le vol : la couche des prénoms, ceux des cartes masqués, le roulement de tambour.
-  const couche = ecran.getByTestId('devoilement');
-  await expect(couche).toBeVisible({ timeout: 3000 });
-  await expect(ecran.locator('.tu-stage-equipes--en-vol')).toHaveCount(1);
-  await expect(ecran.getByTestId('membres-1').getByText('Léa', { exact: true })).toBeHidden();
-  await expect(couche.getByText('Léa', { exact: true })).toBeAttached();
+  // La machine à sous : des rouleaux dans chaque carte, le roulement, un « tic » par carte.
+  const machine = ecran.locator('[data-devoilement="en-cours"]');
+  await expect(machine).toBeVisible({ timeout: 5000 });
+  await expect(machine.locator('.tu-rouleau').first()).toBeAttached();
   await expect.poll(() => sonsJoues(ecran), { timeout: 3000 }).toContain('roulement');
 
   // À la cymbale (5 s), tout est posé : la grille, chaque prénom dans sa carte, et la fête.
-  await expect(couche).toHaveCount(0, { timeout: 8000 });
+  await expect(machine).toHaveCount(0, { timeout: 9000 });
+  await expect(ecran.locator('.tu-rouleau')).toHaveCount(0);
   await expect(ecran.getByTestId('celebration')).toBeAttached();
+  expect((await sonsJoues(ecran)).filter((s) => s === 'tic')).toHaveLength(3);
   for (const [numero, prenoms] of Object.entries(EQUIPES)) {
     const carte = ecran.getByTestId(`membres-${numero}`);
     for (const prenom of prenoms) {
@@ -107,11 +107,11 @@ test('les prénoms tourbillonnent, filent vers leurs cartes, puis la fête', asy
     }
   }
 
-  // Rejouable ; un écran sous prefers-reduced-motion montre la grille d'emblée, sans vol.
+  // Rejouable ; un écran sous prefers-reduced-motion montre la grille d'emblée, sans machine.
   const calme = await ouvrirEcran(browser, session, 'reduce');
   await regie.getByTestId('devoiler-equipes').click();
-  await expect(couche).toBeVisible({ timeout: 3000 });
+  await expect(machine).toBeVisible({ timeout: 5000 });
   await expect(calme.getByTestId('membres-2').getByText('Hugo', { exact: true })).toBeVisible();
-  await expect(calme.getByTestId('devoilement')).toHaveCount(0);
-  await expect(couche).toHaveCount(0, { timeout: 8000 });
+  await expect(calme.locator('[data-devoilement]')).toHaveCount(0);
+  await expect(machine).toHaveCount(0, { timeout: 9000 });
 });

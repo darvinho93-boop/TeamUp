@@ -1,124 +1,68 @@
 import { aleaDepuis, DUREE_TIRAGE_S } from '@teamup/game';
 
 /**
- * Le dévoilement des équipes à l'écran commun (2026-11-04) : sur le roulement de tambour, les
- * cartes paraissent vides, les prénoms tourbillonnent au centre, puis chacun file vers sa carte,
- * un par équipe à tour de rôle ; la cymbale tombe quand tout est posé. Logique pure, testée ;
- * le mouvement est dans `src/ecran/Devoilement.tsx`.
+ * Le dévoilement des équipes à l'écran commun (2026-11-04), en machine à sous : sur le roulement
+ * de tambour, chaque carte d'équipe fait tourner des rouleaux de prénoms ; les cartes s'arrêtent
+ * l'une après l'autre (un « tic » à chaque arrêt), leurs vrais membres tombent un à un et leur
+ * compteur monte ; la cymbale tombe quand tout est posé. Logique pure, testée ; l'image est dans
+ * `src/ecran/Scenes.tsx` et `stage.css`.
  */
 
 /** Le temps du roulement : 5 s de caisse claire, puis la cymbale (comme le tirage de l'ordre). */
 export const DUREE_DEVOILEMENT_MS = DUREE_TIRAGE_S * 1000;
-/** Les cartes vides paraissent d'abord ; les prénoms entrent ensuite dans le tourbillon… */
-export const TOURBILLON_DEBUT_MS = 500;
-/** … en ce temps-là… */
-export const TOURBILLON_ENTREE_MS = 600;
-/** … puis le premier part vers sa carte… */
-export const DEPARTS_DEBUT_MS = 2400;
-/** … et le dernier à cet instant… */
-export const DEPARTS_FIN_MS = 4000;
-/** … pour un vol de cette durée : le dernier se pose à 4,6 s, avant la cymbale. */
-export const VOL_MS = 600;
-/** Un tour du tourbillon, au plus loin du centre ; plus près, il tourne plus vite. */
-export const TOUR_MS = 2200;
-/** Un prénom du tourbillon, par rapport à sa taille dans la carte. */
-export const ECHELLE_TOURBILLON = 0.75;
+/** La première carte s'arrête à cet instant… */
+export const PREMIER_ARRET_MS = 2200;
+/** … la dernière à celui-ci… */
+export const DERNIER_ARRET_MS = 4200;
+/** … et ses prénoms tombent en ce temps au plus : tout est posé avant la cymbale. */
+export const CASCADE_MAX_MS = 600;
+/** L'écart entre deux prénoms qui tombent, pour une petite équipe. */
+export const PAS_CASCADE_MAX_MS = 70;
+/**
+ * La grille quitte le mode « machine » à cet instant : la dernière chute (700 ms) et le dernier
+ * flash de carte sont finis, rien ne saute. La fête, elle, part à la cymbale.
+ */
+export const FIN_DEVOILEMENT_MS = DUREE_DEVOILEMENT_MS + 1000;
+/** Une seule équipe : elle s'arrête au milieu du roulement. */
+const ARRET_SEUL_MS = 3000;
 
-/** Un prénom à poser : son équipe (rang dans la grille) et sa place dans la carte. */
-export interface Depart {
-  equipe: number;
-  rang: number;
+/** L'instant où la carte de rang `k` (sur `total`, dans l'ordre de la grille) s'arrête. */
+export function arretDe(k: number, total: number): number {
+  if (total <= 1) return ARRET_SEUL_MS;
+  return PREMIER_ARRET_MS + (k * (DERNIER_ARRET_MS - PREMIER_ARRET_MS)) / (total - 1);
+}
+
+/** L'écart entre deux prénoms d'une carte de `n` prénoms : la cascade tient en 600 ms. */
+export function pasDeCascade(n: number): number {
+  return Math.min(PAS_CASCADE_MAX_MS, CASCADE_MAX_MS / Math.max(1, n));
+}
+
+/** L'instant où tombe le prénom de rang `i` d'une carte de `n` prénoms qui s'arrête à `arret`. */
+export function chuteDe(arret: number, i: number, n: number): number {
+  return arret + i * pasDeCascade(n);
 }
 
 /**
- * L'ordre des départs : un prénom par équipe à tour de rôle (le premier de chaque équipe, puis le
- * deuxième…), pour que toutes les cartes se remplissent ensemble.
+ * Le compteur d'une carte à l'instant t : il suit les prénoms tombés, de 0 jusqu'à l'effectif
+ * (une carte peut n'en montrer qu'une page : le compteur arrive quand même au total).
  */
-export function ordreDesDeparts(effectifs: readonly number[]): Depart[] {
-  const ordre: Depart[] = [];
-  const plusGrande = Math.max(0, ...effectifs);
-  for (let rang = 0; rang < plusGrande; rang++) {
-    effectifs.forEach((n, equipe) => {
-      if (rang < n) ordre.push({ equipe, rang });
-    });
-  }
-  return ordre;
-}
-
-/** L'instant de départ du k-ième prénom sur `total`, en ms depuis le début du dévoilement. */
-export function departDu(k: number, total: number): number {
-  if (total <= 1) return DEPARTS_DEBUT_MS;
-  return DEPARTS_DEBUT_MS + (k * (DEPARTS_FIN_MS - DEPARTS_DEBUT_MS)) / (total - 1);
-}
-
-/** La place d'un prénom dans le tourbillon : son angle au départ, sa distance au centre (0 à 1). */
-export interface PlaceTourbillon {
-  angle: number;
-  rayon: number;
+export function compteA(t: number, arret: number, affiches: number, effectif: number): number {
+  if (t < arret) return 0;
+  if (affiches === 0) return effectif;
+  const tombes = Math.min(affiches, Math.floor((t - arret) / pasDeCascade(affiches)) + 1);
+  return Math.round((tombes * effectif) / affiches);
 }
 
 /**
- * Les places du tourbillon, tirées de la graine (l'événement et l'instant du dévoilement) : deux
- * écrans, ou un écran rechargé, tirent les mêmes. Répartition uniforme sur le disque, en évitant
- * le cœur, où les prénoms s'entasseraient.
+ * La bande d'un rouleau : des prénoms de la salle tirés au hasard (graine : l'événement, l'instant
+ * du dévoilement, la carte et la colonne), pour que deux écrans tournent pareil.
  */
-export function placesDuTourbillon(total: number, graine: string): PlaceTourbillon[] {
+export function bandeDuRouleau(
+  prenoms: readonly string[],
+  graine: string,
+  longueur: number,
+): string[] {
+  if (prenoms.length === 0) return [];
   const alea = aleaDepuis(graine);
-  return Array.from({ length: total }, () => ({
-    angle: alea() * 2 * Math.PI,
-    rayon: 0.25 + 0.75 * Math.sqrt(alea()),
-  }));
-}
-
-/** Où est un prénom du tourbillon à l'instant t : entre -1 et 1 sur chaque axe. */
-export function dansLeTourbillon(place: PlaceTourbillon, t: number): { x: number; y: number } {
-  const vitesse = ((2 * Math.PI) / TOUR_MS) * (1.6 - 0.6 * place.rayon);
-  const angle = place.angle + vitesse * t;
-  return { x: place.rayon * Math.cos(angle), y: place.rayon * Math.sin(angle) };
-}
-
-/** L'avancée d'un vol, adoucie à l'arrivée : 0 avant le départ, 1 une fois posé. */
-export function avanceeDuVol(t: number, depart: number): number {
-  const p = Math.min(1, Math.max(0, (t - depart) / VOL_MS));
-  return 1 - (1 - p) ** 3;
-}
-
-/** Le centre et les demi-axes du tourbillon, et l'arrivée d'un prénom, en px de la scène. */
-export interface Ellipse {
-  cx: number;
-  cy: number;
-  rx: number;
-  ry: number;
-}
-
-export interface EtatDuPrenom {
-  /** Le centre du prénom. */
-  x: number;
-  y: number;
-  echelle: number;
-  opacite: number;
-}
-
-/** Un prénom à l'instant t : dans le tourbillon, en vol, ou posé à son arrivée. */
-export function etatDuPrenom(
-  t: number,
-  place: PlaceTourbillon,
-  depart: number,
-  arrivee: { x: number; y: number },
-  tourbillon: Ellipse,
-): EtatDuPrenom {
-  const point = (instant: number) => {
-    const p = dansLeTourbillon(place, instant);
-    return { x: tourbillon.cx + tourbillon.rx * p.x, y: tourbillon.cy + tourbillon.ry * p.y };
-  };
-  const entree = Math.min(1, Math.max(0, (t - TOURBILLON_DEBUT_MS) / TOURBILLON_ENTREE_MS));
-  if (t < depart) return { ...point(t), echelle: ECHELLE_TOURBILLON, opacite: entree };
-  const a = avanceeDuVol(t, depart);
-  const parti = point(depart);
-  return {
-    x: parti.x + (arrivee.x - parti.x) * a,
-    y: parti.y + (arrivee.y - parti.y) * a,
-    echelle: ECHELLE_TOURBILLON + (1 - ECHELLE_TOURBILLON) * a,
-    opacite: 1,
-  };
+  return Array.from({ length: longueur }, () => prenoms[Math.floor(alea() * prenoms.length)]!);
 }

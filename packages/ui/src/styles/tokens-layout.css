@@ -103,6 +103,14 @@
   --tu-bandeau-prenom-max: 50rem;
   --tu-dur-bandeau-arrivee: 1600ms;
   --tu-dur-bienvenue: 4000ms;
+  /* Dévoilement des équipes en machine à sous (2026-11-04) : un prénom de rouleau par pas, le
+     flou du défilement, la chute d'un prénom (avec un rebond) et le flash d'une carte qui
+     s'arrête. */
+  --tu-dur-rouleau-pas: 55ms;
+  --tu-rouleau-flou: 0.06em;
+  --tu-dur-clac: 700ms;
+  --tu-ease-clac: cubic-bezier(0.3, 1.4, 0.5, 1);
+  --tu-dur-carte-arret: 900ms;
 
   /* Ouverture de l'écran commun (2026-10-17). */
   /* Les quatre ronds de l'ouverture : un cycle (égal à CYCLE_OUVERTURE_MS, src/lib/ouverture.ts,

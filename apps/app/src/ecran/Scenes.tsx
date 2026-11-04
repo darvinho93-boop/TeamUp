@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useContext, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier, Wordmark } from '@teamup/ui/react';
 import {
@@ -28,7 +28,14 @@ import {
   indicesMsDe,
 } from '@/lib/salle';
 import { duellistesDe, ETAPE_FORMATION, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
-import { DUREE_DEVOILEMENT_MS } from '@/lib/devoilement';
+import {
+  arretDe,
+  bandeDuRouleau,
+  chuteDe,
+  compteA,
+  DUREE_DEVOILEMENT_MS,
+  FIN_DEVOILEMENT_MS,
+} from '@/lib/devoilement';
 import { MESSAGES } from '@/i18n/messages';
 import type { Langue } from '@/lib/partie';
 import { IconeInstagram } from '@/marque/IconeInstagram';
@@ -41,11 +48,9 @@ import {
   membresTries,
   pageA,
   pagesDe,
-  type Membre,
 } from '@/lib/membres';
 import { BandeauPrenoms, MessageBienvenue, useArrivees } from './BandeauPrenoms';
 import { Celebration, useArrivee, type Force } from './Celebration';
-import { VolDesPrenoms } from './Devoilement';
 import { Chrono, useMaintenant, useMonte } from './Chrono';
 import { Recompense } from './Recompense';
 import { SonsContexte } from './sons/useSons';
@@ -174,68 +179,116 @@ function EquipesAVenir({ etat }: { etat: EtatSalle }) {
 }
 
 /**
- * La scène Équipes, et son dévoilement (2026-11-04) : à l'étape « formation », tant que le
- * roulement court, les prénoms tourbillonnent puis filent vers leurs cartes (`VolDesPrenoms`),
- * et la fête quand tout est posé sous les yeux de l'écran. Toujours la même grille dessous :
- * rien ne clignote quand le vol se termine. Sous `prefers-reduced-motion`, la grille d'emblée.
+ * La scène Équipes, et son dévoilement en machine à sous (2026-11-04). À l'étape « formation »,
+ * la grille est remontée (sa clé : l'instant du départ) et note l'heure de son montage ; tout le
+ * reste se joue en CSS, délais calculés une fois pour toutes depuis le départ posé par la base :
+ * deux écrans, ou un écran rechargé, montrent la même image. Sous `prefers-reduced-motion`, la
+ * grille d'emblée.
  */
 function EquipesDevoilees({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   const reduit = useMouvementReduit();
   const monte = useMonte();
   const { etape, chrono_depart_ms: departMs } = etat.pilotage;
-  /** Le dévoilement (son départ) que cet écran a commencé à montrer, et celui qu'il a fini. */
-  const [vuDe, setVuDe] = useState<number | null>(null);
-  const [finDe, setFinDe] = useState<number | null>(null);
-  const [feteDe, setFeteDe] = useState<number | null>(null);
-  const attendu = !reduit && etape === ETAPE_FORMATION && departMs !== null && finDe !== departMs;
-  const maintenant = useMaintenant(attendu) + decalageMs;
-  // La fin, vue par le vol image par image ou par l'heure qui avance : la fête si cet écran a
-  // montré le vol ; rien pour un dévoilement trouvé déjà fini (écran ouvert après coup).
-  const finir = (depart: number) => {
-    setFinDe(depart);
-    if (vuDe === depart) setFeteDe(depart);
-  };
-  const termine = attendu && monte && maintenant - departMs >= DUREE_DEVOILEMENT_MS;
-  if (termine) finir(departMs);
-  const enVol = attendu && monte && !termine;
-  if (enVol && vuDe !== departMs) setVuDe(departMs);
+  const depart = monte && !reduit && etape === ETAPE_FORMATION ? departMs : null;
   return (
     <Equipes
+      key={depart ?? 'grille'}
       etat={etat}
       decalageMs={decalageMs}
-      vol={
-        enVol
-          ? (membres) => (
-              <VolDesPrenoms
-                equipes={membres}
-                departMs={departMs}
-                decalageMs={decalageMs}
-                graine={`${etat.evenement.id}-${departMs}`}
-                surFin={() => finir(departMs)}
-              />
-            )
-          : undefined
-      }
-    >
-      {feteDe !== null && feteDe === departMs && <Celebration force={2} />}
-    </Equipes>
+      departDevoilement={depart}
+    />
+  );
+}
+
+/** Les animations CSS du dévoilement, comptées depuis son départ (`stage.css`, `celebration.css`). */
+const ANIMATIONS_DU_DEVOILEMENT = new Set([
+  'tu-carte-arret',
+  'tu-clac',
+  'tu-rouleaux-arret',
+  'tu-confetti-chute',
+  'tu-feu-eclat',
+]);
+
+/** Le compteur d'une carte pendant le dévoilement : il suit les prénoms qui tombent. */
+function CompteurAnime({
+  textes,
+  arret,
+  affiches,
+  effectif,
+  ecouleMs,
+}: {
+  /** Le libellé pour chaque compte, de 0 à l'effectif (« 3 joueurs »). */
+  textes: string[];
+  arret: number;
+  affiches: number;
+  effectif: number;
+  /** Le temps écoulé depuis le départ du dévoilement, au montage. */
+  ecouleMs: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [montage] = useState(() => performance.now());
+  useEffect(() => {
+    let id = 0;
+    const pas = () => {
+      const n = compteA(ecouleMs + performance.now() - montage, arret, affiches, effectif);
+      if (ref.current) ref.current.textContent = textes[n] ?? '';
+      if (n < effectif) id = requestAnimationFrame(pas);
+    };
+    pas();
+    return () => cancelAnimationFrame(id);
+  }, [textes, arret, affiches, effectif, ecouleMs, montage]);
+  return (
+    <span ref={ref} className="tu-stage-team__nombre">
+      {textes[compteA(ecouleMs, arret, affiches, effectif)]}
+    </span>
+  );
+}
+
+/** Les rouleaux d'une carte pendant le dévoilement : une bande de prénoms par colonne. */
+function Rouleaux({
+  salle,
+  graine,
+  colonnes,
+  longueur,
+}: {
+  salle: readonly string[];
+  graine: string;
+  colonnes: number;
+  longueur: number;
+}) {
+  return (
+    <li className="tu-rouleaux" aria-hidden="true">
+      {Array.from({ length: colonnes }, (_, c) => {
+        const bande = bandeDuRouleau(salle, `${graine}-${c}`, longueur);
+        return (
+          <div
+            key={c}
+            className="tu-rouleau"
+            style={{ '--tu-rouleau-n': longueur, '--tu-rouleau-decale': c } as CSSProperties}
+          >
+            <div className="tu-rouleau__bande">
+              {[...bande, ...bande].map((p, i) => (
+                <span key={i} className="tu-stage-membre tu-rouleau__prenom">
+                  {p}
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </li>
   );
 }
 
 function Equipes({
   etat,
   decalageMs,
-  vol,
-  children,
+  departDevoilement,
 }: {
   etat: EtatSalle;
   decalageMs: number;
-  /**
-   * Le dévoilement : la couche des prénoms volants, qui reçoit ceux de chaque carte. Pendant le
-   * vol, les cartes restent sur leur première page et leurs prénoms sont masqués.
-   */
-  vol?: ((membres: Membre[][]) => ReactNode) | undefined;
-  children?: ReactNode;
+  /** Le départ du dévoilement en cours, posé par la base ; `null` hors dévoilement. */
+  departDevoilement: number | null;
 }) {
   const t = useTranslations('ecran');
   const grille = grilleDesEquipes(etat.equipes.length);
@@ -256,11 +309,64 @@ function Equipes({
     ...e,
     pages: pagesDe(membresTries(e.prenoms, e.capitaine), parPage),
   }));
-  const maintenant = useMaintenant(!vol && equipes.some((e) => e.pages.length > 1)) + decalageMs;
+
+  // Le dévoilement : le temps écoulé depuis son départ, au montage de la grille (sa clé).
+  const [montageMs] = useState(() => Date.now());
+  const ecouleMs = departDevoilement === null ? null : montageMs + decalageMs - departDevoilement;
+  const enDirect = ecouleMs !== null && ecouleMs < DUREE_DEVOILEMENT_MS;
+  const [fini, setFini] = useState(false);
+  const machine = enDirect && !fini;
+  // Le décalage d'horloge se remesure à chaque relecture : les minuteurs visent le temps qui reste
+  // vraiment (sinon une relecture toutes les quelques secondes repoussait la fin sans cesse).
+  const decalageRef = useRef(decalageMs);
+  useEffect(() => {
+    decalageRef.current = decalageMs;
+  }, [decalageMs]);
+  useEffect(() => {
+    if (!enDirect || departDevoilement === null) return;
+    const reste = FIN_DEVOILEMENT_MS - (Date.now() + decalageRef.current - departDevoilement);
+    const fin = setTimeout(() => setFini(true), Math.max(0, reste));
+    return () => clearTimeout(fin);
+  }, [enDirect, departDevoilement]);
+  // Les animations du dévoilement (délais comptés depuis le départ) se calent sur l'heure de la
+  // base, une fois la première image peinte : une scène lourde (huit cartes de rouleaux flous)
+  // met du temps à paraître, et les animations CSS ne partent qu'à ce moment-là ; elles
+  // retarderaient sur le roulement et sur la cymbale.
+  const corpsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!machine || departDevoilement === null) return;
+    const id = requestAnimationFrame(() => {
+      const corps = corpsRef.current;
+      const maintenant = document.timeline.currentTime;
+      if (!corps || typeof maintenant !== 'number') return;
+      const depart = maintenant - (Date.now() + decalageMs - departDevoilement);
+      for (const a of corps.getAnimations({ subtree: true })) {
+        if (a instanceof CSSAnimation && ANIMATIONS_DU_DEVOILEMENT.has(a.animationName)) {
+          a.startTime = depart;
+        }
+      }
+    });
+    return () => cancelAnimationFrame(id);
+  }, [machine, departDevoilement, decalageMs]);
+  // Un « tic » à chaque carte qui s'arrête (un battement : il se pose sur le roulement), programmé
+  // une fois (ou à l'activation du son), jamais à chaque relecture.
+  const jouer = useContext(SonsContexte);
+  const nbEquipes = equipes.length;
+  useEffect(() => {
+    if (!jouer || departDevoilement === null) return;
+    const maintenant = Date.now() + decalageRef.current - departDevoilement;
+    for (let k = 0; k < nbEquipes; k++) {
+      const reste = arretDe(k, nbEquipes) - maintenant;
+      if (reste > 0) jouer('tic', reste);
+    }
+  }, [jouer, departDevoilement, nbEquipes]);
+
+  const maintenant =
+    useMaintenant(!machine && equipes.some((e) => e.pages.length > 1)) + decalageMs;
   // Au premier rendu, la première page : le serveur et le navigateur n'ont pas la même heure.
-  // Pendant un dévoilement aussi : les prénoms volent vers des places qui ne bougent pas.
+  // Pendant un dévoilement aussi : les prénoms tombent à des places qui ne bougent pas.
   const monte = useMonte();
-  const pages = equipes.map((e) => (monte && !vol ? pageA(maintenant, e.pages.length) : 0));
+  const pages = equipes.map((e) => (monte && !machine ? pageA(maintenant, e.pages.length) : 0));
   // Un nom d'équipe ou un prénom trop long pour sa ligne se réduit, lui seul.
   const grilleRef = useRef<HTMLUListElement>(null);
   const cleGrille = `${pages.join()}:${equipes.map((e) => `${e.nom}:${e.prenoms.length}`).join()}:${ajuste}`;
@@ -268,10 +374,13 @@ function Equipes({
   // Le nom partage sa ligne avec l'effectif : il peut descendre plus bas (24 caractères au plus
   // depuis un téléphone).
   useTenirEnLargeur(grilleRef, cleGrille, '.tu-stage-team__nom', 0.5);
+  const salle = etat.equipes.flatMap((e) => e.prenoms);
   return (
     <div
-      className={cx('tu-stage__body tu-stage-equipes', vol && 'tu-stage-equipes--en-vol')}
+      className="tu-stage__body tu-stage-equipes"
       data-scene="equipes"
+      ref={corpsRef}
+      data-devoilement={machine ? 'en-cours' : undefined}
     >
       <h1 className="tu-stage__xl">{t('equipes')}</h1>
       <ul
@@ -284,24 +393,61 @@ function Equipes({
       >
         {equipes.map((e, n) => {
           const page = pages[n] ?? 0;
+          const membres = e.pages[page] ?? [];
+          const arret = arretDe(n, equipes.length);
           return (
-            <li key={e.id} className={cx('tu-stage-team', teamModifier(e.numero))}>
+            <li
+              key={e.id}
+              className={cx(
+                'tu-stage-team',
+                teamModifier(e.numero),
+                machine && 'tu-stage-team--machine',
+              )}
+              style={
+                machine && ecouleMs !== null
+                  ? ({ '--tu-arret': `${arret}ms` } as CSSProperties)
+                  : undefined
+              }
+            >
               <span className="tu-stage-team__tete">
                 <span className="tu-stage-team__nom">{e.nom}</span>
-                <span className="tu-stage-team__nombre">{t('joueurs', { n: e.joueurs })}</span>
+                {machine && ecouleMs !== null ? (
+                  <CompteurAnime
+                    textes={Array.from({ length: e.joueurs + 1 }, (_, i) =>
+                      i === 0 ? '' : t('joueurs', { n: i }),
+                    )}
+                    arret={arret}
+                    affiches={membres.length}
+                    effectif={e.joueurs}
+                    ecouleMs={ecouleMs}
+                  />
+                ) : (
+                  <span className="tu-stage-team__nombre">{t('joueurs', { n: e.joueurs })}</span>
+                )}
               </span>
               <ul
                 key={page}
                 className={cx(
                   'tu-stage-membres tu-stage-reveal',
                   ajuste ? 'tu-stage-membres--ajuste' : 'tu-stage-membres--carrousel',
+                  machine && 'tu-stage-membres--machine',
                 )}
                 style={reglage}
                 data-testid={`membres-${e.numero}`}
                 data-page={page}
               >
-                {(e.pages[page] ?? []).map((m, i) => (
-                  <li key={i} className="tu-stage-membre">
+                {membres.map((m, i) => (
+                  <li
+                    key={i}
+                    className="tu-stage-membre"
+                    style={
+                      machine && ecouleMs !== null
+                        ? ({
+                            '--tu-chute': `${chuteDe(arret, i, membres.length)}ms`,
+                          } as CSSProperties)
+                        : undefined
+                    }
+                  >
                     {m.capitaine && (
                       <>
                         <span className="tu-stage-membre__capitaine" aria-hidden="true">
@@ -313,6 +459,14 @@ function Equipes({
                     {m.prenom}
                   </li>
                 ))}
+                {machine && (
+                  <Rouleaux
+                    salle={salle}
+                    graine={`${etat.evenement.id}-${departDevoilement}-${e.numero}`}
+                    colonnes={disposition.colonnes}
+                    longueur={Math.max(disposition.rangs, 6) + 4}
+                  />
+                )}
               </ul>
               {e.pages.length > 1 && (
                 <span className="tu-stage-points" aria-hidden="true">
@@ -328,8 +482,19 @@ function Equipes({
           );
         })}
       </ul>
-      {vol?.(equipes.map((e, n) => e.pages[pages[n] ?? 0] ?? []))}
-      {children}
+      {/* La fête à la cymbale, programmée dès le départ (5 s), si l'écran voit le dévoilement. */}
+      {enDirect && ecouleMs !== null && (
+        <div
+          className="tu-stage-equipes__fete"
+          style={
+            {
+              '--tu-celebration-depart': `${DUREE_DEVOILEMENT_MS}ms`,
+            } as CSSProperties
+          }
+        >
+          <Celebration force={2} />
+        </div>
+      )}
     </div>
   );
 }

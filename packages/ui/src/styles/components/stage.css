@@ -477,32 +477,112 @@
   margin-inline-end: var(--tu-space-2);
 }
 
-/* Dévoilement des équipes (2026-11-04) : une couche sur la scène Équipes, dont les prénoms sont
-   masqués le temps du vol ; chaque prénom volant prend la taille et la place du sien, et le
-   rejoint posé (l'écran le déplace image par image). */
-.tu-stage-equipes {
+/* Dévoilement des équipes en machine à sous (2026-11-04). L'écran pose les délais une fois, au
+   montage, depuis le départ donné par la base : --tu-arret (la carte s'arrête), --tu-chute (un
+   prénom tombe). Jamais joué sous prefers-reduced-motion (l'écran montre alors la grille). */
+.tu-stage-equipes__fete {
+  display: contents;
+}
+
+/* La carte s'arrête : un flash à la couleur de l'équipe. */
+.tu-stage-team--machine {
+  animation: tu-carte-arret var(--tu-dur-carte-arret) var(--tu-ease) var(--tu-arret) both;
+}
+
+@keyframes tu-carte-arret {
+  0% {
+    background: var(--tu-surface);
+    box-shadow: none;
+    transform: none;
+  }
+  12% {
+    background: color-mix(in srgb, var(--tu-team-color) 12%, var(--tu-surface));
+    box-shadow:
+      0 0 0 var(--tu-space-2) var(--tu-team-color),
+      var(--tu-shadow-lift);
+    transform: scale(1.04);
+  }
+  100% {
+    background: var(--tu-surface);
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+/* La fenêtre des rouleaux : les prénoms tombent de son bord haut. */
+.tu-stage-membres--machine {
   position: relative;
+  overflow: hidden;
 }
 
-.tu-stage-equipes--en-vol .tu-stage-membres .tu-stage-membre {
-  visibility: hidden;
+/* Les vrais membres tombent un à un (clac), à la couleur de l'équipe, puis reprennent le marine. */
+.tu-stage-membres--machine > .tu-stage-membre {
+  animation: tu-clac var(--tu-dur-clac) var(--tu-ease-clac) var(--tu-chute) both;
 }
 
-.tu-devoilement {
+@keyframes tu-clac {
+  0% {
+    color: var(--tu-team-color);
+    opacity: 0;
+    transform: translateY(-120%);
+  }
+  35% {
+    color: var(--tu-team-color);
+    opacity: 1;
+    transform: translateY(8%);
+  }
+  50% {
+    transform: none;
+  }
+  65% {
+    color: var(--tu-team-color);
+  }
+  100% {
+    color: var(--tu-text);
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Les rouleaux : une bande de prénoms par colonne, qui défile vite et floue jusqu'à l'arrêt. */
+.tu-rouleaux {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--tu-stage-membres-colonnes, 2), minmax(0, 1fr));
+  column-gap: var(--tu-space-4);
   pointer-events: none;
+  animation: tu-rouleaux-arret var(--tu-dur-fast) var(--tu-arret) both;
 }
 
-.tu-devoilement__prenom {
-  position: absolute;
-  top: 0;
-  left: 0;
+.tu-rouleau {
+  overflow: hidden;
+}
+
+.tu-rouleau__bande {
+  display: flex;
+  flex-direction: column;
+  filter: blur(var(--tu-rouleau-flou));
+  animation: tu-rouleau-tourne calc(var(--tu-rouleau-n) * var(--tu-dur-rouleau-pas)) linear
+    calc(var(--tu-rouleau-decale) * var(--tu-dur-rouleau-pas) * -2.5) infinite;
+}
+
+.tu-rouleau__prenom {
   display: block;
-  opacity: 0;
-  transform-origin: center;
-  will-change: transform, opacity;
+  color: var(--tu-text-muted);
+}
+
+@keyframes tu-rouleau-tourne {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes tu-rouleaux-arret {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 /* Repère de page : un point par page, celui de la page affichée à la couleur de l'équipe. */
