@@ -16,10 +16,10 @@ test('une coupure réseau puis son retour reprennent la session, sans ressaisie'
   // Une seule langue : on arrive directement au prénom.
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill('Léo');
-  await page.getByRole('button', { name: "C'est parti" }).click();
+  await page.getByRole('button', { name: 'Continuer' }).click();
   await page.getByRole('button', { name: 'Non merci' }).click();
   await page.getByRole('button', { name: 'Compris' }).click();
-  await expect(page.getByRole('heading', { name: 'Salut Léo !' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bienvenue, Léo !' })).toBeVisible();
   await expect(page.getByTestId('points')).toHaveText('0 point');
 
   await context.setOffline(true);
@@ -42,7 +42,7 @@ test('une coupure réseau puis son retour reprennent la session, sans ressaisie'
   await context.setOffline(false);
   await expect(page.getByRole('status')).toHaveCount(0);
   await expect(page.getByTestId('points')).toHaveText('100 points');
-  await expect(page.getByRole('heading', { name: 'Salut Léo !' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bienvenue, Léo !' })).toBeVisible();
 
   // Toujours le même joueur : la reprise n'a créé personne.
   const { count } = await service

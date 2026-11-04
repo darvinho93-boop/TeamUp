@@ -20,34 +20,34 @@ test('du code tapé à la main jusqu’à l’attente, puis retour sans ressaisi
   await expect(page.getByRole('heading', { name: 'Your first name' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 
-  await page.getByRole('button', { name: "Let's go" }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByText('Type your first name.')).toBeVisible();
 
   await page.getByLabel('First name').fill('Asha');
-  await page.getByRole('button', { name: "Let's go" }).click();
-  await expect(page.getByRole('heading', { name: 'Captain?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('heading', { name: 'Want to be captain?' })).toBeVisible();
   await page.getByRole('button', { name: 'No thanks' }).click();
   await expect(page.getByText('Your team')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Équipe 1' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Got it' }).click();
-  await expect(page.getByRole('heading', { name: 'Hi Asha!' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome, Asha!' })).toBeVisible();
 
   // Même téléphone, page rechargée : la session est dans le cookie.
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Hi Asha!' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome, Asha!' })).toBeVisible();
   await expect(page.getByLabel('First name')).toHaveCount(0);
 
   // Et le QR rescanné (nouvelle navigation vers la même adresse) aussi.
   await page.goto(`/${evenement.code}`);
-  await expect(page.getByRole('heading', { name: 'Hi Asha!' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welcome, Asha!' })).toBeVisible();
 
   // Changer de langue en cours de route : gardé sur la fiche, même sans le cookie.
   await page.getByLabel('Language').selectOption('fr');
-  await expect(page.getByRole('heading', { name: 'Salut Asha !' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bienvenue, Asha !' })).toBeVisible();
   await page.context().clearCookies({ name: 'tu_langue' });
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Salut Asha !' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bienvenue, Asha !' })).toBeVisible();
   await expect(page.getByLabel('Langue')).toHaveValue('fr');
 });
 

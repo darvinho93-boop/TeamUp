@@ -4,44 +4,44 @@
     "langue": "Language"
   },
   "rejoindre": {
-    "titre": "Join the game",
+    "titre": "Join the game!",
     "aide": "Type the code shown on the big screen.",
     "legende": "Room code, six characters",
     "caractere": "Character {n}",
     "bouton": "Join",
     "codeIncomplet": "The code has six characters.",
-    "codeInconnu": "This code doesn't open any game. Check it on the big screen."
+    "codeInconnu": "This code doesn't open any game: check it on the big screen."
   },
   "prenom": {
     "titre": "Your first name",
     "champ": "First name",
-    "aide": "Your team will see it. First name only.",
-    "bouton": "Let's go",
+    "aide": "First name only: it will appear on the big screen.",
+    "bouton": "Continue",
     "vide": "Type your first name.",
-    "pris": "The name {prenom} is already taken in this game. Add your last initial, for example “{prenom} M.”.",
+    "pris": "The name {prenom} is already taken: add your last initial, for example “{prenom} M.”.",
     "complet": "The game is full.",
     "codeInconnu": "This game is no longer open.",
     "serveur": "That didn't work. Try again."
   },
   "groupe": {
     "titre": "Your group",
-    "aide": "To mix the teams. We don't keep it.",
+    "aide": "It helps mix the teams and is erased once the first game starts.",
     "sansReponse": "I'd rather not say"
   },
   "capitaine": {
-    "titre": "Captain?",
-    "aide": "The captain picks the team name, takes the photos and places the team's tokens in the quiz. We draw lots among the volunteers.",
+    "titre": "Want to be captain?",
+    "aide": "The captain names the team and, depending on the games, sends its photos and bets its tokens. Drawn at random from the volunteers.",
     "oui": "I volunteer",
     "non": "No thanks",
-    "nomTitre": "Your team name",
-    "nomAide": "If you are drawn as captain, your team will carry this name. You can change it until the teams are formed.",
+    "nomTitre": "A name for your team?",
+    "nomAide": "If you're drawn as captain, your team will carry this name.",
     "nomChamp": "Team name (optional)",
-    "nomBouton": "Let's go"
+    "nomBouton": "Confirm"
   },
   "nomEquipe": {
     "ouvrir": "Rename the team",
     "titre": "Your team's name",
-    "aide": "It shows up right away on the screen in the room.",
+    "aide": "It shows up right away on the big screen!",
     "champ": "Team name",
     "bouton": "Save",
     "retour": "Back",
@@ -51,80 +51,80 @@
     "serveur": "That didn't work. Try again."
   },
   "ajout": {
-    "ouvrir": "Add a guest",
-    "titre": "A guest without a phone",
-    "aide": "Type their first name: they will play with their team, in the room.",
+    "ouvrir": "Add someone without a phone",
+    "titre": "Someone without a phone?",
+    "aide": "Their first name is all it takes to play with everyone, in the room.",
     "champ": "Their first name",
     "bouton": "Add",
     "retour": "Back",
     "groupeTitre": "{prenom}'s group",
-    "fait": "{prenom} joins {equipe}",
-    "faitSansEquipe": "{prenom} is added",
-    "faitAide": "Tell them: their team is waiting. They follow the game on the screen.",
-    "encore": "Add another guest",
+    "fait": "{prenom} joins {equipe}!",
+    "faitSansEquipe": "{prenom} joins the game!",
+    "faitAide": "Tell them to follow the big screen: that's where it all happens!",
+    "encore": "Add someone else",
     "vide": "Type their first name.",
-    "pris": "The name {prenom} is already taken in this game. Add their last initial, for example “{prenom} M.”.",
+    "pris": "The name {prenom} is already taken: add their last initial, for example “{prenom} M.”.",
     "complet": "The game is full.",
-    "interdit": "You can no longer add guests. Ask the host.",
+    "interdit": "You can no longer add anyone: check with the host.",
     "close": "This game is no longer open.",
     "serveur": "That didn't work. Try again."
   },
   "equipe": {
     "surtitre": "Your team",
-    "aide": "Find the players wearing this colour in the room.",
+    "aide": "Hold up your phone and find the others with the same colour!",
     "bouton": "Got it",
-    "sansEquipe": "The host is about to form the teams. Stay close!"
+    "sansEquipe": "The teams will be formed soon: stay close!"
   },
   "attente": {
-    "salut": "Hi {prenom}!",
+    "salut": "Welcome, {prenom}!",
     "points": "{points, plural, one {# point} other {# points}}",
     "enCours": "Now playing: {jeu}",
     "prochain": "Next game: {jeu}",
-    "regarde": "Watch the screen",
+    "regarde": "Eyes on the big screen!",
     "voirEquipe": "See my team",
-    "termine": "The game is over. Thanks for playing!",
-    "capitaine": "You're the captain: the team name, the photos and the quiz tokens are up to you!"
+    "termine": "The game is over: thanks for playing!",
+    "capitaine": "You're the captain! Keep your phone close at hand."
   },
   "horsLigne": {
-    "bandeau": "Connection lost. Retrying…"
+    "bandeau": "Connection lost: retrying…"
   },
   "quiz": {
     "numero": "Question {n} of {total}",
     "choix": "Answer {lettre}: {texte}",
-    "envoyee": "Answer sent. Watch the screen!",
-    "tropTard": "Too late, the question is closed.",
+    "envoyee": "Answer sent! Eyes on the big screen.",
+    "tropTard": "Too late: the question is closed!",
     "bonne": "Right answer! You're still in.",
-    "elimine": "You're out! Watch the rest on the screen.",
-    "enJeu": "You're still in the game.",
-    "prochaine": "Get ready, the next question is coming.",
-    "premiere": "Get ready, the first question is coming.",
+    "elimine": "You're out! Stay with us on the big screen.",
+    "enJeu": "You're in the game!",
+    "prochaine": "Get ready: the next question is coming!",
+    "premiere": "Get ready: the first question is coming!",
     "fin": "End of the quiz",
-    "survivant": "You made it to the end. Well done!",
-    "spectateur": "The quiz started before you arrived: watch the screen, you'll play the next game.",
+    "survivant": "You made it to the end: well done!",
+    "spectateur": "The quiz started before you arrived: follow it on the big screen, you'll play in the next game!",
     "jetons": {
-      "sansEquipe": "You have no team for this quiz: watch the screen.",
+      "sansEquipe": "You have no team for this quiz: follow it on the big screen.",
       "equipe": "{n, plural, =0 {Your team has no tokens left} one {Your team has # token} other {Your team has # tokens}}",
-      "capitaine": "You're the captain: for each question, you share out the team's tokens. Stay together!",
-      "coequipier": "Your captain bets for the team: help them choose!",
-      "plusDeJetons": "No tokens left: watch the rest on the screen.",
+      "capitaine": "For each question, you bet the team's tokens: keep your team around you!",
+      "coequipier": "Your captain bets for the team: whisper them the right answer!",
+      "plusDeJetons": "No tokens left! Stay with us on the big screen.",
       "reste": "{n, plural, one {# token left to place} other {# tokens left to place}}",
-      "toutPose": "All tokens are placed: confirm the bet.",
+      "toutPose": "All tokens are placed: confirm!",
       "valider": "Confirm the bet",
-      "validee": "Bet confirmed. Watch the screen!",
-      "fige": "Time's up: go and see the host.",
+      "validee": "Bet confirmed! Eyes on the big screen.",
+      "fige": "Time's up! Let the host know.",
       "restants": "{n, plural, =0 {No tokens left} one {You have # token left} other {You have # tokens left}}",
       "moins": "Remove a token from answer {lettre}",
       "plus": "Add a token to answer {lettre}",
       "ligne": "Answer {lettre}: {texte}, {n, plural, one {# token} other {# tokens}}"
     },
-    "reponsesAVenir": "Watch the screen: the answers are coming one by one."
+    "reponsesAVenir": "The answers are coming one by one on the big screen!"
   },
   "photos": {
     "ouvrir": "Photos: {envoyees} of {total}",
     "titre": "Photo challenge",
-    "capitaine": "You're the captain: one photo per theme, whenever you like tonight. You can replace it until submissions close.",
-    "equipier": "Your captain sends one photo per theme. Stage it together!",
-    "closes": "Submissions are closed. Watch the screen for the show!",
+    "capitaine": "One photo per theme, whenever you like: you can replace it until submissions close.",
+    "equipier": "Your captain sends one photo per theme: strike a pose with the whole team!",
+    "closes": "Submissions are closed: see you on the big screen for the verdict!",
     "compte": "{envoyees, plural, =0 {No photos sent} one {# photo sent} other {# photos sent}} out of {total}",
     "numero": "Theme {n}",
     "aFaire": "No photo yet",
@@ -140,7 +140,7 @@
       "close": "Not sent: submissions are closed.",
       "theme": "Not sent: this theme no longer exists.",
       "fichier": "Not sent: file rejected.",
-      "decodage": "This image can't be read. Take the photo again."
+      "decodage": "This image can't be read: take the photo again."
     }
   },
   "jeux": {
@@ -845,22 +845,22 @@
   },
   "explication": {
     "titre": "How to play",
-    "deroule": "The host will form mixed teams: you'll play with people you don't know yet. Then the challenges follow one another on the big screen: keep an eye on it!",
+    "deroule": "Mixed teams: you play with people you don't know yet. The games follow one another on the big screen: keep an eye on it!",
     "jeux": "Tonight's games",
     "telephone": "And your phone?",
-    "telephoneAide": "It shows your team and your points, and it is used for the quiz if the host decides so. The captain uses it to name the team, send photos and bet the quiz tokens.",
-    "reseau": "To play, stay connected (to the party Wi-Fi if there is one). Between games, use your phone as you like, then come back here.",
+    "telephoneAide": "It shows your team and its points, and is used in some games: the host will let you know.",
+    "reseau": "Keep it connected (to the party Wi-Fi if there is one). Between games, it's all yours: just come back to this page.",
     "bouton": "Let's go",
-    "revoir": "See the explanations again"
+    "revoir": "See how to play again"
   },
   "proposition": {
-    "titre": "Your team name",
-    "aide": "If you are drawn as captain, your team will carry this name. Leave it empty to suggest nothing.",
-    "champ": "Team name",
+    "titre": "A name for your team?",
+    "aide": "If you're drawn as captain, your team will carry this name. Leave it empty to suggest nothing.",
+    "champ": "Team name (optional)",
     "bouton": "Save",
     "retour": "Back",
-    "formees": "The teams have just been formed: names can no longer be suggested.",
-    "serveur": "The name could not be saved. Try again.",
+    "formees": "The teams are formed: too late to suggest a name!",
+    "serveur": "That didn't work. Try again.",
     "actuel": "Suggested team name: “{nom}”",
     "aucun": "You volunteered to be captain.",
     "ouvrir": "Change the suggested name"

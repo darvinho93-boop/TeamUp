@@ -20,7 +20,7 @@ test('la régie clôture la soirée, puis la rouvre', async ({ browser, request 
   });
   expect(r.status()).toBe(200);
   await invite.goto(`/${evenement.code}`);
-  await expect(invite.getByText('Salut Vera !')).toBeVisible();
+  await expect(invite.getByText('Bienvenue, Vera !')).toBeVisible();
 
   const regie = await (
     await browser.newContext({ viewport: { width: 1440, height: 900 }, isMobile: false })
@@ -50,7 +50,7 @@ test('la régie clôture la soirée, puis la rouvre', async ({ browser, request 
   ).toBe(true);
 
   // Le téléphone le voit sans recharger (signal, ou relecture de sûreté de 4 s).
-  await expect(invite.getByText('La partie est terminée.')).toBeVisible({ timeout: 10_000 });
+  await expect(invite.getByText('La partie est terminée')).toBeVisible({ timeout: 10_000 });
   // Plus d'arrivée.
   const refus = await request.post(`/api/partie/${evenement.code}/rejoindre`, {
     data: { prenom: 'Nils', langue: 'fr', volontaire: false },

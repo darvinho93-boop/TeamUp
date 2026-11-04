@@ -4,127 +4,127 @@
     "langue": "Langue"
   },
   "rejoindre": {
-    "titre": "Rejoins la partie",
-    "aide": "Tape le code affiché sur le grand écran.",
+    "titre": "Rejoignez la partie !",
+    "aide": "Tapez le code affiché sur le grand écran.",
     "legende": "Code de salle, six caractères",
     "caractere": "Caractère {n}",
     "bouton": "Rejoindre",
     "codeIncomplet": "Le code fait six caractères.",
-    "codeInconnu": "Ce code n'ouvre aucune partie. Vérifie-le sur le grand écran."
+    "codeInconnu": "Ce code n'ouvre aucune partie : vérifiez-le sur le grand écran."
   },
   "prenom": {
-    "titre": "Ton prénom",
+    "titre": "Votre prénom",
     "champ": "Prénom",
-    "aide": "Ton équipe le verra. Le prénom suffit.",
-    "bouton": "C'est parti",
-    "vide": "Écris ton prénom.",
-    "pris": "Le prénom {prenom} est déjà pris dans la partie. Ajoute l'initiale de ton nom, par exemple « {prenom} M. ».",
+    "aide": "Le prénom suffit : il s'affichera sur le grand écran.",
+    "bouton": "Continuer",
+    "vide": "Écrivez votre prénom.",
+    "pris": "Le prénom {prenom} est déjà pris : ajoutez l'initiale de votre nom, par exemple « {prenom} M. ».",
     "complet": "La partie est complète.",
     "codeInconnu": "Cette partie n'est plus ouverte.",
-    "serveur": "Ça n'a pas marché. Réessaie."
+    "serveur": "Ça n'a pas marché : réessayez."
   },
   "groupe": {
-    "titre": "Ton groupe",
-    "aide": "Pour mélanger les équipes. On ne le garde pas.",
+    "titre": "Votre groupe",
+    "aide": "Il sert à mélanger les équipes et s'efface dès le premier jeu.",
     "sansReponse": "Je préfère ne pas répondre"
   },
   "capitaine": {
-    "titre": "Capitaine ?",
-    "aide": "Le capitaine choisit le nom de l'équipe, prend les photos et mise les jetons de l'équipe au quiz. On tire au sort parmi les volontaires.",
+    "titre": "Envie d'être capitaine ?",
+    "aide": "Le capitaine nomme l'équipe et, selon les jeux, envoie ses photos et mise ses jetons. Tirage au sort parmi les volontaires.",
     "oui": "Je me propose",
     "non": "Non merci",
-    "nomTitre": "Ton nom d'équipe",
-    "nomAide": "Si tu es tiré capitaine, ton équipe portera ce nom. Tu pourras le changer jusqu'à la formation des équipes.",
+    "nomTitre": "Un nom pour votre équipe ?",
+    "nomAide": "Si le tirage vous désigne capitaine, votre équipe portera ce nom.",
     "nomChamp": "Nom d'équipe (facultatif)",
-    "nomBouton": "C'est parti"
+    "nomBouton": "Valider"
   },
   "nomEquipe": {
     "ouvrir": "Renommer l'équipe",
-    "titre": "Le nom de ton équipe",
-    "aide": "Il s'affiche tout de suite sur l'écran de la salle.",
+    "titre": "Le nom de votre équipe",
+    "aide": "Il s'affiche aussitôt sur le grand écran !",
     "champ": "Nom de l'équipe",
     "bouton": "Enregistrer",
     "retour": "Retour",
-    "vide": "Écris un nom.",
+    "vide": "Écrivez un nom.",
     "fige": "L'animateur a bloqué le nom de l'équipe.",
-    "capitaine": "Tu n'es plus capitaine.",
-    "serveur": "Ça n'a pas marché. Réessaie."
+    "capitaine": "Vous n'êtes plus capitaine.",
+    "serveur": "Ça n'a pas marché : réessayez."
   },
   "ajout": {
-    "ouvrir": "Ajouter un invité",
-    "titre": "Un invité sans téléphone",
-    "aide": "Écris son prénom : il jouera avec son équipe, en salle.",
+    "ouvrir": "Ajouter quelqu'un sans téléphone",
+    "titre": "Quelqu'un sans téléphone ?",
+    "aide": "Son prénom suffit pour jouer avec tout le monde, en salle.",
     "champ": "Son prénom",
     "bouton": "Ajouter",
     "retour": "Retour",
     "groupeTitre": "Le groupe de {prenom}",
-    "fait": "{prenom} rejoint {equipe}",
-    "faitSansEquipe": "{prenom} est ajouté",
-    "faitAide": "Dis-le-lui : son équipe l'attend. Il suit le jeu sur l'écran.",
-    "encore": "Ajouter un autre invité",
-    "vide": "Écris son prénom.",
-    "pris": "Le prénom {prenom} est déjà pris dans la partie. Ajoute l'initiale de son nom, par exemple « {prenom} M. ».",
+    "fait": "{prenom} rejoint {equipe} !",
+    "faitSansEquipe": "{prenom} rejoint la partie !",
+    "faitAide": "Dites-lui de suivre le grand écran : tout s'y joue !",
+    "encore": "Ajouter quelqu'un d'autre",
+    "vide": "Écrivez son prénom.",
+    "pris": "Le prénom {prenom} est déjà pris : ajoutez l'initiale de son nom, par exemple « {prenom} M. ».",
     "complet": "La partie est complète.",
-    "interdit": "Tu ne peux plus ajouter d'invité. Demande à l'animateur.",
-    "close": "La partie n'est plus ouverte.",
-    "serveur": "Ça n'a pas marché. Réessaie."
+    "interdit": "Vous ne pouvez plus ajouter personne : voyez avec l'animateur.",
+    "close": "Cette partie n'est plus ouverte.",
+    "serveur": "Ça n'a pas marché : réessayez."
   },
   "equipe": {
-    "surtitre": "Ton équipe",
-    "aide": "Retrouve les joueurs de cette couleur dans la salle.",
+    "surtitre": "Votre équipe",
+    "aide": "Levez votre téléphone et retrouvez ceux de la même couleur !",
     "bouton": "Compris",
-    "sansEquipe": "L'animateur va former les équipes. Reste dans le coin !"
+    "sansEquipe": "Les équipes se forment bientôt : restez dans le coin !"
   },
   "attente": {
-    "salut": "Salut {prenom} !",
+    "salut": "Bienvenue, {prenom} !",
     "points": "{points, plural, =0 {0 point} one {# point} other {# points}}",
     "enCours": "En ce moment : {jeu}",
     "prochain": "Prochain jeu : {jeu}",
-    "regarde": "Regarde l'écran",
+    "regarde": "Les yeux sur le grand écran !",
     "voirEquipe": "Voir mon équipe",
-    "termine": "La partie est terminée. Merci d'avoir joué !",
-    "capitaine": "Tu es capitaine : le nom de l'équipe, les photos et les jetons du quiz, c'est toi !"
+    "termine": "La partie est terminée : merci d'avoir joué !",
+    "capitaine": "Capitaine, c'est vous ! Gardez votre téléphone à portée de main."
   },
   "horsLigne": {
-    "bandeau": "Connexion perdue. On réessaie…"
+    "bandeau": "Connexion perdue : on réessaie…"
   },
   "quiz": {
     "numero": "Question {n} sur {total}",
     "choix": "Réponse {lettre} : {texte}",
-    "envoyee": "Réponse envoyée. Regarde l'écran !",
-    "tropTard": "Trop tard, la question est fermée.",
-    "bonne": "Bonne réponse ! Tu restes en jeu.",
-    "elimine": "Éliminé ! Regarde la suite sur l'écran.",
-    "enJeu": "Tu es toujours en jeu.",
-    "prochaine": "Prépare-toi, la question suivante arrive.",
-    "premiere": "Prépare-toi, la première question arrive.",
+    "envoyee": "Réponse envoyée ! Les yeux sur le grand écran.",
+    "tropTard": "Trop tard : la question est close !",
+    "bonne": "Bonne réponse ! Vous restez en jeu.",
+    "elimine": "Hors jeu ! Restez avec nous sur le grand écran.",
+    "enJeu": "Vous êtes en jeu !",
+    "prochaine": "Préparez-vous : la question suivante arrive !",
+    "premiere": "Préparez-vous : la première question arrive !",
     "fin": "Fin du quiz",
-    "survivant": "Tu as tenu jusqu'au bout. Bravo !",
-    "spectateur": "Le quiz a commencé avant ton arrivée : regarde l'écran, tu joueras au prochain jeu.",
+    "survivant": "Vous avez tenu jusqu'au bout : bravo !",
+    "spectateur": "Le quiz a commencé avant votre arrivée : suivez-le sur le grand écran, vous jouerez au prochain jeu !",
     "jetons": {
-      "sansEquipe": "Tu n'as pas d'équipe pour ce quiz : regarde l'écran.",
+      "sansEquipe": "Vous n'avez pas d'équipe pour ce quiz : suivez-le sur le grand écran.",
       "equipe": "{n, plural, =0 {Votre équipe n'a plus de jeton} one {Votre équipe a # jeton} other {Votre équipe a # jetons}}",
-      "capitaine": "Tu es capitaine : à chaque question, tu répartis les jetons de l'équipe. Restez ensemble !",
-      "coequipier": "Votre capitaine mise pour l'équipe : aidez-le à choisir !",
-      "plusDeJetons": "Plus de jetons : regardez la suite sur l'écran.",
+      "capitaine": "À chaque question, vous misez les jetons de l'équipe : gardez-la autour de vous !",
+      "coequipier": "Votre capitaine mise pour l'équipe : soufflez-lui la bonne réponse !",
+      "plusDeJetons": "Plus de jetons ! Restez avec nous sur le grand écran.",
       "reste": "{n, plural, one {Reste # jeton à poser} other {Reste # jetons à poser}}",
-      "toutPose": "Tous les jetons sont posés : valide la mise.",
+      "toutPose": "Tous les jetons sont posés : validez !",
       "valider": "Valider la mise",
-      "validee": "Mise validée. Regardez l'écran !",
-      "fige": "Temps écoulé : allez voir l'animateur.",
+      "validee": "Mise validée ! Les yeux sur le grand écran.",
+      "fige": "Temps écoulé ! Faites signe à l'animateur.",
       "restants": "{n, plural, =0 {Plus aucun jeton} one {Il vous reste # jeton} other {Il vous reste # jetons}}",
       "moins": "Retirer un jeton de la réponse {lettre}",
       "plus": "Ajouter un jeton sur la réponse {lettre}",
       "ligne": "Réponse {lettre} : {texte}, {n, plural, one {# jeton} other {# jetons}}"
     },
-    "reponsesAVenir": "Regardez l'écran : les réponses arrivent une à une."
+    "reponsesAVenir": "Les réponses arrivent une à une sur le grand écran !"
   },
   "photos": {
     "ouvrir": "Photos : {envoyees} sur {total}",
     "titre": "Photo challenge",
-    "capitaine": "Tu es capitaine : une photo par thème, quand tu veux dans la soirée. Tu peux la remplacer jusqu'à la clôture.",
-    "equipier": "Votre capitaine envoie une photo par thème. Mettez-vous en scène ensemble !",
-    "closes": "Les envois sont clos. Rendez-vous sur l'écran pour la diffusion !",
+    "capitaine": "Une photo par thème, quand vous voulez : vous pouvez la remplacer jusqu'à la clôture des envois.",
+    "equipier": "Votre capitaine envoie une photo par thème : prenez la pose avec toute l'équipe !",
+    "closes": "Les envois sont clos : rendez-vous sur le grand écran pour le verdict !",
     "compte": "{envoyees, plural, =0 {Aucune photo envoyée} one {# photo envoyée} other {# photos envoyées}} sur {total}",
     "numero": "Thème {n}",
     "aFaire": "Pas encore de photo",
@@ -135,12 +135,12 @@
     "remplacer": "Remplacer la photo",
     "retour": "Retour",
     "refus": {
-      "session": "Non envoyée : ta session a expiré.",
-      "capitaine": "Non envoyée : tu n'es plus capitaine.",
+      "session": "Non envoyée : votre session a expiré.",
+      "capitaine": "Non envoyée : vous n'êtes plus capitaine.",
       "close": "Non envoyée : les envois sont clos.",
       "theme": "Non envoyée : ce thème n'existe plus.",
       "fichier": "Non envoyée : fichier refusé.",
-      "decodage": "Cette image ne peut pas être lue. Reprends la photo."
+      "decodage": "Cette image est illisible : reprenez la photo."
     }
   },
   "jeux": {
@@ -844,25 +844,25 @@
     }
   },
   "explication": {
-    "titre": "Comment on y joue",
-    "deroule": "L'animateur va former des équipes mélangées : tu vas jouer avec des gens que tu ne connais pas encore. Ensuite, les défis s'enchaînent sur le grand écran : suis-le !",
-    "jeux": "Les jeux de la soirée",
-    "telephone": "Et ton téléphone ?",
-    "telephoneAide": "Il t'indique ton équipe et tes points, et il sert au quiz si l'animateur le décide. Le capitaine y choisit le nom de l'équipe, envoie les photos et mise les jetons du quiz.",
-    "reseau": "Pour jouer, reste connecté (au wifi de la soirée s'il y en a un). Entre deux jeux, tu peux faire ce que tu veux de ton téléphone, puis revenir ici.",
+    "titre": "Comment jouer",
+    "deroule": "Des équipes mélangées : vous jouez avec des personnes que vous ne connaissez pas encore. Les jeux s'enchaînent sur le grand écran : suivez-le !",
+    "jeux": "Au programme",
+    "telephone": "Et votre téléphone ?",
+    "telephoneAide": "Il affiche votre équipe et ses points, et sert à certains jeux : l'animateur vous le dira.",
+    "reseau": "Gardez-le connecté (au wifi de la soirée s'il y en a un). Entre deux jeux, il est à vous : revenez simplement sur cette page.",
     "bouton": "C'est parti",
-    "revoir": "Revoir les explications"
+    "revoir": "Revoir comment jouer"
   },
   "proposition": {
-    "titre": "Ton nom d'équipe",
-    "aide": "Si tu es tiré capitaine, ton équipe portera ce nom. Laisse vide pour ne rien proposer.",
-    "champ": "Nom d'équipe",
+    "titre": "Un nom pour votre équipe ?",
+    "aide": "Si le tirage vous désigne capitaine, votre équipe portera ce nom. Laissez vide pour ne rien proposer.",
+    "champ": "Nom d'équipe (facultatif)",
     "bouton": "Enregistrer",
     "retour": "Retour",
-    "formees": "Les équipes viennent d'être formées : le nom ne se propose plus.",
-    "serveur": "Le nom n'a pas pu s'enregistrer. Réessaie.",
+    "formees": "Les équipes sont formées : trop tard pour proposer un nom !",
+    "serveur": "Ça n'a pas marché : réessayez.",
     "actuel": "Nom d'équipe proposé : « {nom} »",
-    "aucun": "Tu es volontaire pour être capitaine.",
+    "aucun": "Vous êtes volontaire pour être capitaine.",
     "ouvrir": "Changer le nom proposé"
   },
   "carte": {

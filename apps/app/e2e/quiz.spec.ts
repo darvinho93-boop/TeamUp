@@ -166,7 +166,7 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
   });
   expect(arrivee.status()).toBe(200);
   await telephone.goto(`/${code}`);
-  await expect(telephone.getByText('Salut Zoé !')).toBeVisible();
+  await expect(telephone.getByText('Bienvenue, Zoé !')).toBeVisible();
 
   // Survivants attendus : ceux qui ne tombent jamais et ne se taisent jamais (Zoé tombe).
   const attendus: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
@@ -210,7 +210,7 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
 
     // Avant le chrono, personne ne répond : le téléphone attend, la base refuse.
     if (q === 1) {
-      await expect(telephone.getByTestId('statut-quiz')).toHaveText(/les réponses arrivent/, {
+      await expect(telephone.getByTestId('statut-quiz')).toHaveText(/Les réponses arrivent/, {
         timeout: 2000,
       });
       expect(
@@ -254,7 +254,7 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
       ecran.getByTestId('bonne-reponse'),
     );
     if (q === 1) {
-      await expect(telephone.getByTestId('statut-quiz')).toHaveText(/Éliminé/, { timeout: 2000 });
+      await expect(telephone.getByTestId('statut-quiz')).toHaveText(/Hors jeu/, { timeout: 2000 });
     }
     await regie
       .getByRole('button', { name: q < 4 ? 'Question suivante' : 'Fin des questions' })

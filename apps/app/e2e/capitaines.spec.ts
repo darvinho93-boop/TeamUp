@@ -29,13 +29,13 @@ async function arriver(browser: Browser, prenom: string, volontaire: boolean) {
   const page = await (await browser.newContext()).newPage();
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill(prenom);
-  await page.getByRole('button', { name: "C'est parti" }).click();
-  await expect(page.getByRole('heading', { name: 'Capitaine ?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await expect(page.getByRole('heading', { name: "Envie d'être capitaine ?" })).toBeVisible();
   await page.getByRole('button', { name: volontaire ? 'Je me propose' : 'Non merci' }).click();
   // Lot 14 : un volontaire propose un nom d'équipe (facultatif) avant d'entrer.
-  if (volontaire) await page.getByRole('button', { name: "C'est parti" }).click();
+  if (volontaire) await page.getByRole('button', { name: 'Valider' }).click();
   await page.getByRole('button', { name: 'Compris' }).click();
-  await expect(page.getByText(`Salut ${prenom} !`)).toBeVisible();
+  await expect(page.getByText(`Bienvenue, ${prenom} !`)).toBeVisible();
   return page;
 }
 

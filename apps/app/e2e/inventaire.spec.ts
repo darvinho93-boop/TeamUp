@@ -862,7 +862,7 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
   await prendreLea('attente');
   for (const [bouton, n] of [
     [/Renommer/, 'nom'],
-    [/Ajouter un invité/, 'ajout'],
+    [/Ajouter quelqu'un sans téléphone/, 'ajout'],
     [/photo/i, 'photos'],
   ] as const) {
     await lea.goto(`/${evenement.code}`);

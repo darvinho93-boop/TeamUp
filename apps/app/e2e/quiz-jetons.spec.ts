@@ -123,7 +123,7 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
     expect(arrivee.status()).toBe(200);
     await placer(prenom, numero);
     await page.goto(`/${code}`);
-    await expect(page.getByText(`Salut ${prenom} !`)).toBeVisible();
+    await expect(page.getByText(`Bienvenue, ${prenom} !`)).toBeVisible();
     return page;
   };
   const api = async (prenom: string, numero: number) => {
@@ -189,7 +189,7 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   // la validation, Bruno le voit en lecture seule.
   await regie.getByRole('button', { name: 'Afficher la question' }).click();
   await expect(scene('qcm2', 'question')).toBeVisible();
-  await expect(alice.getByTestId('statut-quiz')).toHaveText(/les réponses arrivent/, {
+  await expect(alice.getByTestId('statut-quiz')).toHaveText(/Les réponses arrivent/, {
     timeout: 5000,
   });
   expect((await miser([0, 0, 3, 0])).status()).toBe(409);

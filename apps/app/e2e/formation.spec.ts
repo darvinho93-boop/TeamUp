@@ -45,12 +45,12 @@ async function inscrire(browser: Browser, prenom: string, nom?: string): Promise
   const page = await (await browser.newContext()).newPage();
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill(prenom);
-  await page.getByRole('button', { name: "C'est parti" }).click();
-  await expect(page.getByRole('heading', { name: 'Capitaine ?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await expect(page.getByRole('heading', { name: "Envie d'être capitaine ?" })).toBeVisible();
   if (nom) {
     await page.getByRole('button', { name: 'Je me propose' }).click();
     await page.getByLabel("Nom d'équipe (facultatif)").fill(nom);
-    await page.getByRole('button', { name: "C'est parti" }).click();
+    await page.getByRole('button', { name: 'Valider' }).click();
   } else {
     await page.getByRole('button', { name: 'Non merci' }).click();
   }
@@ -100,7 +100,7 @@ test('inscription sans équipe, formation par la régie, puis Points communs', a
 
   // Léa change d'avis sur le nom.
   await lea.getByRole('button', { name: 'Changer le nom proposé' }).click();
-  await lea.getByLabel("Nom d'équipe").fill('Les Tigres');
+  await lea.getByLabel("Nom d'équipe (facultatif)").fill('Les Tigres');
   await lea.getByRole('button', { name: 'Enregistrer' }).click();
   await expect(lea.getByTestId('nom-propose')).toContainText('Les Tigres');
 

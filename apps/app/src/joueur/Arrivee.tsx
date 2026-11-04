@@ -15,7 +15,7 @@ import { EcranJoueur } from './EcranJoueur';
  * laquelle le joueur lit. Ce sont les seuls textes hors des fichiers de messages.
  */
 const TITRES: Record<Langue, string> = {
-  fr: 'Ta langue',
+  fr: 'Votre langue',
   en: 'Your language',
   ta: 'உங்கள் மொழி',
 };
