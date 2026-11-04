@@ -142,12 +142,150 @@
   color: var(--tu-primary);
 }
 
-/* Accueil : QR géant et code de salle. */
+/* Accueil : QR géant et code de salle, puis les prénoms des joueurs déjà arrivés (2026-11-04). */
 .tu-stage-accueil {
-  flex-direction: row;
+  justify-content: center;
+}
+
+.tu-stage-accueil__haut {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--tu-space-16);
+}
+
+/* « Bienvenue, Camille ! » sous le compte des joueurs : sa place est réservée (deux lignes), rien
+   ne bouge quand il paraît ; il éclot, se lit, puis s'efface. Sa largeur ne dépend pas de son
+   texte (contain) : une liste de prénoms longs passait sinon la colonne au-delà de la scène, et
+   le QR code sortait par la gauche (vu à 150 joueurs, 2026-11-04). */
+.tu-stage-bienvenue {
+  contain: inline-size;
+  min-height: calc(2 * var(--tu-size-3xl) * var(--tu-leading-tight) + 2 * var(--tu-space-2));
+}
+
+.tu-stage-bienvenue__texte {
+  display: -webkit-box;
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  padding: var(--tu-space-2) var(--tu-space-6);
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-sage-500);
+  color: var(--tu-navy-900);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  animation: tu-bienvenue var(--tu-dur-bienvenue) var(--tu-ease) both;
+}
+
+@keyframes tu-bienvenue {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  16%,
+  85% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Les bandeaux : toute la largeur de la scène, deux rangées qui glissent en sens opposés (le
+   mouvement est posé par l'écran, image par image). Une rangée qui tient reste centrée. */
+.tu-bandeau {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  margin-inline: calc(-1 * var(--tu-space-16));
+}
+
+.tu-bandeau__rangee {
+  display: flex;
+  justify-content: center;
+  min-height: calc(var(--tu-size-3xl) * var(--tu-leading-tight) + 2 * var(--tu-space-2));
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    var(--tu-text) var(--tu-bandeau-fondu),
+    var(--tu-text) calc(100% - var(--tu-bandeau-fondu)),
+    transparent
+  );
+}
+
+.tu-bandeau__rangee[data-defile] {
+  justify-content: flex-start;
+}
+
+.tu-bandeau__piste {
+  display: flex;
+  flex: none;
+  will-change: transform;
+}
+
+.tu-bandeau__liste {
+  display: flex;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-bandeau__prenom {
+  flex: none;
+  max-width: var(--tu-bandeau-prenom-max);
+  overflow: hidden;
+  margin-inline-end: var(--tu-space-4);
+  padding: var(--tu-space-2) var(--tu-space-6);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface);
+  box-shadow: var(--tu-shadow-sm);
+  color: var(--tu-text);
+  font-size: var(--tu-size-3xl);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Un nouvel arrivé s'ouvre au bout de sa rangée (la suite glisse au lieu de sauter), en sauge,
+   puis rejoint les autres. */
+.tu-bandeau__prenom--nouveau {
+  animation: tu-bandeau-arrivee var(--tu-dur-bandeau-arrivee) var(--tu-ease) both;
+}
+
+@keyframes tu-bandeau-arrivee {
+  0% {
+    max-width: 0;
+    margin-inline-end: 0;
+    padding-inline: 0;
+    opacity: 0;
+    background: var(--tu-sage-500);
+  }
+  35% {
+    max-width: var(--tu-bandeau-prenom-max);
+    margin-inline-end: var(--tu-space-4);
+    padding-inline: var(--tu-space-6);
+    opacity: 1;
+    background: var(--tu-sage-500);
+  }
+  100% {
+    background: var(--tu-surface);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tu-stage-bienvenue__texte,
+  .tu-bandeau__prenom--nouveau {
+    animation: none;
+  }
 }
 
 .tu-stage-qr {

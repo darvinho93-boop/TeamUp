@@ -41,6 +41,7 @@ import {
   pageA,
   pagesDe,
 } from '@/lib/membres';
+import { BandeauPrenoms, MessageBienvenue, useArrivees } from './BandeauPrenoms';
 import { Celebration, useArrivee, type Force } from './Celebration';
 import { Chrono, useMaintenant, useMonte } from './Chrono';
 import { Recompense } from './Recompense';
@@ -118,26 +119,36 @@ function Ouverture() {
 
 function Accueil({ etat, qrSvg, adresse }: Props) {
   const t = useTranslations('ecran');
+  // Sans la migration du 2026-11-04, pas de prénoms : ni bandeau, ni message d'accueil.
+  const prenoms = etat.prenoms;
+  const arrivees = useArrivees(prenoms ?? []);
   return (
     <div className="tu-stage__body tu-stage-accueil" data-scene="accueil">
-      <div className="tu-stage-qr" dangerouslySetInnerHTML={{ __html: qrSvg }} />
-      <div className="tu-stage-accueil__texte">
-        <span className="tu-marque">
-          <Pictogramme taille="coin" />
-          <Wordmark className="tu-stage-accueil__logo" />
-        </span>
-        <p className="tu-stage__l">{t('rejoindre')}</p>
-        <p className="tu-stage-code" data-testid="code">
-          {etat.evenement.code}
-        </p>
-        <p className="tu-stage__m tu-stage__muted">{t('ouLien')}</p>
-        <p className="tu-stage-lien" data-testid="lien">
-          {adresse}/{etat.evenement.code}
-        </p>
-        <p className="tu-stage__m" data-testid="joueurs">
-          {t('joueurs', { n: etat.joueurs })}
-        </p>
+      <div className="tu-stage-accueil__haut">
+        <div className="tu-stage-qr" dangerouslySetInnerHTML={{ __html: qrSvg }} />
+        <div className="tu-stage-accueil__texte">
+          <span className="tu-marque">
+            <Pictogramme taille="coin" />
+            <Wordmark className="tu-stage-accueil__logo" />
+          </span>
+          <p className="tu-stage__l">{t('rejoindre')}</p>
+          <p className="tu-stage-code" data-testid="code">
+            {etat.evenement.code}
+          </p>
+          <p className="tu-stage__m tu-stage__muted">{t('ouLien')}</p>
+          <p className="tu-stage-lien" data-testid="lien">
+            {adresse}/{etat.evenement.code}
+          </p>
+          <p className="tu-stage__m" data-testid="joueurs">
+            {t('joueurs', { n: etat.joueurs })}
+          </p>
+          {prenoms && <MessageBienvenue arrivees={arrivees} />}
+        </div>
       </div>
+      {/* Les joueurs déjà arrivés glissent sous le QR code (2026-11-04). */}
+      {prenoms && prenoms.length > 0 && (
+        <BandeauPrenoms prenoms={prenoms} nouveaux={arrivees?.nouveaux ?? []} />
+      )}
     </div>
   );
 }

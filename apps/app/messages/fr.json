@@ -601,6 +601,9 @@
   "ecran": {
     "rejoindre": "Rejoignez la partie !",
     "joueurs": "{n, plural, =0 {Aucun joueur} one {# joueur} other {# joueurs}}",
+    "bienvenue": "Bienvenue, {prenoms} !",
+    "bienvenueEtAutres": "Bienvenue, {prenoms} et {autres, plural, one {# autre} other {# autres}} !",
+    "bandeauPrenoms": "Les joueurs déjà arrivés",
     "equipes": "Voici les équipes !",
     "capitaine": "Capitaine",
     "activerSon": "Activer le son",

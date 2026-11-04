@@ -97,6 +97,12 @@
   /* Quiz en mode jetons : largeur d'une pastille d'équipe dans la case d'une réponse (trois par
      rangée dans une case de 1 920 × 1 080, donc huit équipes sur trois rangées). */
   --tu-stage-mise-min: 15rem; /* agrandie le 2026-10-30 : texte en 2 rem au lieu de 1,5 */
+  /* Page du QR code (2026-11-04) : les bandeaux de prénoms qui glissent, leur fondu sur les bords,
+     la largeur qu'un prénom prend au plus en s'ouvrant, et le temps d'une arrivée. */
+  --tu-bandeau-fondu: 8rem;
+  --tu-bandeau-prenom-max: 50rem;
+  --tu-dur-bandeau-arrivee: 1600ms;
+  --tu-dur-bienvenue: 4000ms;
 
   /* Ouverture de l'écran commun (2026-10-17). */
   /* Les quatre ronds de l'ouverture : un cycle (égal à CYCLE_OUVERTURE_MS, src/lib/ouverture.ts,

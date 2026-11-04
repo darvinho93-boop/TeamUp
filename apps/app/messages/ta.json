@@ -601,6 +601,9 @@
   "ecran": {
     "rejoindre": "விளையாட்டில் சேருங்கள்!",
     "joueurs": "{n} வீரர்கள்",
+    "bienvenue": "வணக்கம், {prenoms}!",
+    "bienvenueEtAutres": "வணக்கம், {prenoms} மற்றும் இன்னும் {autres} பேர்!",
+    "bandeauPrenoms": "ஏற்கனவே சேர்ந்தவர்கள்",
     "equipes": "இதோ அணிகள்!",
     "capitaine": "அணித்தலைவர்",
     "activerSon": "ஒலியை இயக்கு",
