@@ -1183,3 +1183,38 @@ seulement** (aucun comportement changé). Régie et back-office hors de cette re
 - Inchangés exprès : noms des jeux (« Attrape l'objet » compris), « Loading… », accroche et slogan
   de la carte, textes « Qui sommes-nous » (sauf `nousSuite`).
 - L'anglais suit le même sens et le même ton. Le tamoul reste un premier jet, à faire relire.
+
+## Conventions posées le 2026-11-04 (prénoms à l'accueil, dévoilement des équipes)
+
+Tranché le 2026-11-04 : la page du QR code fait **défiler les prénoms** des joueurs déjà arrivés
+(deux bandeaux en sens opposés) et **salue chaque arrivée** (« Bienvenue, Camille ! ») ; les
+équipes formées se **dévoilent** par une touche du pilotage, sur le roulement de tambour :
+**mélange, puis répartition**.
+
+- `etat_ecran.prenoms` (migration `20261104090000`) : tous les joueurs de la soirée, équipe ou
+  non, par ordre d'arrivée. Sans la migration, ni bandeau ni message : le client tient.
+- Bandeau (`src/ecran/BandeauPrenoms.tsx`, logique pure `src/lib/bandeau.ts`) : deux rangées, un
+  prénom sur deux, 4 rem/s, mouvement image par image (`requestAnimationFrame`, aucun rendu
+  React). Une rangée qui tient reste centrée ; une rangée qui déborde est doublée et boucle. Un
+  nouvel arrivé s'ouvre au bout de sa rangée, en sauge. Sous `prefers-reduced-motion`, rien ne
+  bouge, les plus récents d'abord.
+- Message d'accueil : sous le compte des joueurs, place réservée (deux lignes), largeur
+  indépendante de son texte (`contain: inline-size`) : des prénoms longs poussaient sinon le QR
+  hors de la scène. Seulement les arrivées vues par l'écran (`useArrivees`), avec le son d'arrivée
+  existant ; au-delà de trois prénoms, « et N autres ».
+- Dévoilement : touche « Dévoiler les équipes » au pilotage, visible dès que les équipes existent,
+  rejouable, **hors du groupe des scènes** (le bouton « Équipes » doit y rester seul de son nom).
+  Étape `formation` de la scène Équipes, chrono de la salle sur 5 s : la cymbale du roulement
+  tombe quand tout est posé. Aucune migration. La Salle rappelle la touche une fois les équipes
+  formées.
+- Écran (`EquipesDevoilees` dans `Scenes.tsx`, couche `src/ecran/Devoilement.tsx`, logique pure
+  `src/lib/devoilement.ts`) : la grille d'`Equipes` telle quelle, prénoms masqués et première page
+  tenue pendant le vol. Par-dessus, chaque prénom tourbillonne (0,5 à 2,4 s), puis file vers sa
+  place mesurée dans sa carte (2,4 à 4,6 s), un par équipe à tour de rôle ; posé, il a la taille et
+  la place exactes du prénom qu'il remplace. Le tourbillon se tire de l'événement et de l'instant
+  (`aleaDepuis`) : deux écrans, ou un écran rechargé, montrent la même image. Les confettis
+  suivent si l'écran a montré le vol, que la fin soit vue par l'animation ou par l'heure.
+- Son : `sonsPour` lance le `roulement` à un **nouveau départ** de l'étape `formation`
+  (`Instant.chronoDepartMs`) ; revenir sur la scène ensuite ne le relance pas.
+- e2e : `accueil-prenoms.spec.ts`, `devoilement.spec.ts`. Une capture en pleine définition
+  (5 040 px de large) bloque la page 1,6 à 3 s : pour juger une animation, mesurer dans la page.
