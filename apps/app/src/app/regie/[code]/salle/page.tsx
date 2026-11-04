@@ -121,6 +121,7 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
         })}
       </p>
       <FormationEquipes
+        code={evenement.code}
         evenementId={evenement.id}
         equipesPrevues={evenement.equipes_prevues}
         inscrits={(joueurs ?? []).map((j) => ({

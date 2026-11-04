@@ -525,7 +525,7 @@
         "reserve": "La réserve de Points communs ou de Mime est trop petite pour ce nombre d'équipes : complétez-la à la préparation.",
         "tropTard": "Un jeu a commencé, ou des photos et des points existent déjà : les équipes ne se refont plus.",
         "echec": "La formation n'a pas pu s'enregistrer. Réessayez.",
-        "devoilerAuPilotage": "Pour les montrer à la salle : « Dévoiler les équipes », au pilotage."
+        "devoilerAuPilotage": "L'écran les dévoile aussitôt ; « Dévoiler les équipes », au pilotage, rejoue l'animation."
       }
     },
     "scores": {

@@ -7,6 +7,7 @@ import { formerEquipes, MAX_EQUIPES, MIN_EQUIPES, tirerContenus } from '@teamup/
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import type { Json } from '@/types/base';
 import { BoutonConfirme } from './BoutonConfirme';
+import { devoilerEquipes } from './devoilerEquipes';
 import { useSignalSalle } from './SignalSalle';
 
 export interface InscritDeLaFormation {
@@ -36,6 +37,7 @@ function aleaCrypto(): number {
  * l'écriture d'un bloc par `former_equipes`. Tant qu'aucun jeu n'a commencé, on peut refaire.
  */
 export function FormationEquipes({
+  code,
   evenementId,
   equipesPrevues,
   inscrits,
@@ -43,6 +45,8 @@ export function FormationEquipes({
   formees,
   verrouillee,
 }: {
+  /** Le code de la soirée : la formation se dévoile aussitôt à l'écran. */
+  code: string;
   evenementId: string;
   equipesPrevues: number;
   inscrits: InscritDeLaFormation[];
@@ -106,6 +110,9 @@ export function FormationEquipes({
         setErreur(/commencé|photos/.test(error.message) ? t('tropTard') : t('echec'));
         return;
       }
+      // Les équipes formées se dévoilent aussitôt à l'écran (la machine à sous), sans passer par
+      // le pilotage : c'est le moment que la salle attend.
+      await devoilerEquipes(code);
       signaler();
       router.refresh();
     });

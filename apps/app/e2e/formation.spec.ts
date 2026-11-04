@@ -119,6 +119,8 @@ test('inscription sans équipe, formation par la régie, puis Points communs', a
   await regie.getByTestId('former-equipes').click();
   await regie.getByRole('button', { name: 'Confirmer : 3 équipes' }).click();
   await expect(regie.getByTestId('refaire-equipes')).toBeVisible({ timeout: 15_000 });
+  // La formation se dévoile aussitôt à l'écran, en machine à sous (2026-11-04).
+  await expect(ecran.locator('[data-devoilement="en-cours"]')).toBeVisible({ timeout: 5000 });
 
   // Les noms des volontaires, sur l'écran et sur leur téléphone.
   const noms = ecran.locator('.tu-stage-team__nom');

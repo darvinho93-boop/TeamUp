@@ -525,7 +525,7 @@
         "reserve": "The Common points or Mime reserve is too small for this number of teams: add to it in Preparation.",
         "tropTard": "A game has started, or photos and points already exist: teams can no longer be redone.",
         "echec": "The teams could not be saved. Try again.",
-        "devoilerAuPilotage": "To show them to the room: “Reveal the teams”, under Control."
+        "devoilerAuPilotage": "The screen reveals them right away; “Reveal the teams”, under Control, replays the animation."
       }
     },
     "scores": {
