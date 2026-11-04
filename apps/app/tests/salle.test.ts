@@ -157,3 +157,42 @@ avecBase('le mode des membres à l’écran', () => {
     expect((await pilotage()).membres_mode).toBe('carrousel');
   });
 });
+
+avecBase('les prénoms de la soirée à l’écran (2026-11-04)', () => {
+  it('donne tous les joueurs, avec ou sans équipe, par ordre d’arrivée', async () => {
+    // Avant la formation (lot 14), personne n'a d'équipe : la page du QR code les montre quand même.
+    const soiree = await creerEvenementJetable({ equipes: 1, langues: ['fr'] });
+    try {
+      const service = clientService();
+      const { data: eq } = await service
+        .from('equipes')
+        .select('id')
+        .eq('evenement_id', soiree.id)
+        .single();
+      const depart = Date.now();
+      const arrivees: [string, string | null][] = [
+        ['Zoé', null],
+        ['Ali', (eq as { id: string }).id],
+        ['Mia', null],
+      ];
+      for (const [i, [prenom, equipeId]] of arrivees.entries()) {
+        const { error } = await service.from('joueurs').insert({
+          evenement_id: soiree.id,
+          equipe_id: equipeId,
+          prenom,
+          langue: 'fr',
+          rejoint_le: new Date(depart + i * 1000).toISOString(),
+        });
+        if (error) throw new Error(error.message);
+      }
+      const { data } = await appeler<{ prenoms: string[] }>(
+        await clientAnimateur('anna@teamup.test'),
+        'etat_ecran',
+        { p_code: soiree.code },
+      );
+      expect(data!.prenoms).toEqual(['Zoé', 'Ali', 'Mia']);
+    } finally {
+      await supprimerEvenements([soiree.id]);
+    }
+  });
+});

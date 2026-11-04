@@ -108,6 +108,11 @@ export interface EtatSalle {
   membres_mode?: 'tous' | 'carrousel';
   equipes: EquipeSalle[];
   joueurs: number;
+  /**
+   * Les prénoms de tous les joueurs, équipe ou non, par ordre d'arrivée : la page du QR code les
+   * fait défiler. Absent sans la migration du 2026-11-04 : le bandeau ne s'affiche pas.
+   */
+  prenoms?: string[];
   connectes: number;
   programme: MancheSalle[];
 }
