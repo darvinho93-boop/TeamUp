@@ -1188,8 +1188,9 @@ seulement** (aucun comportement changé). Régie et back-office hors de cette re
 
 Tranché le 2026-11-04 : la page du QR code fait **défiler les prénoms** des joueurs déjà arrivés
 (deux bandeaux en sens opposés) et **salue chaque arrivée** (« Bienvenue, Camille ! ») ; les
-équipes formées se **dévoilent** par une touche du pilotage, sur le roulement de tambour :
-**mélange, puis répartition**.
+équipes formées se **dévoilent** par une touche du pilotage, sur le roulement de tambour, **en
+machine à sous** (revu le même jour : un premier tourbillon de prénoms a été jugé pas assez
+« stylé »), avec les couleurs d'équipe et des cartes vivantes.
 
 - `etat_ecran.prenoms` (migration `20261104090000`) : tous les joueurs de la soirée, équipe ou
   non, par ordre d'arrivée. Sans la migration, ni bandeau ni message : le client tient.
@@ -1207,13 +1208,16 @@ Tranché le 2026-11-04 : la page du QR code fait **défiler les prénoms** des j
   Étape `formation` de la scène Équipes, chrono de la salle sur 5 s : la cymbale du roulement
   tombe quand tout est posé. Aucune migration. La Salle rappelle la touche une fois les équipes
   formées.
-- Écran (`EquipesDevoilees` dans `Scenes.tsx`, couche `src/ecran/Devoilement.tsx`, logique pure
-  `src/lib/devoilement.ts`) : la grille d'`Equipes` telle quelle, prénoms masqués et première page
-  tenue pendant le vol. Par-dessus, chaque prénom tourbillonne (0,5 à 2,4 s), puis file vers sa
-  place mesurée dans sa carte (2,4 à 4,6 s), un par équipe à tour de rôle ; posé, il a la taille et
-  la place exactes du prénom qu'il remplace. Le tourbillon se tire de l'événement et de l'instant
-  (`aleaDepuis`) : deux écrans, ou un écran rechargé, montrent la même image. Les confettis
-  suivent si l'écran a montré le vol, que la fin soit vue par l'animation ou par l'heure.
+- Écran (`EquipesDevoilees` et `Equipes` dans `Scenes.tsx`, minutage pur `src/lib/devoilement.ts`,
+  styles `stage.css`) : la grille, remontée au départ (clé : l'instant), première page tenue.
+  Chaque carte fait tourner une bande floue de prénoms de la salle par colonne (`Rouleaux`, tirée
+  par `aleaDepuis`) ; les cartes s'arrêtent l'une après l'autre de 2,2 à 4,2 s (un `tic` à chaque
+  arrêt), flashent à leur couleur, leurs membres tombent un à un (`tu-clac`, à la couleur de
+  l'équipe puis en marine, 600 ms au plus par carte) et leur compteur monte (`CompteurAnime`, vide
+  tant que la carte tourne) ; confettis à 5 s. Tout est en CSS, délais comptés **depuis le
+  départ** ; après la première image peinte, ces animations sont **recalées sur l'heure de la
+  base** (Web Animations, `startTime`) : une scène lourde (8 cartes de rouleaux) partait avec
+  presque une seconde de retard sur le roulement. La grille quitte le mode « machine » à 6 s.
 - Son : `sonsPour` lance le `roulement` à un **nouveau départ** de l'étape `formation`
   (`Instant.chronoDepartMs`) ; revenir sur la scène ensuite ne le relance pas.
 - e2e : `accueil-prenoms.spec.ts`, `devoilement.spec.ts`. Une capture en pleine définition
