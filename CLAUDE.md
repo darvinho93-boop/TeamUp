@@ -624,8 +624,8 @@ l'animateur, ou **depuis le téléphone d'un joueur que l'animateur y autorise**
 - Régie : formulaire « Ajouter un invité » en haut de la Salle ; sur l'étiquette, un anneau
   pour « sans téléphone » (jamais compté connecté) et un « + » pour qui peut ajouter ;
   l'autorisation se donne et se retire dans la fiche de l'invité.
-- Téléphone : `etat_joueur.joueur.peut_ajouter` fait paraître « Ajouter un invité » à la
-  relecture suivante ; `POST /api/partie/[code]/invite` renvoie le prénom et l'équipe tirée,
+- Téléphone : `etat_joueur.joueur.peut_ajouter` fait paraître « Ajouter quelqu'un sans
+  téléphone » à la relecture suivante ; `POST /api/partie/[code]/invite` renvoie le prénom et l'équipe tirée,
   à annoncer à l'invité.
 - Le test des 150 arrivées simultanées (`tests/arrivee.test.ts`) est instable sur le poste
   (dépassement de 30 s une fois sur trois, avant comme après ce changement, A/B fait le
@@ -681,7 +681,7 @@ depuis son téléphone, tout de suite à l'écran, et la régie peut renommer et
   renommer l'équipe en est une quatrième, hors jeu, un téléphone par équipe. Le cahier des
   charges (§ 2, « rôle attribué par la régie ») reste tenu : c'est la régie qui lance le tirage.
 - `joueurs.volontaire` (jamais vrai pour un invité sans téléphone), posé par
-  `rejoindre_evenement(…, p_volontaire)` via `placer_joueur`. L'étape « Capitaine ? » vient après
+  `rejoindre_evenement(…, p_volontaire)` via `placer_joueur`. L'étape « Envie d'être capitaine ? » vient après
   le prénom et le groupe ; le choix part avec l'arrivée (`volontaire` dans la route `rejoindre`).
 - `tirer_capitaines(p_evenement)` : security invoker (RLS de l'animateur), une requête
   (`distinct on` par équipe, volontaires d'abord, puis au hasard), renvoie le nombre de
@@ -697,7 +697,7 @@ depuis son téléphone, tout de suite à l'écran, et la régie peut renommer et
   `etat_joueur.equipe.nom_fige` masque « Renommer l'équipe » au téléphone.
 - `e2e/capitaines.spec.ts` : une volontaire et un non-volontaire, tirage, renommage vu à l'écran
   sans touche de régie, nom bloqué puis renommé par la régie. Les parcours d'arrivée existants
-  passent l'étape « Capitaine ? » par « Non merci ».
+  passent l'étape « Envie d'être capitaine ? » par « Non merci ».
 
 ## Conventions posées le 2026-10-17 (ouverture de l'écran commun)
 
@@ -814,8 +814,9 @@ premier de la file le lise**.
 
 - Accueil de l'écran commun : sous le code, le **lien complet** à taper tel quel
   (`app.teamup-game.fr/CODE`, `data-testid="lien"`), à la place de « tapez le code sur … ».
-- Capitaine : ses responsabilités (nom de l'équipe, photos, jetons du quiz) sont dites à
-  l'arrivée (`capitaine.aide`) et sur l'écran d'attente (`attente.capitaine`).
+- Capitaine : ses responsabilités sont dites à l'arrivée (`capitaine.aide` : le nom de l'équipe,
+  puis, selon les jeux, photos et jetons). Revu le 2026-11-04 : l'écran d'attente ne dit plus que
+  « Capitaine, c'est vous ! » (`attente.capitaine`), vrai quel que soit le programme.
 - Points communs : à l'étape `masque`, l'écran ne montre plus que « Équipe X, ouvrez les yeux ! » :
   la consigne affichée jusque-là donnait le point commun à l'équipe qui rouvre les yeux.
 - Quiz : `question` en trois temps. « Afficher la question » (la question seule, sans chrono),
@@ -823,11 +824,11 @@ premier de la file le lise**.
   chrono » (`lancer`, 30 s). Les propositions affichées vivent dans `pilotage.indices` (contrainte
   élargie à 0–4, migration `20261018120000`) ; « Révéler » n'est possible qu'une fois le chrono
   lancé. L'écran garde les quatre cases, celles à venir en retrait avec leur lettre seule
-  (`data-affichee`). Les téléphones montrent la question seule et « Regardez l'écran : les réponses
-  arrivent une à une » (`QuestionSeule`, `src/joueur/quizCommun.tsx`) ; on ne répond ni ne mise
+  (`data-affichee`). Les téléphones montrent la question seule et « Les réponses arrivent une à une
+  sur le grand écran ! » (`QuestionSeule`, `src/joueur/quizCommun.tsx`) ; on ne répond ni ne mise
   avant le lancement, ce que la base garantissait déjà (`chrono_depart` nul : question fermée).
-- Mime : à l'étape `secret`, l'écran commun montre le mot en grand sous « Seul le premier de la
-  file regarde l'écran ! » ; `secret_visible` le donne à l'écran à cette étape seulement (migration
+- Mime : à l'étape `secret`, l'écran commun montre le mot en grand sous « Seule la tête de file
+  regarde l'écran ! » ; `secret_visible` le donne à l'écran à cette étape seulement (migration
   `20261018120000`), il disparaît au lancement de la chaîne et revient au verdict. Aucun téléphone
   ne le reçoit (testé). **Écart à la spec v3**, qui le réservait à l'écran de régie.
 
@@ -897,7 +898,7 @@ choix de l'animateur.
   `unique_violation`, « prénom déjà pris »). Couvre le QR code, l'invité ajouté par un joueur et
   celui de la régie (migration `20261023110000`). Le téléphone le demande dès l'écran du prénom
   (`POST /api/partie/[code]/prenom` → `prenom_disponible`, rôle de service), avant le groupe et
-  « Capitaine ? » ; un doublon arrivé entre-temps ramène au prénom. Message : ajouter l'initiale
+  « Envie d'être capitaine ? » ; un doublon arrivé entre-temps ramène au prénom. Message : ajouter l'initiale
   du nom. Les doublons d'avant ne sont pas touchés.
 - Points communs à l'écran : les indices **côte à côte**, et chrono, paliers, indices et verdict
   se réduisent ensemble (`--tu-pc-echelle`, `useAjusterTexte`) jusqu'à tenir. La fête est hors
@@ -1104,13 +1105,13 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
   - « Ce soir », `/soirees` (`Soirees.tsx`, lue à chaque visite) : l'accroche « Ce soir, on Team
     Up! » (`carte.accroche`, le logotype par `t.rich`, `<nom>`), le slogan en capitales, des
     confettis fixes (couleurs de la fête, jamais le corail) ; une carte par soirée, son titre et
-    « Je m'inscris » (tient dans un écran de 360 × 640) ; puis « Ce qui t'attend » en trois
-    cartes (équipes mélangées, grand écran, podium). **« Je m'inscris » n'est que sur cet
-    onglet.** Liste vide : une phrase, « J'ai un code » et « Actualiser ». Un téléphone déjà
+    « Rejoindre » (« Je m'inscris » jusqu'au 2026-11-04 ; tient dans un écran de 360 × 640) ;
+    puis « Ce qui vous attend » en trois cartes (équipes mélangées, grand écran, podium).
+    **« Rejoindre » n'est que sur cet onglet.** Liste vide : une phrase, « J'ai un code » et « Actualiser ». Un téléphone déjà
     inscrit à une soirée (sa session `tu_j_<CODE>`) y lit « Retrouver ma partie » à la place.
   - « Les jeux », `/soirees/jeux` (`Jeux.tsx`) : les cinq jeux, chacun avec le pictogramme et la
     teinte de la page Les jeux de la vitrine et sa règle en une phrase (`ecran.regles.*`). Même
-    forme que « Ce qui t'attend » : `ListeIllustree.tsx`, par `ListeJeux.tsx` (qui donne aussi
+    forme que « Ce qui vous attend » : `ListeIllustree.tsx`, par `ListeJeux.tsx` (qui donne aussi
     un pictogramme aux deux duels). **« Voir la vidéo »** (toute la carte se
     touche) ouvre `VideoJeu.tsx` : l'**explication animée de l'écran commun** (lot 12), rejouée sur
     le téléphone dans un `<dialog>` modal (Échap ou ✕ referme). Le décor de chaque carte
@@ -1119,7 +1120,7 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
     **dessous, en sous-titre lisible**, dans la langue du téléphone ; barre d'avancement par carte ;
     Lecture, Pause (les animations du décor s'arrêtent aussi), Revoir. Horloge locale, rien en
     base. Le Quiz montre son script de base (croix).
-  - « Comment jouer », `/soirees/comment-jouer` (`CommentJouer.tsx`) : « Comment on y joue », la
+  - « Comment jouer », `/soirees/comment-jouer` (`CommentJouer.tsx`) : « Comment jouer », la
     soirée en quatre pastilles aux couleurs d'équipe 1, 3, 4 et 6, de l'inscription au podium.
   - « À propos », `/soirees/qui-sommes-nous` (`QuiSommesNous.tsx`) : « Qui sommes-nous », l'idée
     née en famille et ce qu'on y fait (textes de la **vidéo de présentation**), **une équipe de
@@ -1127,7 +1128,7 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
     l'origine du projet »), Instagram, puis « Demander un devis » vers
     `teamup-game.fr/devis?via=carte` (provenance « carte » dans l'e-mail de l'équipe).
   - Page de contrôle sans base : `/kit-ui/soirees?etat=une|deux|vide`, `&page=jeux|comment|nous`.
-- « Je m'inscris » → `/<CODE>?carte=1` : l'arrivée saute l'étape Langue si celle choisie sur la
+- « Rejoindre » → `/<CODE>?carte=1` : l'arrivée saute l'étape Langue si celle choisie sur la
   carte est une langue de la soirée (`langueDejaChoisie`).
 - **Mêmes repères par toutes les entrées** (revue du 2026-11-02 : QR de l'écran, carte et flyer,
   lien ou code tapé, page Rejoindre de la vitrine ; toutes mènent à la même arrivée) :
@@ -1152,3 +1153,33 @@ même** (heure de Paris), jusqu'à la clôture ; un appui mène **directement** 
   à la croix ne survit pas à un rechargement).
 - Préparation : une alerte compte les questions et thèmes sans contenu (Quiz, Surenchère, Photo
   challenge) ; sans elle, on ne le découvrait qu'en soirée, sur l'écran vide.
+
+## Conventions posées le 2026-11-04 (wording de la partie)
+
+Tranché le 2026-11-04 après la revue de tout ce que lit l'invité (téléphone, carte `/soirees`,
+écran commun, explications animées, qui sous-titrent aussi les vidéos des jeux) : **« vous »
+partout**, **tournures neutres** quand c'est naturel, **plus de peps façon jeu télé**, **texte
+seulement** (aucun comportement changé). Régie et back-office hors de cette revue.
+
+- **« Vous »** partout, explications comprises (le téléphone mélangeait « tu » et « vous », l'écran
+  tutoyait). Le tamoul passe au registre poli (உங்கள், impératifs en -ுங்கள்) ; les boutons gardent
+  la forme courte de l'interface (« சேர் », « சேமி »).
+- **Neutre, jamais de point médian** : « Hors jeu ! », « la tête de file », « la personne
+  suivante », « toutes et tous ». Sinon le masculin ; les rôles restent au masculin (capitaine,
+  animateur, champion, joueurs).
+- **Une phrase reste vraie quels que soient le programme et le mode du quiz** : la règle du quiz
+  ne promet plus l'élimination (fausse en mode jetons, choisi après la présentation) ; le
+  capitaine envoie les photos et mise les jetons « selon les jeux » ; le groupe « s'efface dès le
+  premier jeu » (lot 14).
+- **Un mot par chose** : « partie » (ce qu'on rejoint, complète ou terminée) et « soirée » (le
+  moment) ; « Rejoindre » pour entrer, par le QR, le code ou la carte ; « grand écran » sur le
+  téléphone ; « jeux », plus « défis » ; « Comment jouer », seul titre ; verdicts « Hors jeu ! »,
+  « Raté ! », « Pari tenu ! » et « Pari raté ! » ; « Les yeux sur le grand écran ! » pour renvoyer à
+  l'écran ; « miser » réservé aux jetons du quiz (à la Surenchère, on « promet ») ; une seule
+  erreur, « Ça n'a pas marché : réessayez. ».
+- Arrivée : « Continuer » (prénom), « Valider » (nom proposé), « C'est parti » gardé pour le
+  dernier bouton (explication) ; « Envie d'être capitaine ? », « Un nom pour votre équipe ? » ;
+  attente : « Bienvenue, {prenom} ! ».
+- Inchangés exprès : noms des jeux (« Attrape l'objet » compris), « Loading… », accroche et slogan
+  de la carte, textes « Qui sommes-nous » (sauf `nousSuite`).
+- L'anglais suit le même sens et le même ton. Le tamoul reste un premier jet, à faire relire.
