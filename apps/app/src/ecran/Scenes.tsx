@@ -7,7 +7,6 @@ import {
   CHRONO_MIME_S,
   CHRONO_POINTS_COMMUNS_S,
   CHRONO_QUESTION_S,
-  CHRONO_SURENCHERE_DEFAUT_S,
   chronoDuelS,
   etatPaliers,
   formatChrono,
@@ -27,7 +26,15 @@ import {
   type PassageSalle,
   indicesMsDe,
 } from '@/lib/salle';
-import { duellistesDe, ETAPE_FORMATION, ETAPE_TIRAGE_ORDRE, scriptEnCours } from '@/lib/pilotage';
+import {
+  chronoSurenchere,
+  duellistesDe,
+  ETAPE_FORMATION,
+  ETAPE_TIRAGE_ORDRE,
+  modeDeLaSurenchere,
+  scriptEnCours,
+} from '@/lib/pilotage';
+import { enTeteDuTheme } from '@/lib/mots';
 import {
   arretDe,
   bandeDuRouleau,
@@ -55,6 +62,7 @@ import { Chrono, useMaintenant, useMonte } from './Chrono';
 import { Recompense } from './Recompense';
 import { SonsContexte } from './sons/useSons';
 import { Explication } from './Explication';
+import { SurenchereTelephones } from './SurenchereTelephones';
 import { useAjusterQuiz } from './useAjusterQuiz';
 import { useAjusterTexte } from './useAjusterTexte';
 import { useTenirEnLargeur } from './useTenirEnLargeur';
@@ -765,10 +773,8 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
   const { etape, chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
   const langues = etat.evenement.langues;
   const passage = passageCourant(etat);
-  const chronoS =
-    typeof manche.options['chrono_s'] === 'number'
-      ? manche.options['chrono_s']
-      : CHRONO_SURENCHERE_DEFAUT_S;
+  const mode = modeDeLaSurenchere(manche);
+  const chronoS = chronoSurenchere(manche, mode);
   // Thèmes, sujets et verdicts, parfois en trois langues : le texte se réduit jusqu'à tenir,
   // dans chaque carte de la grille comme sur l'écran du sujet.
   const grille = useRef<HTMLUListElement>(null);
@@ -792,6 +798,8 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
         >
           {manche.passages.map((p) => {
             const champion = etat.equipes.find((e) => e.numero === p.resultat['equipe_champion']);
+            // Mode téléphones : l'équipe (ou les équipes) en tête et son nombre de mots.
+            const enTete = enTeteDuTheme(p, etat.equipes);
             return (
               <li
                 key={p.id}
@@ -807,6 +815,16 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
                         <span className="tu-stage-theme__equipe">{champion.nom}</span>
                       </p>
                     )}
+                    {p.resultat['mode'] === 'telephones' && (
+                      <p className="tu-stage__m">
+                        {enTete
+                          ? t('surenchereMots.enTete', {
+                              equipes: enTete.equipes.map((e) => e.nom).join(' · '),
+                              n: enTete.mots,
+                            })
+                          : t('surenchereMots.aucunMot')}
+                      </p>
+                    )}
                   </>
                 )}
               </li>
@@ -814,6 +832,17 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
           })}
         </ul>
       </div>
+    );
+  }
+
+  if (mode === 'telephones') {
+    return (
+      <SurenchereTelephones
+        etat={etat}
+        decalageMs={decalageMs}
+        passage={passage}
+        chronoS={chronoS}
+      />
     );
   }
 

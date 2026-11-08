@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { REALTIME_SUBSCRIBE_STATES, type RealtimeChannel } from '@supabase/supabase-js';
+import { relectureDesMots } from '@/lib/mots';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import type { EtatSalle } from '@/lib/salle';
 
@@ -157,6 +158,22 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
     const minuterie = setInterval(() => void relire(), enDirect ? SURETE_MS : SECOURS_MS);
     return () => clearInterval(minuterie);
   }, [enDirect, relire]);
+
+  // Surenchère en mode téléphones (2026-11-08) : aucune touche ne marque la fin du chrono ; la base
+  // donne les mots une fois le temps écoulé, l'écran et la régie relisent juste après.
+  const relectureMots = relectureDesMots(etat);
+  const decalageRef = useRef(decalageMs);
+  useEffect(() => {
+    decalageRef.current = decalageMs;
+  }, [decalageMs]);
+  useEffect(() => {
+    if (relectureMots === null) return;
+    const attente = relectureMots - (Date.now() + decalageRef.current);
+    // Déjà bien passé (écran ouvert après coup) : la lecture du chargement avait les mots.
+    if (attente < -SECOURS_MS) return;
+    const minuterie = setTimeout(() => void relire(), Math.max(0, attente));
+    return () => clearTimeout(minuterie);
+  }, [relectureMots, relire]);
 
   /** Prévient les autres fenêtres de la salle qu'il faut relire (après une touche de la régie). */
   const signaler = useCallback(() => {

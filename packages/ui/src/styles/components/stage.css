@@ -936,6 +936,117 @@
   min-height: 0;
 }
 
+/* Surenchère en mode téléphones (2026-11-08). Pendant le chrono, une rangée de compteurs aux
+   couleurs des équipes, sous le sujet : les mots restent cachés. */
+.tu-stage-compteurs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--tu-stage-compteur-min), 1fr));
+  gap: var(--tu-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-compteur {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-1);
+  min-width: 0;
+  padding: var(--tu-space-3) var(--tu-space-4);
+  border-top: var(--tu-space-2) solid var(--tu-team-color);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
+.tu-stage-compteur__nom {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tu-stage-compteur__n {
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* À la fin du chrono : le sujet en bandeau, puis une carte par équipe avec tous ses mots, d'un
+   coup. Les mots se réduisent ensemble (--tu-mots-echelle, posé par l'écran) jusqu'à tenir dans
+   leur carte ; un mot rayé par l'animateur reste lisible, barré et estompé. */
+.tu-stage-mots {
+  gap: var(--tu-space-4);
+}
+
+.tu-stage-mots__tete {
+  flex: none;
+  max-height: var(--tu-stage-mots-tete);
+  text-align: center;
+}
+
+.tu-stage-mots__grille {
+  --tu-mots-echelle: 1;
+}
+
+.tu-stage-mots__carte {
+  overflow: hidden;
+}
+
+.tu-stage-mots__podium {
+  --tu-recompense: calc(var(--tu-size-3xl) * var(--tu-mots-echelle));
+
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  font-size: calc(var(--tu-size-2xl) * var(--tu-mots-echelle));
+  font-weight: 700;
+}
+
+.tu-stage-mots__carte--podium {
+  box-shadow: inset 0 0 0 var(--tu-stage-cadre) var(--tu-team-color);
+}
+
+.tu-stage-mots__liste {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: calc(var(--tu-space-2) * var(--tu-mots-echelle))
+    calc(var(--tu-space-3) * var(--tu-mots-echelle));
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-mot {
+  max-width: 100%;
+  padding: calc(var(--tu-space-1) * var(--tu-mots-echelle))
+    calc(var(--tu-space-3) * var(--tu-mots-echelle));
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface-muted);
+  font-size: calc(var(--tu-mot-taille, var(--tu-size-2xl)) * var(--tu-mots-echelle));
+  font-weight: 600;
+  line-height: var(--tu-leading-tight);
+  overflow-wrap: anywhere;
+}
+
+.tu-stage-mot--refuse {
+  color: var(--tu-danger-text);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-mots__liste .tu-stage-mot {
+    animation: tu-apparition var(--tu-dur-reveal) var(--tu-ease) both;
+  }
+}
+
 /* Quiz : la question seule, en grand, avant sa première réponse (réduite si besoin). */
 .tu-stage-question-seule {
   --tu-question-echelle: 1;

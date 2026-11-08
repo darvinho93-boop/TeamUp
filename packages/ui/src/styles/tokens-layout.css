@@ -96,6 +96,8 @@
   --tu-recompense-1: 12rem;
   /* Quiz en mode jetons : largeur d'une pastille d'équipe dans la case d'une réponse (trois par
      rangée dans une case de 1 920 × 1 080, donc huit équipes sur trois rangées). */
+  --tu-stage-compteur-min: 13rem; /* un compteur de mots de la Surenchère en mode téléphones */
+  --tu-stage-mots-tete: 12rem; /* le sujet au-dessus des cartes de mots */
   --tu-stage-mise-min: 15rem; /* agrandie le 2026-10-30 : texte en 2 rem au lieu de 1,5 */
   /* Page du QR code (2026-11-04) : les bandeaux de prénoms qui glissent, leur fondu sur les bords,
      la largeur qu'un prénom prend au plus en s'ouvrant, et le temps d'une arrivée. */
