@@ -172,6 +172,7 @@ export const TABLES = [
   'photos',
   'reponses_quiz',
   'mises_quiz',
+  'mots_surenchere',
   'classement',
   'groupes',
   'equipes_groupes',

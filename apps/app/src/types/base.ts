@@ -524,6 +524,64 @@ export type Database = {
           },
         ];
       };
+      mots_surenchere: {
+        Row: {
+          ajoute_le: string;
+          cle: string;
+          equipe_id: string;
+          evenement_id: string;
+          id: string;
+          masque: boolean;
+          mot: string;
+          passage_id: string;
+          refuse: boolean;
+        };
+        Insert: {
+          ajoute_le?: string;
+          cle: string;
+          equipe_id: string;
+          evenement_id: string;
+          id?: string;
+          masque?: boolean;
+          mot: string;
+          passage_id: string;
+          refuse?: boolean;
+        };
+        Update: {
+          ajoute_le?: string;
+          cle?: string;
+          equipe_id?: string;
+          evenement_id?: string;
+          id?: string;
+          masque?: boolean;
+          mot?: string;
+          passage_id?: string;
+          refuse?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'mots_surenchere_equipe_id_fkey';
+            columns: ['equipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'classement';
+            referencedColumns: ['equipe_id'];
+          },
+          {
+            foreignKeyName: 'mots_surenchere_equipe_id_fkey';
+            columns: ['equipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'equipes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'mots_surenchere_passage_id_evenement_id_fkey';
+            columns: ['passage_id', 'evenement_id'];
+            isOneToOne: false;
+            referencedRelation: 'passages';
+            referencedColumns: ['id', 'evenement_id'];
+          },
+        ];
+      };
       passages: {
         Row: {
           commence_le: string | null;
@@ -882,6 +940,10 @@ export type Database = {
         Args: { p_evenement: string; p_groupe?: string; p_prenom: string };
         Returns: Json;
       };
+      ajouter_mot: {
+        Args: { p_jeton_hash: string; p_mot: string };
+        Returns: Json;
+      };
       anime: { Args: { p_evenement: string }; Returns: boolean };
       annuaire_animateurs: {
         Args: never;
@@ -894,12 +956,24 @@ export type Database = {
           role: Database['public']['Enums']['role_animateur'];
         }[];
       };
+      capitaine_aux_mots: {
+        Args: { p_jeton_hash: string };
+        Returns: {
+          equipe_id: string;
+          evenement_id: string;
+          passage_id: string;
+        }[];
+      };
       changer_langue: {
         Args: {
           p_jeton_hash: string;
           p_langue: Database['public']['Enums']['langue'];
         };
         Returns: Json;
+      };
+      chrono_mots_ouvert: {
+        Args: { p_pilotage: Database['public']['Tables']['pilotage']['Row'] };
+        Returns: boolean;
       };
       cle_prenom: { Args: { p_prenom: string }; Returns: string };
       contenu_bien_forme: {
@@ -984,6 +1058,18 @@ export type Database = {
         Returns: Json;
       };
       monogramme_valide: { Args: { p_initiales: string[] }; Returns: boolean };
+      mots_de_l_equipe: {
+        Args: { p_equipe: string; p_passage: string };
+        Returns: Json;
+      };
+      mots_ecran: {
+        Args: {
+          p_passage: Database['public']['Tables']['passages']['Row'];
+          p_pilotage: Database['public']['Tables']['pilotage']['Row'];
+          p_regie: boolean;
+        };
+        Returns: Json;
+      };
       nouveau_code: { Args: never; Returns: string };
       ordonner_passages: {
         Args: { p_manche: string; p_passages: string[] };
@@ -1041,6 +1127,10 @@ export type Database = {
           joueur_id: string;
         }[];
       };
+      refuser_mot: {
+        Args: { p_mot: string; p_refuse: boolean };
+        Returns: undefined;
+      };
       regler_membres: {
         Args: { p_evenement: string; p_mode: string };
         Returns: undefined;
@@ -1069,6 +1159,10 @@ export type Database = {
         Args: { p_choix: number; p_jeton_hash: string };
         Returns: Json;
       };
+      retirer_mot: {
+        Args: { p_jeton_hash: string; p_mot: string };
+        Returns: Json;
+      };
       secret_du_joueur: { Args: { p_jeton_hash: string }; Returns: Json };
       secret_visible: {
         Args: {
@@ -1081,6 +1175,10 @@ export type Database = {
         Returns: Json;
       };
       soirees_du_jour: { Args: never; Returns: Json };
+      surenchere_du_joueur: {
+        Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
+        Returns: Json;
+      };
       survivants_quiz: { Args: { p_manche: string }; Returns: Json };
       texte_rempli: { Args: { p_valeur: Json }; Returns: boolean };
       tirer_capitaines: { Args: { p_evenement: string }; Returns: number };
