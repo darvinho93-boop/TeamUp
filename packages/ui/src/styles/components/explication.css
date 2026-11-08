@@ -292,6 +292,71 @@
   background: var(--tu-surface-muted);
 }
 
+/* Surenchère en mode téléphones : un petit téléphone dans la main d'un capitaine. */
+.tu-expl-telephone--petit {
+  position: absolute;
+  right: calc(var(--tu-expl-perso) * -0.35);
+  bottom: calc(var(--tu-expl-perso) * 0.3);
+  width: calc(var(--tu-expl-perso) * 0.55);
+  aspect-ratio: 9 / 16;
+  padding: 0;
+  border-width: var(--tu-btn-border-width);
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-surface);
+}
+
+/* Des mots tapés, en traits : un mot rayé par l'animateur est barré de rouge. */
+.tu-expl-mots {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+  width: 100%;
+}
+
+.tu-expl-mot {
+  position: relative;
+  block-size: var(--tu-space-4);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface-muted);
+}
+
+.tu-expl-mot--raye {
+  opacity: 0.5;
+}
+
+.tu-expl-mot--raye::after {
+  position: absolute;
+  inset: 50% calc(var(--tu-space-2) * -1) auto;
+  block-size: var(--tu-btn-border-width);
+  background: var(--tu-danger);
+  content: '';
+}
+
+/* Le nombre de mots de chaque équipe, à sa couleur. */
+.tu-expl-compteur {
+  display: grid;
+  place-items: center;
+  width: calc(var(--tu-expl-perso) * 1.2);
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-4xl);
+  font-weight: 700;
+}
+
+/* Une carte de mots, le liseré à la couleur de l'équipe. */
+.tu-expl-liste {
+  display: flex;
+  width: calc(var(--tu-expl-perso) * 2.2);
+  padding: var(--tu-space-4);
+  border-top: var(--tu-space-2) solid var(--tu-team-color);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
 /* Paliers de Points communs : largeur à l'échelle de la durée (posée par le composant), une couleur chacun. */
 .tu-expl-paliers {
   display: flex;

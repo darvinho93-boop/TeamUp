@@ -104,6 +104,40 @@ function Telephone({ children }: { children: ReactNode }) {
   return <div className="tu-expl-telephone">{children}</div>;
 }
 
+/**
+ * Des mots tapés, en traits sans texte (la phrase de la carte porte le sens) : `rayes` donne les
+ * rangs des mots rayés par l'animateur.
+ */
+function Mots({
+  n,
+  rayes = [],
+  className,
+}: {
+  n: number;
+  rayes?: readonly number[];
+  className?: string;
+}) {
+  return (
+    <span className={cx('tu-expl-mots', className)}>
+      {Array.from({ length: n }, (_, i) => (
+        <span
+          key={i}
+          className={cx('tu-expl-mot', rayes.includes(i) && 'tu-expl-mot--raye')}
+          style={{ inlineSize: `${[70, 100, 55, 85, 65, 90][i % 6]}%` }}
+        />
+      ))}
+    </span>
+  );
+}
+
+/** Les mots de chaque équipe, une carte à sa couleur. */
+const LISTES = [
+  { equipe: 1, n: 4, rayes: [2] },
+  { equipe: 3, n: 6, rayes: [] },
+  { equipe: 4, n: 3, rayes: [] },
+  { equipe: 6, n: 5, rayes: [1] },
+] as const;
+
 function Photo({ equipe, className }: { equipe: number; className?: string }) {
   return <span className={cx('tu-expl-photo', teamModifier(equipe), className)} />;
 }
@@ -232,6 +266,61 @@ const VISUELS: Record<VisuelExplication, () => ReactNode> = {
     <div className="tu-expl-groupe tu-expl-suite">
       <span className="tu-expl-points">+100</span>
       <span className="tu-expl-points tu-expl-points--discret">+20</span>
+    </div>
+  ),
+
+  // ---- Surenchère en mode téléphones (2026-11-08)
+  'sujet-capitaines': () => (
+    <>
+      <div className="tu-expl-ecran">?</div>
+      <span className="tu-expl-fleche">→</span>
+      <div className="tu-expl-groupe tu-expl-suite">
+        {EQUIPES.slice(0, 3).map((e) => (
+          <span key={e} className="tu-expl-repere">
+            <Perso equipe={e} className="tu-expl-perso--grand" />
+            <span className="tu-expl-telephone tu-expl-telephone--petit" />
+          </span>
+        ))}
+      </div>
+    </>
+  ),
+  'saisie-mots': () => (
+    <>
+      <Equipe n={3} equipe={3} />
+      <span className="tu-expl-bulle tu-expl-pulse">• • •</span>
+      <Telephone>
+        <Mots n={5} className="tu-expl-suite" />
+      </Telephone>
+    </>
+  ),
+  'compteurs-mots': () => (
+    <>
+      <div className="tu-expl-ecran">
+        <span className="tu-expl-ecran__rideau" />
+      </div>
+      <div className="tu-expl-groupe tu-expl-suite">
+        {LISTES.map(({ equipe, n }) => (
+          <span key={equipe} className={cx('tu-expl-compteur', teamModifier(equipe))}>
+            {n}
+          </span>
+        ))}
+      </div>
+    </>
+  ),
+  'listes-mots': () => (
+    <div className="tu-expl-groupe tu-expl-suite">
+      {LISTES.map(({ equipe, n, rayes }) => (
+        <span key={equipe} className={cx('tu-expl-liste', teamModifier(equipe))}>
+          <Mots n={n} rayes={rayes} />
+        </span>
+      ))}
+    </div>
+  ),
+  'podium-mots': () => (
+    <div className="tu-expl-groupe tu-expl-suite">
+      <span className="tu-expl-points">+100</span>
+      <span className="tu-expl-points tu-expl-points--discret">+60</span>
+      <span className="tu-expl-points tu-expl-points--discret">+30</span>
     </div>
   ),
 
