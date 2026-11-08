@@ -115,7 +115,9 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
   const fenetreEcran = await browser.newContext({ storageState: await context.storageState() });
   const ecran = await fenetreEcran.newPage();
   await ecran.goto(`/ecran/${code}`);
-  await expect(ecran.getByTestId('code')).toHaveText(code);
+  // Former les équipes les dévoile aussitôt à l'écran (2026-11-04) : il s'ouvre sur la scène
+  // Équipes, plus sur l'accueil et son code.
+  await expect(ecran.locator('[data-scene="equipes"]')).toBeVisible({ timeout: 15_000 });
   await expect(ecran.locator('[data-en-direct="true"]')).toBeVisible({ timeout: 15_000 });
 
   await regie.goto(`/regie/${code}/pilotage`);
