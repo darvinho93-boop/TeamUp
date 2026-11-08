@@ -1239,7 +1239,8 @@ puis **tous les mots d'un coup** à la fin ; l'animateur raye les hors-sujet ; *
   suivant sauté ; 0 mot validé : ni rang ni point), `cleMot` (la même forme que `cle_prenom`),
   40 caractères et 60 mots au plus. Machine : étape `podium`, action `classer` ; le résultat du
   passage garde `{ mode: 'telephones', comptes, rangs, points }`.
-- Base (migration `20261108090000`) : `mots_surenchere` (unique par passage, équipe et clé), lue
+- Base (migrations `20261108090000`, puis `20261109090000` qui ferme `chrono_mots_ouvert` à anon) :
+  `mots_surenchere` (unique par passage, équipe et clé), lue
   par l'animateur, écrite **uniquement** par `ajouter_mot` et `retirer_mot` (rôle de service ;
   refus : session inconnue, chrono fermé à l'heure de la base + 1 s, pas capitaine, mot invalide,
   60 mots, doublon) et `refuser_mot` (session de l'animateur ; refusé une fois le thème classé).
