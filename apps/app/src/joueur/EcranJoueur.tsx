@@ -14,6 +14,7 @@ import { NomEquipe } from './NomEquipe';
 import { NomPropose } from './NomPropose';
 import { Photos } from './Photos';
 import { Quiz } from './Quiz';
+import { SurenchereMots } from './SurenchereMots';
 import { useEtatJoueur } from './useEtatJoueur';
 import { useFilePhotos } from './useFilePhotos';
 
@@ -86,7 +87,7 @@ export function EcranJoueur({
     );
   }
 
-  const { joueur, equipe, manche, prochaine, evenement, quiz, photos } = etat;
+  const { joueur, equipe, manche, prochaine, evenement, quiz, photos, surenchere } = etat;
 
   // Quiz en mode téléphone : le seul moment où le téléphone sert à jouer (spec v3).
   if (quiz) {
@@ -96,6 +97,23 @@ export function EcranJoueur({
           <Quiz
             code={code}
             quiz={quiz}
+            decalageMs={decalageMs}
+            remplacer={remplacer}
+            relire={relire}
+          />
+        </div>
+      </Cadre>
+    );
+  }
+
+  // Surenchère en mode téléphones (2026-11-08) : le capitaine tape les mots de l'équipe.
+  if (surenchere) {
+    return (
+      <Cadre bandeau={bandeau} outil={outil}>
+        <div className="tu-player__body">
+          <SurenchereMots
+            code={code}
+            surenchere={surenchere}
             decalageMs={decalageMs}
             remplacer={remplacer}
             relire={relire}

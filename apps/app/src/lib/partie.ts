@@ -97,6 +97,36 @@ export interface QuizJetons extends QuizCommun {
 export type QuizJoueur = QuizTelephone | QuizJetons;
 
 /**
+ * La Surenchère en mode téléphones vue par un téléphone (2026-11-08) : le capitaine tape les mots
+ * de son équipe, ses coéquipiers les voient. Le sujet n'arrive qu'aux étapes où l'écran commun le
+ * montre déjà ; rien sur les autres équipes.
+ */
+export interface SurenchereJoueur {
+  mode: 'telephones';
+  serveur_ms: number;
+  /** `themes`, `sujet`, `chrono` ou `podium` (`packages/game`, pilotage de la Surenchère). */
+  etape: string | null;
+  passage_id: string | null;
+  chrono_depart_ms: number | null;
+  chrono_duree_s: number | null;
+  theme: string | null;
+  sujet: string | null;
+  capitaine: boolean;
+  /** Sans équipe, le joueur regarde. */
+  equipe: boolean;
+  mots: MotJoueur[];
+  /** Au podium : le rang de l'équipe (absent sans mot validé) et ses points. */
+  rang: number | null;
+  points: number | null;
+}
+
+export interface MotJoueur {
+  id: string;
+  mot: string;
+  refuse: boolean;
+}
+
+/**
  * Le photo challenge vu par un téléphone : les thèmes dans sa langue et l'heure d'envoi de la
  * photo de son équipe pour chacun. Aucune image ne descend vers un téléphone.
  */
@@ -139,6 +169,8 @@ export interface EtatJoueur {
   /** Les jeux de la soirée, dans l'ordre : la page d'explication de l'inscription (lot 14). */
   programme?: GameCode[];
   quiz: QuizJoueur | null;
+  /** Surenchère en mode téléphones ; absent sans la migration du 2026-11-08. */
+  surenchere?: SurenchereJoueur | null;
   /** `null` tant que la soirée n'a pas de manche photo. */
   photos: PhotosJoueur | null;
 }
@@ -151,6 +183,9 @@ export type RefusQuiz = 'session' | 'fermee' | 'spectateur' | 'elimine' | 'deja'
 
 /** Refus d'une mise en mode jetons, dans l'ordre où la base les vérifie. */
 export type RefusMise = 'session' | 'fermee' | 'capitaine' | 'deja' | 'temps' | 'invalide';
+
+/** Refus d'un mot de la Surenchère, dans l'ordre où la base les vérifie. */
+export type RefusMot = 'session' | 'fermee' | 'capitaine' | 'mot' | 'trop' | 'doublon';
 
 /** Refus d'un envoi photo. Tous définitifs, sauf `serveur` : la file d'attente réessaiera. */
 export type RefusPhoto = 'session' | 'capitaine' | 'close' | 'theme' | 'fichier';

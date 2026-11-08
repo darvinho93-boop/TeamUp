@@ -4,6 +4,7 @@ import type {
   EvenementPublic,
   Langue,
   RefusMise,
+  RefusMot,
   RefusQuiz,
   SoireeDuJour,
 } from '@/lib/partie';
@@ -190,6 +191,54 @@ export async function miserQuiz(
             ? 'temps'
             : /invalide/.test(error.message)
               ? 'invalide'
+              : /session/.test(error.message)
+                ? 'session'
+                : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  await signalerSalle(etat.evenement.id, 'mises');
+  return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
+}
+
+/** Ajouter un mot à la liste de l'équipe, ou en retirer un (une faute de frappe). */
+export type ActionMot = { type: 'ajouter'; mot: string } | { type: 'retirer'; id: string };
+
+/**
+ * Surenchère en mode téléphones : le capitaine de ce cookie ajoute ou retire un mot. La base
+ * décide seule (capitaine, chrono, doublon, longueur, nombre) ; l'écran et la régie sont prévenus
+ * aussitôt (signal `mises`, qu'ils sont seuls à écouter), les coéquipiers à leur relecture.
+ * Renvoie l'état à jour, à afficher sans attendre.
+ */
+export async function motSurenchere(
+  code: string,
+  action: ActionMot,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusMot }> {
+  const jeton = await jetonDe(code);
+  const etat = jeton ? await etatPourJeton(code, jeton) : null;
+  if (!jeton || !etat) return { ok: false, refus: 'session' };
+
+  const { error } =
+    action.type === 'ajouter'
+      ? await supabaseService().rpc('ajouter_mot', {
+          p_jeton_hash: hacher(jeton),
+          p_mot: action.mot,
+        })
+      : await supabaseService().rpc('retirer_mot', {
+          p_jeton_hash: hacher(jeton),
+          p_mot: action.id,
+        });
+  if (error) {
+    const refus: RefusMot | null = /fermé/.test(error.message)
+      ? 'fermee'
+      : /pas capitaine/.test(error.message)
+        ? 'capitaine'
+        : /déjà/.test(error.message)
+          ? 'doublon'
+          : /trop/.test(error.message)
+            ? 'trop'
+            : /invalide/.test(error.message)
+              ? 'mot'
               : /session/.test(error.message)
                 ? 'session'
                 : null;
