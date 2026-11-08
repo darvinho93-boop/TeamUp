@@ -119,6 +119,32 @@
     },
     "reponsesAVenir": "The answers are coming one by one on the big screen!"
   },
+  "surenchere": {
+    "titre": "Bidding war",
+    "sansEquipe": "You have no team for this game: follow it on the big screen.",
+    "themes": "The themes are on the big screen. Your captain will type the team's words!",
+    "themesCapitaine": "The themes are on the big screen. On the signal, you type the team's words: keep your team around you!",
+    "compte": "{n, plural, =0 {No words} one {# word} other {# words}}",
+    "champ": "A word on the topic",
+    "ajouter": "Add",
+    "pret": "The timer is about to start: get your ideas ready!",
+    "pretCapitaine": "The timer is about to start: on go, type as many words as you can!",
+    "coequipier": "Your captain is typing the words: whisper them your ideas!",
+    "fini": "Time's up! Eyes on the big screen.",
+    "perdus": "{n, plural, one {# word couldn't be sent in time.} other {# words couldn't be sent in time.}}",
+    "podium": "{rang, select, 1 {1st place} 2 {2nd place} other {3rd place}}: +{points} points!",
+    "horsPodium": "No podium this time: catch up on the next theme!",
+    "liste": "Your team's words",
+    "retirer": "Remove “{mot}”",
+    "refus": {
+      "vide": "Type a word.",
+      "doublon": "This word is already in your list.",
+      "trop": "60 words is the maximum!",
+      "mot": "40 characters at most.",
+      "fermee": "Too late: time's up!",
+      "capitaine": "Only the captain types the words."
+    }
+  },
   "photos": {
     "ouvrir": "Photos: {envoyees} of {total}",
     "titre": "Photo challenge",
@@ -229,6 +255,8 @@
       "tours": "Turns per team",
       "themes": "Themes",
       "chronoChamp": "Timer (seconds)",
+      "chronoTelephonesChamp": "Phone timer (seconds)",
+      "chronoTelephones": "phones: {secondes} s",
       "ajouter": "Add {jeu}",
       "questions": "Questions",
       "question": "Question {numero}",
@@ -350,6 +378,7 @@
       "motifPointsCommuns": "Common ground — {equipe}",
       "motifTenu": "Bidding war — bet kept",
       "motifRate": "Bidding war — bet missed by another team",
+      "motifPodiumMots": "Bidding war — {rang, select, 1 {1st place} 2 {2nd place} other {3rd place}} ({mots, plural, one {# word} other {# words}})",
       "motifQuiz": "{survivants, plural, =0 {Quiz – no survivors} one {Quiz – # survivor} other {Quiz – # survivors}}",
       "motifQuizJetons": "{jetons, plural, =0 {Quiz – no tokens} one {Quiz – # token} other {Quiz – # tokens}}",
       "motifMime": "Mime – {equipe}",
@@ -399,6 +428,21 @@
         "validerJetons": "Confirm the tokens left",
         "proposition": "Show answer {lettre}",
         "lancer": "Start the timer"
+      },
+      "surenchereMots": {
+        "commencerVoix": "Start the Bidding war by voice",
+        "commencerTelephones": "Phones mode (captains type the words)",
+        "modeVoix": "by voice",
+        "modeTelephones": "phones mode",
+        "capitainesTitre": "Phones mode: one captain per team",
+        "lancer": "Start the timer ({secondes} s)",
+        "mots": "{n, plural, =0 {no words} one {# word} other {# words}}",
+        "aide": "Tap an off-topic word to strike it. Struck during the timer, it will never appear on screen.",
+        "finDuChrono": "When the timer ends, the screen shows all the words.",
+        "classer": "Confirm the ranking",
+        "rayer": "Strike “{mot}”",
+        "retablir": "Restore “{mot}”",
+        "place": "{rang, select, 1 {1st place} 2 {2nd place} 3 {3rd place} other {off the podium}}"
       },
       "mime": {
         "titre": "Mime",
@@ -451,7 +495,9 @@
         "expliquerJetons": "Explain (tokens)",
         "enCours": "Explanation on screen:",
         "rejouer": "Replay",
-        "arreter": "Stop the explanation"
+        "arreter": "Stop the explanation",
+        "expliquerVoix": "Explain (voice)",
+        "expliquerTelephones": "Explain (phones)"
       },
       "tirage": {
         "tirer": "Draw the playing order",
@@ -613,7 +659,7 @@
     "regles": {
       "list2": "Back to the screen, one team guesses what the people standing have in common!",
       "qcm2": "One question, four answers: only one is right!",
-      "enchere2": "One champion per team. Who can say the most? Keep your bet!",
+      "enchere2": "One topic, one timer: which team can name the most?",
       "mime2": "The word travels down the team, mimed then whispered.",
       "photo2": "Your photos of the evening, theme by theme: which one will win?",
       "grab": "The music starts: grab the matching object!",
@@ -632,6 +678,16 @@
     "sujet": "The topic",
     "tenu": "Bet kept!",
     "perdu": "Bet missed!",
+    "surenchereMots": {
+      "capitaines": "Captains, grab your phones!",
+      "mots": "{n, plural, =0 {0 words} one {# word} other {# words}}",
+      "motsCaches": "The words stay hidden until time's up!",
+      "tempsEcoule": "Time's up!",
+      "place": "{rang, select, 1 {1st place} 2 {2nd place} other {3rd place}}",
+      "points": "+{points} points",
+      "enTete": "Top: {equipes} · {n, plural, one {# word} other {# words}}",
+      "aucunMot": "No valid words"
+    },
     "scores": "Standings",
     "podium": "Podium",
     "merci": "Well done, and thank you all!",
@@ -689,6 +745,13 @@
         "encheres": "The topic is revealed, the bids go up: “5!” “7!”",
         "chrono": "Whoever promises the most must keep their bet, against the clock!",
         "verdict": "Bet kept: +100! Bet missed: +20 for every other team."
+      },
+      "enchere2-telephones": {
+        "sujet": "The topic appears on screen and on the captains' phones.",
+        "saisie": "Timer on: each captain types as many words as they can, the team whispers ideas!",
+        "compteurs": "On screen, the counters climb… but the words stay hidden!",
+        "listes": "Time's up: all the words appear! Off-topic ones are struck out.",
+        "podium": "Most words wins: +100, then +60 and +30!"
       },
       "mime2": {
         "file": "The team stands in a line, without turning around.",
