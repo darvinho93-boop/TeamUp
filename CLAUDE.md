@@ -1224,3 +1224,56 @@ machine à sous** (revu le même jour : un premier tourbillon de prénoms a ét�
   (`Instant.chronoDepartMs`) ; revenir sur la scène ensuite ne le relance pas.
 - e2e : `accueil-prenoms.spec.ts`, `devoilement.spec.ts`. Une capture en pleine définition
   (5 040 px de large) bloque la page 1,6 à 3 s : pour juger une animation, mesurer dans la page.
+
+## Conventions posées le 2026-11-08 (Surenchère en mode téléphones)
+
+Tranché le 2026-11-08 : un second mode de la Surenchère, **téléphones**. Pendant le chrono, le
+**capitaine** de chaque équipe tape **le plus de mots possible** sur le sujet, **toutes les équipes
+en même temps** ; **pas de pari** ; l'écran ne montre que le **nombre** de mots pendant le chrono,
+puis **tous les mots d'un coup** à la fin ; l'animateur raye les hors-sujet ; **podium du thème
++100 / +60 / +30**. Le mode se choisit **au lancement** : « à la voix » (spec v3) reste.
+
+- **Écart assumé à la spec v3** (« deux principes ») : comme le mode jetons, le téléphone du
+  capitaine sert à jouer, un par équipe. Pas de déblocage par la régie (contrairement aux jetons).
+- Logique pure (`packages/game/src/surenchere.ts`) : `podiumDesMots` (ex aequo : mêmes points, rang
+  suivant sauté ; 0 mot validé : ni rang ni point), `cleMot` (la même forme que `cle_prenom`),
+  40 caractères et 60 mots au plus. Machine : étape `podium`, action `classer` ; le résultat du
+  passage garde `{ mode: 'telephones', comptes, rangs, points }`.
+- Base (migration `20261108090000`) : `mots_surenchere` (unique par passage, équipe et clé), lue
+  par l'animateur, écrite **uniquement** par `ajouter_mot` et `retirer_mot` (rôle de service ;
+  refus : session inconnue, chrono fermé à l'heure de la base + 1 s, pas capitaine, mot invalide,
+  60 mots, doublon) et `refuser_mot` (session de l'animateur ; refusé une fois le thème classé).
+  Un mot rayé **pendant le chrono** est `masque` : il ne sort jamais vers l'écran ; rayé après, il
+  s'affiche barré.
+- `etat_joueur.surenchere` (`surenchere_du_joueur`) : le sujet dans la langue du joueur aux étapes
+  `sujet`, `chrono` et `podium` (l'écran le montre alors à toute la salle), les mots de **son
+  équipe seulement**, son rang et ses points au podium. `etat_ecran.passage.mots` : `valides`
+  toujours ; `liste` à l'écran une fois le chrono écoulé (+ 1 s) ou le thème classé, sans les mots
+  masqués ; à la régie toujours. `secret_visible` montre aussi le sujet au podium.
+- Le mode vit dans `manches.options.mode` (`voix` | `telephones`), posé par « Commencer » ; une
+  manche lancée sans mode est à la voix. Chrono : `options.chrono_telephones_s` (préparation,
+  60 s par défaut) ; celui de la voix reste `chrono_s`.
+- Temps réel : chaque mot passe par `POST /api/partie/[code]/mot` (ajouter ou retirer), puis le
+  serveur envoie `mises` (écran et régie seulement). Aucune touche ne marque la fin du chrono :
+  `useEtatSalle` relit 1,3 s après (`relectureDesMots`, `src/lib/mots.ts`).
+- Téléphone (`src/joueur/SurenchereMots.tsx`) : champ et « Ajouter » (Entrée envoie, le clavier
+  reste ouvert), file d'envoi qui réessaie toutes les 1,5 s tant que le chrono court ; doublon et
+  limite vérifiés aussi sur place ; les mots partis trop tard sont annoncés.
+- Écran (`src/ecran/SurenchereTelephones.tsx`) : le sujet et « Capitaines, à vos téléphones ! » ;
+  puis chrono et compteurs ; à la fin, une carte de mots par équipe sur la grille de la scène
+  Équipes (`--tu-mots-echelle`, `useAjusterTexte`) ; au podium, médailles et fête, les cartes à
+  leur place. Un thème joué dit « En tête : … » dans la grille des thèmes.
+- Régie : « Commencer la Surenchère à la voix » (accent) et « Mode téléphones » (grisé sans un
+  capitaine par équipe), avec la liste des capitaines (`CapitainesAuTelephone`, commune avec les
+  jetons) ; `PanneauMots` : les mots en étiquettes à toucher pour rayer, « Valider le classement »
+  (confirmé), « Retour aux thèmes ».
+- Explication : script `enchere2-telephones` (45 s, cinq cartes), étape `explication-telephones`,
+  touches « Expliquer (voix) » et « Expliquer (téléphones) ». Son : `reussite` au podium.
+- La règle de la présentation (et de la carte) vaut pour les deux modes, le mode ne se choisissant
+  qu'ensuite : « Un sujet, un chrono : quelle équipe en citera le plus ? » (2026-11-09, à la place
+  de « Un champion par équipe… Tenez votre pari ! »).
+- Cartes de mots : la taille de départ suit la plus longue liste (`4xl` jusqu'à 8 mots, `3xl`
+  jusqu'à 20, `2xl` au-delà), puis se réduit jusqu'à tenir.
+- Tests : `packages/game` (podium, clé, machine), `tests/pilotage-etapes.test.ts`,
+  `tests/mots.test.ts`, `tests/surenchere-mots.test.ts` (base : refus, fuites, masquage),
+  `e2e/surenchere-telephones.spec.ts` (parcours complet, 8 équipes de 25 mots en 1 920 × 1 080).
