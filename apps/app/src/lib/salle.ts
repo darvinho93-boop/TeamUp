@@ -37,6 +37,26 @@ export interface PassageSalle {
   mises?: Record<string, MiseSalle> | null;
   /** Photo : les photos du thème (régie toujours, écran une fois la diffusion lancée). */
   photos?: PhotoSalle[] | null;
+  /** Surenchère en mode téléphones : les mots de chaque équipe (par numéro). */
+  mots?: Record<string, MotsEquipeSalle> | null;
+}
+
+/**
+ * Les mots d'une équipe sur un thème (Surenchère en mode téléphones, 2026-11-08). `valides` (les
+ * mots non rayés) toujours ; `liste` à l'écran seulement une fois le chrono écoulé, à la régie
+ * toujours. Les mots masqués (rayés pendant le chrono) ne sortent que vers la régie.
+ */
+export interface MotsEquipeSalle {
+  valides: number;
+  liste: MotSalle[] | null;
+}
+
+export interface MotSalle {
+  id: string;
+  mot: string;
+  refuse: boolean;
+  /** Rayé pendant le chrono : jamais montré à l'écran. */
+  masque: boolean;
 }
 
 export interface MiseSalle {

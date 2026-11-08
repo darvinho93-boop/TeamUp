@@ -139,7 +139,7 @@ export function instantDe(etat: EtatSalle): Instant {
 /** L'étape de chaque jeu qui sonne, et comment. */
 const VERDICTS: Partial<Record<GameCode, Record<string, Son>>> = {
   list2: { trouve: 'reussite', echec: 'echec' },
-  enchere2: { tenu: 'reussite', rate: 'echec' },
+  enchere2: { tenu: 'reussite', rate: 'echec', podium: 'reussite' },
   qcm2: { reponse: 'revelation' },
   mime2: { trouve: 'reussite', rate: 'echec' },
   photo2: { gagnante: 'reussite' },

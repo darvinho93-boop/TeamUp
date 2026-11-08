@@ -12,7 +12,6 @@ import {
   CHRONO_MIME_S,
   CHRONO_POINTS_COMMUNS_S,
   CHRONO_QUESTION_S,
-  CHRONO_SURENCHERE_DEFAUT_S,
   passageSuivant,
   type ActionPointsCommuns,
   type EtapeMime,
@@ -27,8 +26,10 @@ import {
 } from '@teamup/game';
 import {
   calculerEtape,
+  chronoSurenchere,
   jeuParEquipe,
   mancheATerminer,
+  modeDeLaSurenchere,
   modeDuQuiz,
   modeExpliqueDe,
   scriptEnCours,
@@ -42,6 +43,7 @@ import {
   revelationPrete,
 } from '@/lib/jetons';
 import { membresTries } from '@/lib/membres';
+import { classementDuTheme, equipesEnJeu } from '@/lib/mots';
 import { reglageDe } from '@/lib/sons';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import type { Json } from '@/types/base';
@@ -54,6 +56,7 @@ import {
   type EtatSalle,
   type MancheSalle,
   type ParLangue,
+  type PassageSalle,
   type Scene,
   indicesMsDe,
   type EquipeSalle,
@@ -76,13 +79,29 @@ const PILOTABLES: readonly GameCode[] = [
 ];
 const LETTRES = ['A', 'B', 'C', 'D'] as const;
 
-/** Libellé du mode d'un quiz, fixé au lancement ; rien avant, ni pour un autre jeu. */
-function libelleMode(manche: MancheSalle): 'modeJetons' | 'modeTelephone' | 'modeCroix' | null {
-  if (manche.jeu !== 'qcm2') return null;
+/**
+ * Libellé du mode d'un quiz ou d'une Surenchère, fixé au lancement (clé sous `regie.pilotage`) ;
+ * rien avant, ni pour un autre jeu.
+ */
+function libelleMode(
+  manche: MancheSalle,
+):
+  | 'quiz.modeJetons'
+  | 'quiz.modeTelephone'
+  | 'quiz.modeCroix'
+  | 'surenchereMots.modeVoix'
+  | 'surenchereMots.modeTelephones'
+  | null {
   const mode = manche.options['mode'];
-  if (mode === 'jetons') return 'modeJetons';
-  if (mode === 'telephone') return 'modeTelephone';
-  if (mode === 'croix') return 'modeCroix';
+  if (manche.jeu === 'enchere2') {
+    if (mode === 'telephones') return 'surenchereMots.modeTelephones';
+    if (mode === 'voix') return 'surenchereMots.modeVoix';
+    return null;
+  }
+  if (manche.jeu !== 'qcm2') return null;
+  if (mode === 'jetons') return 'quiz.modeJetons';
+  if (mode === 'telephone') return 'quiz.modeTelephone';
+  if (mode === 'croix') return 'quiz.modeCroix';
   return null;
 }
 
@@ -124,6 +143,7 @@ export function Pilotage({
       pointsCommuns: (equipe) => t('motifPointsCommuns', { equipe }),
       tenu: t('motifTenu'),
       rate: t('motifRate'),
+      podiumMots: (rang, mots) => t('motifPodiumMots', { rang, mots }),
       quiz: (survivants) => t('motifQuiz', { survivants }),
       quizJetons: (jetons) => t('motifQuizJetons', { jetons }),
       mime: (equipe) => t('motifMime', { equipe }),
@@ -186,6 +206,19 @@ export function Pilotage({
     });
   };
 
+  /** Surenchère en mode téléphones : la régie raye un mot hors sujet (ou le rétablit). */
+  const refuser = (motId: string, refuse: boolean) => {
+    demarrer(async () => {
+      const { error } = await supabaseNavigateur().rpc('refuser_mot', {
+        p_mot: motId,
+        p_refuse: refuse,
+      });
+      if (error) setAlerte(t('erreur.impossible'));
+      else signaler();
+      await relire();
+    });
+  };
+
   const manche = mancheCourante(etat);
   const { scene } = etat.pilotage;
 
@@ -239,6 +272,7 @@ export function Pilotage({
         {scene === 'intro' &&
           manche &&
           manche.jeu !== 'qcm2' &&
+          !(manche.jeu === 'enchere2' && manche.statut === 'a_venir') &&
           !mancheATerminer(manche) &&
           !(jeuParEquipe(manche.jeu) && manche.passages.length === 0) && (
             <Button
@@ -247,9 +281,37 @@ export function Pilotage({
               className="tu-regie-keys__wide"
               onClick={() => agir({ type: 'commencer' })}
             >
-              {t('commencer', { jeu: tJeux(manche.jeu) })}
+              {/* Une Surenchère reprise garde le mode choisi à son lancement : on le rappelle. */}
+              {[
+                t('commencer', { jeu: tJeux(manche.jeu) }),
+                ...[libelleMode(manche)].flatMap((mode) => (mode ? [t(mode)] : [])),
+              ].join(' · ')}
             </Button>
           )}
+        {scene === 'intro' && manche?.jeu === 'enchere2' && manche.statut === 'a_venir' && (
+          // Le mode se choisit au lancement (2026-11-08) : la voix d'abord, le jeu de la spec v3.
+          <>
+            <div className="tu-regie-keys">
+              <Button
+                variant="accent"
+                size="lg"
+                className="tu-regie-keys__wide"
+                onClick={() => agir({ type: 'commencer', mode: 'voix' })}
+              >
+                {t('surenchereMots.commencerVoix')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="tu-regie-keys__wide"
+                disabled={capitainesManquants(etat).length > 0}
+                onClick={() => agir({ type: 'commencer', mode: 'telephones' })}
+              >
+                {t('surenchereMots.commencerTelephones')}
+              </Button>
+            </div>
+            <CapitainesAuTelephone etat={etat} code={code} mode="telephones" />
+          </>
+        )}
         {scene === 'intro' &&
           manche?.jeu === 'qcm2' &&
           !mancheATerminer(manche) &&
@@ -262,7 +324,7 @@ export function Pilotage({
               className="tu-regie-keys__wide"
               onClick={() => agir({ type: 'commencer' })}
             >
-              {`${t('commencer', { jeu: tJeux(manche.jeu) })} · ${t(`quiz.${libelleMode(manche)!}`)}`}
+              {`${t('commencer', { jeu: tJeux(manche.jeu) })} · ${t(libelleMode(manche)!)}`}
             </Button>
           )}
         {scene === 'intro' &&
@@ -298,13 +360,19 @@ export function Pilotage({
             </div>
           )}
         {scene === 'intro' && manche?.jeu === 'qcm2' && manche.statut === 'a_venir' && (
-          <CapitainesJetons etat={etat} code={code} />
+          <CapitainesAuTelephone etat={etat} code={code} mode="jetons" />
         )}
         {scene === 'jeu' && manche?.jeu === 'list2' && (
           <PanneauPointsCommuns etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
         {scene === 'jeu' && manche?.jeu === 'enchere2' && (
-          <PanneauSurenchere etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+          <PanneauSurenchere
+            etat={etat}
+            manche={manche}
+            decalageMs={decalageMs}
+            agir={agir}
+            refuser={refuser}
+          />
         )}
         {scene === 'jeu' && manche?.jeu === 'qcm2' && (
           <PanneauQuiz
@@ -392,7 +460,7 @@ export function Pilotage({
                     quiz au programme ne se confondent plus (inventaire du 2026-10-30). */}
                 {[
                   `${m.ordre}. ${tJeux(m.jeu)}`,
-                  ...[libelleMode(m)].flatMap((mode) => (mode ? [t(`quiz.${mode}`)] : [])),
+                  ...[libelleMode(m)].flatMap((mode) => (mode ? [t(mode)] : [])),
                   t(`statut.${m.statut}`),
                 ].join(' · ')}
               </span>
@@ -464,6 +532,18 @@ function PanneauExplication({ etat, manche, decalageMs, agir }: PanneauProps) {
   const { etape, chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
   const enCours = scriptEnCours(manche.jeu, 'intro', etape) !== null;
   if (!enCours) {
+    if (manche.jeu === 'enchere2') {
+      return (
+        <div className="tu-cluster">
+          <Button variant="ghost" onClick={() => agir({ type: 'expliquer' })}>
+            {t('expliquerVoix')}
+          </Button>
+          <Button variant="ghost" onClick={() => agir({ type: 'expliquer', mode: 'telephones' })}>
+            {t('expliquerTelephones')}
+          </Button>
+        </div>
+      );
+    }
     return manche.jeu === 'qcm2' ? (
       <div className="tu-cluster">
         <Button variant="ghost" onClick={() => agir({ type: 'expliquer' })}>
@@ -717,17 +797,21 @@ function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) 
   );
 }
 
-function PanneauSurenchere({ etat, manche, decalageMs, agir }: PanneauProps) {
+function PanneauSurenchere({
+  etat,
+  manche,
+  decalageMs,
+  agir,
+  refuser,
+}: PanneauProps & { refuser: (motId: string, refuse: boolean) => void }) {
   const t = useTranslations('regie.pilotage');
   const [champion, setChampion] = useState<number | null>(null);
   const etape = etat.pilotage.etape as EtapeSurenchere;
   const permises = actionsSurenchere({ etape, passageId: etat.pilotage.passage_id });
   const passage = passageCourant(etat);
   const langue = etat.evenement.langues[0] ?? 'fr';
-  const chronoS =
-    typeof manche.options['chrono_s'] === 'number'
-      ? manche.options['chrono_s']
-      : CHRONO_SURENCHERE_DEFAUT_S;
+  const telephones = modeDeLaSurenchere(manche) === 'telephones';
+  const chronoS = chronoSurenchere(manche, modeDeLaSurenchere(manche));
   const texte = (valeurs: ParLangue | null, cle: string) =>
     texteParLangue(valeurs, cle, [langue])[0]?.texte ?? '—';
 
@@ -761,6 +845,21 @@ function PanneauSurenchere({ etat, manche, decalageMs, agir }: PanneauProps) {
           {t('terminer')}
         </Button>
       </section>
+    );
+  }
+
+  if (telephones) {
+    return (
+      <PanneauMots
+        etat={etat}
+        passage={passage}
+        theme={texte(passage.public, 'theme')}
+        sujet={texte(passage.secret, 'sujet')}
+        chronoS={chronoS}
+        decalageMs={decalageMs}
+        agir={agir}
+        refuser={refuser}
+      />
     );
   }
 
@@ -838,20 +937,33 @@ function PanneauSurenchere({ etat, manche, decalageMs, agir }: PanneauProps) {
 }
 
 /**
- * Avant le mode jetons : un capitaine par équipe, son téléphone en ligne. Le lancement attend
- * qu'aucune équipe qui a des joueurs n'en manque ; un capitaine hors ligne se remplace à la Salle.
+ * Avant le quiz en mode jetons ou la Surenchère en mode téléphones : un capitaine par équipe, son
+ * téléphone en ligne. Le lancement attend qu'aucune équipe qui a des joueurs n'en manque ; un
+ * capitaine hors ligne se remplace à la Salle.
  */
-function CapitainesJetons({ etat, code }: { etat: EtatSalle; code: string }) {
+function CapitainesAuTelephone({
+  etat,
+  code,
+  mode,
+}: {
+  etat: EtatSalle;
+  code: string;
+  mode: 'jetons' | 'telephones';
+}) {
   const tq = useTranslations('regie.pilotage.quiz');
+  const ts = useTranslations('regie.pilotage.surenchereMots');
   const manquants = capitainesManquants(etat);
+  const titre = mode === 'jetons' ? tq('capitainesTitre') : ts('capitainesTitre');
   return (
     <section
       className="tu-regie-secret"
-      aria-label={tq('capitainesTitre')}
-      data-testid="capitaines-jetons"
+      aria-label={titre}
+      data-testid={mode === 'jetons' ? 'capitaines-jetons' : 'capitaines-telephones'}
     >
-      <p className="tu-regie-item__title">{tq('capitainesTitre')}</p>
-      <p className="tu-regie__muted">{tq('jetonsDeDepart', { n: jetonsDeDepartDe(etat) })}</p>
+      <p className="tu-regie-item__title">{titre}</p>
+      {mode === 'jetons' && (
+        <p className="tu-regie__muted">{tq('jetonsDeDepart', { n: jetonsDeDepartDe(etat) })}</p>
+      )}
       <ul className="tu-regie-list">
         {etat.equipes
           .filter((e) => e.joueurs > 0)
@@ -886,6 +998,119 @@ function CapitainesJetons({ etat, code }: { etat: EtatSalle; code: string }) {
       <Link href={`/regie/${code}/salle`} className="tu-regie__lien">
         {tq('nommerALaSalle')}
       </Link>
+    </section>
+  );
+}
+
+/**
+ * Surenchère en mode téléphones (2026-11-08), un thème : « Lancer le chrono », puis les mots de
+ * chaque équipe en étiquettes, à toucher pour rayer un mot hors sujet (rayé pendant le chrono, il
+ * ne paraîtra jamais à l'écran), « Valider le classement » (confirmé), et le podium du thème.
+ */
+function PanneauMots({
+  etat,
+  passage,
+  theme,
+  sujet,
+  chronoS,
+  decalageMs,
+  agir,
+  refuser,
+}: {
+  etat: EtatSalle;
+  passage: PassageSalle;
+  theme: string;
+  sujet: string;
+  chronoS: number;
+  decalageMs: number;
+  agir: Agir;
+  refuser: (motId: string, refuse: boolean) => void;
+}) {
+  const t = useTranslations('regie.pilotage');
+  const ts = useTranslations('regie.pilotage.surenchereMots');
+  const { etape, chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
+  const maintenant = useMaintenant(etape === 'chrono') + decalageMs;
+  const fini = depart !== null && maintenant >= depart + (duree ?? chronoS) * 1000;
+  const classement = classementDuTheme(passage);
+  const mots = passage.mots ?? {};
+
+  return (
+    <section className="tu-regie__section" aria-label={t('surenchere')} data-testid="panneau-mots">
+      <div className="tu-regie-secret">
+        <p className="tu-regie__muted">{theme}</p>
+        <p className="tu-regie-item__title">{sujet}</p>
+      </div>
+      {etape === 'sujet' && (
+        <Button variant="accent" size="lg" onClick={() => agir({ type: 'adjuger' })}>
+          {ts('lancer', { secondes: chronoS })}
+        </Button>
+      )}
+      {etape === 'chrono' && (
+        <>
+          {!fini && (
+            <Chrono
+              departMs={depart}
+              dureeS={duree ?? chronoS}
+              decalageMs={decalageMs}
+              className="tu-regie-timer"
+            />
+          )}
+          <p className="tu-regie__muted">
+            {fini ? ts('aide') : `${ts('finDuChrono')} ${ts('aide')}`}
+          </p>
+        </>
+      )}
+      <ul className="tu-regie-list" data-testid="regie-mots">
+        {equipesEnJeu(etat).map((e) => {
+          const leurs = mots[String(e.numero)];
+          const rang = classement?.rangs[e.numero];
+          return (
+            <li key={e.id} className="tu-regie-item tu-regie-item--mots">
+              <span className={cx('tu-team tu-team--badge', teamModifier(e.numero))}>{e.nom}</span>
+              <span className="tu-regie-item__meta" data-testid={`regie-compte-${e.numero}`}>
+                {[
+                  ts('mots', { n: leurs?.valides ?? 0 }),
+                  ...(classement
+                    ? [ts('place', { rang: rang ?? 0 }), `+${classement.points[e.numero] ?? 0}`]
+                    : []),
+                ].join(' · ')}
+              </span>
+              {(leurs?.liste ?? []).length > 0 && (
+                <ul className="tu-regie-chips">
+                  {(leurs?.liste ?? []).map((m) => (
+                    <li key={m.id}>
+                      <button
+                        type="button"
+                        className={cx('tu-regie-chip', m.refuse && 'tu-regie-chip--raye')}
+                        aria-pressed={m.refuse}
+                        aria-label={ts(m.refuse ? 'retablir' : 'rayer', { mot: m.mot })}
+                        disabled={etape !== 'chrono'}
+                        onClick={() => refuser(m.id, !m.refuse)}
+                      >
+                        {m.mot}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {etape === 'chrono' && (
+        <BoutonConfirme
+          variant={fini ? 'accent' : 'ghost'}
+          confirmation={t('confirmer', { action: ts('classer') })}
+          onConfirm={() => agir({ type: 'classer' })}
+        >
+          {ts('classer')}
+        </BoutonConfirme>
+      )}
+      {etape === 'podium' && (
+        <Button variant="accent" size="lg" onClick={() => agir({ type: 'retour' })}>
+          {t('retour')}
+        </Button>
+      )}
     </section>
   );
 }

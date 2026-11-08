@@ -421,6 +421,22 @@ button.tu-regie-chip:hover,
   background: var(--tu-success);
 }
 
+/* Surenchère en mode téléphones : un mot rayé par l'animateur, barré et en rouge. */
+.tu-regie-chip--raye {
+  border-color: var(--tu-danger);
+  color: var(--tu-danger-text);
+  text-decoration: line-through;
+}
+
+button.tu-regie-chip:disabled {
+  cursor: default;
+}
+
+/* Les mots d'une équipe : l'équipe et son compte sur une ligne, les mots dessous. */
+.tu-regie-item--mots > .tu-regie-chips {
+  flex-basis: 100%;
+}
+
 /* Invité ajouté à la main : un anneau, ni connecté ni hors ligne. */
 .tu-regie-chip__etat--sans {
   border: var(--tu-btn-border-width) solid var(--tu-text-muted);

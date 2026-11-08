@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Button } from '@teamup/ui/react';
 import {
   CHRONO_SURENCHERE_DEFAUT_S,
+  CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
   DUELS_DEFAUT,
   dureeProgramme,
   formatDuree,
@@ -287,7 +288,7 @@ export default async function Preparation({
                     <span className="tu-regie-item__meta">
                       {t(`statut.${m.statut}`)}
                       {m.jeu === 'enchere2' &&
-                        ` · ${t('chrono', { secondes: Number(m.options['chrono_s'] ?? CHRONO_SURENCHERE_DEFAUT_S) })}`}
+                        ` · ${t('chrono', { secondes: Number(m.options['chrono_s'] ?? CHRONO_SURENCHERE_DEFAUT_S) })} · ${t('chronoTelephones', { secondes: Number(m.options['chrono_telephones_s'] ?? CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S) })}`}
                     </span>
                     {parEquipe &&
                       (m.options['reserve'] !== undefined || m.passages.length === 0) && (
@@ -443,6 +444,18 @@ export default async function Preparation({
                 max={300}
                 step={5}
                 defaultValue={CHRONO_SURENCHERE_DEFAUT_S}
+              />
+            </label>
+            <label className="tu-field">
+              <span className="tu-field__label">{t('chronoTelephonesChamp')}</span>
+              <input
+                className="tu-field__control"
+                name="chrono_telephones"
+                type="number"
+                min={10}
+                max={300}
+                step={5}
+                defaultValue={CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S}
               />
             </label>
             <Button type="submit">{t('ajouter', { jeu: tJeux('enchere2') })}</Button>

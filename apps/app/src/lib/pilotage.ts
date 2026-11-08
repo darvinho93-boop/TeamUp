@@ -17,9 +17,11 @@ import {
   appliquerQuiz,
   appliquerSurenchere,
   CHRONO_SURENCHERE_DEFAUT_S,
+  CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
   dureeExplicationS,
   DUREE_TIRAGE_S,
   MODES_QUIZ,
+  MODES_SURENCHERE,
   passageSuivant,
   scriptExplication,
   type ActionDuel,
@@ -38,7 +40,9 @@ import {
   type EtapeQuiz,
   type EtapeSurenchere,
   type GameCode,
+  type ModeExplication,
   type ModeQuiz,
+  type ModeSurenchere,
   type ScoresParEquipe,
   type ScriptExplication,
 } from '@teamup/game';
@@ -50,18 +54,23 @@ import {
   passageCourant,
   type EtatSalle,
   type MancheSalle,
+  type PassageSalle,
   type Scene,
 } from './salle';
 
 export type Commande =
   | { type: 'scene'; scene: Exclude<Scene, 'intro' | 'jeu'> }
   | { type: 'intro'; mancheId: string }
-  /** Le Quiz s'explique selon le mode qu'on va lancer ; les autres jeux n'en ont qu'un. */
-  | { type: 'expliquer'; mode?: ModeQuiz }
+  /**
+   * Le Quiz et la Surenchère s'expliquent selon le mode qu'on va lancer ; les autres jeux n'en
+   * ont qu'un.
+   */
+  | { type: 'expliquer'; mode?: ModeExplication }
   | { type: 'arreterExplication' }
   /** L'ordre tiré par la régie (lot 13) : les ids des passages de la manche, dans l'ordre. */
   | { type: 'tirerOrdre'; passages: string[] }
-  | { type: 'commencer'; mode?: ModeQuiz }
+  /** Le mode du Quiz ou de la Surenchère, choisi au lancement de la manche. */
+  | { type: 'commencer'; mode?: ModeExplication }
   | { type: 'pointsCommuns'; action: ActionPointsCommuns }
   | { type: 'quiz'; action: Exclude<ActionQuiz['type'], 'valider'> }
   | { type: 'survivants'; survivants: ScoresParEquipe }
@@ -78,6 +87,8 @@ export type Commande =
   | { type: 'devoiler'; passageId: string }
   | { type: 'adjuger' }
   | { type: 'verdict'; tenu: boolean; equipeChampion: number }
+  /** Surenchère en mode téléphones : le podium du thème, d'après les mots non rayés. */
+  | { type: 'classer' }
   | { type: 'retour' }
   | { type: 'terminer' }
   /** Le dévoilement animé des équipes formées (2026-11-04), rejouable. */
@@ -112,6 +123,8 @@ export interface Motifs {
   pointsCommuns: (equipe: string) => string;
   tenu: string;
   rate: string;
+  /** Surenchère en mode téléphones : le rang de l'équipe et ses mots validés. */
+  podiumMots: (rang: number, mots: number) => string;
   quiz: (survivants: number) => string;
   /** Quiz en mode jetons : les jetons restants, comptés comme des survivants. */
   quizJetons: (jetons: number) => string;
@@ -122,19 +135,23 @@ export interface Motifs {
 
 /**
  * Explication animée (lot 12) : une étape de la scène intro, `explication` ou, pour le Quiz
- * en mode téléphone ou jetons, `explication-telephone` ou `explication-jetons`. Le chrono de
- * la salle en donne le départ.
+ * en mode téléphone ou jetons, `explication-telephone` ou `explication-jetons`, pour la
+ * Surenchère en mode téléphones, `explication-telephones`. Le chrono de la salle en donne le
+ * départ.
  */
 const ETAPE_EXPLICATION = 'explication';
-const ETAPES_EXPLICATION_QUIZ: Record<Exclude<ModeQuiz, 'croix'>, string> = {
+type ModeExpliqueAPart = Exclude<ModeExplication, 'croix' | 'voix'>;
+const ETAPES_EXPLICATION_MODE: Record<ModeExpliqueAPart, string> = {
   telephone: 'explication-telephone',
   jetons: 'explication-jetons',
+  telephones: 'explication-telephones',
 };
 
-/** Le mode du Quiz qu'une étape d'explication présente (`croix` pour toutes les autres). */
-export function modeExpliqueDe(etape: string | null): ModeQuiz {
-  if (etape === ETAPES_EXPLICATION_QUIZ.telephone) return 'telephone';
-  if (etape === ETAPES_EXPLICATION_QUIZ.jetons) return 'jetons';
+/** Le mode qu'une étape d'explication présente (`croix` pour le script de base de chaque jeu). */
+export function modeExpliqueDe(etape: string | null): ModeExplication {
+  for (const [mode, nom] of Object.entries(ETAPES_EXPLICATION_MODE)) {
+    if (etape === nom) return mode as ModeExpliqueAPart;
+  }
   return 'croix';
 }
 
@@ -147,8 +164,10 @@ export function scriptEnCours(
   if (!jeu || scene !== 'intro') return null;
   if (etape === ETAPE_EXPLICATION) return scriptExplication(jeu);
   const mode = modeExpliqueDe(etape);
-  if (mode !== 'croix' && jeu === 'qcm2') return scriptExplication(jeu, mode);
-  return null;
+  if (mode === 'croix') return null;
+  const script = scriptExplication(jeu, mode);
+  // Le mode d'un autre jeu (une étape restée d'une explication du Quiz) : rien à jouer.
+  return script === jeu ? null : script;
 }
 
 /** Tirage de l'ordre de passage en direct (lot 13) : une étape de l'intro, animée à l'écran. */
@@ -181,6 +200,34 @@ export function modeDuQuiz(manche: MancheSalle): ModeQuiz | null {
 }
 
 /**
+ * Le mode d'une Surenchère, fixé à son lancement : `voix` pour une manche lancée avant le mode
+ * téléphones (sans `mode`), `null` avant le lancement ou pour un autre jeu.
+ */
+export function modeDeLaSurenchere(manche: MancheSalle): ModeSurenchere | null {
+  if (manche.jeu !== 'enchere2' || manche.statut === 'a_venir') return null;
+  const mode = manche.options['mode'];
+  return (MODES_SURENCHERE as readonly unknown[]).includes(mode)
+    ? (mode as ModeSurenchere)
+    : 'voix';
+}
+
+/** Le chrono d'un thème de la Surenchère selon le mode (réglages de la préparation). */
+export function chronoSurenchere(manche: MancheSalle, mode: ModeSurenchere | null): number {
+  const reglage = manche.options[mode === 'telephones' ? 'chrono_telephones_s' : 'chrono_s'];
+  if (typeof reglage === 'number') return reglage;
+  return mode === 'telephones' ? CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S : CHRONO_SURENCHERE_DEFAUT_S;
+}
+
+/** Les mots non rayés de chaque équipe sur ce thème, par numéro (Surenchère en mode téléphones). */
+export function comptesDesMots(passage: PassageSalle): Record<number, number> {
+  const comptes: Record<number, number> = {};
+  for (const [numero, mots] of Object.entries(passage.mots ?? {})) {
+    comptes[Number(numero)] = mots.valides;
+  }
+  return comptes;
+}
+
+/**
  * Une manche lancée dont tout est joué, mais pas terminée : la régie l'a quittée par une scène
  * libre (les scores, le programme) avant « Terminer la manche ». Il ne reste qu'à la terminer :
  * la présentation le propose, et « Commencer » n'y rejoue rien (un quiz validé ne se valide pas
@@ -196,11 +243,6 @@ function chronoDe(chrono: Chrono): Pick<Ecriture['pilotage'], 'chrono' | 'chrono
   return typeof chrono === 'string'
     ? { chrono }
     : { chrono: 'demarrer', chrono_duree_s: chrono.demarrer };
-}
-
-function chronoSurenchere(manche: MancheSalle): number {
-  const reglage = manche.options['chrono_s'];
-  return typeof reglage === 'number' ? reglage : CHRONO_SURENCHERE_DEFAUT_S;
 }
 
 /**
@@ -262,10 +304,17 @@ export function calculerEtape(
 
       case 'expliquer': {
         if (p.scene !== 'intro' || !manche) return null;
-        const mode = manche.jeu === 'qcm2' ? (commande.mode ?? 'croix') : 'croix';
+        const voulu = commande.mode ?? 'croix';
+        // Un mode qui n'est pas celui de ce jeu : son script de base.
+        const aPart =
+          voulu !== 'croix' &&
+          voulu !== 'voix' &&
+          scriptExplication(manche.jeu, voulu) !== manche.jeu
+            ? voulu
+            : null;
+        const mode: ModeExplication = aPart ?? 'croix';
         // Rejouer, c'est la même touche : un nouveau départ, posé par la base.
-        ecriture.pilotage.etape =
-          mode === 'croix' ? ETAPE_EXPLICATION : ETAPES_EXPLICATION_QUIZ[mode];
+        ecriture.pilotage.etape = aPart ? ETAPES_EXPLICATION_MODE[aPart] : ETAPE_EXPLICATION;
         Object.assign(
           ecriture.pilotage,
           chronoDe({ demarrer: dureeExplicationS(scriptExplication(manche.jeu, mode)) }),
@@ -304,6 +353,7 @@ export function calculerEtape(
         if (mancheATerminer(manche)) return null;
         // Une manche reprise (quittée en cours de jeu) garde le mode choisi à son lancement.
         const modeFixe = manche.statut === 'en_cours' ? modeDuQuiz(manche) : null;
+        const modeSurenchereFixe = modeDeLaSurenchere(manche);
         const base = {
           ...ecriture.pilotage,
           scene: 'jeu' as const,
@@ -349,7 +399,29 @@ export function calculerEtape(
         } else {
           return null;
         }
-        const mode = modeFixe ?? commande.mode ?? 'croix';
+        if (manche.jeu === 'enchere2') {
+          // Le mode de la Surenchère se choisit au lancement (2026-11-08), la voix d'abord ; une
+          // reprise le garde. Mode téléphones : un capitaine par équipe, comme pour les jetons.
+          const voulu: ModeSurenchere = commande.mode === 'telephones' ? 'telephones' : 'voix';
+          if (
+            !modeSurenchereFixe &&
+            voulu === 'telephones' &&
+            capitainesManquants(etat).length > 0
+          ) {
+            return null;
+          }
+          ecriture.manche = {
+            id: manche.id,
+            statut: 'en_cours',
+            ...(modeSurenchereFixe ? {} : { options: { mode: voulu } }),
+          };
+          ecriture.ouvrirLaSoiree = etat.evenement.statut === 'preparation';
+          return ecriture;
+        }
+        const demande = commande.mode;
+        const mode: ModeQuiz =
+          modeFixe ??
+          ((MODES_QUIZ as readonly unknown[]).includes(demande) ? (demande as ModeQuiz) : 'croix');
         // Mode jetons : chaque équipe mise par son capitaine ; toutes partent avec l'effectif de
         // la plus grande (2026-10-18). Une reprise ne refait ni ce contrôle ni ce compte.
         if (
@@ -623,8 +695,13 @@ export function calculerEtape(
       case 'devoiler':
       case 'adjuger':
       case 'verdict':
+      case 'classer':
       case 'retour': {
         if (manche?.jeu !== 'enchere2') return null;
+        const modeS = modeDeLaSurenchere(manche);
+        // Chaque mode n'a que ses touches : pas de verdict au téléphone, pas de podium à la voix.
+        if (commande.type === 'verdict' && modeS === 'telephones') return null;
+        if (commande.type === 'classer' && (modeS !== 'telephones' || !passage)) return null;
         const dejaJoues = manche.passages.filter((x) => x.statut === 'termine').map((x) => x.id);
         // L'équipe du champion joue forcément, même si personne ne l'a rejointe par téléphone.
         const equipesAvecJoueurs = [
@@ -637,7 +714,7 @@ export function calculerEtape(
           commande.type === 'devoiler'
             ? { type: 'devoiler', passageId: commande.passageId }
             : commande.type === 'adjuger'
-              ? { type: 'adjuger', chronoS: chronoSurenchere(manche) }
+              ? { type: 'adjuger', chronoS: chronoSurenchere(manche, modeS) }
               : commande.type === 'verdict'
                 ? {
                     type: 'verdict',
@@ -645,7 +722,9 @@ export function calculerEtape(
                     equipeChampion: commande.equipeChampion,
                     equipesAvecJoueurs,
                   }
-                : { type: 'retour' };
+                : commande.type === 'classer' && passage
+                  ? { type: 'classer', comptes: comptesDesMots(passage) }
+                  : { type: 'retour' };
         const suite = appliquerSurenchere(
           { etape: p.etape as EtapeSurenchere, passageId: p.passage_id },
           action,
@@ -667,13 +746,22 @@ export function calculerEtape(
             resultat: suite.resultat,
             points: Object.values(points).reduce((a, b) => a + b, 0),
           };
+          const resultat = suite.resultat;
           for (const [numero, gagnes] of Object.entries(points)) {
             const equipe = etat.equipes.find((e) => e.numero === Number(numero));
             if (!equipe) continue;
             ecriture.scores.push({
               equipe_id: equipe.id,
               points: gagnes,
-              motif: suite.resultat.tenu ? motifs.tenu : motifs.rate,
+              motif:
+                'mode' in resultat
+                  ? motifs.podiumMots(
+                      resultat.rangs[Number(numero)] ?? 0,
+                      resultat.comptes[Number(numero)] ?? 0,
+                    )
+                  : resultat.tenu
+                    ? motifs.tenu
+                    : motifs.rate,
               manche_id: manche.id,
             });
           }

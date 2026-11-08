@@ -8,6 +8,7 @@ const SANS_MOTIF: Motifs = {
   pointsCommuns: () => '',
   tenu: '',
   rate: '',
+  podiumMots: () => '',
   quiz: () => '',
   quizJetons: () => '',
   mime: () => '',

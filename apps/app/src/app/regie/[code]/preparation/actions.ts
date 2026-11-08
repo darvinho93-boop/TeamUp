@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { randomInt } from 'node:crypto';
 import {
   CHRONO_SURENCHERE_DEFAUT_S,
+  CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
   DUELS_DEFAUT,
   QUESTIONS_QUIZ,
   QUESTIONS_QUIZ_DEFAUT,
@@ -288,18 +289,30 @@ export async function ajouterQuiz(code: string, donnees: FormData) {
 const Surenchere = z.object({
   themes: z.coerce.number().int().min(1).max(6).catch(3),
   chrono: z.coerce.number().int().min(10).max(300).catch(CHRONO_SURENCHERE_DEFAUT_S),
+  chronoTelephones: z.coerce
+    .number()
+    .int()
+    .min(10)
+    .max(300)
+    .catch(CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S),
 });
 
-/** Surenchère : un passage par thème ; le chrono géant se règle ici (60 s par défaut). */
+/**
+ * Surenchère : un passage par thème. Deux chronos se règlent ici, celui du jeu à la voix (60 s
+ * par défaut) et celui du mode téléphones (2026-11-08, 60 s : taper prend plus de temps que
+ * parler) ; le mode se choisit au lancement.
+ */
 export async function ajouterSurenchere(code: string, donnees: FormData) {
   const { supabase, evenement, rafraichir } = await contexte(code);
-  const { themes, chrono } = Surenchere.parse({
+  const { themes, chrono, chronoTelephones } = Surenchere.parse({
     themes: donnees.get('themes'),
     chrono: donnees.get('chrono'),
+    chronoTelephones: donnees.get('chrono_telephones'),
   });
   const mancheId = await nouvelleManche(supabase, evenement, 'enchere2', {
     themes,
     chrono_s: chrono,
+    chrono_telephones_s: chronoTelephones,
   });
   const libres = await contenusLibres(supabase, evenement, 'enchere2');
   await supabase.from('passages').insert(

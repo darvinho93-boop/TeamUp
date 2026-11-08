@@ -8,6 +8,7 @@ const motifs = {
   rate: 'raté',
   quiz: (n: number) => `Quiz ${n}`,
   quizJetons: (n: number) => `Jetons ${n}`,
+  podiumMots: (rang: number, mots: number) => `Podium ${rang} ${mots}`,
   mime: (equipe: string) => `Mime ${equipe}`,
   photo: (equipe: string) => `Photo ${equipe}`,
   duel: (prenom: string, equipe: string) => `Duel ${prenom} ${equipe}`,
@@ -233,6 +234,100 @@ describe('une touche de la régie', () => {
     expect(ecriture?.scores).toEqual([
       { equipe_id: 'e3', points: 100, motif: 'tenu', manche_id: 'se' },
     ]);
+  });
+
+  describe('Surenchère en mode téléphones', () => {
+    const avecCapitaines = (e: EtatSalle) => {
+      e.equipes = e.equipes.map((q) => ({
+        ...q,
+        capitaine: q.joueurs > 0 ? `Cap ${q.nom}` : null,
+      }));
+      return e;
+    };
+    const enJeu = (pilotage: Partial<EtatSalle['pilotage']>) => {
+      const e = avecCapitaines(etat({ scene: 'jeu', manche_id: 'se', ...pilotage }));
+      const manche = e.programme[1]!;
+      manche.statut = 'en_cours';
+      manche.options = { ...manche.options, mode: 'telephones', chrono_telephones_s: 75 };
+      return e;
+    };
+
+    it('se lance seulement quand chaque équipe qui a des joueurs a son capitaine', () => {
+      const sans = etat({ scene: 'intro', manche_id: 'se' });
+      expect(etape(sans, { type: 'commencer', mode: 'telephones' })).toBeNull();
+      const ecriture = etape(avecCapitaines(etat({ scene: 'intro', manche_id: 'se' })), {
+        type: 'commencer',
+        mode: 'telephones',
+      });
+      expect(ecriture?.manche).toEqual({
+        id: 'se',
+        statut: 'en_cours',
+        options: { mode: 'telephones' },
+      });
+      expect(ecriture?.pilotage).toMatchObject({ scene: 'jeu', etape: 'themes' });
+    });
+
+    it('à la voix par défaut, et une reprise garde le mode du lancement', () => {
+      const voix = etape(etat({ scene: 'intro', manche_id: 'se' }), { type: 'commencer' });
+      expect(voix?.manche?.options).toEqual({ mode: 'voix' });
+      const reprise = enJeu({ scene: 'intro', etape: null });
+      expect(etape(reprise, { type: 'commencer', mode: 'voix' })?.manche).toEqual({
+        id: 'se',
+        statut: 'en_cours',
+      });
+    });
+
+    it('lance le chrono réglé pour les téléphones', () => {
+      expect(
+        etape(enJeu({ passage_id: 't1', etape: 'sujet' }), { type: 'adjuger' })?.pilotage,
+      ).toMatchObject({ etape: 'chrono', chrono: 'demarrer', chrono_duree_s: 75 });
+    });
+
+    it('classe le thème d’après les mots non rayés : +100, +60, +30', () => {
+      const e = enJeu({ passage_id: 't1', etape: 'chrono' });
+      e.programme[1]!.passages[0]!.mots = {
+        '1': { valides: 9, liste: null },
+        '2': { valides: 9, liste: null },
+        '3': { valides: 0, liste: null },
+      };
+      const ecriture = etape(e, { type: 'classer' });
+      expect(ecriture?.pilotage).toMatchObject({ etape: 'podium', chrono: 'arreter' });
+      expect(ecriture?.scores).toEqual([
+        { equipe_id: 'e1', points: 100, motif: 'Podium 1 9', manche_id: 'se' },
+        { equipe_id: 'e2', points: 100, motif: 'Podium 1 9', manche_id: 'se' },
+      ]);
+      expect(ecriture?.passage).toMatchObject({
+        id: 't1',
+        statut: 'termine',
+        points: 200,
+        resultat: { mode: 'telephones', rangs: { 1: 1, 2: 1 } },
+      });
+    });
+
+    it('n’a ni verdict au téléphone, ni podium à la voix', () => {
+      expect(
+        etape(enJeu({ passage_id: 't1', etape: 'chrono' }), {
+          type: 'verdict',
+          tenu: true,
+          equipeChampion: 1,
+        }),
+      ).toBeNull();
+      const voix = etat({ scene: 'jeu', manche_id: 'se', passage_id: 't1', etape: 'chrono' });
+      voix.programme[1]!.statut = 'en_cours';
+      voix.programme[1]!.options = { mode: 'voix' };
+      expect(etape(voix, { type: 'classer' })).toBeNull();
+    });
+
+    it('s’explique avec son propre script', () => {
+      const e = etat({ scene: 'intro', manche_id: 'se' });
+      expect(etape(e, { type: 'expliquer', mode: 'telephones' })?.pilotage).toMatchObject({
+        etape: 'explication-telephones',
+        chrono: 'demarrer',
+        chrono_duree_s: 45,
+      });
+      // Le mode d'un autre jeu : le script de base.
+      expect(etape(e, { type: 'expliquer', mode: 'jetons' })?.pilotage.etape).toBe('explication');
+    });
   });
 
   it('terminer la manche revient au programme, pas au classement', () => {
