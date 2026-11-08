@@ -6,9 +6,16 @@
 
 import type { GameCode } from './catalogue';
 import type { ModeQuiz } from './pilotage/quiz';
+import type { ModeSurenchere } from './surenchere';
 
-/** Le Quiz s'explique selon son mode, choisi seulement au lancement : trois scripts. */
-export type ScriptExplication = GameCode | 'qcm2-telephone' | 'qcm2-jetons';
+/**
+ * Le Quiz et la Surenchère s'expliquent selon leur mode, choisi seulement au lancement : trois
+ * scripts pour l'un, deux pour l'autre.
+ */
+export type ScriptExplication = GameCode | 'qcm2-telephone' | 'qcm2-jetons' | 'enchere2-telephones';
+
+/** Le mode qu'une explication présente : celui du Quiz ou de la Surenchère. */
+export type ModeExplication = ModeQuiz | ModeSurenchere;
 
 /** Ce que l'écran dessine pour une carte. */
 export type VisuelExplication =
@@ -30,6 +37,11 @@ export type VisuelExplication =
   | 'encheres'
   | 'chrono'
   | 'verdict'
+  | 'sujet-capitaines'
+  | 'saisie-mots'
+  | 'compteurs-mots'
+  | 'listes-mots'
+  | 'podium-mots'
   | 'file'
   | 'mot'
   | 'chaine'
@@ -85,6 +97,14 @@ export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplic
     carte('jetons-restants', 8),
   ],
   enchere2: [carte('champions', 9), carte('encheres', 9), carte('chrono', 9), carte('verdict', 9)],
+  // Mode téléphones (2026-11-08) : les capitaines tapent leurs mots, tous en même temps.
+  'enchere2-telephones': [
+    carte('sujet', 9, 'sujet-capitaines'),
+    carte('saisie', 9, 'saisie-mots'),
+    carte('compteurs', 9, 'compteurs-mots'),
+    carte('listes', 9, 'listes-mots'),
+    carte('podium', 9, 'podium-mots'),
+  ],
   mime2: [carte('file', 9), carte('mot', 9), carte('chaine', 10), carte('annonce', 9)],
   photo2: [
     carte('capitaine', 9),
@@ -106,10 +126,16 @@ export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplic
   ],
 };
 
-/** Le script d'un jeu ; pour le Quiz, celui de son mode. */
-export function scriptExplication(jeu: GameCode, mode: ModeQuiz = 'croix'): ScriptExplication {
-  if (jeu !== 'qcm2' || mode === 'croix') return jeu;
-  return mode === 'telephone' ? 'qcm2-telephone' : 'qcm2-jetons';
+/** Le script d'un jeu ; pour le Quiz et la Surenchère, celui de leur mode. */
+export function scriptExplication(
+  jeu: GameCode,
+  mode: ModeExplication = 'croix',
+): ScriptExplication {
+  if (jeu === 'enchere2') return mode === 'telephones' ? 'enchere2-telephones' : jeu;
+  if (jeu !== 'qcm2') return jeu;
+  if (mode === 'telephone') return 'qcm2-telephone';
+  if (mode === 'jetons') return 'qcm2-jetons';
+  return jeu;
 }
 
 export function dureeExplicationS(script: ScriptExplication): number {

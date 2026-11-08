@@ -159,6 +159,30 @@ describe('pilotage de la Surenchère', () => {
     expect(t.resultat).toEqual({ tenu: true, equipe_champion: 3 });
   });
 
+  it('en mode téléphones, classe le thème d’après les mots validés', () => {
+    const t = appliquerSurenchere(
+      { etape: 'chrono', passageId: 'savane' },
+      { type: 'classer', comptes: { 1: 12, 2: 9, 3: 12, 4: 0 } },
+    );
+    expect(t.etat).toEqual({ etape: 'podium', passageId: 'savane' });
+    expect(t.chrono).toBe('arreter');
+    expect(t.points).toEqual({ 1: 100, 3: 100, 2: 30 });
+    expect(t.resultat).toEqual({
+      mode: 'telephones',
+      comptes: { 1: 12, 2: 9, 3: 12, 4: 0 },
+      rangs: { 1: 1, 2: 3, 3: 1 },
+      points: { 1: 100, 3: 100, 2: 30 },
+    });
+    expect(actionsSurenchere(t.etat)).toEqual(['retour']);
+    expect(appliquerSurenchere(t.etat, { type: 'retour' }).etat).toEqual(ETAT_INITIAL_SURENCHERE);
+  });
+
+  it('ne classe qu’une fois le chrono lancé', () => {
+    expect(() =>
+      appliquerSurenchere({ etape: 'sujet', passageId: 'x' }, { type: 'classer', comptes: {} }),
+    ).toThrow(/impossible/);
+  });
+
   it('refuse de trancher avant d’avoir adjugé, et de rejouer un thème', () => {
     expect(() =>
       appliquerSurenchere(

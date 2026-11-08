@@ -16,7 +16,13 @@ const SCRIPTS = Object.keys(SCRIPTS_EXPLICATION) as ScriptExplication[];
 describe('scripts des explications', () => {
   it('couvrent les 5 jeux et les 2 duels, rien de plus', () => {
     expect(new Set(SCRIPTS)).toEqual(
-      new Set([...SOCLE_GAMES, ...BETA_DUELS, 'qcm2-telephone', 'qcm2-jetons']),
+      new Set([
+        ...SOCLE_GAMES,
+        ...BETA_DUELS,
+        'qcm2-telephone',
+        'qcm2-jetons',
+        'enchere2-telephones',
+      ]),
     );
   });
 
@@ -36,10 +42,15 @@ describe('scripts des explications', () => {
     expect(new Set(cles).size).toBe(cles.length);
   });
 
-  it('le Quiz s’explique selon son mode, les autres jeux n’en ont qu’un', () => {
+  it('le Quiz et la Surenchère s’expliquent selon leur mode, les autres jeux n’en ont qu’un', () => {
     expect(scriptExplication('qcm2')).toBe('qcm2');
     expect(scriptExplication('qcm2', 'telephone')).toBe('qcm2-telephone');
     expect(scriptExplication('qcm2', 'jetons')).toBe('qcm2-jetons');
+    expect(scriptExplication('qcm2', 'telephones')).toBe('qcm2');
+    expect(scriptExplication('enchere2')).toBe('enchere2');
+    expect(scriptExplication('enchere2', 'voix')).toBe('enchere2');
+    expect(scriptExplication('enchere2', 'telephones')).toBe('enchere2-telephones');
+    expect(scriptExplication('enchere2', 'jetons')).toBe('enchere2');
     expect(scriptExplication('mime2', 'jetons')).toBe('mime2');
   });
 });
