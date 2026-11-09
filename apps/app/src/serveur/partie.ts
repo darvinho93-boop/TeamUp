@@ -260,8 +260,12 @@ export async function motSurenchere(
     if (!refus) throw new Error(error.message);
     return { ok: false, refus };
   }
-  await signalerSalle(etat.evenement.id, 'mises');
-  return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
+  // Le signal et l'état du capitaine en même temps : le mot confirmé n'attend pas l'écran.
+  const [, suivant] = await Promise.all([
+    signalerSalle(etat.evenement.id, 'mises'),
+    etatPourJeton(code, jeton),
+  ]);
+  return { ok: true, etat: suivant ?? etat };
 }
 
 export type RefusNom = 'session' | 'capitaine' | 'fige' | 'nom';

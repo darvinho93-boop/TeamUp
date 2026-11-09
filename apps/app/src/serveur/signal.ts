@@ -1,5 +1,8 @@
 import 'server-only';
 
+/** Au-delà, on n'attend plus la diffusion : le joueur a sa réponse, l'écran sa relecture de sûreté. */
+const ATTENTE_MAX_MS = 2000;
+
 /**
  * Le signal sans données de la régie (`relire` sur `salle:<id>`), envoyé cette fois par le
  * serveur : pour un changement qui vient d'un téléphone (un capitaine qui renomme son équipe),
@@ -24,6 +27,7 @@ export async function signalerSalle(
       body: JSON.stringify({
         messages: [{ topic: `salle:${evenementId}`, event: evenement, payload: {} }],
       }),
+      signal: AbortSignal.timeout(ATTENTE_MAX_MS),
     });
   } catch {
     // La relecture de sûreté de l'écran prend le relais.
