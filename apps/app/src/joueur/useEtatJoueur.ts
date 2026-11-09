@@ -42,7 +42,11 @@ export function useEtatJoueur(code: string, initial: EtatJoueur) {
 
   const recevoir = useCallback((suivant: EtatJoueur) => {
     setEtat(suivant);
-    if (suivant.quiz) setDecalageMs(suivant.quiz.serveur_ms - Date.now());
+    // L'heure de la base, quand l'état en porte une : le chrono du quiz et celui de la Surenchère
+    // au téléphone se lisent à cette heure-là, jamais à celle du téléphone (une montre qui avance
+    // de 45 s trouvait le chrono déjà fini, 2026-11-09).
+    const serveurMs = suivant.quiz?.serveur_ms ?? suivant.surenchere?.serveur_ms;
+    if (serveurMs !== undefined) setDecalageMs(serveurMs - Date.now());
   }, []);
 
   useEffect(() => {
