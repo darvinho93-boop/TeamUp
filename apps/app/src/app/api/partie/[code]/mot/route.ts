@@ -5,7 +5,12 @@ import { motSurenchere } from '@/serveur/partie';
 import { reponse } from '@/serveur/reponse';
 
 const Mot = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('ajouter'), mot: z.string().trim().min(1).max(LONGUEUR_MOT_MAX) }),
+  z.object({
+    type: z.literal('ajouter'),
+    mot: z.string().trim().min(1).max(LONGUEUR_MOT_MAX),
+    // Le thème pour lequel le mot a été tapé (facultatif : un ancien téléphone ne l'envoie pas).
+    passage: z.uuid().optional(),
+  }),
   z.object({ type: z.literal('retirer'), id: z.uuid() }),
 ]);
 

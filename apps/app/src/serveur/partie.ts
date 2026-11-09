@@ -201,8 +201,12 @@ export async function miserQuiz(
   return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
 }
 
-/** Ajouter un mot à la liste de l'équipe, ou en retirer un (une faute de frappe). */
-export type ActionMot = { type: 'ajouter'; mot: string } | { type: 'retirer'; id: string };
+/**
+ * Ajouter un mot à la liste de l'équipe, ou en retirer un (une faute de frappe). `passage` : le
+ * thème pour lequel le mot a été tapé.
+ */
+export type ActionMot =
+  { type: 'ajouter'; mot: string; passage?: string | undefined } | { type: 'retirer'; id: string };
 
 /**
  * Surenchère en mode téléphones : le capitaine de ce cookie ajoute ou retire un mot. La base
@@ -217,6 +221,17 @@ export async function motSurenchere(
   const jeton = await jetonDe(code);
   const etat = jeton ? await etatPourJeton(code, jeton) : null;
   if (!jeton || !etat) return { ok: false, refus: 'session' };
+  // Un mot tapé pour un thème ne compte jamais pour un autre : la file d'un téléphone resté
+  // coupé pendant le changement de thème l'envoyait au thème suivant, que la base acceptait
+  // (2026-11-09). Le thème change par deux touches de régie (dévoiler, puis lancer le chrono) :
+  // il ne peut pas s'ouvrir entre cette lecture et l'écriture.
+  if (
+    action.type === 'ajouter' &&
+    action.passage !== undefined &&
+    etat.surenchere?.passage_id !== action.passage
+  ) {
+    return { ok: false, refus: 'fermee' };
+  }
 
   const { error } =
     action.type === 'ajouter'

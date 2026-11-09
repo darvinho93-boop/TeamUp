@@ -104,7 +104,7 @@ export function SurenchereMots({
           const reponse = await fetch(`/api/partie/${code}/mot`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'ajouter', mot: premier.mot }),
+            body: JSON.stringify({ type: 'ajouter', mot: premier.mot, passage: premier.passage }),
           });
           if (reponse.status >= 500) throw new Error(String(reponse.status));
           corps = (await reponse.json()) as EtatJoueur | { erreur: RefusMot };
