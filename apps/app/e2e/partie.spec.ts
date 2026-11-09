@@ -196,7 +196,8 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
   );
   await mesurer(
     'commencer Surenchère',
-    () => regie.getByRole('button', { name: 'Commencer : Surenchère' }).click(),
+    // Le mode se choisit au lancement (2026-11-08) : ce parcours joue la Surenchère à la voix.
+    () => regie.getByRole('button', { name: 'Commencer la Surenchère à la voix' }).click(),
     scene('enchere2', 'themes'),
   );
   for (const [champion, verdict] of [
