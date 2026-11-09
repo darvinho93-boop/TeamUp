@@ -1278,3 +1278,34 @@ puis **tous les mots d'un coup** à la fin ; l'animateur raye les hors-sujet ; *
 - Tests : `packages/game` (podium, clé, machine), `tests/pilotage-etapes.test.ts`,
   `tests/mots.test.ts`, `tests/surenchere-mots.test.ts` (base : refus, fuites, masquage),
   `e2e/surenchere-telephones.spec.ts` (parcours complet, 8 équipes de 25 mots en 1 920 × 1 080).
+
+## Conventions posées le 2026-11-09 (Surenchère à l'épreuve)
+
+`e2e/surenchere-casse.spec.ts`, trois tests : la charge et le temps de réponse à l'image, les
+scénarios de casse, l'heure du téléphone.
+
+- **Mesure « à l'image »** : `noterLesImages` pose dans la page un `MutationObserver` qui note
+  l'instant de l'image d'animation suivante à chaque changement (comptes par équipe, scène, listes,
+  mots confirmés). Le délai d'un mot se compte de son départ à cette image, sur l'écran, la régie,
+  le téléphone du capitaine et celui d'un coéquipier ; plus les touches de régie et la fin du
+  chrono jusqu'aux mots. Rapport en console, en annotations et en `latences.json`. Exigé : 90e
+  centile sous 1 s (écran, régie, capitaine), coéquipier sous 5,5 s (relecture de 4 s, voulu),
+  mots à l'écran moins de 2,3 s après la fin du chrono (1 s de grâce, relecture à 1,3 s).
+  `RELECTEURS=0` retire les 40 relectures de fond (40 en CI).
+- **Sur ce poste, la mesure de charge ne fait pas foi** : i5-6300U (2 cœurs), Docker à 2 CPU et
+  3 Go. Avec les navigateurs du test, un mot répond en 0,9 s (médiane) et paraît à l'écran en
+  1,0 s (médiane, 1,8 s au 90e centile, 2026-11-09) ; sans navigateur, à la même charge (8
+  capitaines, écran et régie relisant sans arrêt, 40 relectures), il répond en 0,39 s (médiane,
+  0,88 s au 90e centile). L'accès à Docker s'y arrête aussi parfois **10 s** (rien n'arrive à Kong,
+  pour aucun client) : ce qui ne mesure rien attend jusqu'à 20 s dans ce fichier.
+- Coût mesuré dans Postgres (8 équipes, 49 joueurs, 96 mots, sans charge) : `etat_ecran` 55 à 97 ms
+  à froid, ~18 ms à chaud, dont deux tiers dans `anime()` (la RLS, appelée 326 fois par lecture,
+  une par ligne) ; `etat_joueur` et `pouls_joueur` 5 à 11 ms ; `ajouter_mot` ~12 ms. Piste non
+  traitée, à trancher : une politique qui ne rappelle pas `anime()` à chaque ligne.
+- Corrigé en chemin : le décalage d'horloge du téléphone se mesure aussi sur l'état de la
+  Surenchère (`useEtatJoueur`) ; un mot porte son thème (`passage`) et le serveur le refuse si ce
+  n'est plus le thème en cours (`motSurenchere`) ; « Valider le classement » relit l'état avant de
+  calculer le podium, en gardant la version vue par l'animateur ; `signalerSalle` abandonne après
+  2 s et part en même temps que la relecture du capitaine.
+- Playwright : `getByRole('button', { name: 'Dévoiler' })` trouve aussi « Dévoiler les équipes »
+  (nom comparé par sous-chaîne) : `exact: true`.
