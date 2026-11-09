@@ -139,23 +139,40 @@ export function Pilotage({
   const agir: Agir = (commande) => {
     // Le temps compté est celui de l'appui, pas celui où la base reçoit l'écriture.
     const ecoule = ecouleMs(etat, decalageMs);
-    const ecriture = calculerEtape(etat, commande, ecoule, {
-      pointsCommuns: (equipe) => t('motifPointsCommuns', { equipe }),
-      tenu: t('motifTenu'),
-      rate: t('motifRate'),
-      podiumMots: (rang, mots) => t('motifPodiumMots', { rang, mots }),
-      quiz: (survivants) => t('motifQuiz', { survivants }),
-      quizJetons: (jetons) => t('motifQuizJetons', { jetons }),
-      mime: (equipe) => t('motifMime', { equipe }),
-      photo: (equipe) => t('motifPhoto', { equipe }),
-      duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
-    });
-    if (!ecriture) {
+    const calculer = (base: EtatSalle) =>
+      calculerEtape(base, commande, ecoule, {
+        pointsCommuns: (equipe) => t('motifPointsCommuns', { equipe }),
+        tenu: t('motifTenu'),
+        rate: t('motifRate'),
+        podiumMots: (rang, mots) => t('motifPodiumMots', { rang, mots }),
+        quiz: (survivants) => t('motifQuiz', { survivants }),
+        quizJetons: (jetons) => t('motifQuizJetons', { jetons }),
+        mime: (equipe) => t('motifMime', { equipe }),
+        photo: (equipe) => t('motifPhoto', { equipe }),
+        duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
+      });
+    const affichee = calculer(etat);
+    if (!affichee) {
       setAlerte(t('erreur.impossible'));
       return;
     }
     demarrer(async () => {
       const supabase = supabaseNavigateur();
+      let ecriture = affichee;
+      // Le classement de la Surenchère au téléphone compte les mots de la base au moment de
+      // l'appui, relus exprès : une régie en retard d'une relecture (réseau lent) classait sans
+      // les derniers mots, que l'écran montrait pourtant (2026-11-09). L'écriture garde la
+      // version que l'animateur a vue : une autre régie passée entre-temps la rend périmée.
+      if (commande.type === 'classer') {
+        const { data } = await supabase.rpc('etat_ecran', { p_code: code, p_regie: true });
+        const fraiche = data ? calculer(data as unknown as EtatSalle) : null;
+        if (data && !fraiche) {
+          setAlerte(t('erreur.impossible'));
+          await relire();
+          return;
+        }
+        if (fraiche) ecriture = fraiche;
+      }
       // L'ordre tiré s'écrit d'abord : l'écran, réveillé par l'étape, le lira déjà rangé.
       if (ecriture.ordre) {
         const { error: refus } = await supabase.rpc('ordonner_passages', {
