@@ -390,11 +390,20 @@ test('huit capitaines tapent ensemble : l’écran peint chaque mot en moins d�
   const toucher = async (touche: string, appui: () => Promise<void>, etape: string) => {
     const t0 = Date.now();
     await appui();
-    await expect(ecran.locator(`[data-scene="enchere2"][data-etape="${etape}"]`)).toBeVisible();
-    const ms = delaiALImage(await imagesDe(ecran), t0, (i) =>
-      i.scenes.includes(`enchere2:${etape}`),
-    );
-    touches.push({ touche, ms: ms ?? Number.NaN });
+    // L'image se note à l'image d'animation qui suit le changement : Playwright peut trouver la
+    // scène dans le DOM avant qu'elle soit peinte (vu en CI le 2026-11-10, la lecture du journal
+    // arrivait avant l'image), on attend donc qu'elle y soit.
+    let ms = Number.NaN;
+    await expect
+      .poll(async () => {
+        const d = delaiALImage(await imagesDe(ecran), t0, (i) =>
+          i.scenes.includes(`enchere2:${etape}`),
+        );
+        if (d !== null) ms = d;
+        return d;
+      }, `touche ${touche} : l'image de l'écran`)
+      .not.toBeNull();
+    touches.push({ touche, ms });
   };
   await regie.goto(`/regie/${code}/pilotage`);
   await regie.getByRole('button', { name: 'Présenter' }).first().click();
@@ -527,6 +536,10 @@ test('huit capitaines tapent ensemble : l’écran peint chaque mot en moins d�
   ];
   console.log(`\nSurenchère, ${EQUIPES} capitaines et ${RELECTEURS} relectures en fond :`);
   for (const ligne of rapport) console.log(`  ${ligne}`);
+  // En CI, chaque ligne devient aussi une annotation du run, lisible sans compte GitHub (le journal
+  // et les pièces jointes en demandent un).
+  if (process.env['GITHUB_ACTIONS'])
+    for (const ligne of rapport) console.log(`\n::notice title=Latence de la Surenchère::${ligne}`);
   for (const ligne of rapport)
     test.info().annotations.push({ type: 'latence', description: ligne });
   await test.info().attach('latences.json', {
