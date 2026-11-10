@@ -536,10 +536,10 @@ test('huit capitaines tapent ensemble : l’écran peint chaque mot en moins d�
   ];
   console.log(`\nSurenchère, ${EQUIPES} capitaines et ${RELECTEURS} relectures en fond :`);
   for (const ligne of rapport) console.log(`  ${ligne}`);
-  // En CI, chaque ligne devient aussi une annotation du run, lisible sans compte GitHub (le journal
-  // et les pièces jointes en demandent un).
+  // En CI, le rapport devient aussi une annotation du run, lisible sans compte GitHub (le journal et
+  // les pièces jointes en demandent un). Une seule : GitHub n'en garde que dix par étape.
   if (process.env['GITHUB_ACTIONS'])
-    for (const ligne of rapport) console.log(`\n::notice title=Latence de la Surenchère::${ligne}`);
+    console.log(`\n::notice title=Latences de la Surenchère::${rapport.join('%0A')}`);
   for (const ligne of rapport)
     test.info().annotations.push({ type: 'latence', description: ligne });
   await test.info().attach('latences.json', {
@@ -810,13 +810,17 @@ test('la Surenchère tient : coupures, rechargements, rafales, usurpations, rég
   // --- Deux régies valident le classement au même instant : les points ne comptent qu'une fois.
   const regie2 = await regie.context().newPage();
   await regie2.goto(`/regie/${code}/pilotage`);
-  for (const r of [regie, regie2]) {
-    await r.getByRole('button', { name: 'Valider le classement' }).click();
-  }
+  // Les deux boutons armés, puis les deux appuis envoyés ensemble, sans attendre que le bouton soit
+  // immobile : en CI, la première validation atteignait la seconde régie (signal, relecture) pendant
+  // que Playwright attendait la fin de sa transition, et le bouton disparaissait (2026-11-10).
+  const confirmer = (r: Page) =>
+    r.getByRole('button', { name: 'Confirmer : Valider le classement' });
   await Promise.all(
-    [regie, regie2].map((r) =>
-      r.getByRole('button', { name: 'Confirmer : Valider le classement' }).click(),
-    ),
+    [regie, regie2].map((r) => r.getByRole('button', { name: 'Valider le classement' }).click()),
+  );
+  for (const r of [regie, regie2]) await expect(confirmer(r)).toBeVisible();
+  await Promise.all(
+    [regie, regie2].map((r) => confirmer(r).dispatchEvent('click', undefined, { timeout: 2000 })),
   );
   await expect(scene(ecran, 'podium')).toBeVisible();
   await expect(ecran.getByTestId('place-3')).toContainText('1re place');
