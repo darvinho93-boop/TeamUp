@@ -53,18 +53,18 @@
   "messageEcran": {
     "ouvrir": "Message pour le grand écran",
     "titre": "Un message pour le grand écran",
-    "aide": "Il paraît aussitôt, avec votre prénom. Restez bienveillant \u0001 toute la salle le lit \u0001",
+    "aide": "Il paraît aussitôt, avec votre prénom. Restez bienveillant : toute la salle le lit !",
     "champ": "Votre message",
     "restants": "{n, plural, =0 {Plus aucun caractère} one {# caractère restant} other {# caractères restants}}",
     "envoyer": "Envoyer",
     "fermer": "Fermer",
-    "envoye": "C'est à l'écran \u0001",
+    "envoye": "C'est à l'écran !",
     "attente": "Prochain message dans {s} s",
     "vide": "Écrivez un message.",
     "long": "100 caractères au plus.",
     "fermes": "Les messages sont fermés pour le moment.",
     "termine": "La partie est terminée.",
-    "serveur": "Ça n'a pas marché \u0001 réessayez."
+    "serveur": "Ça n'a pas marché : réessayez."
   },
   "ajout": {
     "ouvrir": "Ajouter quelqu'un sans téléphone",

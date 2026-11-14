@@ -33,6 +33,15 @@ describe('traductions de l’écran joueur', () => {
       expect(variables(valeur(messages, cle)), cle).toEqual(variables(valeur(fr, cle)));
     }
   });
+
+  // Un script de retouche avait remplacé des « ! » par un caractère de contrôle (2026-11-14).
+  it.each([
+    ['fr', fr],
+    ['en', en],
+    ['ta', ta],
+  ])('%s : aucun caractère de contrôle dans les textes', (_langue, messages) => {
+    expect(JSON.stringify(messages)).not.toMatch(/\\u00[01][0-9a-f]/);
+  });
 });
 
 describe('phrases des explications animées', () => {
