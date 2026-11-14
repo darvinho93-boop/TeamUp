@@ -81,7 +81,7 @@ test('un joueur écrit sur le grand écran ; la régie retire, écrit et ferme l
 
   // --- La régie écrit sous « Team Up! ».
   await panneau.getByLabel('Message de Team Up!').fill('Place au Quiz !');
-  await panneau.getByRole('button', { name: 'Afficher' }).click();
+  await panneau.getByRole('button', { name: "Envoyer à l'écran" }).click();
   await expect(ecran.locator('.tu-bulle--regie')).toContainText('Place au Quiz !', {
     timeout: 3000,
   });

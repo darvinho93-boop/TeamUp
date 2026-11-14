@@ -394,7 +394,7 @@
         "fermes": "Envois des joueurs fermés",
         "champ": "Message de Team Up!",
         "restants": "{n, plural, =0 {Plus aucun caractère} one {# caractère restant} other {# caractères restants}}",
-        "afficher": "Afficher",
+        "afficher": "Envoyer à l'écran",
         "erreur": "Écrivez un message de 100 caractères au plus.",
         "aucun": "Aucun message pour l'instant.",
         "equipe": "équipe {n}",
