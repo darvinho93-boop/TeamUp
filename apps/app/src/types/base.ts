@@ -475,6 +475,71 @@ export type Database = {
           },
         ];
       };
+      messages_salle: {
+        Row: {
+          cree_le: string;
+          equipe_id: string | null;
+          evenement_id: string;
+          id: string;
+          joueur_id: string | null;
+          prenom: string | null;
+          regie: boolean;
+          retire: boolean;
+          texte: string;
+        };
+        Insert: {
+          cree_le?: string;
+          equipe_id?: string | null;
+          evenement_id: string;
+          id?: string;
+          joueur_id?: string | null;
+          prenom?: string | null;
+          regie?: boolean;
+          retire?: boolean;
+          texte: string;
+        };
+        Update: {
+          cree_le?: string;
+          equipe_id?: string | null;
+          evenement_id?: string;
+          id?: string;
+          joueur_id?: string | null;
+          prenom?: string | null;
+          regie?: boolean;
+          retire?: boolean;
+          texte?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'messages_salle_equipe_id_fkey';
+            columns: ['equipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'classement';
+            referencedColumns: ['equipe_id'];
+          },
+          {
+            foreignKeyName: 'messages_salle_equipe_id_fkey';
+            columns: ['equipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'equipes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'messages_salle_evenement_id_fkey';
+            columns: ['evenement_id'];
+            isOneToOne: false;
+            referencedRelation: 'evenements';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'messages_salle_joueur_id_fkey';
+            columns: ['joueur_id'];
+            isOneToOne: false;
+            referencedRelation: 'joueurs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       mises_quiz: {
         Row: {
           debloquee: boolean;
@@ -748,6 +813,7 @@ export type Database = {
           maj_le: string;
           manche_id: string | null;
           membres_mode: string;
+          messages_ouverts: boolean;
           passage_id: string | null;
           scene: Database['public']['Enums']['scene'];
           son_actif: boolean;
@@ -762,6 +828,7 @@ export type Database = {
           maj_le?: string;
           manche_id?: string | null;
           membres_mode?: string;
+          messages_ouverts?: boolean;
           passage_id?: string | null;
           scene?: Database['public']['Enums']['scene'];
           son_actif?: boolean;
@@ -776,6 +843,7 @@ export type Database = {
           maj_le?: string;
           manche_id?: string | null;
           membres_mode?: string;
+          messages_ouverts?: boolean;
           passage_id?: string | null;
           scene?: Database['public']['Enums']['scene'];
           son_actif?: boolean;
@@ -1029,6 +1097,14 @@ export type Database = {
         };
         Returns: string;
       };
+      envoyer_message: {
+        Args: { p_jeton_hash: string; p_texte: string };
+        Returns: Json;
+      };
+      envoyer_message_regie: {
+        Args: { p_evenement: string; p_texte: string };
+        Returns: string;
+      };
       envoyer_photo: {
         Args: { p_chemin: string; p_jeton_hash: string; p_theme: string };
         Returns: Json;
@@ -1052,6 +1128,10 @@ export type Database = {
           restants: number;
         }[];
       };
+      messages_ecran: {
+        Args: { p_evenement: string; p_regie: boolean };
+        Returns: Json;
+      };
       miser_quiz: {
         Args: {
           p_jeton_hash: string;
@@ -1073,6 +1153,7 @@ export type Database = {
         };
         Returns: Json;
       };
+      nettoyer_message: { Args: { p_texte: string }; Returns: string };
       nouveau_code: { Args: never; Returns: string };
       ordonner_passages: {
         Args: { p_manche: string; p_passages: string[] };
@@ -1138,6 +1219,10 @@ export type Database = {
         Args: { p_evenement: string; p_mode: string };
         Returns: undefined;
       };
+      regler_messages: {
+        Args: { p_evenement: string; p_ouverts: boolean };
+        Returns: undefined;
+      };
       regler_son: {
         Args: { p_actif: boolean; p_evenement: string; p_volume: number };
         Returns: undefined;
@@ -1161,6 +1246,10 @@ export type Database = {
       repondre_quiz: {
         Args: { p_choix: number; p_jeton_hash: string };
         Returns: Json;
+      };
+      retirer_message: {
+        Args: { p_message: string; p_retire?: boolean };
+        Returns: undefined;
       };
       retirer_mot: {
         Args: { p_jeton_hash: string; p_mot: string };
