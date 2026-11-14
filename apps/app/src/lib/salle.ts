@@ -4,6 +4,7 @@
  */
 
 import type { GameCode, StatutManche, StatutPassage } from '@teamup/game';
+import type { MessageSalle } from './messages';
 import type { Langue } from './partie';
 
 export type Scene =
@@ -131,6 +132,13 @@ export interface EtatSalle {
   son?: { actif: boolean; volume: number };
   /** Membres des équipes à l'écran ; absent sans la migration du 2026-10-17 (« tous »). */
   membres_mode?: 'tous' | 'carrousel';
+  /**
+   * Messages sur le grand écran : l'écran, les récents non retirés ; la régie, les derniers,
+   * retirés compris. Absents sans la migration du 2026-11-15 : ni bulle, ni panneau.
+   */
+  messages?: MessageSalle[];
+  /** Les joueurs peuvent écrire sur le grand écran ; absent sans la migration (ouverts). */
+  messages_ouverts?: boolean;
   equipes: EquipeSalle[];
   joueurs: number;
   /**
