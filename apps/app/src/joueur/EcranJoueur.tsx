@@ -10,6 +10,7 @@ import { AjoutInvite } from './AjoutInvite';
 import { Cadre } from './Cadre';
 import { ChoixLangueJoueur } from './ChoixLangueJoueur';
 import { Explication } from './Explication';
+import { MessageEcran } from './MessageEcran';
 import { NomEquipe } from './NomEquipe';
 import { NomPropose } from './NomPropose';
 import { Photos } from './Photos';
@@ -56,11 +57,15 @@ export function EcranJoueur({
     }
     router.refresh();
   };
+  // Le message pour le grand écran, tant que la régie laisse les envois ouverts (2026-11-15).
   const outil = (
-    <ChoixLangueJoueur
-      langues={etat.evenement.langues}
-      choisir={(langue) => void changerLangue(langue)}
-    />
+    <span className="tu-player__outils">
+      {etat.evenement.messages_ouverts === true && <MessageEcran code={code} />}
+      <ChoixLangueJoueur
+        langues={etat.evenement.langues}
+        choisir={(langue) => void changerLangue(langue)}
+      />
+    </span>
   );
 
   const bandeau = horsLigne ? (

@@ -50,6 +50,22 @@
     "capitaine": "You're no longer captain.",
     "serveur": "That didn't work. Try again."
   },
+  "messageEcran": {
+    "ouvrir": "Message for the big screen",
+    "titre": "A message for the big screen",
+    "aide": "It shows up right away, with your first name. Keep it kind: the whole room reads it!",
+    "champ": "Your message",
+    "restants": "{n, plural, =0 {No characters left} one {# character left} other {# characters left}}",
+    "envoyer": "Send",
+    "fermer": "Close",
+    "envoye": "It's on the screen!",
+    "attente": "Next message in {s} s",
+    "vide": "Write a message.",
+    "long": "100 characters at most.",
+    "fermes": "Messages are closed for now.",
+    "termine": "The game is over.",
+    "serveur": "That didn't work: please try again."
+  },
   "ajout": {
     "ouvrir": "Add someone without a phone",
     "titre": "Someone without a phone?",

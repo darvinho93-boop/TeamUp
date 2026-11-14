@@ -56,6 +56,54 @@
   font-size: var(--tu-size-sm);
 }
 
+/* En face du logo : le message pour le grand écran, puis la langue (2026-11-15). */
+.tu-player__outils {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+}
+
+.tu-player__outil {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--tu-tap-min);
+  height: var(--tu-tap-min);
+  padding: 0;
+  border: var(--tu-btn-border-width) solid var(--tu-primary);
+  border-radius: var(--tu-radius-pill);
+  background: transparent;
+  color: var(--tu-text);
+  cursor: pointer;
+}
+
+.tu-player__outil svg {
+  width: var(--tu-space-6);
+  height: var(--tu-space-6);
+}
+
+.tu-message-ecran {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+  padding: var(--tu-space-6);
+}
+
+.tu-message-ecran__titre {
+  margin: 0;
+  font-size: var(--tu-size-xl);
+  line-height: var(--tu-leading-tight);
+}
+
+/* Place gardée : la confirmation ne fait pas sauter les boutons. */
+.tu-message-ecran__statut {
+  min-height: calc(var(--tu-size-base) * var(--tu-leading-normal));
+  margin: 0;
+  color: var(--tu-success);
+  font-weight: 600;
+}
+
 /* Occupe la hauteur restante : l'action principale tombe en bas de l'écran. */
 .tu-player__body {
   display: flex;
