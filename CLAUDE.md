@@ -1351,3 +1351,39 @@ scènes ; le `@teamup_officiel` descend alors **en bas à gauche**. Sans partena
 - `pnpm db:types` : la sortie du CLI n'a plus la mise en forme du dépôt, et Prettier ignore ce
   fichier. Le remettre en forme avec `pnpm exec prettier --ignore-path ./aucun --write` sur
   `apps/app/src/types/base.ts`, puis vérifier `git diff --stat` (trois lignes pour une colonne).
+
+## Conventions posées le 2026-11-15 (messages sur le grand écran)
+
+Tranché le 2026-11-14 : tout joueur qui a un téléphone écrit un **message court** qui paraît
+**aussitôt** sur l'écran commun, dans une **bulle temporaire** (prénom + message), **sur toutes
+les scènes** ; **pas de validation préalable**, la régie **retire** après coup et peut **fermer les
+envois** ; la régie écrit aussi, sous **« Team Up! »**.
+
+- **Écart assumé à la spec v3** (« deux principes ») : un usage du téléphone hors jeu, comme le
+  renommage d'équipe. Un invité sans téléphone n'a pas d'écran, donc pas d'envoi.
+- Base (migration `20261115090000`) : `messages_salle` (prénom et équipe figés à l'envoi, `regie`,
+  `retire`), lue par l'animateur seulement, **aucune écriture directe**. `envoyer_message` (rôle de
+  service ; refus : session inconnue, partie terminée `PT409`, envois fermés `PT403`, texte invalide,
+  **un message toutes les 20 s par joueur** `PT429` « trop tôt:<s> »), `envoyer_message_regie` et
+  `retirer_message` (security definer + `anime()`), `regler_messages` (comme `regler_son` : ne
+  touche pas à `maj_le`). Texte : une ligne, 1 à 100 caractères (un émoji en vaut un),
+  `nettoyer_message` en base et `nettoyerMessage` (`src/lib/messages.ts`) côté client.
+- `etat_ecran.messages` (`messages_ecran`) : à l'écran, les 20 derniers des deux dernières minutes
+  non retirés ; à la régie, les 30 derniers, retirés compris. `etat_ecran.messages_ouverts`,
+  `etat_joueur.evenement.messages_ouverts` (le bouton du téléphone). Le client tient sans la
+  migration : ni bulle, ni bouton, ni panneau.
+- Temps réel : `POST /api/partie/[code]/message`, puis le signal **`mises`** (écran et régie
+  seulement) ; la régie écrit sous sa session, puis le signal `relire`.
+- Écran (`src/ecran/Bulles.tsx`, `bulles.css`) : **3 bulles au plus**, en bas à droite, **8 s**
+  chacune, file d'attente, abandon au-delà de **60 s** d'attente (`planDesBulles`, pur et testé).
+  Planning à l'heure de la base : deux écrans montrent les mêmes bulles, un rechargement retombe au
+  même endroit. Rien au premier rendu (hydratation). Au-dessus de la fête (`--tu-z-bulles`), dans
+  l'aperçu de la régie aussi. Pas de son. `SORTIE_BULLE_MS` = `--tu-dur-bulle-sortie`.
+- Téléphone (`src/joueur/MessageEcran.tsx`) : un bouton bulle en face du logo, à côté de la langue
+  (`.tu-player__outils`), qui ouvre un `<dialog>` ; « C'est à l'écran ! », puis le compte à rebours
+  de la cadence. Entrée n'envoie pas (le champ multiligne la bloque) : « Envoyer ».
+- Régie (`src/regie/PanneauMessages.tsx`, au pilotage sous le son) : envois ouverts ou fermés,
+  message de Team Up!, derniers messages avec « Retirer » / « Remettre », **un appui, sans
+  confirmation**.
+- Tests : `tests/messages-salle.test.ts` (base), `tests/messages-ecran.test.ts` (planning),
+  `e2e/messages-ecran.spec.ts`.
