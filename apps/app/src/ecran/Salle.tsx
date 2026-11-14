@@ -12,6 +12,7 @@ import { IconeInstagram } from '@/marque/IconeInstagram';
 import { INSTAGRAM } from '@/marque/instagram';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Ronds } from '@/marque/Ronds';
+import { Bulles } from './Bulles';
 import { Finale } from './Finale';
 import { Scene } from './Scenes';
 import { SonsContexte, useSons } from './sons/useSons';
@@ -170,6 +171,9 @@ export function Salle({
             </div>
           )}
           {enFinale && <Finale key={passage} depuisMs={depuisMs} />}
+          {/* Les messages des joueurs et de la régie, par-dessus toutes les scènes (2026-11-15) ;
+              dans l'aperçu aussi : l'animateur voit ce que voit la salle. */}
+          {etat.messages && <Bulles messages={etat.messages} decalageMs={decalageMs} />}
           {sons.aActiver && (
             <button
               type="button"

@@ -1,0 +1,82 @@
+/* Messages sur le grand écran (2026-11-15) : des bulles en bas à droite de la scène, par-dessus
+   toutes les scènes et la fête. La plus récente en bas. Une bulle de joueur porte la couleur de
+   son équipe (liseré et pastille) ; celle de la régie, le pictogramme et le nom Team Up!. Jamais
+   le corail en décor. Sous prefers-reduced-motion, elles paraissent et partent sans bouger. */
+
+.tu-bulles {
+  position: absolute;
+  right: var(--tu-space-8);
+  bottom: var(--tu-space-12);
+  z-index: var(--tu-z-bulles);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--tu-space-3);
+  width: var(--tu-stage-bulle-largeur);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.tu-bulle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-1);
+  max-width: 100%;
+  padding: var(--tu-space-3) var(--tu-space-6);
+  border-left: var(--tu-space-2) solid var(--tu-team-color, var(--tu-border));
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-surface);
+  box-shadow: var(--tu-shadow-lift);
+  color: var(--tu-text);
+  transition: opacity var(--tu-dur-bulle-sortie) var(--tu-ease);
+}
+
+.tu-bulle--sortie {
+  opacity: 0;
+}
+
+.tu-bulle--regie {
+  border-left-color: var(--tu-sage-700);
+  background: color-mix(in srgb, var(--tu-sage-500) 16%, var(--tu-surface));
+}
+
+.tu-bulle__auteur {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tu-space-2);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+}
+
+.tu-bulle__texte {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: var(--tu-size-2xl);
+  line-height: var(--tu-leading-tight);
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-bulle {
+    animation: tu-bulle-entree var(--tu-dur-bulle-entree) var(--tu-ease) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tu-bulle {
+    transition: none;
+  }
+}
+
+@keyframes tu-bulle-entree {
+  from {
+    opacity: 0;
+    transform: translateY(var(--tu-space-6)) scale(0.96);
+  }
+}

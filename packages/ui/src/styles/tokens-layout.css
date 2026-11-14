@@ -106,6 +106,12 @@
   --tu-bandeau-prenom-max: 50rem;
   --tu-dur-bandeau-arrivee: 1600ms;
   --tu-dur-bienvenue: 4000ms;
+  /* Messages sur le grand écran (2026-11-15) : largeur d'une bulle, son entrée et sa sortie
+     (`SORTIE_BULLE_MS` dans src/lib/messages.ts, à garder égal), au-dessus de la fête. */
+  --tu-stage-bulle-largeur: 42rem;
+  --tu-dur-bulle-entree: 500ms;
+  --tu-dur-bulle-sortie: 600ms;
+  --tu-z-bulles: 4;
   /* Dévoilement des équipes en machine à sous (2026-11-04) : un prénom de rouleau par pas, le
      flou du défilement, la chute d'un prénom (avec un rebond) et le flash d'une carte qui
      s'arrête. */
