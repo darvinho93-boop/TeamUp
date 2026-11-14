@@ -16,6 +16,7 @@ import {
   appliquerPointsCommuns,
   appliquerQuiz,
   appliquerSurenchere,
+  CHRONO_QUESTION_S,
   CHRONO_SURENCHERE_DEFAUT_S,
   CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
   dureeExplicationS,
@@ -216,6 +217,18 @@ export function chronoSurenchere(manche: MancheSalle, mode: ModeSurenchere | nul
   const reglage = manche.options[mode === 'telephones' ? 'chrono_telephones_s' : 'chrono_s'];
   if (typeof reglage === 'number') return reglage;
   return mode === 'telephones' ? CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S : CHRONO_SURENCHERE_DEFAUT_S;
+}
+
+/**
+ * Le chrono d'une question du Quiz : `options.chrono_s` de la manche s'il est posé (2 min pour le
+ * Bar à jeux du 2026-11-14), sinon les 30 s de la spec. La base contrôle les réponses et les mises
+ * sur la durée écrite au pilotage : elle suit d'elle-même.
+ */
+export function chronoQuiz(manche: MancheSalle): number {
+  const reglage = manche.options['chrono_s'];
+  return typeof reglage === 'number' && Number.isInteger(reglage) && reglage > 0
+    ? reglage
+    : CHRONO_QUESTION_S;
 }
 
 /** Les mots non rayés de chaque équipe sur ce thème, par numéro (Surenchère en mode téléphones). */
@@ -560,7 +573,8 @@ export function calculerEtape(
           },
           action,
         );
-        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        const chronoQ = action.type === 'lancer' ? { demarrer: chronoQuiz(manche) } : suite.chrono;
+        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(chronoQ) });
         if (suite.propositions !== undefined) ecriture.pilotage.indices = suite.propositions;
         switch (action.type) {
           case 'afficher':

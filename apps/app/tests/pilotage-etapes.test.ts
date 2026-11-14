@@ -402,6 +402,25 @@ describe('une touche de la régie', () => {
     });
   });
 
+  it('Quiz : le chrono réglé sur la manche remplace les 30 s', () => {
+    const e = etat({
+      scene: 'jeu',
+      manche_id: 'qz',
+      passage_id: 'q1',
+      etape: 'question',
+      indices: 4,
+    });
+    e.programme[2]!.options = { questions: 2, chrono_s: 120 };
+    expect(etape(e, { type: 'quiz', action: 'lancer' })?.pilotage).toMatchObject({
+      chrono: 'demarrer',
+      chrono_duree_s: 120,
+    });
+    e.programme[2]!.options = { questions: 2, chrono_s: 'n’importe quoi' };
+    expect(etape(e, { type: 'quiz', action: 'lancer' })?.pilotage).toMatchObject({
+      chrono_duree_s: 30,
+    });
+  });
+
   it('Quiz : question suivante, puis fin des questions après la dernière', () => {
     const e = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'reponse' });
     e.programme[2]!.passages[0]!.statut = 'termine';
