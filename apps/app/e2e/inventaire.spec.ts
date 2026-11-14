@@ -1,4 +1,7 @@
+import { randomUUID } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
+import { cheminLogo } from '../src/lib/logo';
 import {
   appeler,
   clientAnimateur,
@@ -14,9 +17,15 @@ import {
  * régie à chaque état (portable, tablette), ses autres pages et le back-office. Hors CI : ne tourne qu'avec
  * `INVENTAIRE=<dossier>`, où les captures sont rangées.
  *   INVENTAIRE=C:/chemin pnpm exec playwright test e2e/inventaire.spec.ts --project=mobile
+ *
+ * `INVENTAIRE_LOGO=<fichier.png>` dépose ce logo de partenaire sur la soirée (2026-11-11) : chaque
+ * scène se relit alors avec le coin haut gauche occupé. `INVENTAIRE_ECRAN=1` ne capture que
+ * l'écran commun en 1 920, sans la régie ni les téléphones : la passe rapide.
  */
 
 const DOSSIER = process.env['INVENTAIRE'];
+const LOGO = process.env['INVENTAIRE_LOGO'];
+const ECRAN_SEUL = process.env['INVENTAIRE_ECRAN'] === '1';
 /** Fausses photos : une étiquette lisible au milieu (des images de test, hors de la charte). */
 const TAILLE_ETIQUETTE = 120;
 test.skip(!DOSSIER, 'inventaire visuel : INVENTAIRE=<dossier> pour le lancer');
@@ -210,11 +219,13 @@ const CONTENUS = {
 let evenement: { id: string; code: string };
 const contenus: string[] = [];
 const chemins: string[] = [];
+const logos: string[] = [];
 
 test.afterAll(async () => {
   if (!DOSSIER) return;
   const service = clientService();
   if (chemins.length) await service.storage.from('photos').remove(chemins);
+  if (logos.length) await service.storage.from('logos').remove(logos);
   if (evenement) await supprimerEvenements([evenement.id]);
   if (contenus.length) await service.from('contenus').delete().in('id', contenus);
 });
@@ -273,6 +284,20 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
   test.setTimeout(30 * 60_000);
   const service = clientService();
   evenement = await creerEvenementJetable({ equipes: 6, langues: ['fr', 'en', 'ta'] });
+  if (LOGO) {
+    // Un PNG déjà rogné et à la taille (celui que la préparation aurait envoyé).
+    const chemin = cheminLogo(evenement.id, randomUUID());
+    logos.push(chemin);
+    const depot = await service.storage
+      .from('logos')
+      .upload(chemin, await readFile(LOGO), { contentType: 'image/png' });
+    if (depot.error) throw new Error(depot.error.message);
+    const { error } = await service
+      .from('evenements')
+      .update({ logo_partenaire: chemin })
+      .eq('id', evenement.id);
+    if (error) throw new Error(error.message);
+  }
   const { data: equipes } = await service
     .from('equipes')
     .select('id, numero')
@@ -504,7 +529,7 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
   const tailles = [
     { nom: '1920', width: 1920, height: 1080 },
     { nom: '1280', width: 1280, height: 720 },
-  ];
+  ].slice(0, ECRAN_SEUL ? 1 : 2);
   // La régie : tablette ou ordinateur portable (cahier des charges § 5.3).
   const taillesRegie = [
     { nom: 'portable', width: 1440, height: 900 },
@@ -542,6 +567,7 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
       await ecran.waitForTimeout(options.attente ?? 1500);
       await ecran.screenshot({ path: `${DOSSIER}/ecran-${t.nom}/${prefixe}-${nom}.png` });
     }
+    if (ECRAN_SEUL) return;
     if (options.regie !== false)
       await capturerPage(regie, 'regie', `${prefixe}-${nom}`, `${regieCode}/pilotage`);
     if (options.telephones) {
@@ -559,26 +585,28 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
   // ========== Régie : pages hors pilotage.
   const horsPilotage = (nom: string, chemin: string) =>
     capturerPage(regie, 'regie-pages', nom, chemin);
-  await horsPilotage('evenements', '/regie');
-  await horsPilotage('compte', '/regie/compte');
-  await horsPilotage('preparation', `${regieCode}/preparation`);
-  await horsPilotage('salle', `${regieCode}/salle`);
-  for (const t of taillesRegie) {
-    const prise = (n: string) =>
-      regie.screenshot({ path: `${DOSSIER}/regie-pages-${t.nom}/${n}.png`, fullPage: true });
-    await regie.setViewportSize({ width: t.width, height: t.height });
-    await regie.goto(`${regieCode}/salle`);
-    await regie.getByRole('button', { name: 'Léa Martin' }).first().click();
-    await regie.waitForTimeout(600);
-    await prise('salle-fiche');
-    await regie.getByRole('searchbox').fill('an');
-    await regie.waitForTimeout(600);
-    await prise('salle-recherche');
+  if (!ECRAN_SEUL) {
+    await horsPilotage('evenements', '/regie');
+    await horsPilotage('compte', '/regie/compte');
+    await horsPilotage('preparation', `${regieCode}/preparation`);
+    await horsPilotage('salle', `${regieCode}/salle`);
+    for (const t of taillesRegie) {
+      const prise = (n: string) =>
+        regie.screenshot({ path: `${DOSSIER}/regie-pages-${t.nom}/${n}.png`, fullPage: true });
+      await regie.setViewportSize({ width: t.width, height: t.height });
+      await regie.goto(`${regieCode}/salle`);
+      await regie.getByRole('button', { name: 'Léa Martin' }).first().click();
+      await regie.waitForTimeout(600);
+      await prise('salle-fiche');
+      await regie.getByRole('searchbox').fill('an');
+      await regie.waitForTimeout(600);
+      await prise('salle-recherche');
+    }
+    await horsPilotage('scores', `${regieCode}/scores`);
+    await horsPilotage('photos', `${regieCode}/photos`);
+    const deconnecte = await (await browser.newContext({ isMobile: false })).newPage();
+    await capturerPage(deconnecte, 'regie-pages', 'connexion', '/regie/connexion');
   }
-  await horsPilotage('scores', `${regieCode}/scores`);
-  await horsPilotage('photos', `${regieCode}/photos`);
-  const deconnecte = await (await browser.newContext({ isMobile: false })).newPage();
-  await capturerPage(deconnecte, 'regie-pages', 'connexion', '/regie/connexion');
 
   // ========== Écran commun : hors jeu.
   await capturer('ouverture', { attente: 5000 });
@@ -799,6 +827,7 @@ test('inventaire visuel de l’écran commun et du téléphone', async ({ browse
   await capturer('instagram');
   await etape({ scene: 'cloture' });
   await capturer('cloture', { attente: 12_000 });
+  if (ECRAN_SEUL) return;
   await horsPilotage('scores-fin', `${regieCode}/scores`);
   await horsPilotage('photos-fin', `${regieCode}/photos`);
 
