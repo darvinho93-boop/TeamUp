@@ -1309,3 +1309,45 @@ scénarios de casse, l'heure du téléphone.
   2 s et part en même temps que la relecture du capitaine.
 - Playwright : `getByRole('button', { name: 'Dévoiler' })` trouve aussi « Dévoiler les équipes »
   (nom comparé par sous-chaîne) : `exact: true`.
+
+## Conventions posées le 2026-11-11 (logo du partenaire)
+
+Tranché le 2026-11-11 : une soirée peut porter le **logo d'un partenaire**, déposé **à la
+préparation** (un par soirée), montré **en haut à gauche de l'écran commun** sur toutes les
+scènes ; le `@teamup_officiel` descend alors **en bas à gauche**. Sans partenaire, rien ne change.
+
+- **Écart assumé à la charte** : un logo tiers à l'écran, avec ses couleurs. Écran commun et son
+  aperçu dans la régie seulement : ni téléphones, ni carte, ni vitrine. Sans rapport avec
+  `logo_initiales` et `logo_titre` (2026-10-18), toujours vides.
+- « Calibré » sur la marque Team Up! : même boîte (`.tu-logo-partenaire` : hauteur
+  `--tu-picto-coin`, largeur au plus `--tu-stage-marque`), même retrait du haut et du bord. Un
+  logo carré a la hauteur du pictogramme, un logo large est borné en largeur.
+- Le navigateur de l'animateur prépare le fichier (`src/regie/preparerLogo.ts`, règles pures et
+  testées dans `src/lib/logo.ts`) : PNG, WebP ou SVG en entrée, **jamais de JPEG** ; marges
+  transparentes rognées, réduit à 1 344 × 352 au plus (quatre fois la boîte), converti en PNG.
+  Un fichier avec fond ou trop petit est signalé, pas refusé. Rien ne part avant « Enregistrer ».
+- Base (migration `20261111090000`) : `evenements.logo_partenaire` (chemin
+  `<soirée>/<uuid>.png`, contrainte de forme) et bucket **public** `logos` (512 Ko, PNG seul).
+  Public parce qu'une URL signée d'une heure ne tient pas une soirée ; un uuid neuf à chaque
+  dépôt, donc aucun cache ne ressert l'ancien. Lister, déposer, retirer : l'animateur de la
+  soirée (`anime()`). `etat_ecran.evenement.logo_partenaire` ; le client tient sans la migration.
+- Dépôt et retrait : `POST` et `DELETE /regie/[code]/logo`, **sous la session de l'animateur**.
+  Le serveur revérifie les octets PNG, les dimensions et le poids, retire l'ancien fichier, puis
+  `signalerSalle` : l'écran suit sans recharger. `evenementDeLaRegie` ne lit pas la colonne (les
+  pages de la régie ne doivent pas dépendre de la migration) : lecture à part.
+- Écran (`Salle.tsx`, `brand.css`) : `tu-stage--partenaire` sur la scène. Le haut devient un
+  bandeau des deux logos, et **une scène commence dessous par défaut** (`--tu-stage-bandeau`) :
+  les titres alignés à gauche passaient sous le logo. Exceptions listées dans `brand.css`, pour
+  les scènes dont le haut est centré entre les marques (présentation, explication, Points
+  communs, Mime, podium, pages centrées). Une scène ajoutée plus tard est donc à l'abri ; ne
+  l'ajouter aux exceptions que si son haut est centré. QR de l'accueil :
+  `--tu-stage-qr-partenaire`.
+- Sur un verdict plein écran, le logo garde une plaque beige (ses couleurs ne sont pas les
+  nôtres : on ne peut pas le passer en blanc comme la marque).
+- Inventaire : `INVENTAIRE_LOGO=<fichier.png>` dépose un logo sur la soirée, `INVENTAIRE_ECRAN=1`
+  ne capture que l'écran en 1 920 (cinq minutes au lieu de vingt).
+- Tests : `tests/logo.test.ts`, `tests/logo-partenaire.test.ts` (policies, bucket, contrainte ;
+  `tests/png.ts` fabrique un vrai PNG), `e2e/logo-partenaire.spec.ts`.
+- `pnpm db:types` : la sortie du CLI n'a plus la mise en forme du dépôt, et Prettier ignore ce
+  fichier. Le remettre en forme avec `pnpm exec prettier --ignore-path ./aucun --write` sur
+  `apps/app/src/types/base.ts`, puis vérifier `git diff --stat` (trois lignes pour une colonne).
