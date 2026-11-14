@@ -367,3 +367,41 @@ export async function changerLangue(
   }
   return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
 }
+
+export type RefusMessage = 'session' | 'fermes' | 'termine' | 'message' | 'cadence';
+
+/**
+ * Le joueur de ce cookie écrit sur le grand écran. La base décide seule (envois ouverts, partie
+ * en cours, 100 caractères, un message toutes les 20 s) ; puis le signal `mises`, que seuls
+ * l'écran et la régie écoutent : un message ne fait pas relire les 150 téléphones.
+ */
+export async function envoyerMessage(
+  code: string,
+  texte: string,
+): Promise<{ ok: true } | { ok: false; refus: RefusMessage; attenteS?: number }> {
+  const jeton = await jetonDe(code);
+  if (!jeton) return { ok: false, refus: 'session' };
+
+  const { data, error } = await supabaseService().rpc('envoyer_message', {
+    p_jeton_hash: hacher(jeton),
+    p_texte: texte,
+  });
+  if (error) {
+    const attente = /trop tôt:(\d+)/.exec(error.message)?.[1];
+    if (attente) return { ok: false, refus: 'cadence', attenteS: Number(attente) };
+    const refus: RefusMessage | null = /session/.test(error.message)
+      ? 'session'
+      : /fermés/.test(error.message)
+        ? 'fermes'
+        : /terminée/.test(error.message)
+          ? 'termine'
+          : /message invalide/.test(error.message)
+            ? 'message'
+            : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  const { evenement_id } = data as { evenement_id: string };
+  await signalerSalle(evenement_id, 'mises');
+  return { ok: true };
+}

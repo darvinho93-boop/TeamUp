@@ -155,6 +155,8 @@ export interface EtatJoueur {
     statut: 'preparation' | 'repetition' | 'en_cours' | 'termine';
     langues: Langue[];
     photos_closes: boolean;
+    /** Le bouton « Message pour le grand écran » ; absent sans la migration du 2026-11-15. */
+    messages_ouverts?: boolean;
   };
   equipe: {
     id: string;

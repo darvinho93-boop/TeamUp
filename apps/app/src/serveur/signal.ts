@@ -9,9 +9,9 @@ const ATTENTE_MAX_MS = 2000;
  * que l'écran commun doit voir aussitôt. Passe par l'API de diffusion de Supabase, sans ouvrir
  * de canal. Au mieux : en cas d'échec, l'écran le verra à sa relecture de sûreté.
  *
- * `mises` (quiz en mode jetons, mots de la Surenchère en mode téléphones) n'est écouté que par
- * l'écran et la régie : chaque appui d'un capitaine ne fait pas relire les 150 téléphones, qui
- * n'écoutent que `relire`.
+ * `mises` (quiz en mode jetons, mots de la Surenchère en mode téléphones, messages pour le grand
+ * écran) n'est écouté que par l'écran et la régie : chaque appui d'un capitaine ne fait pas
+ * relire les 150 téléphones, qui n'écoutent que `relire`.
  */
 export async function signalerSalle(
   evenementId: string,
