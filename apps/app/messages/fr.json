@@ -311,6 +311,26 @@
         "statutVisible": "La soirée paraîtra sur la carte le jour J.",
         "statutCachee": "La soirée ne paraît pas sur la carte (il lui faut la case cochée et un titre).",
         "enregistrer": "Enregistrer la carte"
+      },
+      "partenaire": {
+        "titre": "Logo partenaire",
+        "aide": "Le logo du partenaire de la soirée paraît en haut à gauche du grand écran, en face du logo Team Up!, sur toutes les scènes. Déposez un fichier sans fond (PNG, WebP ou SVG) : les marges vides sont retirées et la taille se règle seule.",
+        "choisir": "Fichier du logo",
+        "apercu": "Aperçu du haut de l'écran",
+        "aucun": "Aucun logo partenaire : le haut de l'écran reste comme d'habitude.",
+        "enPlace": "Logo enregistré : il paraît à l'écran.",
+        "aEnregistrer": "Aperçu du nouveau logo : il n'est pas encore enregistré.",
+        "fond": "Ce logo a un fond : il paraîtra dans un rectangle. Préférez une version sans fond.",
+        "petit": "Ce logo est petit : il risque d'être flou sur le grand écran. Préférez un fichier plus grand, ou un SVG.",
+        "enregistrer": "Enregistrer le logo",
+        "retirer": "Retirer le logo",
+        "confirmerRetrait": "Retirer du grand écran ?",
+        "erreur": {
+          "illisible": "Ce fichier ne s'ouvre pas comme une image. Essayez un PNG, un WebP ou un SVG.",
+          "vide": "Cette image est entièrement transparente.",
+          "lourd": "Ce logo reste trop lourd, même réduit. Essayez un fichier plus simple.",
+          "envoi": "Ça n'a pas marché : réessayez."
+        }
       }
     },
     "pilotage": {
@@ -655,6 +675,7 @@
     "equipes": "Voici les équipes !",
     "capitaine": "Capitaine",
     "activerSon": "Activer le son",
+    "partenaire": "Logo du partenaire",
     "programme": "Au programme",
     "regles": {
       "list2": "Dos à l'écran, une équipe devine ce qui rassemble les personnes debout !",

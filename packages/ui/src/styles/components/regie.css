@@ -571,6 +571,31 @@ button.tu-regie-chip:disabled {
   font-weight: 600;
 }
 
+/* Préparation, logo partenaire (2026-11-11) : le haut de l'écran commun, le logo du partenaire à
+   gauche et la marque Team Up! à droite, dans les mêmes boîtes qu'à l'écran et sur son beige. */
+.tu-regie-marques {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-4) var(--tu-space-8);
+  margin: 0;
+  padding: var(--tu-space-6) var(--tu-space-8);
+  border: var(--tu-border-width) dashed var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-bg);
+}
+
+.tu-regie-marques__partenaire {
+  display: block;
+  min-width: 0;
+  min-height: var(--tu-picto-coin);
+}
+
+.tu-regie-marques .tu-logo-partenaire {
+  max-width: min(var(--tu-stage-marque), 100%);
+}
+
 /* Quiz : la question et ses propositions, la bonne réponse marquée (la régie voit tout). */
 .tu-regie-quiz {
   display: grid;

@@ -12,8 +12,10 @@ import {
 } from '@teamup/game';
 import { etiquettesDe, libelleContenu, proposable } from '@/lib/contenus';
 import { MAX_GROUPES } from '@/lib/groupes';
+import { urlLogo } from '@/lib/logo';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
+import { LogoPartenaire } from '@/regie/LogoPartenaire';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
 import {
   ajouterDuels,
@@ -57,6 +59,7 @@ export default async function Preparation({
     { data: photos },
     { data: groupes },
     { data: reglageGroupes },
+    { data: reglageLogo },
   ] = await Promise.all([
     supabase
       .from('equipes')
@@ -82,6 +85,8 @@ export default async function Preparation({
       .select('groupe_facultatif, carte_visible, titre_public')
       .eq('id', evenement.id)
       .maybeSingle(),
+    // À part : sans la migration 20261111090000, seule cette lecture échoue (aucun logo).
+    supabase.from('evenements').select('logo_partenaire').eq('id', evenement.id).maybeSingle(),
   ]);
   // Sans la migration 20261022100000, la lecture échoue : proposé, comme avant.
   const groupeFacultatif = reglageGroupes?.groupe_facultatif ?? true;
@@ -231,6 +236,14 @@ export default async function Preparation({
             <Button type="submit">{t('carte.enregistrer')}</Button>
           </div>
         </form>
+      </section>
+
+      <section className="tu-regie__section" aria-labelledby="partenaire">
+        <h2 id="partenaire" className="tu-regie__section-title">
+          {t('partenaire.titre')}
+        </h2>
+        <p className="tu-regie__muted">{t('partenaire.aide')}</p>
+        <LogoPartenaire code={code} actuel={urlLogo(reglageLogo?.logo_partenaire)} />
       </section>
 
       <section className="tu-regie__section" aria-labelledby="programme">

@@ -311,6 +311,26 @@
         "statutVisible": "The event will appear on the card on the day.",
         "statutCachee": "The event does not appear on the card (it needs the box ticked and a title).",
         "enregistrer": "Save card"
+      },
+      "partenaire": {
+        "titre": "Partner logo",
+        "aide": "The event partner's logo appears at the top left of the big screen, opposite the Team Up! logo, on every scene. Upload a file with no background (PNG, WebP or SVG): empty margins are removed and the size adjusts itself.",
+        "choisir": "Logo file",
+        "apercu": "Preview of the top of the screen",
+        "aucun": "No partner logo: the top of the screen stays as usual.",
+        "enPlace": "Logo saved: it appears on the screen.",
+        "aEnregistrer": "Preview of the new logo: it is not saved yet.",
+        "fond": "This logo has a background: it will appear inside a rectangle. Prefer a version with no background.",
+        "petit": "This logo is small: it may look blurry on the big screen. Prefer a larger file, or an SVG.",
+        "enregistrer": "Save logo",
+        "retirer": "Remove logo",
+        "confirmerRetrait": "Remove from the big screen?",
+        "erreur": {
+          "illisible": "This file does not open as an image. Try a PNG, a WebP or an SVG.",
+          "vide": "This image is entirely transparent.",
+          "lourd": "This logo is still too heavy, even reduced. Try a simpler file.",
+          "envoi": "That didn't work: try again."
+        }
       }
     },
     "pilotage": {
@@ -655,6 +675,7 @@
     "equipes": "Here are the teams!",
     "capitaine": "Captain",
     "activerSon": "Turn sound on",
+    "partenaire": "Partner logo",
     "programme": "Tonight's games",
     "regles": {
       "list2": "Back to the screen, one team guesses what the people standing have in common!",
