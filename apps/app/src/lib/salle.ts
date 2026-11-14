@@ -111,6 +111,11 @@ export interface EtatSalle {
     client_nom: string;
     creneau_minutes: number;
     photos_closes: boolean;
+    /**
+     * Chemin du logo du partenaire dans le bucket « logos » (`urlLogo`), ou `null`. Absent sans
+     * la migration du 2026-11-11 : le haut de l'écran reste comme avant.
+     */
+    logo_partenaire?: string | null;
   };
   pilotage: {
     scene: Scene;

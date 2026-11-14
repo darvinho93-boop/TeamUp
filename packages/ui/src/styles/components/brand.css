@@ -194,6 +194,70 @@
   font-weight: 600;
 }
 
+/* Le logo du partenaire de la soirée (2026-11-11), dans la boîte de la marque Team Up! : la
+   hauteur de son pictogramme, au plus sa largeur. Un logo carré a la hauteur du pictogramme, un
+   logo très large est borné en largeur ; jamais plus gros que Team Up!. */
+.tu-logo-partenaire {
+  display: block;
+  width: auto;
+  max-width: var(--tu-stage-marque);
+  height: var(--tu-picto-coin);
+  object-fit: contain;
+  object-position: left center;
+}
+
+/* À l'écran commun : en haut à gauche, en miroir de la marque Team Up! (même retrait du haut et
+   du bord). */
+.tu-stage__partenaire {
+  position: absolute;
+  top: var(--tu-space-6);
+  left: var(--tu-space-16);
+}
+
+/* Le compte Instagram lui laisse le coin : il descend dans la marge du bas, à gauche. */
+.tu-stage--partenaire .tu-stage__insta {
+  top: auto;
+  bottom: var(--tu-space-3);
+}
+
+/* Avec un partenaire, le haut de la scène est un bandeau : son logo à gauche, la marque Team Up!
+   à droite. Une scène commence dessous (un titre ou un en-tête aligné à gauche passait sous le
+   logo), sauf celles dont le haut est centré entre les deux marques ou déjà sous elles. Dessous
+   par défaut : une scène ajoutée plus tard ne touchera pas le logo. */
+.tu-stage--partenaire
+  .tu-stage__body:not(
+    .tu-stage-centre,
+    [data-scene='ouverture'],
+    [data-scene='intro'],
+    [data-scene='explication'],
+    [data-scene='list2'],
+    [data-scene='mime2'],
+    [data-scene='podium'],
+    [data-scene='instagram'],
+    [data-scene='cloture']
+  ) {
+  padding-top: var(--tu-stage-bandeau);
+}
+
+/* La page du QR code garde de la marge sous le bandeau : son QR rétrécit d'un cran. */
+.tu-stage--partenaire .tu-stage-accueil {
+  --tu-stage-qr: var(--tu-stage-qr-partenaire);
+}
+
+/* L'en-tête du quiz est passé sous le bandeau : son chrono n'a plus à éviter la marque. */
+.tu-stage--partenaire .tu-stage-quiz__tete {
+  padding-inline-end: 0;
+}
+
+/* Sur le plein écran vert ou rouge d'un verdict, le logo du partenaire garde son beige autour
+   de lui : ses couleurs ne sont pas les nôtres, on ne peut pas le passer en blanc comme la
+   marque. L'ombre fait la plaque sans changer sa boîte, donc sans le déplacer. */
+.tu-stage:has(.tu-stage-verdict) .tu-stage__partenaire {
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-bg);
+  box-shadow: 0 0 0 var(--tu-space-3) var(--tu-bg);
+}
+
 .tu-icone-insta {
   width: 1.2em;
   height: 1.2em;

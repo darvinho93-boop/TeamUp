@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { cx, Wordmark } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
+import { urlLogo } from '@/lib/logo';
 import { FINALE, raccordFinale } from '@/lib/ouverture';
 import type { EtatSalle, Scene as NomDeScene } from '@/lib/salle';
 import { INTERLUDE_MS, sonsDeLaFinale } from '@/lib/sons';
@@ -43,6 +44,8 @@ export function Salle({
 }) {
   const langue = etat.evenement.langues[0] ?? 'fr';
   const { scene, manche_id: mancheId } = etat.pilotage;
+  // Le logo du partenaire de la soirée, s'il y en a un : en haut à gauche de toutes les scènes.
+  const logoPartenaire = urlLogo(etat.evenement.logo_partenaire);
 
   // Entre deux jeux, le logo passe en plein écran, par-dessus une scène déjà à jour. Seulement
   // si cet écran a vu le jeu arriver : ni au chargement, ni dans l'aperçu de la régie.
@@ -115,7 +118,12 @@ export function Salle({
     <NextIntlClientProvider locale={langue} messages={MESSAGES[langue]}>
       <SonsContexte value={sons.jouer}>
         <div
-          className={cx('tu-stage', apercu && 'tu-stage--apercu', projete && 'tu-stage--projete')}
+          className={cx(
+            'tu-stage',
+            apercu && 'tu-stage--apercu',
+            projete && 'tu-stage--projete',
+            logoPartenaire && 'tu-stage--partenaire',
+          )}
           lang={langue}
           aria-hidden={apercu || undefined}
           data-fin-de-boucle={finDeBoucle || undefined}
@@ -131,6 +139,17 @@ export function Salle({
             qrSvg={qrSvg}
             adresse={adresse}
           />
+          {/* Le logo du partenaire en haut à gauche, dans la boîte de la marque Team Up! ; le compte
+              Instagram descend alors en bas à gauche (2026-11-11). */}
+          {logoPartenaire && (
+            // Fichier du bucket public, déjà à la bonne taille : rien à optimiser côté Next.
+            <img
+              className="tu-logo-partenaire tu-stage__partenaire"
+              src={logoPartenaire}
+              alt={MESSAGES[langue].ecran.partenaire}
+              data-testid="logo-partenaire"
+            />
+          )}
           {/* Le compte Instagram en haut à gauche, sur toutes les scènes ; le logo animé en haut à
               droite, sauf là où il est déjà en grand (2026-10-22). */}
           {!PAGES_INSTAGRAM.has(sceneAffichee) && (
