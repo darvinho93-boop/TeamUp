@@ -217,6 +217,7 @@ export type Database = {
           langues: Database['public']['Enums']['langue'][];
           lieu: string | null;
           logo_initiales: string[] | null;
+          logo_partenaire: string | null;
           logo_titre: string | null;
           occasion: string | null;
           photos_closes_le: string | null;
@@ -242,6 +243,7 @@ export type Database = {
           langues?: Database['public']['Enums']['langue'][];
           lieu?: string | null;
           logo_initiales?: string[] | null;
+          logo_partenaire?: string | null;
           logo_titre?: string | null;
           occasion?: string | null;
           photos_closes_le?: string | null;
@@ -267,6 +269,7 @@ export type Database = {
           langues?: Database['public']['Enums']['langue'][];
           lieu?: string | null;
           logo_initiales?: string[] | null;
+          logo_partenaire?: string | null;
           logo_titre?: string | null;
           occasion?: string | null;
           photos_closes_le?: string | null;
