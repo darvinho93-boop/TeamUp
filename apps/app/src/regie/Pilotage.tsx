@@ -66,6 +66,7 @@ import { useEtatSalle } from '@/ecran/useEtatSalle';
 import { Apercu } from './Apercu';
 import { BoutonConfirme } from './BoutonConfirme';
 import { PanneauDuel } from './PanneauDuel';
+import { PanneauMessages } from './PanneauMessages';
 
 /** Jeux que la régie sait piloter (lots 6 à 8, duels en bêta au lot 10). */
 const PILOTABLES: readonly GameCode[] = [
@@ -441,6 +442,18 @@ export function Pilotage({
             await relire();
           }}
         />
+        {/* Messages sur le grand écran (2026-11-15) ; absent sans la migration. */}
+        {etat.messages && (
+          <PanneauMessages
+            evenementId={etat.evenement.id}
+            messages={etat.messages}
+            ouverts={etat.messages_ouverts !== false}
+            apresEcriture={async () => {
+              signaler();
+              await relire();
+            }}
+          />
+        )}
         <div className="tu-cluster" role="group" aria-label={t('scenes')}>
           {SCENES_LIBRES.map((s) => (
             <Button

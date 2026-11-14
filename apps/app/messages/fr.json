@@ -388,6 +388,19 @@
         "coupe": "Son coupé",
         "volume": "Volume {n} %"
       },
+      "messages": {
+        "titre": "Messages sur l'écran ({n})",
+        "ouverts": "Envois des joueurs ouverts",
+        "fermes": "Envois des joueurs fermés",
+        "champ": "Message de Team Up!",
+        "restants": "{n, plural, =0 {Plus aucun caractère} one {# caractère restant} other {# caractères restants}}",
+        "afficher": "Afficher",
+        "erreur": "Écrivez un message de 100 caractères au plus.",
+        "aucun": "Aucun message pour l'instant.",
+        "equipe": "équipe {n}",
+        "retirer": "Retirer",
+        "remettre": "Remettre"
+      },
       "afficher": "Afficher",
       "masquer": "Masquer",
       "lancer": "Lancer",

@@ -388,6 +388,19 @@
         "coupe": "Sound off",
         "volume": "Volume {n}%"
       },
+      "messages": {
+        "titre": "Messages on screen ({n})",
+        "ouverts": "Player messages open",
+        "fermes": "Player messages closed",
+        "champ": "Message from Team Up!",
+        "restants": "{n, plural, =0 {No characters left} one {# character left} other {# characters left}}",
+        "afficher": "Show",
+        "erreur": "Write a message of 100 characters at most.",
+        "aucun": "No messages yet.",
+        "equipe": "team {n}",
+        "retirer": "Remove",
+        "remettre": "Restore"
+      },
       "afficher": "Show",
       "masquer": "Hide",
       "lancer": "Start",

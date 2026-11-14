@@ -352,6 +352,68 @@
   accent-color: var(--tu-primary);
 }
 
+/* Messages sur le grand écran (2026-11-15) : les envois, le message de Team Up!, puis les
+   derniers messages, le plus récent en haut, chacun avec « Retirer ». */
+.tu-regie-messages__corps {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--tu-space-4);
+  margin-top: var(--tu-space-3);
+}
+
+.tu-regie-messages__envoi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--tu-space-3);
+  width: 100%;
+}
+
+.tu-regie-messages__envoi .tu-field {
+  flex: 1 1 var(--tu-regie-field-min);
+}
+
+.tu-regie-messages__liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie-messages__message {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0 var(--tu-space-3);
+  padding: var(--tu-space-2) var(--tu-space-3);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+}
+
+.tu-regie-messages__auteur {
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+}
+
+.tu-regie-messages__texte {
+  grid-column: 1;
+  overflow-wrap: anywhere;
+}
+
+.tu-regie-messages__message .tu-btn {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+}
+
+.tu-regie-messages__message--retire .tu-regie-messages__texte {
+  color: var(--tu-text-muted);
+  text-decoration: line-through;
+}
+
 /* Membres en étiquettes : toute une équipe d'un coup d'œil. */
 .tu-regie-recherche {
   display: flex;
