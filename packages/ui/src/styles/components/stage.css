@@ -1881,3 +1881,47 @@
     transform: scaleY(1);
   }
 }
+
+/* Photo de fond d'un jeu (2026-11-15), pendant le jeu seulement : toute la scène, sous un voile
+   beige qui garde chaque texte lisible. Derrière la scène (la scène isole ses calques) : un verdict
+   plein écran, la fête, les marques et les bulles passent dessus comme sur le beige. */
+.tu-stage--fond {
+  isolation: isolate;
+}
+
+.tu-stage__fond {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tu-stage__fond[data-visible='true'] {
+  opacity: 1;
+}
+
+.tu-stage__fond img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tu-stage__fond::after {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--tu-bg) var(--tu-stage-fond-voile), transparent);
+  content: '';
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage__fond {
+    transition: opacity var(--tu-dur-fond) var(--tu-ease);
+  }
+
+  /* Une photo qui arrive (ou en remplace une autre) fond à son montage. */
+  .tu-stage__fond img {
+    animation: tu-fondu var(--tu-dur-fond) var(--tu-ease) both;
+  }
+}

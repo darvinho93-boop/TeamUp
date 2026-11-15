@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { cx, Wordmark } from '@teamup/ui/react';
 import { MESSAGES } from '@/i18n/messages';
+import { fondDeLaScene, fondsDuProgramme } from '@/lib/fonds';
 import { urlLogo } from '@/lib/logo';
 import { FINALE, raccordFinale } from '@/lib/ouverture';
 import type { EtatSalle, Scene as NomDeScene } from '@/lib/salle';
@@ -13,9 +14,11 @@ import { INSTAGRAM } from '@/marque/instagram';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Ronds } from '@/marque/Ronds';
 import { Bulles } from './Bulles';
+import { FondDeScene } from './FondDeScene';
 import { Finale } from './Finale';
 import { Scene } from './Scenes';
 import { SonsContexte, useSons } from './sons/useSons';
+import { useFondsDeLaSoiree } from './useFondsDeLaSoiree';
 
 /** Les scènes qui portent déjà le logo en grand, ou l'invitation Instagram en entier. */
 const LOGO_EN_GRAND = new Set<NomDeScene>(['ouverture', 'accueil', 'cloture']);
@@ -47,6 +50,10 @@ export function Salle({
   const { scene, manche_id: mancheId } = etat.pilotage;
   // Le logo du partenaire de la soirée, s'il y en a un : en haut à gauche de toutes les scènes.
   const logoPartenaire = urlLogo(etat.evenement.logo_partenaire);
+  // Les photos de fond des jeux, téléchargées d'avance ; celle du jeu en cours, pendant le jeu.
+  const fonds = useFondsDeLaSoiree(fondsDuProgramme(etat));
+  const fondActuel = fondDeLaScene(etat);
+  const urlFond = fondActuel ? (fonds.get(fondActuel) ?? null) : null;
 
   // Entre deux jeux, le logo passe en plein écran, par-dessus une scène déjà à jour. Seulement
   // si cet écran a vu le jeu arriver : ni au chargement, ni dans l'aperçu de la régie.
@@ -124,12 +131,14 @@ export function Salle({
             apercu && 'tu-stage--apercu',
             projete && 'tu-stage--projete',
             logoPartenaire && 'tu-stage--partenaire',
+            fonds.size > 0 && 'tu-stage--fond',
           )}
           lang={langue}
           aria-hidden={apercu || undefined}
           data-fin-de-boucle={finDeBoucle || undefined}
           data-d-emblee={premiere || undefined}
         >
+          {fonds.size > 0 && <FondDeScene url={urlFond} />}
           {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
           <Scene
             key={`${sceneAffichee}:${mancheId ?? ''}`}
