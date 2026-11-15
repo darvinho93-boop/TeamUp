@@ -286,6 +286,25 @@ describe('pilotage du Quiz', () => {
     expect(() => appliquerQuiz(q('reponse', false), { type: 'suivante' })).toThrow(/impossible/);
   });
 
+  // 2026-11-15 : au téléphone et aux jetons, l'app compte ; une validation oubliée laissait le
+  // classement à zéro. « Fin » emporte donc le compte et donne les points du même geste.
+  it('avec le compte de l’app, la fin des questions valide du même geste', () => {
+    const fin = appliquerQuiz(q('reponse', false), { type: 'fin', survivants: { 1: 2, 2: 0 } });
+    expect(fin).toEqual({
+      etape: 'resultat',
+      chrono: 'garder',
+      points: { 1: 200, 2: 0 },
+      resultat: { survivants: { 1: 2, 2: 0 } },
+    });
+    // Le même résultat qu'une validation à la main, et aussi avant la dernière question.
+    expect(fin).toEqual(
+      appliquerQuiz(q('survivants', false), { type: 'valider', survivants: { 1: 2, 2: 0 } }),
+    );
+    expect(appliquerQuiz(q('reponse'), { type: 'fin', survivants: { 1: 1 } }).etape).toBe(
+      'resultat',
+    );
+  });
+
   it('une question annulée mène à la suivante, ou aux survivants si c’était la dernière', () => {
     expect(appliquerQuiz(q('question'), { type: 'annuler' })).toEqual({
       etape: 'pret',

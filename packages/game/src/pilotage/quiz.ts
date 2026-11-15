@@ -10,8 +10,11 @@
  * répond sur son écran ; en mode jetons, le capitaine de chaque équipe répartit les jetons.
  * `reponse` : la bonne réponse est révélée, les mauvaises zones (ou les mauvais téléphones) sortent.
  * `annuler` : la question ne compte pas (réseau tombé en mode téléphone) ; on passe à la suivante.
- * `survivants` : la régie saisit (croix) ou confirme (téléphone) les survivants par équipe ; en
- * mode jetons, elle confirme les jetons restants, qui se comptent comme des survivants.
+ * `survivants` : en mode croix, la régie saisit les survivants par équipe, puis valide.
+ * En modes téléphone et jetons, c'est l'app qui compte (les jetons restants valent des
+ * survivants) : `fin` emporte ce compte et valide du même geste, sans passer par `survivants`
+ * (2026-11-15 : une validation oubliée laissait le classement à zéro). Sans compte, `fin` mène à
+ * `survivants`, comme à la croix.
  *
  * Le score se calcule **une seule fois**, à la validation des survivants, par `scoreQuiz` :
  * le mode n'entre pas dans le calcul, c'est ce qui rend les deux modes comparables.
@@ -46,7 +49,8 @@ export type ActionQuiz =
   | { type: 'reveler' }
   | { type: 'annuler' }
   | { type: 'suivante' }
-  | { type: 'fin' }
+  /** `survivants` : le compte de l'app (téléphone, jetons), qui valide du même geste. */
+  | { type: 'fin'; survivants?: ScoresParEquipe }
   | { type: 'valider'; survivants: ScoresParEquipe };
 
 export interface EtatQuiz {
@@ -88,6 +92,15 @@ export function actionsQuiz(etat: EtatQuiz): ActionQuiz['type'][] {
   }
 }
 
+function valide(survivants: ScoresParEquipe): TransitionQuiz {
+  return {
+    etape: 'resultat',
+    chrono: 'garder',
+    points: scoreQuiz(survivants),
+    resultat: { survivants: { ...survivants } },
+  };
+}
+
 export function appliquerQuiz(etat: EtatQuiz, action: ActionQuiz): TransitionQuiz {
   if (!actionsQuiz(etat).includes(action.type)) {
     throw new Error(`Quiz : « ${action.type} » impossible à l'étape « ${etat.etape} ».`);
@@ -116,13 +129,10 @@ export function appliquerQuiz(etat: EtatQuiz, action: ActionQuiz): TransitionQui
     case 'suivante':
       return { etape: 'pret', chrono: 'garder', propositions: 0 };
     case 'fin':
-      return { etape: 'survivants', chrono: 'garder' };
+      return action.survivants
+        ? valide(action.survivants)
+        : { etape: 'survivants', chrono: 'garder' };
     case 'valider':
-      return {
-        etape: 'resultat',
-        chrono: 'garder',
-        points: scoreQuiz(action.survivants),
-        resultat: { survivants: { ...action.survivants } },
-      };
+      return valide(action.survivants);
   }
 }
