@@ -40,6 +40,7 @@
   /* Touches du pilotage : au-dessus de la cible tactile, sans pousser les dernières hors d'une
      tablette (1 024 × 768). Menu de l'en-tête : largeur de son panneau. */
   --tu-regie-touche: calc(var(--tu-tap-min) * 1.25);
+  --tu-regie-fond-vignette: 16rem; /* la vignette d'une photo de fond à la préparation */
   --tu-regie-menu-min: 14rem;
   /* Préparation : colonne du nom d'un passage (équipe, « Question 1 »), en face de son menu. */
   --tu-regie-passage-nom: 12rem;
@@ -77,6 +78,10 @@
   --tu-stage-egaliseur: 16rem;
   --tu-stage-egaliseur-barre: 2.5rem;
   --tu-dur-egaliseur: 420ms;
+  /* Photo de fond d'un jeu (2026-11-15) : la part de beige du voile posé dessus (les textes
+     restent lisibles sur toute la photo), et son fondu à l'arrivée. */
+  --tu-stage-fond-voile: 75%;
+  --tu-dur-fond: 800ms;
   --tu-stage-qr: 44rem; /* agrandi le 2026-10-27 : scanné du fond de la salle */
   --tu-stage-qr-partenaire: 41rem; /* sous le bandeau d'un logo partenaire (2026-11-11) */
   --tu-stage-cadre: 0.375rem;

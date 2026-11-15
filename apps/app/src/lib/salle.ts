@@ -86,6 +86,8 @@ export interface MancheSalle {
   survivants?: Record<string, number> | null;
   /** Quiz en mode jetons : jetons de départ et restants par numéro d'équipe, comptés par la base. */
   jetons?: Record<string, { depart: number; restants: number }> | null;
+  /** La photo de fond du jeu (bucket privé « fonds ») ; absente sans la migration 20261117090000. */
+  fond?: string | null;
   passages: PassageSalle[];
 }
 

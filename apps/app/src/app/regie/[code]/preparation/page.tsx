@@ -18,11 +18,13 @@ import {
 } from '@teamup/game';
 import { etiquettesDe, libelleContenu, proposable } from '@/lib/contenus';
 import { MAX_GROUPES } from '@/lib/groupes';
+import { estCheminFond } from '@/lib/fonds';
 import { musiquesDe } from '@/lib/musiques';
 import { extraitBlind, titresBlind } from '@/lib/pilotage';
 import { urlLogo } from '@/lib/logo';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
+import { FondDuJeu } from '@/regie/FondDuJeu';
 import { LogoPartenaire } from '@/regie/LogoPartenaire';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
 import {
@@ -72,6 +74,7 @@ export default async function Preparation({
     { data: reglageGroupes },
     { data: reglageLogo },
     { data: bibliotheque },
+    { data: lignesFonds },
   ] = await Promise.all([
     supabase
       .from('equipes')
@@ -101,7 +104,26 @@ export default async function Preparation({
     supabase.from('evenements').select('logo_partenaire').eq('id', evenement.id).maybeSingle(),
     // Les musiques sous les chronos (2026-11-15) ; sans la migration, aucune.
     supabase.from('musiques').select('id, titre, artiste, actif').order('titre'),
+    // Les photos de fond des jeux (2026-11-15) ; à part : sans la migration 20261117090000, seule
+    // cette lecture échoue (aucune photo).
+    supabase.from('manches').select('id, fond').eq('evenement_id', evenement.id),
   ]);
+  // Leur aperçu : des URL signées (bucket privé), le temps de la page.
+  const fonds = (lignesFonds ?? []).flatMap((l) =>
+    estCheminFond(l.fond) ? [{ manche: l.id, chemin: l.fond }] : [],
+  );
+  const { data: signees } = fonds.length
+    ? await supabase.storage.from('fonds').createSignedUrls(
+        fonds.map((f) => f.chemin),
+        3600,
+      )
+    : { data: [] };
+  const urlFond = new Map(
+    fonds.flatMap((f, i) => {
+      const url = signees?.[i]?.signedUrl;
+      return url ? [[f.manche, url] as const] : [];
+    }),
+  );
   const musiques = bibliotheque ?? [];
   // Sans la migration 20261022100000, la lecture échoue : proposé, comme avant.
   const groupeFacultatif = reglageGroupes?.groupe_facultatif ?? true;
@@ -324,6 +346,14 @@ export default async function Preparation({
                       {m.jeu === 'enchere2' &&
                         ` · ${t('chrono', { secondes: Number(m.options['chrono_s'] ?? CHRONO_SURENCHERE_DEFAUT_S) })} · ${t('chronoTelephones', { secondes: Number(m.options['chrono_telephones_s'] ?? CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S) })}`}
                     </span>
+                    {m.statut !== 'annulee' && (
+                      <FondDuJeu
+                        code={code}
+                        manche={m.id}
+                        ordre={m.ordre}
+                        actuel={urlFond.get(m.id) ?? null}
+                      />
+                    )}
                     {parEquipe &&
                       (m.options['reserve'] !== undefined || m.passages.length === 0) && (
                         <div className="tu-regie__section" data-testid={`reserve-${m.jeu}`}>

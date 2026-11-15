@@ -371,6 +371,27 @@
           "envoi": "Ça n'a pas marché : réessayez."
         }
       },
+      "fond": {
+        "titre": "Photo de fond",
+        "aide": "Pendant le jeu, cette photo couvre le grand écran sous un voile beige. Elle est recadrée au format de l'écran.",
+        "choisir": "Choisir une photo",
+        "changer": "Changer la photo",
+        "aucune": "Pas de photo : fond beige.",
+        "enPlace": "Photo en place : elle paraît pendant le jeu.",
+        "aEnregistrer": "Aperçu de la nouvelle photo : elle n'est pas encore enregistrée.",
+        "envoi": "Préparation de la photo…",
+        "recadre": "Photo en hauteur : seul son milieu est gardé.",
+        "petit": "Photo petite : elle risque d'être floue sur le grand écran.",
+        "apercu": "Aperçu sur le grand écran",
+        "retirer": "Retirer la photo",
+        "confirmerRetrait": "Retirer la photo de fond ?",
+        "enregistrer": "Enregistrer la photo",
+        "erreur": {
+          "illisible": "Ce fichier ne s'ouvre pas comme une photo. Essayez un JPEG ou un PNG.",
+          "lourd": "Cette photo reste trop lourde, même réduite.",
+          "envoi": "Ça n'a pas marché : réessayez."
+        }
+      },
       "blind": {
         "titres": "Titres",
         "extraitChamp": "Écoute par titre (secondes)",

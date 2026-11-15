@@ -371,6 +371,27 @@
           "envoi": "That didn't work: try again."
         }
       },
+      "fond": {
+        "titre": "Background photo",
+        "aide": "During the game, this photo fills the big screen under a beige veil. It is cropped to the screen's shape.",
+        "choisir": "Choose a photo",
+        "changer": "Change the photo",
+        "aucune": "No photo: beige background.",
+        "enPlace": "Photo set: it shows during the game.",
+        "aEnregistrer": "Preview of the new photo: not saved yet.",
+        "envoi": "Preparing the photo…",
+        "recadre": "Portrait photo: only its middle is kept.",
+        "petit": "Small photo: it may look blurry on the big screen.",
+        "apercu": "Big screen preview",
+        "retirer": "Remove the photo",
+        "confirmerRetrait": "Remove the background photo?",
+        "enregistrer": "Save the photo",
+        "erreur": {
+          "illisible": "This file doesn't open as a photo. Try a JPEG or a PNG.",
+          "lourd": "This photo is still too heavy, even reduced.",
+          "envoi": "That didn't work: try again."
+        }
+      },
       "blind": {
         "titres": "Songs",
         "extraitChamp": "Listening per song (seconds)",

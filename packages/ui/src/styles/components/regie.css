@@ -881,3 +881,36 @@ button.tu-regie-chip:disabled {
 .tu-regie-photo__image--vide {
   border: var(--tu-border-width) dashed var(--tu-border);
 }
+
+/* Préparation, photo de fond d'un jeu (2026-11-15) : la vignette 16:9 montre la photo sous le
+   voile de l'écran commun, telle que la salle la verra. */
+.tu-regie-fond {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tu-space-3) var(--tu-space-4);
+}
+
+.tu-regie-fond__vignette {
+  position: relative;
+  width: var(--tu-regie-fond-vignette);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  margin: 0;
+  border: var(--tu-border-width) dashed var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-bg);
+}
+
+.tu-regie-fond__vignette img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tu-regie-fond__vignette img + .tu-regie-fond__voile {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--tu-bg) var(--tu-stage-fond-voile), transparent);
+}
