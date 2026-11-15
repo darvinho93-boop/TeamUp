@@ -248,6 +248,40 @@ export async function ajusterReserve(code: string, mancheId: string, jeu: GameCo
   );
 }
 
+/**
+ * La musique sous les chronos d'un Quiz ou d'une Surenchère (2026-11-15) : les musiques cochées,
+ * parmi les actives de la bibliothèque, qui tourneront d'une question ou d'un thème à l'autre.
+ * Seulement avant le lancement du jeu, comme la réserve : une fois lancé, `enregistrer_etape`
+ * réécrit aussi ses options.
+ */
+export async function enregistrerMusiques(code: string, mancheId: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const voulues = [
+    ...new Set(donnees.getAll('musique').filter((x): x is string => typeof x === 'string')),
+  ];
+  const [{ data: manche }, { data: actives }] = await Promise.all([
+    supabase
+      .from('manches')
+      .select('jeu, options')
+      .eq('id', mancheId)
+      .eq('evenement_id', evenement.id)
+      .eq('statut', 'a_venir')
+      .maybeSingle(),
+    voulues.length
+      ? supabase.from('musiques').select('id').in('id', voulues).eq('actif', true)
+      : Promise.resolve({ data: [] as { id: string }[] }),
+  ]);
+  if (!manche || !['qcm2', 'enchere2'].includes(manche.jeu)) return;
+  const connues = new Set((actives ?? []).map((m) => m.id));
+  const options = (manche.options ?? {}) as Record<string, unknown>;
+  await supabase
+    .from('manches')
+    .update({ options: { ...options, musiques: voulues.filter((id) => connues.has(id)) } })
+    .eq('id', mancheId)
+    .eq('statut', 'a_venir');
+  rafraichir();
+}
+
 /** Points communs : un passage par équipe et par tour, chacun avec un contenu de la banque. */
 export async function ajouterPointsCommuns(code: string, donnees: FormData) {
   await ajouterParEquipe(code, donnees, 'list2');

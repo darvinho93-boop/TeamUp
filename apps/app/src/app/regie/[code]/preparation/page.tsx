@@ -12,6 +12,7 @@ import {
 } from '@teamup/game';
 import { etiquettesDe, libelleContenu, proposable } from '@/lib/contenus';
 import { MAX_GROUPES } from '@/lib/groupes';
+import { musiquesDe } from '@/lib/musiques';
 import { urlLogo } from '@/lib/logo';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
@@ -30,6 +31,7 @@ import {
   enregistrerCarte,
   enregistrerEquipesPrevues,
   enregistrerGroupes,
+  enregistrerMusiques,
   retirerManche,
 } from './actions';
 
@@ -60,6 +62,7 @@ export default async function Preparation({
     { data: groupes },
     { data: reglageGroupes },
     { data: reglageLogo },
+    { data: bibliotheque },
   ] = await Promise.all([
     supabase
       .from('equipes')
@@ -87,7 +90,10 @@ export default async function Preparation({
       .maybeSingle(),
     // À part : sans la migration 20261111090000, seule cette lecture échoue (aucun logo).
     supabase.from('evenements').select('logo_partenaire').eq('id', evenement.id).maybeSingle(),
+    // Les musiques sous les chronos (2026-11-15) ; sans la migration, aucune.
+    supabase.from('musiques').select('id, titre, actif').order('titre'),
   ]);
+  const musiques = bibliotheque ?? [];
   // Sans la migration 20261022100000, la lecture échoue : proposé, comme avant.
   const groupeFacultatif = reglageGroupes?.groupe_facultatif ?? true;
   const groupeDeRang = new Map((groupes ?? []).map((g) => [g.ordre, g.nom]));
@@ -344,6 +350,43 @@ export default async function Preparation({
                             </form>
                           )}
                         </div>
+                      )}
+                    {(m.jeu === 'qcm2' || m.jeu === 'enchere2') &&
+                      (modifiable || musiquesDe(m.options).length > 0) && (
+                        // Les musiques actives, plus celles déjà cochées et désactivées depuis
+                        // (elles ne joueront pas, mais se décochent ici).
+                        <form
+                          action={enregistrerMusiques.bind(null, code, m.id)}
+                          className="tu-regie__section"
+                          data-testid={`musiques-${m.ordre}`}
+                        >
+                          <p className="tu-regie__muted">
+                            {musiques.some((x) => x.actif) ? t('musique.aide') : t('musique.vide')}
+                          </p>
+                          <fieldset className="tu-regie__choices" disabled={!modifiable}>
+                            <legend className="tu-visually-hidden">{t('musique.titre')}</legend>
+                            {musiques
+                              .filter((x) => x.actif || musiquesDe(m.options).includes(x.id))
+                              .map((x) => (
+                                <label key={x.id}>
+                                  <input
+                                    type="checkbox"
+                                    name="musique"
+                                    value={x.id}
+                                    defaultChecked={musiquesDe(m.options).includes(x.id)}
+                                  />
+                                  {x.actif ? x.titre : t('musique.inactive', { titre: x.titre })}
+                                </label>
+                              ))}
+                          </fieldset>
+                          {modifiable && musiques.some((x) => x.actif) && (
+                            <div className="tu-cluster">
+                              <Button type="submit" variant="ghost">
+                                {t('musique.enregistrer')}
+                              </Button>
+                            </div>
+                          )}
+                        </form>
                       )}
                     {preparable && m.passages.length > 0 && (
                       <ul className="tu-regie-list">
