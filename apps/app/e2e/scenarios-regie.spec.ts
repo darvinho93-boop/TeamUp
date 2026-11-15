@@ -186,8 +186,9 @@ async function jouerJusquauBout(regie: Page, ecran: Page, jeu: 'list2' | 'mime2'
   const journal: string[] = [];
   for (let garde = 0; garde < 30; garde++) {
     const sansEquipe = regie.getByTestId('passage-sans-equipe');
+    // « Commencer » au lancement, « Reprendre » une fois le jeu lancé (après un passage passé).
     const commencer = regie.getByRole('button', {
-      name: `Commencer : ${jeu === 'list2' ? 'Points communs' : 'Mime'}`,
+      name: new RegExp(`^(Commencer|Reprendre).: ${jeu === 'list2' ? 'Points communs' : 'Mime'}$`),
     });
     const terminer = regie.getByRole('button', { name: 'Terminer la manche' });
     const suivant = regie.getByRole('button', { name: /Passage suivant/ });
@@ -575,7 +576,7 @@ test('4. les scores en plein jeu : le quiz reprend à son mode, puis chaque jeu 
   const scene = (nom: string, etape = '') =>
     ecran.locator(`[data-scene="${nom}"]${etape ? `[data-etape="${etape}"]` : ''}`);
   const scenes = regie.getByRole('group', { name: 'Scènes' });
-  const reprise = regie.getByRole('button', { name: 'Commencer : Quiz · mode téléphone' });
+  const reprise = regie.getByRole('button', { name: 'Reprendre : Quiz · mode téléphone' });
 
   /** Les scores à l'écran en plein jeu, puis retour au jeu par « Présenter ». */
   const scoresPuisRetour = async () => {
@@ -630,18 +631,21 @@ test('4. les scores en plein jeu : le quiz reprend à son mode, puis chaque jeu 
     .single();
   expect((manche as { options: Record<string, unknown> }).options['mode']).toBe('telephone');
 
-  // Seconde et dernière question, puis les scores avant la validation : on y revient.
+  // Seconde et dernière question. Les scores avant la fin du quiz montreraient un classement
+  // sans ses points (soirée du 2026-11-14) : la régie refuse et dit quoi toucher.
   await jouerLaQuestion();
-  await scoresPuisRetour();
-  await reprise.click();
-  await expect(scene('qcm2', 'survivants')).toBeVisible({ timeout: 10_000 });
-  await expect(regie.getByTestId('survivants-1')).toHaveText('1 survivant');
-  await confirmer(regie, 'Valider les survivants');
+  await scenes.getByRole('button', { name: 'Scores' }).click();
+  await expect(regie.locator('.tu-regie__alert')).toContainText('Fin des questions');
+  await expect(scene('qcm2', 'reponse')).toBeVisible();
+  // Au téléphone, l'app compte : la fin des questions donne les points, sans validation à part.
+  await regie.getByRole('button', { name: 'Fin des questions' }).click();
   await expect(scene('qcm2', 'resultat')).toBeVisible({ timeout: 10_000 });
+  await expect(regie.getByTestId('survivants-1')).toHaveText('1 survivant');
+  await expect(regie.locator('.tu-regie__alert')).toHaveCount(0);
 
   // Validé : le quiz ne se rejoue pas, il se termine ; ses points ne comptent qu'une fois.
   await scoresPuisRetour();
-  await expect(regie.getByRole('button', { name: /^Commencer/ })).toHaveCount(0);
+  await expect(regie.getByRole('button', { name: /^(Commencer|Reprendre)/ })).toHaveCount(0);
   await regie.getByRole('button', { name: 'Terminer la manche' }).click();
   await expect(scene('programme')).toBeVisible({ timeout: 10_000 });
   await expect.poll(() => statutManche(service, mancheQuiz)).toBe('terminee');

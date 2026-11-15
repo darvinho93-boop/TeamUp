@@ -286,14 +286,13 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
   await regie.getByRole('button', { name: 'Terminer le quiz ici', exact: true }).click();
   await regie.getByRole('button', { name: 'Confirmer : Terminer le quiz ici' }).click();
 
-  // --- Les jetons restants valent des survivants : × 100.
-  await expect(scene('qcm2', 'survivants')).toBeVisible();
+  // --- Les jetons restants valent des survivants, × 100 : la fin du quiz les donne elle-même,
+  // sans validation à part (2026-11-15 : oubliée en soirée, elle laissait le classement à zéro).
+  await expect(scene('qcm2', 'resultat')).toBeVisible();
   await expect(regie.getByTestId('survivants-1')).toHaveText('2 jetons');
   await expect(regie.getByTestId('survivants-2')).toHaveText('aucun jeton');
   await expect(ecran.getByTestId('survivants')).toContainText('2 jetons');
-  await regie.getByRole('button', { name: 'Valider les jetons restants', exact: true }).click();
-  await regie.getByRole('button', { name: 'Confirmer : Valider les jetons restants' }).click();
-  await expect(scene('qcm2', 'resultat')).toBeVisible();
+  await expect(regie.getByRole('button', { name: 'Valider les jetons restants' })).toHaveCount(0);
   const { data: scores } = await service
     .from('scores')
     .select('equipe_id, points, motif')

@@ -32,7 +32,10 @@ import {
   modeDeLaSurenchere,
   modeDuQuiz,
   modeExpliqueDe,
+  quitteLeJeu,
+  quizEnSuspens,
   scriptEnCours,
+  survivantsComptes,
   type Commande,
 } from '@/lib/pilotage';
 import {
@@ -152,6 +155,13 @@ export function Pilotage({
         photo: (equipe) => t('motifPhoto', { equipe }),
         duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
       });
+    // Un quiz qui n'a pas encore donné ses points ne se quitte pas : « Scores » montrerait un
+    // classement à zéro (vu le 2026-11-14). La régie dit quelle touche il attend.
+    const suspens = quizEnSuspens(etat);
+    if (suspens && quitteLeJeu(commande)) {
+      setAlerte(t(suspens === 'fin' ? 'erreur.finirDAbord' : 'erreur.validerDAbord'));
+      return;
+    }
     const affichee = calculer(etat);
     if (!affichee) {
       setAlerte(t('erreur.impossible'));
@@ -164,7 +174,14 @@ export function Pilotage({
       // l'appui, relus exprès : une régie en retard d'une relecture (réseau lent) classait sans
       // les derniers mots, que l'écran montrait pourtant (2026-11-09). L'écriture garde la
       // version que l'animateur a vue : une autre régie passée entre-temps la rend périmée.
-      if (commande.type === 'classer') {
+      // Même précaution pour la fin d'un quiz que l'app compte (téléphone, jetons) : elle donne
+      // les points du même geste (2026-11-15).
+      const compteParLApp =
+        commande.type === 'classer' ||
+        (commande.type === 'quiz' &&
+          commande.action === 'fin' &&
+          affichee.pilotage.etape === 'resultat');
+      if (compteParLApp) {
         const { data } = await supabase.rpc('etat_ecran', { p_code: code, p_regie: true });
         const fraiche = data ? calculer(data as unknown as EtatSalle) : null;
         if (data && !fraiche) {
@@ -301,7 +318,9 @@ export function Pilotage({
             >
               {/* Une Surenchère reprise garde le mode choisi à son lancement : on le rappelle. */}
               {[
-                t('commencer', { jeu: tJeux(manche.jeu) }),
+                t(manche.statut === 'en_cours' ? 'reprendre' : 'commencer', {
+                  jeu: tJeux(manche.jeu),
+                }),
                 ...[libelleMode(manche)].flatMap((mode) => (mode ? [t(mode)] : [])),
               ].join(' · ')}
             </Button>
@@ -342,7 +361,7 @@ export function Pilotage({
               className="tu-regie-keys__wide"
               onClick={() => agir({ type: 'commencer' })}
             >
-              {`${t('commencer', { jeu: tJeux(manche.jeu) })} · ${t(libelleMode(manche)!)}`}
+              {`${t('reprendre', { jeu: tJeux(manche.jeu) })} · ${t(libelleMode(manche)!)}`}
             </Button>
           )}
         {scene === 'intro' &&
@@ -1179,16 +1198,14 @@ function PanneauQuiz({
 
   // Survivants : comptés par la base en mode téléphone, saisis par l'animateur en mode croix.
   // En mode jetons, les jetons restants, comptés par la base, en tiennent lieu.
-  const survivants: Record<number, number> = Object.fromEntries(
-    etat.equipes.map((e) => [
-      e.numero,
-      jetons
-        ? (manche.jetons?.[String(e.numero)]?.restants ?? 0)
-        : telephone
-          ? (manche.survivants?.[String(e.numero)] ?? 0)
-          : Math.max(0, Math.trunc(Number(saisie[e.numero] ?? '0')) || 0),
-    ]),
-  );
+  const survivants: Record<number, number> =
+    survivantsComptes(etat, manche) ??
+    Object.fromEntries(
+      etat.equipes.map((e) => [
+        e.numero,
+        telephone || jetons ? 0 : Math.max(0, Math.trunc(Number(saisie[e.numero] ?? '0')) || 0),
+      ]),
+    );
 
   const mises =
     jetons && passage

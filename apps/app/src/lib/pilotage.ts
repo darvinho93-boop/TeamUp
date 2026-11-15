@@ -231,6 +231,50 @@ export function chronoQuiz(manche: MancheSalle): number {
     : CHRONO_QUESTION_S;
 }
 
+/**
+ * Les survivants que l'app compte elle-même, par numéro d'équipe : ceux de la base au téléphone,
+ * les jetons restants aux jetons (ils en tiennent lieu). `null` à la croix, que l'animateur
+ * saisit, et quand l'état ne porte pas ce compte : on ne valide jamais des zéros par défaut.
+ */
+export function survivantsComptes(etat: EtatSalle, manche: MancheSalle): ScoresParEquipe | null {
+  const mode = modeDuQuiz(manche);
+  const { jetons, survivants } = manche;
+  if (mode === 'jetons' && jetons) {
+    return Object.fromEntries(
+      etat.equipes.map((e) => [e.numero, jetons[String(e.numero)]?.restants ?? 0]),
+    );
+  }
+  if (mode === 'telephone' && survivants) {
+    return Object.fromEntries(
+      etat.equipes.map((e) => [e.numero, survivants[String(e.numero)] ?? 0]),
+    );
+  }
+  return null;
+}
+
+/**
+ * Ce qu'un quiz attend encore pour donner ses points : `fin` (la dernière réponse est révélée,
+ * il ne reste qu'à toucher « Fin des questions ») ou `valider` (les survivants à valider) ;
+ * `null` sinon. Tant qu'il en est là, la régie ne change pas de scène : le 2026-11-14, « Scores »
+ * touché avant la validation a montré un classement à zéro, et les points du quiz n'ont jamais
+ * été écrits. Entre deux questions, on montre les scores librement.
+ */
+export function quizEnSuspens(etat: EtatSalle): 'fin' | 'valider' | null {
+  const manche = mancheCourante(etat);
+  const { scene, etape, passage_id } = etat.pilotage;
+  if (scene !== 'jeu' || manche?.jeu !== 'qcm2') return null;
+  if (etape === 'survivants') return 'valider';
+  const reste = manche.passages.some((x) => x.id !== passage_id && x.statut !== 'termine');
+  return etape === 'reponse' && !reste ? 'fin' : null;
+}
+
+/** Les touches qui font quitter le jeu en cours : une scène libre, un autre jeu, le dévoilement. */
+export function quitteLeJeu(commande: Commande): boolean {
+  return (
+    commande.type === 'scene' || commande.type === 'intro' || commande.type === 'devoilerEquipes'
+  );
+}
+
 /** Les mots non rayés de chaque équipe sur ce thème, par numéro (Surenchère en mode téléphones). */
 export function comptesDesMots(passage: PassageSalle): Record<number, number> {
   const comptes: Record<number, number> = {};
@@ -288,6 +332,8 @@ export function calculerEtape(
   };
 
   try {
+    // Les points du quiz d'abord : la régie dit quoi toucher au lieu de changer de scène.
+    if (quizEnSuspens(etat) && quitteLeJeu(commande)) return null;
     switch (commande.type) {
       case 'scene':
         ecriture.pilotage.scene = commande.scene;
@@ -558,10 +604,18 @@ export function calculerEtape(
         const suivante = manche.passages
           .filter((x) => x.id !== passage.id && x.statut !== 'termine')
           .sort((a, b) => a.ordre - b.ordre)[0];
+        // Au téléphone et aux jetons, l'app compte : « Fin des questions » emporte ce compte et
+        // donne les points du même geste (2026-11-15). À la croix, l'animateur saisit puis valide.
+        const comptes =
+          commande.type === 'quiz' && commande.action === 'fin'
+            ? survivantsComptes(etat, manche)
+            : null;
         const action: ActionQuiz =
-          commande.type === 'quiz'
-            ? { type: commande.action }
-            : { type: 'valider', survivants: commande.survivants };
+          commande.type === 'survivants'
+            ? { type: 'valider', survivants: commande.survivants }
+            : comptes
+              ? { type: 'fin', survivants: comptes }
+              : { type: commande.action };
         // Les propositions affichées une à une vivent dans `indices` (inutilisé par le quiz
         // jusque-là) ; le chrono lancé, c'est un départ posé par la base (2026-10-18).
         const suite = appliquerQuiz(
@@ -592,15 +646,17 @@ export function calculerEtape(
             ecriture.pilotage.passage_id = suivante.id;
             break;
           case 'fin':
-            // Gardé dans la manche : une reprise (la régie a montré les scores avant de valider)
-            // revient aux survivants au lieu d'ouvrir la question suivante.
-            ecriture.manche = { id: manche.id, statut: 'en_cours', options: { fin: true } };
-            break;
-          case 'valider':
+          case 'valider': {
+            // `fin` se garde dans la manche : une reprise revient aux survivants au lieu d'ouvrir
+            // la question suivante. Les survivants validés s'y gardent aussi, pour l'écran.
+            const valides = suite.resultat?.survivants;
             ecriture.manche = {
               id: manche.id,
               statut: 'en_cours',
-              options: { survivants: suite.resultat?.survivants ?? {} },
+              options: {
+                ...(action.type === 'fin' ? { fin: true } : {}),
+                ...(valides ? { survivants: valides } : {}),
+              },
             };
             for (const [numero, points] of Object.entries(suite.points ?? {})) {
               const equipe = etat.equipes.find((e) => e.numero === Number(numero));
@@ -609,12 +665,13 @@ export function calculerEtape(
                 equipe_id: equipe.id,
                 points,
                 motif: (manche.options['mode'] === 'jetons' ? motifs.quizJetons : motifs.quiz)(
-                  action.survivants[Number(numero)] ?? 0,
+                  valides?.[Number(numero)] ?? 0,
                 ),
                 manche_id: manche.id,
               });
             }
             break;
+          }
         }
         return ecriture;
       }

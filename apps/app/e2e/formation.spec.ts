@@ -222,7 +222,8 @@ test("une équipe supprimée n'a plus de passage, et un passage orphelin se pass
     await regie.getByRole('button', { name: 'Commencer : Points communs' }).click();
     await expect(regie.getByTestId('passage-sans-equipe')).toBeVisible({ timeout: 10_000 });
     await regie.getByRole('button', { name: 'Passer ce passage' }).click();
-    await regie.getByRole('button', { name: 'Commencer : Points communs' }).click();
+    // Le jeu est lancé : la touche dit « Reprendre ».
+    await regie.getByRole('button', { name: 'Reprendre : Points communs' }).click();
     await expect(regie.getByTestId('regie-reponse')).toBeVisible({ timeout: 10_000 });
   } finally {
     await supprimerEvenements([soiree.id]);

@@ -266,14 +266,14 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
     (await telephones[0]!.post(`/api/partie/${code}/quiz`, { data: { choix: 0 } })).status(),
   ).toBe(409);
 
-  await expect(scene('qcm2', 'survivants')).toBeVisible();
+  // Au téléphone, l'app compte : « Fin des questions » donne les points, sans validation à part.
+  await expect(scene('qcm2', 'resultat')).toBeVisible();
   for (const [n, survivants] of Object.entries(attendus)) {
     await expect(regie.getByTestId(`survivants-${n}`)).toHaveText(
       new RegExp(`^${survivants === 0 ? 'aucun' : survivants} survivant`),
     );
   }
-  await confirmer(regie, 'Valider les survivants');
-  await expect(scene('qcm2', 'resultat')).toBeVisible();
+  await expect(regie.getByRole('button', { name: 'Valider les survivants' })).toHaveCount(0);
   await regie.getByRole('button', { name: 'Terminer la manche' }).click();
   await expect(scene('programme')).toBeVisible();
 

@@ -375,6 +375,7 @@
       },
       "presenter": "Présenter",
       "commencer": "Commencer : {jeu}",
+      "reprendre": "Reprendre : {jeu}",
       "choisirJeu": "Présente un jeu du programme pour le lancer.",
       "aLEcran": "À l’écran : {scene}",
       "pointsCommuns": "Points communs",
@@ -422,6 +423,8 @@
       "retour": "Retour aux thèmes",
       "erreur": {
         "perime": "La salle a changé entre-temps : vérifie l'écran et réessaie.",
+        "finirDAbord": "Le quiz n’est pas fini : touche d’abord « Fin des questions », sinon ses points ne comptent pas.",
+        "validerDAbord": "Le quiz n’est pas validé : touche d’abord « Valider », sinon ses points sont perdus.",
         "impossible": "Action impossible à cette étape."
       },
       "motifPointsCommuns": "Points communs — {equipe}",

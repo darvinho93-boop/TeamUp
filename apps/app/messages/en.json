@@ -375,6 +375,7 @@
       },
       "presenter": "Present",
       "commencer": "Start: {jeu}",
+      "reprendre": "Resume: {jeu}",
       "choisirJeu": "Present a game from the programme to start it.",
       "aLEcran": "On screen: {scene}",
       "pointsCommuns": "Common ground",
@@ -422,6 +423,8 @@
       "retour": "Back to the themes",
       "erreur": {
         "perime": "The room changed in the meantime: check the screen and try again.",
+        "finirDAbord": "The quiz isn’t over yet: tap “End of questions” first, or its points won’t count.",
+        "validerDAbord": "The quiz isn’t confirmed yet: tap “Confirm” first, or its points are lost.",
         "impossible": "This action isn't possible at this step."
       },
       "motifPointsCommuns": "Common ground — {equipe}",

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { calculerEtape, mancheATerminer, scriptEnCours, type Commande } from '../src/lib/pilotage';
+import {
+  calculerEtape,
+  mancheATerminer,
+  quizEnSuspens,
+  scriptEnCours,
+  survivantsComptes,
+  type Commande,
+} from '../src/lib/pilotage';
 import type { EtatSalle, MancheSalle, PassageSalle } from '../src/lib/salle';
 
 const motifs = {
@@ -437,6 +444,95 @@ describe('une touche de la régie', () => {
     const derniere = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'reponse' });
     for (const p of derniere.programme[2]!.passages) p.statut = 'termine';
     expect(etape(derniere, { type: 'quiz', action: 'fin' })?.pilotage.etape).toBe('survivants');
+  });
+
+  // 2026-11-14 : un quiz aux jetons s'est fini sans validation, « Scores » a montré zéro partout
+  // et les points n'ont jamais été écrits. Quand l'app compte, la fin donne les points.
+  describe('Quiz : la fin des questions quand l’app compte', () => {
+    const finDuQuiz = (options: Record<string, unknown>, compte: Partial<MancheSalle>) => {
+      const e = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'reponse' });
+      const quiz = e.programme[2]!;
+      quiz.statut = 'en_cours';
+      quiz.options = { questions: 2, ...options };
+      quiz.passages.forEach((p) => (p.statut = 'termine'));
+      Object.assign(quiz, compte);
+      return e;
+    };
+
+    it('aux jetons : les jetons restants donnent les points du même geste', () => {
+      const e = finDuQuiz(
+        { mode: 'jetons', jetons: 3 },
+        { jetons: { '1': { depart: 3, restants: 2 }, '2': { depart: 3, restants: 0 } } },
+      );
+      const fin = etape(e, { type: 'quiz', action: 'fin' });
+      expect(fin?.pilotage).toMatchObject({ scene: 'jeu', etape: 'resultat', passage_id: 'q2' });
+      // L'équipe 3, sans ligne dans le compte, vaut zéro : aucune ligne de score pour elle.
+      expect(fin?.manche).toEqual({
+        id: 'qz',
+        statut: 'en_cours',
+        options: { fin: true, survivants: { 1: 2, 2: 0, 3: 0 } },
+      });
+      expect(fin?.scores).toEqual([
+        { equipe_id: 'e1', points: 200, motif: 'Jetons 2', manche_id: 'qz' },
+      ]);
+      expect(survivantsComptes(e, e.programme[2]!)).toEqual({ 1: 2, 2: 0, 3: 0 });
+    });
+
+    it('au téléphone : les survivants comptés par la base, de même', () => {
+      const e = finDuQuiz({ mode: 'telephone' }, { survivants: { '1': 1, '2': 3 } });
+      const fin = etape(e, { type: 'quiz', action: 'fin' });
+      expect(fin?.pilotage.etape).toBe('resultat');
+      expect(fin?.scores).toEqual([
+        { equipe_id: 'e1', points: 100, motif: 'Quiz 1', manche_id: 'qz' },
+        { equipe_id: 'e2', points: 300, motif: 'Quiz 3', manche_id: 'qz' },
+      ]);
+    });
+
+    it('à la croix, ou sans compte dans l’état : la saisie et sa validation restent', () => {
+      const croix = etape(finDuQuiz({ mode: 'croix' }, {}), { type: 'quiz', action: 'fin' });
+      expect(croix?.pilotage.etape).toBe('survivants');
+      expect(croix?.manche).toEqual({ id: 'qz', statut: 'en_cours', options: { fin: true } });
+      expect(croix?.scores).toEqual([]);
+      // Jamais de zéros par défaut : un état sans le compte des jetons ne valide rien.
+      const sansCompte = etape(finDuQuiz({ mode: 'jetons', jetons: 3 }, {}), {
+        type: 'quiz',
+        action: 'fin',
+      });
+      expect(sansCompte?.pilotage.etape).toBe('survivants');
+      expect(sansCompte?.scores).toEqual([]);
+    });
+
+    it('tant que les survivants ne sont pas validés, on ne quitte pas le quiz', () => {
+      const e = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'survivants' });
+      e.programme[2]!.options = { questions: 2, mode: 'croix' };
+      expect(quizEnSuspens(e)).toBe('valider');
+      expect(etape(e, { type: 'scene', scene: 'scores' })).toBeNull();
+      expect(etape(e, { type: 'intro', mancheId: 'pc' })).toBeNull();
+      expect(etape(e, { type: 'devoilerEquipes' })).toBeNull();
+      // La validation, elle, passe ; ensuite les scènes se rouvrent.
+      expect(etape(e, { type: 'survivants', survivants: { 1: 1 } })?.pilotage.etape).toBe(
+        'resultat',
+      );
+      const valide = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'resultat' });
+      expect(quizEnSuspens(valide)).toBeNull();
+      expect(etape(valide, { type: 'scene', scene: 'scores' })?.pilotage.scene).toBe('scores');
+    });
+
+    it('entre deux questions les scores se montrent ; après la dernière réponse, la fin d’abord', () => {
+      const entre = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q1', etape: 'reponse' });
+      entre.programme[2]!.passages[0]!.statut = 'termine';
+      expect(quizEnSuspens(entre)).toBeNull();
+      expect(etape(entre, { type: 'scene', scene: 'scores' })?.pilotage.scene).toBe('scores');
+
+      const derniere = etat({ scene: 'jeu', manche_id: 'qz', passage_id: 'q2', etape: 'reponse' });
+      derniere.programme[2]!.passages.forEach((p) => (p.statut = 'termine'));
+      expect(quizEnSuspens(derniere)).toBe('fin');
+      expect(etape(derniere, { type: 'scene', scene: 'scores' })).toBeNull();
+      expect(etape(derniere, { type: 'quiz', action: 'fin' })?.pilotage.etape).toBe('survivants');
+      // Un autre jeu n'est pas concerné, même à une étape du même nom.
+      const mime = etat({ scene: 'jeu', manche_id: 'mi', passage_id: 'm1', etape: 'reponse' });
+      expect(quizEnSuspens(mime)).toBeNull();
+    });
   });
 
   it('Quiz : une question annulée ne compte pas et passe à la suivante', () => {
