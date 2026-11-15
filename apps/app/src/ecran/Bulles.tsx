@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { cx, Wordmark } from '@teamup/ui/react';
-import { bullesA, bullesEnCours, type MessageSalle } from '@/lib/messages';
+import { BANDEAU_MAX, BULLES_MAX, bullesA, bullesEnCours, type MessageSalle } from '@/lib/messages';
 import { Pictogramme } from '@/marque/Pictogramme';
 
 /** Le pas de redessin tant qu'une bulle est à l'écran ou en file. */
@@ -13,15 +13,21 @@ const PAS_MS = 250;
  * scènes. Le planning (`bullesA`) se lit à l'heure de la base : deux écrans montrent les mêmes
  * bulles, un rechargement retombe au même endroit. Rien au premier rendu (le serveur n'a pas
  * l'heure du navigateur : sinon, erreur d'hydratation).
+ *
+ * `bandeau` (pendant le quiz, dont les cases remplissent la scène) : une bulle à la fois, sur une
+ * ligne, dans la marge du bas ; rien des cases n'est caché.
  */
 export function Bulles({
   messages,
   decalageMs,
+  bandeau = false,
 }: {
   messages: readonly MessageSalle[];
   decalageMs: number;
+  bandeau?: boolean;
 }) {
   const [maintenant, setMaintenant] = useState<number | null>(null);
+  const nombre = bandeau ? BANDEAU_MAX : BULLES_MAX;
 
   useEffect(() => {
     // Un pas tout de suite (hors du rendu de l'effet), puis tant qu'une bulle est à l'écran ou
@@ -29,7 +35,7 @@ export function Bulles({
     const pas = () => {
       const t = Date.now() + decalageMs;
       setMaintenant(t);
-      if (!bullesEnCours(messages, t)) clearInterval(minuterie);
+      if (!bullesEnCours(messages, t, nombre)) clearInterval(minuterie);
     };
     const premier = setTimeout(pas, 0);
     const minuterie = setInterval(pas, PAS_MS);
@@ -37,14 +43,18 @@ export function Bulles({
       clearTimeout(premier);
       clearInterval(minuterie);
     };
-  }, [messages, decalageMs]);
+  }, [messages, decalageMs, nombre]);
 
   if (maintenant === null) return null;
-  const bulles = bullesA(messages, maintenant);
+  const bulles = bullesA(messages, maintenant, nombre);
   if (bulles.length === 0) return null;
 
   return (
-    <ol className="tu-bulles" aria-live="polite" data-testid="bulles">
+    <ol
+      className={cx('tu-bulles', bandeau && 'tu-bulles--bandeau')}
+      aria-live="polite"
+      data-testid="bulles"
+    >
       {bulles.map(({ message, sortie }) => (
         <li
           key={message.id}

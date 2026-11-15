@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ATTENTE_BULLE_MAX_MS,
+  BANDEAU_MAX,
   DUREE_BULLE_MS,
   SORTIE_BULLE_MS,
   attenteDuRefus,
@@ -51,6 +52,20 @@ describe('planDesBulles', () => {
       ['c', 200],
       ['d', DUREE_BULLE_MS],
     ]);
+  });
+
+  it('en bandeau (pendant le quiz), une bulle à la fois, les suivantes à la file', () => {
+    const plan = planDesBulles(
+      [message('a', 0), message('b', 100), message('c', 200)],
+      BANDEAU_MAX,
+    );
+    expect(plan.map((b) => [b.message.id, b.debutMs])).toEqual([
+      ['a', 0],
+      ['b', DUREE_BULLE_MS],
+      ['c', 2 * DUREE_BULLE_MS],
+    ]);
+    expect(bullesA([message('a', 0), message('b', 100)], 1000, BANDEAU_MAX)).toHaveLength(1);
+    expect(bullesEnCours([message('a', 0), message('b', 100)], 9000, BANDEAU_MAX)).toBe(true);
   });
 
   it('un message qui attendrait plus de 60 s est abandonné, sans prendre de place', () => {

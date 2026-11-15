@@ -13,6 +13,11 @@ export const MESSAGE_MAX = 100;
 export const CADENCE_MESSAGE_S = 20;
 /** Bulles à l'écran en même temps, au plus. */
 export const BULLES_MAX = 3;
+/**
+ * Pendant le quiz, les bulles cachaient les cases (vu à 8 équipes le 2026-11-15) : une seule à la
+ * fois, en bandeau d'une ligne dans la marge du bas.
+ */
+export const BANDEAU_MAX = 1;
 /** Durée d'une bulle à l'écran. */
 export const DUREE_BULLE_MS = 8000;
 /** Fin de la bulle : elle s'efface. */
@@ -61,8 +66,11 @@ export function caracteresRestants(texte: string): number {
  * `BULLES_MAX` places qui se libère, pour `DUREE_BULLE_MS`. Un message qui attendrait plus de
  * `ATTENTE_BULLE_MAX_MS` est abandonné (il ne prend aucune place). Retirés exclus.
  */
-export function planDesBulles(messages: readonly MessageSalle[]): Omit<Bulle, 'sortie'>[] {
-  const places: number[] = Array.from({ length: BULLES_MAX }, () => -Infinity);
+export function planDesBulles(
+  messages: readonly MessageSalle[],
+  nombre: number = BULLES_MAX,
+): Omit<Bulle, 'sortie'>[] {
+  const places: number[] = Array.from({ length: nombre }, () => -Infinity);
   const plan: Omit<Bulle, 'sortie'>[] = [];
   const tries = messages
     .filter((m) => !m.retire)
@@ -79,15 +87,23 @@ export function planDesBulles(messages: readonly MessageSalle[]): Omit<Bulle, 's
 }
 
 /** Les bulles à l'écran à cet instant (heure de la base), de la plus ancienne à la plus récente. */
-export function bullesA(messages: readonly MessageSalle[], maintenantMs: number): Bulle[] {
-  return planDesBulles(messages)
+export function bullesA(
+  messages: readonly MessageSalle[],
+  maintenantMs: number,
+  nombre: number = BULLES_MAX,
+): Bulle[] {
+  return planDesBulles(messages, nombre)
     .filter((b) => b.debutMs <= maintenantMs && maintenantMs < b.finMs)
     .map((b) => ({ ...b, sortie: maintenantMs >= b.finMs - SORTIE_BULLE_MS }));
 }
 
 /** Une bulle est à l'écran ou en file : l'écran doit continuer de se redessiner. */
-export function bullesEnCours(messages: readonly MessageSalle[], maintenantMs: number): boolean {
-  return planDesBulles(messages).some((b) => maintenantMs < b.finMs);
+export function bullesEnCours(
+  messages: readonly MessageSalle[],
+  maintenantMs: number,
+  nombre: number = BULLES_MAX,
+): boolean {
+  return planDesBulles(messages, nombre).some((b) => maintenantMs < b.finMs);
 }
 
 /** Le temps à attendre, lu dans le refus de la base (« trop tôt:12 »), en secondes. */

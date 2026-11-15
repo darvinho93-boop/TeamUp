@@ -182,7 +182,17 @@ export function Salle({
           {enFinale && <Finale key={passage} depuisMs={depuisMs} />}
           {/* Les messages des joueurs et de la régie, par-dessus toutes les scènes (2026-11-15) ;
               dans l'aperçu aussi : l'animateur voit ce que voit la salle. */}
-          {etat.messages && <Bulles messages={etat.messages} decalageMs={decalageMs} />}
+          {etat.messages && (
+            <Bulles
+              messages={etat.messages}
+              decalageMs={decalageMs}
+              // Pendant le quiz, ses cases remplissent la scène : un bandeau en bas, une bulle à
+              // la fois (2026-11-15, vu à 8 équipes).
+              bandeau={
+                scene === 'jeu' && etat.programme.find((m) => m.id === mancheId)?.jeu === 'qcm2'
+              }
+            />
+          )}
           {sons.aActiver && (
             <button
               type="button"

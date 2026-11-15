@@ -62,6 +62,37 @@
   line-clamp: 3;
 }
 
+/* Pendant le quiz (2026-11-15) : ses cases remplissent la scène, les bulles en cachaient la
+   moitié droite. Une bulle à la fois, sur une ligne, dans la marge du bas, au milieu ; un message
+   trop long finit par des points de suspension. */
+.tu-bulles--bandeau {
+  right: var(--tu-space-16);
+  bottom: var(--tu-space-1);
+  left: var(--tu-space-16);
+  align-items: center;
+  width: auto;
+}
+
+.tu-bulles--bandeau .tu-bulle {
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--tu-space-3);
+  padding: var(--tu-space-1) var(--tu-space-6);
+}
+
+.tu-bulles--bandeau .tu-bulle__auteur {
+  flex: none;
+}
+
+.tu-bulles--bandeau .tu-bulle__texte {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--tu-size-xl);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .tu-bulle {
     animation: tu-bulle-entree var(--tu-dur-bulle-entree) var(--tu-ease) both;

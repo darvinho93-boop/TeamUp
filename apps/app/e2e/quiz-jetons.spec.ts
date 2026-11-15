@@ -468,6 +468,42 @@ test('à 8 équipes, les mises tiennent dans les cases de l’écran', async ({ 
   await dansLesCases();
   await ecran.screenshot({ path: test.info().outputPath('ecran-jetons-question.png') });
 
+  // --- Trois messages de la salle, les plus longs possible, pendant la question : pendant le
+  // quiz, un bandeau d'une ligne en bas, une bulle à la fois, qui ne couvre aucune case (avant le
+  // 2026-11-15, les bulles cachaient la case D et les pastilles de la case B).
+  const MESSAGE =
+    'Allez les Super Champions, on y croit jusqu’au bout, c’est notre soirée et on va tout gagner !!!';
+  for (let i = 0; i < 3; i++) {
+    const { erreur } = await appeler(service, 'envoyer_message', {
+      p_jeton_hash: hacher(jeton(i)),
+      p_texte: MESSAGE,
+    });
+    expect(erreur).toBeNull();
+  }
+  await ecran.reload();
+  const bulle = ecran.getByTestId('bulle');
+  await expect(bulle).toHaveCount(1, { timeout: 15_000 });
+  await expect(ecran.getByTestId('bulles')).toHaveClass(/tu-bulles--bandeau/);
+  await ecran.waitForTimeout(1000);
+  const boite = (await bulle.boundingBox())!;
+  // Une ligne, dans la scène.
+  expect(boite.height).toBeLessThan(60);
+  expect(boite.y + boite.height).toBeLessThanOrEqual(1080);
+  const recouvrements = await ecran.evaluate(() => {
+    const b = document.querySelector('[data-testid="bulle"]')!.getBoundingClientRect();
+    return [...document.querySelectorAll('.tu-stage-quiz__zone')].flatMap((z, i) => {
+      const c = z.getBoundingClientRect();
+      const l = Math.min(b.right, c.right) - Math.max(b.left, c.left);
+      const h = Math.min(b.bottom, c.bottom) - Math.max(b.top, c.top);
+      return l > 0 && h > 0 ? ['ABCD'[i]] : [];
+    });
+  });
+  expect(recouvrements, 'cases couvertes par un message').toEqual([]);
+  await expect(bulle).toContainText('Invité 1');
+  // La suivante prend la place, 8 s plus tard.
+  await expect(bulle).toContainText('Invité 2', { timeout: 12_000 });
+  await ecran.screenshot({ path: test.info().outputPath('ecran-jetons-bulles.png') });
+
   // --- La réponse révélée : la bonne case ressort, ses pastilles restent lisibles.
   await etape(
     {
