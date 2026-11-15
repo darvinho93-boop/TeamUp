@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
 import {
+  actionsBlind,
   actionsMime,
   actionsPointsCommuns,
   actionsQuiz,
@@ -13,7 +14,10 @@ import {
   CHRONO_POINTS_COMMUNS_S,
   CHRONO_QUESTION_S,
   passageSuivant,
+  peutBuzzer,
+  resultatBlindDe,
   type ActionPointsCommuns,
+  type EtapeBlind,
   type EtapeMime,
   type EtapePhoto,
   type EtapePointsCommuns,
@@ -27,6 +31,8 @@ import {
 import {
   calculerEtape,
   chronoSurenchere,
+  extraitBlind,
+  titresBlind,
   jeuParEquipe,
   mancheATerminer,
   modeDeLaSurenchere,
@@ -48,6 +54,7 @@ import {
 import { membresTries } from '@/lib/membres';
 import { classementDuTheme, equipesEnJeu } from '@/lib/mots';
 import { reglageDe } from '@/lib/sons';
+import { useMusiquesDuJeu } from '@/ecran/useMusiquesDuJeu';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import type { Json } from '@/types/base';
 import {
@@ -71,13 +78,14 @@ import { BoutonConfirme } from './BoutonConfirme';
 import { PanneauDuel } from './PanneauDuel';
 import { PanneauMessages } from './PanneauMessages';
 
-/** Jeux que la régie sait piloter (lots 6 à 8, duels en bêta au lot 10). */
+/** Jeux que la régie sait piloter (lots 6 à 8, duels en bêta au lot 10, blind test le 2026-11-15). */
 const PILOTABLES: readonly GameCode[] = [
   'list2',
   'enchere2',
   'qcm2',
   'mime2',
   'photo2',
+  'blind',
   'grab',
   'cup',
 ];
@@ -154,12 +162,21 @@ export function Pilotage({
         mime: (equipe) => t('motifMime', { equipe }),
         photo: (equipe) => t('motifPhoto', { equipe }),
         duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
+        blind: (n) => t('motifBlind', { n }),
       });
     // Un quiz qui n'a pas encore donné ses points ne se quitte pas : « Scores » montrerait un
     // classement à zéro (vu le 2026-11-14). La régie dit quelle touche il attend.
     const suspens = quizEnSuspens(etat);
     if (suspens && quitteLeJeu(commande)) {
-      setAlerte(t(suspens === 'fin' ? 'erreur.finirDAbord' : 'erreur.validerDAbord'));
+      setAlerte(
+        t(
+          suspens === 'fin'
+            ? 'erreur.finirDAbord'
+            : suspens === 'juger'
+              ? 'erreur.jugerDAbord'
+              : 'erreur.validerDAbord',
+        ),
+      );
       return;
     }
     const affichee = calculer(etat);
@@ -337,6 +354,12 @@ export function Pilotage({
               variant="accent"
               size="lg"
               className="tu-regie-keys__wide"
+              // Blind test : le capitaine de chaque équipe tient le buzzer.
+              disabled={
+                manche.jeu === 'blind' &&
+                manche.statut === 'a_venir' &&
+                capitainesManquants(etat).length > 0
+              }
               onClick={() => agir({ type: 'commencer' })}
             >
               {/* Une Surenchère reprise garde le mode choisi à son lancement : on le rappelle. */}
@@ -422,6 +445,9 @@ export function Pilotage({
         {scene === 'intro' && manche?.jeu === 'qcm2' && manche.statut === 'a_venir' && (
           <CapitainesAuTelephone etat={etat} code={code} mode="jetons" />
         )}
+        {scene === 'intro' && manche?.jeu === 'blind' && manche.statut === 'a_venir' && (
+          <CapitainesAuTelephone etat={etat} code={code} mode="blind" />
+        )}
         {scene === 'jeu' && manche?.jeu === 'list2' && (
           <PanneauPointsCommuns etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
@@ -445,6 +471,9 @@ export function Pilotage({
         )}
         {scene === 'jeu' && manche?.jeu === 'mime2' && (
           <PanneauMime etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+        )}
+        {scene === 'jeu' && manche?.jeu === 'blind' && (
+          <PanneauBlind etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
         {scene === 'jeu' && manche?.jeu === 'photo2' && (
           <PanneauPhoto etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
@@ -1044,18 +1073,20 @@ function CapitainesAuTelephone({
 }: {
   etat: EtatSalle;
   code: string;
-  mode: 'jetons' | 'telephones';
+  mode: 'jetons' | 'telephones' | 'blind';
 }) {
   const tq = useTranslations('regie.pilotage.quiz');
   const ts = useTranslations('regie.pilotage.surenchereMots');
+  const tb = useTranslations('regie.pilotage.blind');
   const manquants = capitainesManquants(etat);
-  const titre = mode === 'jetons' ? tq('capitainesTitre') : ts('capitainesTitre');
+  const titre =
+    mode === 'jetons'
+      ? tq('capitainesTitre')
+      : mode === 'blind'
+        ? tb('capitainesTitre')
+        : ts('capitainesTitre');
   return (
-    <section
-      className="tu-regie-secret"
-      aria-label={titre}
-      data-testid={mode === 'jetons' ? 'capitaines-jetons' : 'capitaines-telephones'}
-    >
+    <section className="tu-regie-secret" aria-label={titre} data-testid={`capitaines-${mode}`}>
       <p className="tu-regie-item__title">{titre}</p>
       {mode === 'jetons' && (
         <p className="tu-regie__muted">{tq('jetonsDeDepart', { n: jetonsDeDepartDe(etat) })}</p>
@@ -1094,6 +1125,177 @@ function CapitainesAuTelephone({
       <Link href={`/regie/${code}/salle`} className="tu-regie__lien">
         {tq('nommerALaSalle')}
       </Link>
+    </section>
+  );
+}
+
+/**
+ * Blind test (2026-11-15) : la réponse pour l'animateur seul, les touches du déroulé, et un
+ * buzz de secours pour une équipe dont le téléphone a lâché. Le capitaine, lui, buzze en base.
+ */
+function PanneauBlind({ etat, manche, decalageMs, agir }: PanneauProps) {
+  const t = useTranslations('regie.pilotage');
+  const tb = useTranslations('regie.pilotage.blind');
+  const passage = passageCourant(etat);
+  const titres = titresBlind(manche);
+  const musiques = useMusiquesDuJeu(titres.flatMap((x) => (x.musique ? [x.musique] : [])));
+  const maintenant = useMaintenant(etat.pilotage.etape === 'ecoute');
+  if (!passage) return null;
+
+  const etape = etat.pilotage.etape as EtapeBlind;
+  const resultat = resultatBlindDe(passage.resultat);
+  const extraitS = extraitBlind(manche);
+  const equipes = etat.equipes.filter((e) => e.joueurs > 0);
+  const etatBlind = {
+    etape,
+    resultat,
+    extraitS,
+    equipes: equipes.map((e) => e.numero),
+    ecouleMs: ecouleMs(etat, decalageMs, maintenant),
+  };
+  const permises = actionsBlind(etatBlind);
+  const titre = titres[passage.ordre - 1];
+  const musique = titre?.musique ? musiques.get(titre.musique) : undefined;
+  const nom = (numero: number | null) => etat.equipes.find((e) => e.numero === numero)?.nom ?? '—';
+  const suivant = passageSuivant(manche);
+  const bloquees = resultat.bloquees.map((n) => nom(n));
+
+  return (
+    <section className="tu-regie__section" aria-label={tb('titre')} data-testid="panneau-blind">
+      <p className="tu-regie__muted">
+        {tb('numero', { n: passage.ordre, total: manche.passages.length })}
+      </p>
+      <div className="tu-regie-secret">
+        <p className="tu-regie__muted">{tb('reponse')}</p>
+        {musique ? (
+          <p className="tu-regie-item__title" data-testid="blind-reponse">
+            {musique.artiste ? `${musique.titre} — ${musique.artiste}` : musique.titre}
+          </p>
+        ) : (
+          <p className="tu-regie__alert" role="status">
+            {tb('sansMusique')}
+          </p>
+        )}
+      </div>
+
+      {(etape === 'ecoute' || etape === 'buzz') && (
+        <Chrono
+          departMs={etat.pilotage.chrono_depart_ms}
+          dureeS={etat.pilotage.chrono_duree_s ?? extraitS}
+          decalageMs={decalageMs}
+          className="tu-regie-timer"
+        />
+      )}
+      {etape === 'buzz' && (
+        <p
+          className={cx('tu-team tu-team--badge tu-team--lg', teamModifier(resultat.buzz ?? 1))}
+          data-testid="blind-a-la-main"
+        >
+          {tb('aLaMain', { equipe: nom(resultat.buzz) })}
+        </p>
+      )}
+      {bloquees.length > 0 && etape !== 'revele' && (
+        <p className="tu-regie__muted" data-testid="blind-bloquees">
+          {tb('bloquees', { equipes: bloquees.join(', ') })}
+        </p>
+      )}
+      {etape === 'revele' && (
+        <p className="tu-regie-item__title" data-testid="blind-trouve">
+          {resultat.trouvePar === null
+            ? tb('personne')
+            : tb('trouvePar', { equipe: nom(resultat.trouvePar) })}
+        </p>
+      )}
+      {(etape === 'ecoute' || etape === 'pause') &&
+        !permises.includes('buzz') &&
+        !permises.includes('relancer') && <p className="tu-regie__muted">{tb('extraitFini')}</p>}
+
+      <div className="tu-regie-keys">
+        {etape === 'pret' && (
+          <Button
+            variant="accent"
+            size="lg"
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'blind', action: { type: 'lancer' } })}
+          >
+            {tb('lancer')}
+          </Button>
+        )}
+        {etape === 'buzz' && (
+          <>
+            <Button
+              variant="accent"
+              size="lg"
+              onClick={() => agir({ type: 'blind', action: { type: 'bonne' } })}
+            >
+              {tb('bonne')}
+            </Button>
+            <Button size="lg" onClick={() => agir({ type: 'blind', action: { type: 'mauvaise' } })}>
+              {tb('mauvaise')}
+            </Button>
+          </>
+        )}
+        {etape === 'pause' && permises.includes('relancer') && (
+          <Button
+            variant="accent"
+            size="lg"
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'blind', action: { type: 'relancer' } })}
+          >
+            {tb('relancer')}
+          </Button>
+        )}
+        {(etape === 'ecoute' || etape === 'pause') && (
+          <Button
+            variant="ghost"
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'blind', action: { type: 'reveler' } })}
+          >
+            {tb('reveler')}
+          </Button>
+        )}
+        {etape === 'revele' &&
+          (suivant ? (
+            <Button
+              variant="accent"
+              size="lg"
+              className="tu-regie-keys__wide"
+              onClick={() => agir({ type: 'suivant' })}
+            >
+              {tb('suivant')}
+            </Button>
+          ) : (
+            <Button
+              variant="accent"
+              size="lg"
+              className="tu-regie-keys__wide"
+              onClick={() => agir({ type: 'terminer' })}
+            >
+              {t('terminer')}
+            </Button>
+          ))}
+      </div>
+
+      {etape === 'ecoute' && permises.includes('buzz') && (
+        <div className="tu-regie__section">
+          <p className="tu-regie__muted">{tb('secours')}</p>
+          <div className="tu-cluster">
+            {equipes
+              .filter((e) => peutBuzzer(etatBlind, e.numero))
+              .map((e) => (
+                <Button
+                  key={e.id}
+                  variant="ghost"
+                  onClick={() =>
+                    agir({ type: 'blind', action: { type: 'buzz', equipe: e.numero } })
+                  }
+                >
+                  {tb('buzzerPour', { equipe: e.nom })}
+                </Button>
+              ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -19,6 +19,7 @@ const motifs = {
   mime: (equipe: string) => `Mime ${equipe}`,
   photo: (equipe: string) => `Photo ${equipe}`,
   duel: (prenom: string, equipe: string) => `Duel ${prenom} ${equipe}`,
+  blind: (n: number) => `Blind ${n}`,
 };
 
 function passage(id: string, ordre: number, extra: Partial<PassageSalle> = {}): PassageSalle {
@@ -973,5 +974,119 @@ describe('le dévoilement des équipes (2026-11-04)', () => {
     const sansEquipes = etat({ scene: 'accueil' });
     sansEquipes.equipes = [];
     expect(etape(sansEquipes, { type: 'devoilerEquipes' })).toBeNull();
+  });
+});
+
+// Blind test (2026-11-15) : la régie lance, juge, relance ; le buzz de secours passe par elle.
+describe('le blind test, touche par touche', () => {
+  const blind = (passages = [passage('b1', 1), passage('b2', 2)]): MancheSalle => ({
+    id: 'bt',
+    jeu: 'blind',
+    ordre: 1,
+    statut: 'en_cours',
+    options: {
+      extrait_s: 30,
+      titres: [
+        { musique: 'm-1', debut_s: 0 },
+        { musique: 'm-2', debut_s: 12 },
+      ],
+    },
+    passages,
+  });
+  const enJeu = (etape: string, resultat: Record<string, unknown> = {}, passageId = 'b1') => {
+    const e = etat(
+      {
+        scene: 'jeu',
+        manche_id: 'bt',
+        passage_id: passageId,
+        etape,
+        chrono_depart_ms: 1000,
+        chrono_duree_s: 30,
+      },
+      [blind([passage('b1', 1, { statut: 'en_cours', resultat }), passage('b2', 2)])],
+    );
+    e.equipes[0]!.capitaine = 'Alice';
+    e.equipes[1]!.capitaine = 'Bruno';
+    return e;
+  };
+
+  it('se lance seulement quand chaque équipe qui a des joueurs a son capitaine', () => {
+    const intro = etat({ scene: 'intro', manche_id: 'bt' }, [{ ...blind(), statut: 'a_venir' }]);
+    expect(etape(intro, { type: 'commencer' })).toBeNull();
+    intro.equipes[0]!.capitaine = 'Alice';
+    intro.equipes[1]!.capitaine = 'Bruno';
+    expect(etape(intro, { type: 'commencer' })).toMatchObject({
+      pilotage: { scene: 'jeu', passage_id: 'b1', etape: 'pret' },
+      passage: { id: 'b1', statut: 'en_cours' },
+      manche: { id: 'bt', statut: 'en_cours' },
+    });
+  });
+
+  it('lance la musique pour la durée de l’extrait', () => {
+    expect(etape(enJeu('pret'), { type: 'blind', action: { type: 'lancer' } })).toMatchObject({
+      pilotage: { etape: 'ecoute', chrono: 'demarrer', chrono_duree_s: 30 },
+      passage: { id: 'b1', statut: 'en_cours', resultat: { ecoute_ms: 0, bloquees: [] } },
+    });
+  });
+
+  it('buzz de secours, puis bonne réponse : +100 à l’équipe, le titre est révélé', () => {
+    const buzz = etape(
+      enJeu('ecoute'),
+      { type: 'blind', action: { type: 'buzz', equipe: 2 } },
+      5000,
+    );
+    expect(buzz).toMatchObject({
+      pilotage: { etape: 'buzz', chrono: 'demarrer', chrono_duree_s: 7 },
+      passage: { resultat: { ecoute_ms: 5000, buzz: 2 } },
+    });
+    // L'équipe 3 n'a personne : elle ne buzze pas.
+    expect(
+      etape(enJeu('ecoute'), { type: 'blind', action: { type: 'buzz', equipe: 3 } }),
+    ).toBeNull();
+
+    const bonne = etape(enJeu('buzz', { ecoute_ms: 5000, buzz: 2 }), {
+      type: 'blind',
+      action: { type: 'bonne' },
+    });
+    expect(bonne).toMatchObject({
+      pilotage: { etape: 'revele', chrono: 'arreter' },
+      passage: { id: 'b1', statut: 'termine', points: 100, resultat: { trouve_par: 2 } },
+    });
+    expect(bonne?.scores).toEqual([
+      { equipe_id: 'e2', points: 100, motif: 'Blind 1', manche_id: 'bt' },
+    ]);
+  });
+
+  it('mauvaise réponse : l’équipe est bloquée, la musique reprend quand la régie la relance', () => {
+    const pause = etape(enJeu('buzz', { ecoute_ms: 5000, buzz: 2 }), {
+      type: 'blind',
+      action: { type: 'mauvaise' },
+    });
+    expect(pause).toMatchObject({
+      pilotage: { etape: 'pause', chrono: 'arreter' },
+      passage: { statut: 'en_cours', resultat: { bloquees: [2], buzz: null } },
+    });
+    expect(pause?.scores).toEqual([]);
+    const relance = etape(enJeu('pause', { ecoute_ms: 5000, bloquees: [2] }), {
+      type: 'blind',
+      action: { type: 'relancer' },
+    });
+    expect(relance?.pilotage).toMatchObject({ etape: 'ecoute', chrono_duree_s: 25 });
+  });
+
+  it('une réponse à juger retient la régie ; révélé, on passe au titre suivant', () => {
+    const buzz = enJeu('buzz', { buzz: 1 });
+    expect(quizEnSuspens(buzz)).toBe('juger');
+    expect(etape(buzz, { type: 'scene', scene: 'scores' })).toBeNull();
+    expect(etape(buzz, { type: 'blind', action: { type: 'reveler' } })).toBeNull();
+
+    const revele = enJeu('revele', { trouve_par: 1 });
+    // Révélé, le titre est terminé (`statut: 'termine'` écrit avec la révélation).
+    revele.programme[0]!.passages[0]!.statut = 'termine';
+    expect(quizEnSuspens(revele)).toBeNull();
+    expect(etape(revele, { type: 'suivant' })).toMatchObject({
+      pilotage: { passage_id: 'b2', etape: 'pret', chrono: 'arreter' },
+      passage: { id: 'b2', statut: 'en_cours' },
+    });
   });
 });

@@ -61,6 +61,7 @@ import { Celebration, useArrivee, type Force } from './Celebration';
 import { Chrono, useMaintenant, useMonte } from './Chrono';
 import { Recompense } from './Recompense';
 import { SonsContexte } from './sons/useSons';
+import { BlindTest } from './BlindTest';
 import { Explication } from './Explication';
 import { SurenchereTelephones } from './SurenchereTelephones';
 import { useAjusterQuiz } from './useAjusterQuiz';
@@ -601,6 +602,7 @@ function Jeu(props: Props) {
   if (manche?.jeu === 'mime2') return <Mime {...props} />;
   if (manche?.jeu === 'photo2') return <Photo {...props} manche={manche} />;
   if (manche?.jeu === 'grab' || manche?.jeu === 'cup') return <Duel {...props} jeu={manche.jeu} />;
+  if (manche?.jeu === 'blind') return <BlindTest {...props} manche={manche} />;
   return null;
 }
 

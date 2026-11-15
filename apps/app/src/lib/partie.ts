@@ -120,6 +120,25 @@ export interface SurenchereJoueur {
   points: number | null;
 }
 
+/**
+ * Le blind test vu par un téléphone (2026-11-15) : l'étape, le titre en cours, qui a la main et
+ * si l'équipe du joueur peut buzzer. Jamais la musique ni la réponse.
+ */
+export interface BlindJoueur {
+  /** `pret`, `ecoute`, `buzz`, `pause` ou `revele` (`packages/game`, pilotage du blind test). */
+  etape: string | null;
+  titre: number | null;
+  titres: number;
+  /** Le numéro de l'équipe du joueur, `null` sans équipe. */
+  equipe: number | null;
+  /** L'équipe qui a la main, pendant `buzz`. */
+  buzz: number | null;
+  trouve_par: number | null;
+  bloquee: boolean;
+  /** Le capitaine, pendant l'écoute, d'une équipe qui a encore la main. */
+  peut_buzzer: boolean;
+}
+
 export interface MotJoueur {
   id: string;
   mot: string;
@@ -173,6 +192,8 @@ export interface EtatJoueur {
   quiz: QuizJoueur | null;
   /** Surenchère en mode téléphones ; absent sans la migration du 2026-11-08. */
   surenchere?: SurenchereJoueur | null;
+  /** Blind test ; absent sans la migration du 2026-11-16. */
+  blind?: BlindJoueur | null;
   /** `null` tant que la soirée n'a pas de manche photo. */
   photos: PhotosJoueur | null;
 }
@@ -185,6 +206,9 @@ export type RefusQuiz = 'session' | 'fermee' | 'spectateur' | 'elimine' | 'deja'
 
 /** Refus d'une mise en mode jetons, dans l'ordre où la base les vérifie. */
 export type RefusMise = 'session' | 'fermee' | 'capitaine' | 'deja' | 'temps' | 'invalide';
+
+/** Refus d'un buzz du blind test : une autre équipe a buzzé avant, ou l'extrait est fini. */
+export type RefusBuzz = 'session' | 'capitaine' | 'tard' | 'bloquee';
 
 /** Refus d'un mot de la Surenchère, dans l'ordre où la base les vérifie. */
 export type RefusMot = 'session' | 'fermee' | 'capitaine' | 'mot' | 'trop' | 'doublon';

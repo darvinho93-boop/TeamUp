@@ -14,6 +14,7 @@ const SANS_MOTIF: Motifs = {
   mime: () => '',
   photo: () => '',
   duel: () => '',
+  blind: () => '',
 };
 
 /**

@@ -5,6 +5,12 @@ import {
   CHRONO_SURENCHERE_DEFAUT_S,
   CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
   DUELS_DEFAUT,
+  EXTRAIT_BLIND_DEFAUT_S,
+  EXTRAIT_BLIND_MAX_S,
+  EXTRAIT_BLIND_MIN_S,
+  TITRES_BLIND_DEFAUT,
+  TITRES_BLIND_MAX,
+  TITRES_BLIND_MIN,
   dureeProgramme,
   formatDuree,
   QUESTIONS_QUIZ,
@@ -13,12 +19,14 @@ import {
 import { etiquettesDe, libelleContenu, proposable } from '@/lib/contenus';
 import { MAX_GROUPES } from '@/lib/groupes';
 import { musiquesDe } from '@/lib/musiques';
+import { extraitBlind, titresBlind } from '@/lib/pilotage';
 import { urlLogo } from '@/lib/logo';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { LogoPartenaire } from '@/regie/LogoPartenaire';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
 import {
+  ajouterBlind,
   ajouterDuels,
   ajusterReserve,
   ajouterMime,
@@ -27,6 +35,7 @@ import {
   ajouterQuiz,
   ajouterSurenchere,
   choisirContenuReserve,
+  choisirTitreBlind,
   deplacerManche,
   enregistrerCarte,
   enregistrerEquipesPrevues,
@@ -91,7 +100,7 @@ export default async function Preparation({
     // À part : sans la migration 20261111090000, seule cette lecture échoue (aucun logo).
     supabase.from('evenements').select('logo_partenaire').eq('id', evenement.id).maybeSingle(),
     // Les musiques sous les chronos (2026-11-15) ; sans la migration, aucune.
-    supabase.from('musiques').select('id, titre, actif').order('titre'),
+    supabase.from('musiques').select('id, titre, artiste, actif').order('titre'),
   ]);
   const musiques = bibliotheque ?? [];
   // Sans la migration 20261022100000, la lecture échoue : proposé, comme avant.
@@ -124,9 +133,13 @@ export default async function Preparation({
   }));
   // Audit du 2026-11-02 : une question ou un thème sans contenu ne se voyait qu'en soirée, sur
   // l'écran (la banque en ligne n'avait aucun thème photo). La préparation le dit.
-  const sansContenu = programme
-    .filter((m) => m.statut === 'a_venir' && ['enchere2', 'qcm2', 'photo2'].includes(m.jeu))
-    .reduce((n, m) => n + m.passages.filter((p) => p.contenu_id === null).length, 0);
+  const sansContenu =
+    programme
+      .filter((m) => m.statut === 'a_venir' && ['enchere2', 'qcm2', 'photo2'].includes(m.jeu))
+      .reduce((n, m) => n + m.passages.filter((p) => p.contenu_id === null).length, 0) +
+    programme
+      .filter((m) => m.statut === 'a_venir' && m.jeu === 'blind')
+      .reduce((n, m) => n + titresBlind(m).filter((x) => x.musique === null).length, 0);
   const duree = dureeProgramme(
     programme.map((m) =>
       elementDuProgramme({
@@ -306,6 +319,8 @@ export default async function Preparation({
                     </span>
                     <span className="tu-regie-item__meta">
                       {t(`statut.${m.statut}`)}
+                      {m.jeu === 'blind' &&
+                        ` · ${t('blind.extrait', { secondes: extraitBlind(m) })}`}
                       {m.jeu === 'enchere2' &&
                         ` · ${t('chrono', { secondes: Number(m.options['chrono_s'] ?? CHRONO_SURENCHERE_DEFAUT_S) })} · ${t('chronoTelephones', { secondes: Number(m.options['chrono_telephones_s'] ?? CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S) })}`}
                     </span>
@@ -388,6 +403,65 @@ export default async function Preparation({
                           )}
                         </form>
                       )}
+                    {m.jeu === 'blind' && (
+                      <ul
+                        className="tu-regie-list tu-regie-titres"
+                        data-testid={`titres-${m.ordre}`}
+                      >
+                        {titresBlind(m).map((titre, index) => (
+                          <li key={index}>
+                            <form
+                              action={choisirTitreBlind.bind(null, code, m.id, index)}
+                              className="tu-regie-titre-blind"
+                            >
+                              <span className="tu-regie-passage__nom">
+                                {t('blind.titre', { numero: index + 1 })}
+                              </span>
+                              <label className="tu-field tu-regie-item__grow">
+                                <span className="tu-visually-hidden">
+                                  {t('blind.titre', { numero: index + 1 })}
+                                </span>
+                                <select
+                                  className="tu-field__control"
+                                  name="musique"
+                                  defaultValue={titre.musique ?? ''}
+                                  disabled={!modifiable}
+                                >
+                                  <option value="">{t('blind.aChoisir')}</option>
+                                  {musiques
+                                    .filter((x) => x.actif || x.id === titre.musique)
+                                    .map((x) => (
+                                      <option key={x.id} value={x.id}>
+                                        {x.artiste ? `${x.titre} — ${x.artiste}` : x.titre}
+                                      </option>
+                                    ))}
+                                </select>
+                              </label>
+                              <label className="tu-field tu-regie-titre-blind__debut">
+                                <span className="tu-visually-hidden">
+                                  {t('blind.debutDe', { numero: index + 1 })}
+                                </span>
+                                <input
+                                  className="tu-field__control"
+                                  name="debut"
+                                  type="number"
+                                  min={0}
+                                  max={3600}
+                                  defaultValue={titre.debutS}
+                                  placeholder={t('blind.debut')}
+                                  disabled={!modifiable}
+                                />
+                              </label>
+                              {modifiable && (
+                                <Button type="submit" variant="ghost">
+                                  {t('blind.enregistrer')}
+                                </Button>
+                              )}
+                            </form>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     {preparable && m.passages.length > 0 && (
                       <ul className="tu-regie-list">
                         {m.passages.map((p) => (
@@ -532,6 +606,31 @@ export default async function Preparation({
               </select>
             </label>
             <Button type="submit">{t('ajouter', { jeu: tJeux('qcm2') })}</Button>
+          </form>
+          <form action={ajouterBlind.bind(null, code)} className="tu-regie-item">
+            <label className="tu-field">
+              <span className="tu-field__label">{t('blind.titres')}</span>
+              <input
+                className="tu-field__control"
+                name="titres"
+                type="number"
+                min={TITRES_BLIND_MIN}
+                max={TITRES_BLIND_MAX}
+                defaultValue={TITRES_BLIND_DEFAUT}
+              />
+            </label>
+            <label className="tu-field">
+              <span className="tu-field__label">{t('blind.extraitChamp')}</span>
+              <input
+                className="tu-field__control"
+                name="extrait"
+                type="number"
+                min={EXTRAIT_BLIND_MIN_S}
+                max={EXTRAIT_BLIND_MAX_S}
+                defaultValue={EXTRAIT_BLIND_DEFAUT_S}
+              />
+            </label>
+            <Button type="submit">{t('ajouter', { jeu: tJeux('blind') })}</Button>
           </form>
           <form action={ajouterMime.bind(null, code)} className="tu-regie-item">
             <label className="tu-field">

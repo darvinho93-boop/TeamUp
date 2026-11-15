@@ -4,6 +4,7 @@ import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import { musiquesDe } from '@/lib/musiques';
 import {
   deroule,
+  extraitA,
   fondA,
   instantDe,
   musiqueA,
@@ -13,6 +14,7 @@ import {
   type Montee,
   type Son,
 } from '@/lib/sons';
+import { titresBlind } from '@/lib/pilotage';
 import { mancheCourante, type EtatSalle } from '@/lib/salle';
 import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import { creerLecteur, type Lecteur } from './lecteur';
@@ -108,7 +110,16 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
   // Les musiques du jeu présenté (2026-11-15) : lues dans la bibliothèque dès la présentation,
   // puis téléchargées d'avance. Seules les actives jouent ; une musique retirée de la bibliothèque
   // après coup se tait.
-  const cochees = musiquesDe(mancheCourante(etat)?.options).join('|');
+  const mancheEnCours = mancheCourante(etat);
+  // Blind test (2026-11-15) : les extraits de ses titres se téléchargent de même.
+  const cochees = [
+    ...new Set([
+      ...musiquesDe(mancheEnCours?.options),
+      ...(mancheEnCours?.jeu === 'blind'
+        ? titresBlind(mancheEnCours).flatMap((x) => (x.musique ? [x.musique] : []))
+        : []),
+    ]),
+  ].join('|');
   const [actives, setActives] = useState<ReadonlySet<string>>(() => new Set());
   useEffect(() => {
     if (!lecteur || !cochees) {
@@ -155,6 +166,29 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
     const fin = setTimeout(() => relancer((n) => n + 1), Math.max(0, reste) + MARGE_MINUTEUR_MS);
     return () => clearTimeout(fin);
   }, [lecteur, musiqueId, jusquA, decalageMs, passage]);
+
+  // L'extrait du blind test : il part à l'écoute, à la seconde où il en est, et s'arrête net au
+  // buzz (l'étape change) ou quand le chrono de l'extrait est écoulé. Le décalage d'horloge se
+  // réestime à chaque relecture : il passe par une référence, sans quoi l'extrait repartirait.
+  const extrait = lecteur ? extraitA(etat, Date.now() + decalageMs, actives) : null;
+  const extraitId = extrait?.id ?? null;
+  const extraitFin = extrait?.jusquA ?? null;
+  const depuisRef = useRef(0);
+  depuisRef.current = extrait?.depuisS ?? 0;
+  const decalageRef = useRef(decalageMs);
+  decalageRef.current = decalageMs;
+  const [tour, relancerExtrait] = useState(0);
+  useEffect(() => {
+    if (!lecteur) return;
+    lecteur.extrait(extraitId, depuisRef.current);
+    if (extraitFin === null) return;
+    const reste = extraitFin - (Date.now() + decalageRef.current);
+    const fin = setTimeout(
+      () => relancerExtrait((n) => n + 1),
+      Math.max(0, reste) + MARGE_MINUTEUR_MS,
+    );
+    return () => clearTimeout(fin);
+  }, [lecteur, extraitId, extraitFin, tour]);
 
   const jouer = useCallback(
     (son: Son, apresMs?: number, montee?: Montee, dansLeSonMs?: number) =>

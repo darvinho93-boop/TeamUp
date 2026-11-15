@@ -161,6 +161,21 @@
       "capitaine": "Seul le capitaine tape les mots."
     }
   },
+  "blind": {
+    "titre": "Titre {n} sur {total}",
+    "pret": "Préparez-vous : la musique arrive sur le grand écran !",
+    "buzz": "BUZZ",
+    "aide": "Votre équipe reconnaît la musique ? Buzzez !",
+    "coequipier": "Reconnaissez la musique et soufflez le titre à votre capitaine : c’est lui qui buzze !",
+    "aVous": "À vous ! Donnez le titre à voix haute.",
+    "autre": "Une autre équipe a buzzé…",
+    "bloquee": "Plus de buzz pour votre équipe sur ce titre : écoutez les autres !",
+    "tropTard": "Trop tard : une autre équipe a buzzé !",
+    "fini": "L’extrait est terminé !",
+    "trouve": "Bravo, titre trouvé : +100 !",
+    "revele": "Les yeux sur le grand écran !",
+    "sansEquipe": "Vous n’avez pas d’équipe pour ce jeu : suivez-le sur le grand écran."
+  },
   "photos": {
     "ouvrir": "Photos : {envoyees} sur {total}",
     "titre": "Photo challenge",
@@ -192,7 +207,8 @@
     "mime2": "Mime",
     "photo2": "Photo challenge",
     "grab": "Attrape l'objet",
-    "cup": "Tête, épaule, gobelet"
+    "cup": "Tête, épaule, gobelet",
+    "blind": "Blind test"
   },
   "regie": {
     "accueil": "Mes événements",
@@ -254,7 +270,7 @@
       "programme": "Programme",
       "duree": "Durée estimée : {total} min ({chronos} de jeu + {transitions} de transitions), pour un créneau de {creneau} min.",
       "depassement": "Le programme dépasse le créneau de {minutes} min : retire un passage, un thème ou un jeu.",
-      "sansContenu": "{n, plural, one {# question ou thème sans contenu : choisis-le avant la soirée, sinon l’écran restera vide.} other {# questions ou thèmes sans contenu : choisis-les avant la soirée, sinon l’écran restera vide.}}",
+      "sansContenu": "{n, plural, one {# question, thème ou titre sans contenu : choisis-le avant la soirée, sinon l’écran restera vide.} other {# questions, thèmes ou titres sans contenu : choisis-les avant la soirée, sinon l’écran restera vide.}}",
       "programmeVide": "Aucun jeu au programme pour l'instant.",
       "statut": {
         "a_venir": "à venir",
@@ -354,6 +370,16 @@
           "lourd": "Ce logo reste trop lourd, même réduit. Essayez un fichier plus simple.",
           "envoi": "Ça n'a pas marché : réessayez."
         }
+      },
+      "blind": {
+        "titres": "Titres",
+        "extraitChamp": "Écoute par titre (secondes)",
+        "titre": "Titre {numero}",
+        "debut": "Début (s)",
+        "debutDe": "Début de l’extrait du titre {numero}, en secondes",
+        "aChoisir": "— musique à choisir —",
+        "extrait": "écoute de {secondes} s par titre",
+        "enregistrer": "Enregistrer"
       }
     },
     "pilotage": {
@@ -435,7 +461,8 @@
         "perime": "La salle a changé entre-temps : vérifie l'écran et réessaie.",
         "finirDAbord": "Le quiz n’est pas fini : touche d’abord « Fin des questions », sinon ses points ne comptent pas.",
         "validerDAbord": "Le quiz n’est pas validé : touche d’abord « Valider », sinon ses points sont perdus.",
-        "impossible": "Action impossible à cette étape."
+        "impossible": "Action impossible à cette étape.",
+        "jugerDAbord": "Une équipe a buzzé : juge d’abord sa réponse (« Bonne » ou « Mauvaise »)."
       },
       "motifPointsCommuns": "Points communs — {equipe}",
       "motifTenu": "Surenchère — pari tenu",
@@ -444,6 +471,7 @@
       "motifQuiz": "{survivants, plural, =0 {Quiz – aucun survivant} one {Quiz – # survivant} other {Quiz – # survivants}}",
       "motifRelance": "{jeu} relancé : points remis à zéro",
       "motifQuizJetons": "{jetons, plural, =0 {Quiz – aucun jeton} one {Quiz – # jeton} other {Quiz – # jetons}}",
+      "motifBlind": "Blind test – titre {n}",
       "motifMime": "Mime – {equipe}",
       "motifPhoto": "Photo : {equipe}",
       "quiz": {
@@ -573,6 +601,27 @@
         "titre": "Équipe retirée",
         "aide": "L'équipe de ce passage n'existe plus. Passez-le : il ne compte aucun point.",
         "passer": "Passer ce passage"
+      },
+      "blind": {
+        "titre": "Blind test",
+        "commencer": "Commencer le blind test",
+        "capitainesTitre": "Blind test : un capitaine par équipe",
+        "numero": "Titre {n} sur {total}",
+        "reponse": "Réponse",
+        "sansMusique": "Aucune musique choisie pour ce titre : révèle-le, puis passe au suivant.",
+        "lancer": "Lancer la musique",
+        "relancer": "Relancer la musique",
+        "reveler": "Révéler le titre",
+        "bonne": "Bonne réponse (+100)",
+        "mauvaise": "Mauvaise réponse",
+        "aLaMain": "{equipe} a la main : 7 s pour répondre",
+        "bloquees": "Plus de buzz sur ce titre : {equipes}",
+        "secours": "Buzzer pour une équipe (téléphone en panne)",
+        "buzzerPour": "Buzz {equipe}",
+        "suivant": "Titre suivant",
+        "trouvePar": "Trouvé par {equipe}",
+        "personne": "Personne n’a trouvé",
+        "extraitFini": "Extrait terminé : révèle le titre."
       }
     },
     "salle": {
@@ -727,7 +776,8 @@
       "mime2": "Le mot traverse l'équipe, en mime puis à l'oreille.",
       "photo2": "Vos photos de la soirée, thème par thème : laquelle gagnera ?",
       "grab": "La musique part : attrapez l'objet qui va avec !",
-      "cup": "Tête, épaule… gobelet ! Attrapez-le en premier !"
+      "cup": "Tête, épaule… gobelet ! Attrapez-le en premier !",
+      "blind": "Une musique, un buzzer : trouvez le titre avant les autres !"
     },
     "yeuxFermes": "{equipe} : dos à l'écran, yeux fermés !",
     "pointCommun": "Le point commun",
@@ -840,6 +890,13 @@
         "tete-epaule": "Touchez ce que dit l'animateur : tête, épaule…",
         "gobelet": "Au mot « gobelet », attrapez-le en premier !",
         "points": "Gare aux pièges ! Duel gagné : +50."
+      },
+      "blind": {
+        "ecoute": "Une musique démarre sur le grand écran : ouvrez grand les oreilles !",
+        "buzzer": "Quelqu’un la reconnaît ? Le capitaine buzze sur son téléphone, le plus vite possible.",
+        "reponse": "La musique s’arrête : son équipe a 7 secondes pour donner le titre.",
+        "bloquee": "Raté ? L’équipe ne buzze plus sur ce titre, et la musique reprend pour les autres.",
+        "points": "Titre trouvé : +100 points !"
       }
     },
     "ordre": {
@@ -850,7 +907,20 @@
     "miseEquipe": "{equipe} : {n, plural, one {# jeton} other {# jetons}}",
     "ouLien": "Scannez le QR code, ou ouvrez ce lien :",
     "unInstant": "Un instant…",
-    "equipesAVenir": "Les équipes se forment…"
+    "equipesAVenir": "Les équipes se forment…",
+    "blind": {
+      "titre": "Titre {n} sur {total}",
+      "pret": "Capitaines, la main sur le buzzer !",
+      "ecoute": "Qui reconnaît ce titre ?",
+      "buzz": "{equipe} a buzzé !",
+      "reponse": "7 secondes pour donner le titre !",
+      "rate": "Raté pour {equipe} !",
+      "attente": "La musique va reprendre…",
+      "revele": "C’était…",
+      "trouvePar": "Trouvé par {equipe} !",
+      "personne": "Personne ne l’a trouvé !",
+      "bloquees": "Plus de buzz sur ce titre"
+    }
   },
   "admin": {
     "nav": {
@@ -927,6 +997,7 @@
       "confirmerDesactiver": "Désactiver « {titre} » ?",
       "ajouter": "Ajouter une musique",
       "titreMusique": "Titre",
+      "artiste": "Artiste (facultatif)",
       "fichier": "Fichier MP3",
       "aideFichier": "MP3 seulement, 15 Mo au plus. Un extrait de 1 à 3 minutes suffit : il tourne en boucle.",
       "ajouterBouton": "Ajouter",

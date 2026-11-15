@@ -7,6 +7,12 @@ import {
   CHRONO_SURENCHERE_DEFAUT_S,
   CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
   DUELS_DEFAUT,
+  EXTRAIT_BLIND_DEFAUT_S,
+  EXTRAIT_BLIND_MAX_S,
+  EXTRAIT_BLIND_MIN_S,
+  TITRES_BLIND_DEFAUT,
+  TITRES_BLIND_MAX,
+  TITRES_BLIND_MIN,
   QUESTIONS_QUIZ,
   QUESTIONS_QUIZ_DEFAUT,
   tirerContenus,
@@ -16,6 +22,7 @@ import { etiquettesDe, proposable } from '@/lib/contenus';
 import { MAX_GROUPES } from '@/lib/groupes';
 import { evenementDeLaRegie, type EvenementRegie } from '@/serveur/regie';
 import type { ClientAnimateur } from '@/serveur/supabase-animateur';
+import type { Json } from '@/types/base';
 
 /**
  * Préparation d'une soirée : équipes prévues, groupes et programme (les équipes se forment à la
@@ -128,7 +135,7 @@ async function nouvelleManche(
   supabase: ClientAnimateur,
   evenement: EvenementRegie,
   jeu: GameCode,
-  options: Record<string, number | string[]>,
+  options: Record<string, number | string[] | { musique: null; debut_s: number }[]>,
 ) {
   const { data: dernieres } = await supabase
     .from('manches')
@@ -317,6 +324,96 @@ export async function ajouterQuiz(code: string, donnees: FormData) {
       contenu_id: libres[i] ?? null,
     })),
   );
+  rafraichir();
+}
+
+const Blind = z.object({
+  titres: z.coerce
+    .number()
+    .int()
+    .min(TITRES_BLIND_MIN)
+    .max(TITRES_BLIND_MAX)
+    .catch(TITRES_BLIND_DEFAUT),
+  extrait: z.coerce
+    .number()
+    .int()
+    .min(EXTRAIT_BLIND_MIN_S)
+    .max(EXTRAIT_BLIND_MAX_S)
+    .catch(EXTRAIT_BLIND_DEFAUT_S),
+});
+
+/**
+ * Blind test (2026-11-15) : un passage par titre. Chaque titre (une musique de la bibliothèque et
+ * la seconde où l'extrait commence) vit dans `options.titres`, dans l'ordre des passages ; la durée
+ * d'écoute dans `options.extrait_s`. Les titres se choisissent ensuite, un par un.
+ */
+export async function ajouterBlind(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const { titres, extrait } = Blind.parse({
+    titres: donnees.get('titres'),
+    extrait: donnees.get('extrait'),
+  });
+  const mancheId = await nouvelleManche(supabase, evenement, 'blind', {
+    extrait_s: extrait,
+    titres: Array.from({ length: titres }, () => ({ musique: null, debut_s: 0 })),
+  });
+  await supabase.from('passages').insert(
+    Array.from({ length: titres }, (_, i) => ({
+      manche_id: mancheId,
+      evenement_id: evenement.id,
+      equipe_id: null,
+      ordre: i + 1,
+      contenu_id: null,
+    })),
+  );
+  rafraichir();
+}
+
+const TitreBlind = z.object({
+  musique: z.string().uuid().or(z.literal('')),
+  debut: z.coerce.number().int().min(0).max(3600).catch(0),
+});
+
+/** Le titre `index` d'un blind test : sa musique (parmi les actives) et le début de l'extrait. */
+export async function choisirTitreBlind(
+  code: string,
+  mancheId: string,
+  index: number,
+  donnees: FormData,
+) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const saisie = TitreBlind.safeParse({
+    musique: donnees.get('musique') ?? '',
+    debut: donnees.get('debut'),
+  });
+  if (!saisie.success) return;
+  const [{ data: manche }, { data: musique }] = await Promise.all([
+    supabase
+      .from('manches')
+      .select('jeu, options')
+      .eq('id', mancheId)
+      .eq('evenement_id', evenement.id)
+      .eq('statut', 'a_venir')
+      .maybeSingle(),
+    saisie.data.musique
+      ? supabase
+          .from('musiques')
+          .select('id')
+          .eq('id', saisie.data.musique)
+          .eq('actif', true)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+  if (manche?.jeu !== 'blind') return;
+  const options = (manche.options ?? {}) as Record<string, unknown>;
+  const titres = Array.isArray(options['titres']) ? [...(options['titres'] as Json[])] : [];
+  if (index < 0 || index >= titres.length) return;
+  titres[index] = { musique: musique?.id ?? null, debut_s: saisie.data.debut };
+  await supabase
+    .from('manches')
+    .update({ options: { ...options, titres } })
+    .eq('id', mancheId)
+    .eq('statut', 'a_venir');
   rafraichir();
 }
 

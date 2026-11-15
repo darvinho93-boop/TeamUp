@@ -10,6 +10,7 @@
  */
 
 import {
+  appliquerBlind,
   appliquerDuel,
   appliquerMime,
   appliquerPhoto,
@@ -24,7 +25,11 @@ import {
   MODES_QUIZ,
   MODES_SURENCHERE,
   passageSuivant,
+  resultatBlindDe,
+  resultatBlindVers,
   scriptExplication,
+  EXTRAIT_BLIND_DEFAUT_S,
+  type ActionBlind,
   type ActionDuel,
   type ActionMime,
   type ActionPhoto,
@@ -34,6 +39,7 @@ import {
   type BetaDuel,
   type Chrono,
   type Duelliste,
+  type EtapeBlind,
   type EtapeDuel,
   type EtapeMime,
   type EtapePhoto,
@@ -76,6 +82,8 @@ export type Commande =
   | { type: 'quiz'; action: Exclude<ActionQuiz['type'], 'valider'> }
   | { type: 'survivants'; survivants: ScoresParEquipe }
   | { type: 'mime'; action: ActionMime }
+  /** Blind test (2026-11-15) ; `buzz` est le secours de la régie, le capitaine buzze en base. */
+  | { type: 'blind'; action: ActionBlind }
   | { type: 'duel'; action: ActionDuel }
   | {
       type: 'photo';
@@ -132,6 +140,8 @@ export interface Motifs {
   mime: (equipe: string) => string;
   photo: (equipe: string) => string;
   duel: (prenom: string, equipe: string) => string;
+  /** Blind test : le numéro du titre trouvé. */
+  blind: (titre: number) => string;
 }
 
 /**
@@ -259,9 +269,11 @@ export function survivantsComptes(etat: EtatSalle, manche: MancheSalle): ScoresP
  * touché avant la validation a montré un classement à zéro, et les points du quiz n'ont jamais
  * été écrits. Entre deux questions, on montre les scores librement.
  */
-export function quizEnSuspens(etat: EtatSalle): 'fin' | 'valider' | null {
+export function quizEnSuspens(etat: EtatSalle): 'fin' | 'valider' | 'juger' | null {
   const manche = mancheCourante(etat);
   const { scene, etape, passage_id } = etat.pilotage;
+  // Blind test : une équipe a buzzé, sa réponse attend la régie (2026-11-15).
+  if (scene === 'jeu' && manche?.jeu === 'blind' && etape === 'buzz') return 'juger';
   if (scene !== 'jeu' || manche?.jeu !== 'qcm2') return null;
   if (etape === 'survivants') return 'valider';
   const reste = manche.passages.some((x) => x.id !== passage_id && x.statut !== 'termine');
@@ -273,6 +285,30 @@ export function quitteLeJeu(commande: Commande): boolean {
   return (
     commande.type === 'scene' || commande.type === 'intro' || commande.type === 'devoilerEquipes'
   );
+}
+
+/** La durée d'écoute d'un titre du blind test (préparation), 30 s par défaut. */
+export function extraitBlind(manche: Pick<MancheSalle, 'options'>): number {
+  const reglage = manche.options['extrait_s'];
+  return typeof reglage === 'number' && Number.isInteger(reglage) && reglage > 0
+    ? reglage
+    : EXTRAIT_BLIND_DEFAUT_S;
+}
+
+/** Les titres choisis à la préparation, un par passage dans l'ordre : musique et début (s). */
+export function titresBlind(
+  manche: Pick<MancheSalle, 'options'>,
+): { musique: string | null; debutS: number }[] {
+  const brut = manche.options['titres'];
+  if (!Array.isArray(brut)) return [];
+  return brut.map((t) => {
+    const titre = (t ?? {}) as Record<string, unknown>;
+    const debut = titre['debut_s'];
+    return {
+      musique: typeof titre['musique'] === 'string' && titre['musique'] ? titre['musique'] : null,
+      debutS: typeof debut === 'number' && Number.isFinite(debut) && debut > 0 ? debut : 0,
+    };
+  });
 }
 
 /** Les mots non rayés de chaque équipe sur ce thème, par numéro (Surenchère en mode téléphones). */
@@ -432,6 +468,13 @@ export function calculerEtape(
           if (!premier) return null;
           ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'theme' };
           ecriture.passage = { id: premier.id, statut: 'en_cours' };
+        } else if (manche.jeu === 'blind') {
+          // Le capitaine de chaque équipe tient le buzzer : comme les jetons, un par équipe.
+          const premier = passageSuivant(manche);
+          if (!premier) return null;
+          if (manche.statut === 'a_venir' && capitainesManquants(etat).length > 0) return null;
+          ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'pret' };
+          ecriture.passage = { id: premier.id, statut: 'en_cours' };
         } else if (estDuel(manche.jeu)) {
           // Un passage par duel : on commence par tirer les duellistes.
           const premier = passageSuivant(manche);
@@ -559,7 +602,8 @@ export function calculerEtape(
           (manche?.jeu === 'list2' && (p.etape === 'trouve' || p.etape === 'echec')) ||
           (manche?.jeu === 'mime2' && (p.etape === 'trouve' || p.etape === 'rate')) ||
           (manche?.jeu === 'photo2' && (p.etape === 'gagnante' || p.etape === 'aucune')) ||
-          (estDuel(manche?.jeu) && p.etape === 'gagne');
+          (estDuel(manche?.jeu) && p.etape === 'gagne') ||
+          (manche?.jeu === 'blind' && p.etape === 'revele');
         if (!manche || !fini) return null;
         const suivant = passageSuivant(manche);
         if (!suivant) return null;
@@ -731,6 +775,39 @@ export function calculerEtape(
               manche_id: manche.id,
             });
           }
+        }
+        return ecriture;
+      }
+
+      case 'blind': {
+        if (manche?.jeu !== 'blind' || !passage) return null;
+        const suite = appliquerBlind(
+          {
+            etape: p.etape as EtapeBlind,
+            resultat: resultatBlindDe(passage.resultat),
+            extraitS: extraitBlind(manche),
+            equipes: etat.equipes.filter((e) => e.joueurs > 0).map((e) => e.numero),
+            ecouleMs,
+          },
+          commande.action,
+        );
+        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        const gagnes = Object.values(suite.points ?? {}).reduce((a, b) => a + b, 0);
+        ecriture.passage = {
+          id: passage.id,
+          statut: suite.etape === 'revele' ? 'termine' : 'en_cours',
+          resultat: resultatBlindVers(suite.resultat),
+          ...(suite.etape === 'revele' ? { points: gagnes } : {}),
+        };
+        for (const [numero, points] of Object.entries(suite.points ?? {})) {
+          const equipe = etat.equipes.find((e) => e.numero === Number(numero));
+          if (!equipe || points <= 0) continue;
+          ecriture.scores.push({
+            equipe_id: equipe.id,
+            points,
+            motif: motifs.blind(passage.ordre),
+            manche_id: manche.id,
+          });
         }
         return ecriture;
       }

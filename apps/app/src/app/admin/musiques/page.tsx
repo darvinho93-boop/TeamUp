@@ -21,7 +21,7 @@ export default async function Musiques() {
   const langue = await getLocale();
   const { data } = await supabase
     .from('musiques')
-    .select('id, titre, chemin, taille, actif')
+    .select('id, titre, artiste, chemin, taille, actif')
     .order('actif', { ascending: false })
     .order('titre');
   const musiques = data ?? [];
@@ -50,7 +50,9 @@ export default async function Musiques() {
               return (
                 <li key={m.id} className="tu-regie-item" data-testid="musique">
                   <div className="tu-regie-item__main">
-                    <span className="tu-regie-item__title">{m.titre}</span>
+                    <span className="tu-regie-item__title">
+                      {m.artiste ? `${m.titre} — ${m.artiste}` : m.titre}
+                    </span>
                     <span className="tu-regie-item__meta">
                       {tailleLisible(m.taille, langue)} · {m.actif ? t('active') : t('inactive')}
                     </span>

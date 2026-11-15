@@ -4,6 +4,7 @@ import type {
   EvenementPublic,
   Langue,
   RefusMise,
+  RefusBuzz,
   RefusMot,
   RefusQuiz,
   SoireeDuJour,
@@ -263,6 +264,39 @@ export async function motSurenchere(
   // Le signal et l'état du capitaine en même temps : le mot confirmé n'attend pas l'écran.
   const [, suivant] = await Promise.all([
     signalerSalle(etat.evenement.id, 'mises'),
+    etatPourJeton(code, jeton),
+  ]);
+  return { ok: true, etat: suivant ?? etat };
+}
+
+/**
+ * Blind test (2026-11-15) : le capitaine de ce cookie buzze. La base tranche seule, sous le verrou
+ * du pilotage (premier arrivé, extrait encore en cours, équipe pas bloquée) ; tout le monde relit
+ * aussitôt (signal `relire`) : l'écran montre l'équipe, les téléphones ferment leur buzzer.
+ */
+export async function buzzerBlind(
+  code: string,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusBuzz }> {
+  const jeton = await jetonDe(code);
+  const etat = jeton ? await etatPourJeton(code, jeton) : null;
+  if (!jeton || !etat) return { ok: false, refus: 'session' };
+
+  const { error } = await supabaseService().rpc('buzzer_blind', { p_jeton_hash: hacher(jeton) });
+  if (error) {
+    const refus: RefusBuzz | null = /trop tard|extrait fini/.test(error.message)
+      ? 'tard'
+      : /bloquée/.test(error.message)
+        ? 'bloquee'
+        : /pas capitaine/.test(error.message)
+          ? 'capitaine'
+          : /session/.test(error.message)
+            ? 'session'
+            : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  const [, suivant] = await Promise.all([
+    signalerSalle(etat.evenement.id, 'relire'),
     etatPourJeton(code, jeton),
   ]);
   return { ok: true, etat: suivant ?? etat };

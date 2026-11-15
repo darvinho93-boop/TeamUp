@@ -26,6 +26,12 @@ export function FormulaireMusique() {
     setOk(null);
     const brut = donnees.get('titre');
     const titre = typeof brut === 'string' ? brut.trim() : '';
+    const brutArtiste = donnees.get('artiste');
+    // La réponse du blind test : « titre — artiste ». Facultatif.
+    const artiste =
+      typeof brutArtiste === 'string' && brutArtiste.trim()
+        ? brutArtiste.trim().slice(0, TITRE_MAX_MUSIQUE)
+        : null;
     const fichier = donnees.get('fichier');
     if (!(fichier instanceof File)) return setErreur('vide');
     const debut = new Uint8Array(await fichier.slice(0, 4).arrayBuffer());
@@ -40,7 +46,7 @@ export function FormulaireMusique() {
       .upload(chemin, fichier, { contentType: 'audio/mpeg', upsert: false });
     const ligne = depot.error
       ? depot
-      : await supabase.from('musiques').insert({ titre, chemin, taille: fichier.size });
+      : await supabase.from('musiques').insert({ titre, artiste, chemin, taille: fichier.size });
     setEnCours(false);
     if (ligne.error) {
       // Fichier déposé sans sa ligne : on le retire, sinon il resterait orphelin.
@@ -66,6 +72,12 @@ export function FormulaireMusique() {
           label={t('titreMusique')}
           name="titre"
           required
+          maxLength={TITRE_MAX_MUSIQUE}
+          autoComplete="off"
+        />
+        <TextField
+          label={t('artiste')}
+          name="artiste"
           maxLength={TITRE_MAX_MUSIQUE}
           autoComplete="off"
         />

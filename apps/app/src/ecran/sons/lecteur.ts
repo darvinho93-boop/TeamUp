@@ -3,6 +3,7 @@ import {
   fichierDe,
   FOND_SOUS_UN_SON,
   FONDU_MUSIQUE_MS,
+  NIVEAU_EXTRAIT,
   NIVEAU_MUSIQUE,
   NIVEAUX,
   SONS,
@@ -38,6 +39,12 @@ export interface Lecteur {
   charger(cle: string, url: string): Promise<void>;
   /** La musique sous le chrono : en changer ou l'éteindre (`null`), en fondu, en boucle. */
   musique(cle: string | null): void;
+  /**
+   * Blind test (2026-11-15) : joue l'extrait `cle` à partir de `depuisS` secondes, sans boucle, ou
+   * l'arrête net (`null`) : un buzz coupe la musique sur-le-champ. Pas encore téléchargé, il part
+   * à la fin du téléchargement, à la seconde où il en serait.
+   */
+  extrait(cle: string | null, depuisS?: number): void;
   regler(reglage: ReglageSon): void;
   /**
    * Met le lecteur en veille, ou le réveille. Réversible, contrairement à une fermeture : en
@@ -51,7 +58,7 @@ export interface Lecteur {
    * Ce qui a été joué, pour les contrôles : le nom du son et l'instant (ms). Une musique y paraît
    * en `musique:<id>` à son départ, `musique:-` à son arrêt.
    */
-  journal: { son: Son | `musique:${string}`; a: number }[];
+  journal: { son: Son | `musique:${string}` | `extrait:${string}`; a: number }[];
   /** Le dernier réglage appliqué, pour les contrôles. */
   reglage: ReglageSon;
 }
@@ -104,6 +111,39 @@ export async function creerLecteur(
   let musiqueVoulue: string | null = null;
   /** La musique qui joue (ou monte) : un second `charger` ne la relance pas. */
   let jouee: string | null = null;
+  /** L'extrait du blind test voulu : la clé, sa seconde de départ et l'instant de la demande. */
+  let extraitVoulu: { cle: string; depuisS: number; a: number } | null = null;
+  let extraitJoue: { audio: HTMLAudioElement; gain: GainNode } | null = null;
+
+  /** Le lecteur d'un fichier téléchargé, créé une fois : un `<audio>` relié au contexte. */
+  const pisteDe = (cle: string, adresse: string) => {
+    let piste = pistes.get(cle);
+    if (!piste) {
+      const audio = new Audio(adresse);
+      audio.preload = 'auto';
+      const gain = contexte.createGain();
+      gain.gain.value = 0;
+      contexte.createMediaElementSource(audio).connect(gain).connect(sortie);
+      piste = { audio, gain };
+      pistes.set(cle, piste);
+    }
+    return piste;
+  };
+
+  const lancerExtrait = (adresse: string) => {
+    const voulu = extraitVoulu;
+    if (!voulu) return;
+    const piste = pisteDe(voulu.cle, adresse);
+    piste.audio.loop = false;
+    piste.audio.currentTime = voulu.depuisS + (performance.now() - voulu.a) / 1000;
+    const t = contexte.currentTime;
+    piste.gain.gain.cancelScheduledValues(t);
+    piste.gain.gain.setValueAtTime(0, t);
+    piste.gain.gain.linearRampToValueAtTime(NIVEAU_EXTRAIT, t + COUPE_S);
+    void piste.audio.play().catch(() => undefined);
+    extraitJoue = piste;
+    journal.push({ son: `extrait:${voulu.cle}`, a: Math.round(performance.now()) });
+  };
 
   // Un seul onglet sonne à la fois : deux écrans ouverts sur le même ordinateur joueraient
   // chaque son deux fois, un peu décalés. Le dernier activé garde le son, les autres se taisent.
@@ -150,17 +190,8 @@ export async function creerLecteur(
   const allumer = (cle: string, adresse: string) => {
     if (musiqueVoulue !== cle || jouee === cle) return;
     jouee = cle;
-    let piste = pistes.get(cle);
-    if (!piste) {
-      const audio = new Audio(adresse);
-      audio.loop = true;
-      audio.preload = 'auto';
-      const gain = contexte.createGain();
-      gain.gain.value = 0;
-      contexte.createMediaElementSource(audio).connect(gain).connect(sortie);
-      piste = { audio, gain };
-      pistes.set(cle, piste);
-    }
+    const piste = pisteDe(cle, adresse);
+    piste.audio.loop = true;
     const t = contexte.currentTime;
     piste.gain.gain.cancelScheduledValues(t);
     piste.gain.gain.setValueAtTime(piste.gain.gain.value, t);
@@ -246,7 +277,29 @@ export async function creerLecteur(
         });
       }
       return fichier.then((adresse) => {
-        if (adresse) allumer(cle, adresse);
+        if (!adresse) return;
+        allumer(cle, adresse);
+        if (extraitVoulu?.cle === cle && !extraitJoue) lancerExtrait(adresse);
+      });
+    },
+    extrait(cle, depuisS = 0) {
+      // Déjà en train de jouer cet extrait : il continue (un rendu de plus ne le relance pas).
+      if (cle !== null && cle === extraitVoulu?.cle && extraitJoue) return;
+      if (extraitJoue) {
+        // Net : un buzz arrête la musique sur-le-champ.
+        const { audio, gain } = extraitJoue;
+        const t = contexte.currentTime;
+        gain.gain.cancelScheduledValues(t);
+        gain.gain.setValueAtTime(gain.gain.value, t);
+        gain.gain.linearRampToValueAtTime(0, t + COUPE_S);
+        setTimeout(() => audio.pause(), COUPE_S * 1000 + 20);
+        extraitJoue = null;
+        journal.push({ son: 'extrait:-', a: Math.round(performance.now()) });
+      }
+      extraitVoulu = cle ? { cle, depuisS, a: performance.now() } : null;
+      if (!cle) return;
+      void fichiers.get(cle)?.then((adresse) => {
+        if (adresse && extraitVoulu?.cle === cle && !extraitJoue) lancerExtrait(adresse);
       });
     },
     musique(cle) {

@@ -12,6 +12,7 @@ import {
   NIVEAUX,
   reglageDe,
   SONS,
+  extraitA,
   FONDU_MUSIQUE_MS,
   monteeDuChrono,
   musiqueA,
@@ -338,5 +339,65 @@ describe('la musique sous les chronos (2026-11-15)', () => {
     // « a » désactivée : la rotation se fait sur ce qui reste.
     expect(musiqueA(salle('qcm2', 'question', 'p1'), T0, new Set(['b']))?.id).toBe('b');
     expect(musiqueA(salle('qcm2', 'question', 'p1'), T0, new Set())).toBeNull();
+  });
+});
+
+describe('l’extrait du blind test (2026-11-15)', () => {
+  const T0 = 1_000_000;
+  const salle = (
+    etape: string,
+    resultat: Record<string, unknown> = {},
+    titres: unknown = [{ musique: 'a', debut_s: 45 }],
+  ): Pick<EtatSalle, 'pilotage' | 'programme'> => ({
+    pilotage: {
+      scene: 'jeu',
+      manche_id: 'm1',
+      passage_id: 'p1',
+      etape,
+      indices: 0,
+      chrono_depart_ms: T0,
+      chrono_duree_s: 22,
+      version: 'v1',
+    },
+    programme: [
+      {
+        id: 'm1',
+        jeu: 'blind',
+        ordre: 1,
+        statut: 'en_cours',
+        options: { extrait_s: 30, titres },
+        passages: [
+          {
+            id: 'p1',
+            ordre: 1,
+            statut: 'en_cours',
+            equipe_id: null,
+            points: null,
+            resultat,
+            contenu_id: null,
+            public: {},
+            secret: null,
+          },
+        ],
+      },
+    ],
+  });
+  const actives = new Set(['a']);
+
+  it('reprend là où l’écoute s’était arrêtée : début choisi, écoute faite, chrono en cours', () => {
+    expect(extraitA(salle('ecoute', { ecoute_ms: 8000 }), T0 + 2500, actives)).toEqual({
+      id: 'a',
+      depuisS: 55.5,
+      jusquA: T0 + 22_000,
+    });
+  });
+
+  it('se tait hors de l’écoute, chrono écoulé, ou sans musique active', () => {
+    for (const etape of ['pret', 'buzz', 'pause', 'revele']) {
+      expect(extraitA(salle(etape), T0, actives)).toBeNull();
+    }
+    expect(extraitA(salle('ecoute'), T0 + 22_000, actives)).toBeNull();
+    expect(extraitA(salle('ecoute'), T0, new Set())).toBeNull();
+    expect(extraitA(salle('ecoute', {}, [{ musique: null, debut_s: 0 }]), T0, actives)).toBeNull();
   });
 });

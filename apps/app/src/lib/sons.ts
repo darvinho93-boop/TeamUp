@@ -1,7 +1,7 @@
-import type { GameCode } from '@teamup/game';
+import { positionExtraitMs, resultatBlindDe, type GameCode } from '@teamup/game';
 import { musiquesDe } from './musiques';
 import { FINALE } from './ouverture';
-import { ETAPE_FORMATION, ETAPE_TIRAGE_ORDRE } from './pilotage';
+import { ETAPE_FORMATION, ETAPE_TIRAGE_ORDRE, extraitBlind, titresBlind } from './pilotage';
 import { mancheCourante, type EtatSalle } from './salle';
 
 /**
@@ -146,6 +146,8 @@ const VERDICTS: Partial<Record<GameCode, Record<string, Son>>> = {
   photo2: { gagnante: 'reussite' },
   grab: { gagne: 'reussite' },
   cup: { gagne: 'reussite' },
+  // Blind test (2026-11-15) : le buzz, la mauvaise réponse, la révélation.
+  blind: { buzz: 'indice', pause: 'echec', revele: 'revelation' },
 };
 
 /**
@@ -246,6 +248,9 @@ export function monteeDuChrono(reste: number): Montee {
  */
 export const NIVEAU_MUSIQUE = 0.45;
 
+/** L'extrait du blind test : c'est le jeu, il passe au premier plan. */
+export const NIVEAU_EXTRAIT = 0.9;
+
 /**
  * Le fondu des musiques, à l'entrée comme à la sortie (le lecteur s'en sert pour toutes). Celle
  * du chrono commence à s'effacer d'autant avant les dix dernières secondes, pour que le premier
@@ -293,4 +298,48 @@ export function musiqueA(
   const jusquA = premierBattement - FONDU_MUSIQUE_MS;
   if (maintenantMs >= jusquA) return null;
   return { id: liste[(Math.max(1, passage.ordre) - 1) % liste.length]!, jusquA };
+}
+
+/** L'extrait du blind test qui doit jouer : la musique, la seconde où il en est, et sa fin. */
+export interface ExtraitDuMoment {
+  id: string;
+  depuisS: number;
+  /** Heure de la base (ms) où l'écoute s'arrête : le chrono de l'extrait est écoulé. */
+  jusquA: number;
+}
+
+/**
+ * Blind test (2026-11-15) : l'extrait joue pendant l'écoute, à la seconde où il en est (début
+ * choisi, écoute déjà faite, chrono en cours) ; deux écrans et un rechargement tombent donc au même
+ * endroit. Rien hors de l'écoute, ni sans musique choisie et active. `maintenantMs` est à l'heure de
+ * la base.
+ */
+export function extraitA(
+  etat: Pick<EtatSalle, 'pilotage' | 'programme'>,
+  maintenantMs: number,
+  actives: ReadonlySet<string>,
+): ExtraitDuMoment | null {
+  const {
+    scene,
+    etape,
+    passage_id,
+    chrono_depart_ms: depart,
+    chrono_duree_s: duree,
+  } = etat.pilotage;
+  if (scene !== 'jeu' || etape !== 'ecoute' || depart === null || duree === null) return null;
+  const manche = etat.programme.find((m) => m.id === etat.pilotage.manche_id);
+  if (manche?.jeu !== 'blind') return null;
+  const passage = manche.passages.find((p) => p.id === passage_id);
+  const titre = passage ? titresBlind(manche)[passage.ordre - 1] : undefined;
+  if (!passage || !titre?.musique || !actives.has(titre.musique)) return null;
+  const jusquA = depart + duree * 1000;
+  if (maintenantMs >= jusquA) return null;
+  const positionMs = positionExtraitMs(
+    titre.debutS,
+    resultatBlindDe(passage.resultat),
+    'ecoute',
+    maintenantMs - depart,
+    extraitBlind(manche),
+  );
+  return { id: titre.musique, depuisS: positionMs / 1000, jusquA };
 }

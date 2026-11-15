@@ -161,6 +161,21 @@
       "capitaine": "Only the captain types the words."
     }
   },
+  "blind": {
+    "titre": "Song {n} of {total}",
+    "pret": "Get ready: the music is coming on the big screen!",
+    "buzz": "BUZZ",
+    "aide": "Your team knows the song? Buzz!",
+    "coequipier": "Recognise the song and whisper it to your captain: they buzz!",
+    "aVous": "Your turn! Say the song title out loud.",
+    "autre": "Another team buzzed…",
+    "bloquee": "Your team can’t buzz again on this song: listen to the others!",
+    "tropTard": "Too late: another team buzzed!",
+    "fini": "The excerpt is over!",
+    "trouve": "Well done, song found: +100!",
+    "revele": "Eyes on the big screen!",
+    "sansEquipe": "You don’t have a team for this game: follow it on the big screen."
+  },
   "photos": {
     "ouvrir": "Photos: {envoyees} of {total}",
     "titre": "Photo challenge",
@@ -192,7 +207,8 @@
     "mime2": "Mime",
     "photo2": "Photo challenge",
     "grab": "Grab the object",
-    "cup": "Head, shoulders, cup"
+    "cup": "Head, shoulders, cup",
+    "blind": "Blind test"
   },
   "regie": {
     "accueil": "My events",
@@ -254,7 +270,7 @@
       "programme": "Programme",
       "duree": "Estimated length: {total} min ({chronos} of play + {transitions} of transitions), for a {creneau} min slot.",
       "depassement": "The programme runs {minutes} min over the slot: remove a turn, a theme or a game.",
-      "sansContenu": "{n, plural, one {# question or theme has no content: pick it before the event, or the screen will stay empty.} other {# questions or themes have no content: pick them before the event, or the screen will stay empty.}}",
+      "sansContenu": "{n, plural, one {# question, theme or song has no content: pick it before the event, or the screen will stay empty.} other {# questions, themes or songs have no content: pick them before the event, or the screen will stay empty.}}",
       "programmeVide": "No games in the programme yet.",
       "statut": {
         "a_venir": "upcoming",
@@ -354,6 +370,16 @@
           "lourd": "This logo is still too heavy, even reduced. Try a simpler file.",
           "envoi": "That didn't work: try again."
         }
+      },
+      "blind": {
+        "titres": "Songs",
+        "extraitChamp": "Listening per song (seconds)",
+        "titre": "Song {numero}",
+        "debut": "Start (s)",
+        "debutDe": "Start of the excerpt for song {numero}, in seconds",
+        "aChoisir": "— choose a track —",
+        "extrait": "{secondes} s of listening per song",
+        "enregistrer": "Save"
       }
     },
     "pilotage": {
@@ -435,7 +461,8 @@
         "perime": "The room changed in the meantime: check the screen and try again.",
         "finirDAbord": "The quiz isn’t over yet: tap “End of questions” first, or its points won’t count.",
         "validerDAbord": "The quiz isn’t confirmed yet: tap “Confirm” first, or its points are lost.",
-        "impossible": "This action isn't possible at this step."
+        "impossible": "This action isn't possible at this step.",
+        "jugerDAbord": "A team buzzed: judge their answer first (“Right” or “Wrong”)."
       },
       "motifPointsCommuns": "Common ground — {equipe}",
       "motifTenu": "Bidding war — bet kept",
@@ -444,6 +471,7 @@
       "motifQuiz": "{survivants, plural, =0 {Quiz – no survivors} one {Quiz – # survivor} other {Quiz – # survivors}}",
       "motifRelance": "{jeu} restarted: points reset",
       "motifQuizJetons": "{jetons, plural, =0 {Quiz – no tokens} one {Quiz – # token} other {Quiz – # tokens}}",
+      "motifBlind": "Blind test – song {n}",
       "motifMime": "Mime – {equipe}",
       "motifPhoto": "Photo: {equipe}",
       "quiz": {
@@ -573,6 +601,27 @@
         "titre": "Team removed",
         "aide": "This turn's team no longer exists. Skip it: it scores no points.",
         "passer": "Skip this turn"
+      },
+      "blind": {
+        "titre": "Blind test",
+        "commencer": "Start the blind test",
+        "capitainesTitre": "Blind test: one captain per team",
+        "numero": "Song {n} of {total}",
+        "reponse": "Answer",
+        "sansMusique": "No music chosen for this song: reveal it, then move on.",
+        "lancer": "Play the music",
+        "relancer": "Resume the music",
+        "reveler": "Reveal the song",
+        "bonne": "Right answer (+100)",
+        "mauvaise": "Wrong answer",
+        "aLaMain": "{equipe} has the floor: 7 s to answer",
+        "bloquees": "No more buzzing on this song: {equipes}",
+        "secours": "Buzz for a team (phone down)",
+        "buzzerPour": "Buzz {equipe}",
+        "suivant": "Next song",
+        "trouvePar": "Found by {equipe}",
+        "personne": "Nobody found it",
+        "extraitFini": "Excerpt over: reveal the song."
       }
     },
     "salle": {
@@ -727,7 +776,8 @@
       "mime2": "The word travels down the team, mimed then whispered.",
       "photo2": "Your photos of the evening, theme by theme: which one will win?",
       "grab": "The music starts: grab the matching object!",
-      "cup": "Head, shoulders… cup! Grab it first!"
+      "cup": "Head, shoulders… cup! Grab it first!",
+      "blind": "One song, one buzzer: name it before anyone else!"
     },
     "yeuxFermes": "{equipe}: back to the screen, eyes closed!",
     "pointCommun": "What they have in common",
@@ -840,6 +890,13 @@
         "tete-epaule": "Touch what the host says: head, shoulder…",
         "gobelet": "When you hear “cup”, be the first to grab it!",
         "points": "Watch out for traps! Duel won: +50."
+      },
+      "blind": {
+        "ecoute": "A song starts on the big screen: listen closely!",
+        "buzzer": "Someone recognises it? The captain buzzes on their phone, as fast as possible.",
+        "reponse": "The music stops: their team has 7 seconds to name the song.",
+        "bloquee": "Wrong? That team can’t buzz again on this song, and the music resumes for the others.",
+        "points": "Song found: +100 points!"
       }
     },
     "ordre": {
@@ -850,7 +907,20 @@
     "miseEquipe": "{equipe}: {n, plural, one {# token} other {# tokens}}",
     "ouLien": "Scan the QR code, or open this link:",
     "unInstant": "One moment…",
-    "equipesAVenir": "The teams are being formed…"
+    "equipesAVenir": "The teams are being formed…",
+    "blind": {
+      "titre": "Song {n} of {total}",
+      "pret": "Captains, hands on the buzzer!",
+      "ecoute": "Who knows this song?",
+      "buzz": "{equipe} buzzed!",
+      "reponse": "7 seconds to name the song!",
+      "rate": "Wrong for {equipe}!",
+      "attente": "The music will resume…",
+      "revele": "It was…",
+      "trouvePar": "Found by {equipe}!",
+      "personne": "Nobody found it!",
+      "bloquees": "No more buzzing on this song"
+    }
   },
   "admin": {
     "nav": {
@@ -927,6 +997,7 @@
       "confirmerDesactiver": "Disable “{titre}”?",
       "ajouter": "Add a track",
       "titreMusique": "Title",
+      "artiste": "Artist (optional)",
       "fichier": "MP3 file",
       "aideFichier": "MP3 only, 15 MB max. A 1 to 3 minute excerpt is enough: it loops.",
       "ajouterBouton": "Add",

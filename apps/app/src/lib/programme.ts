@@ -25,5 +25,7 @@ export function elementDuProgramme({ jeu, options, passages }: MancheAChiffrer):
     case 'grab':
     case 'cup':
       return { jeu, duels: nombre(options['duels'], passages) };
+    case 'blind':
+      return { jeu, titres: passages || nombre(options['titres_n'], 8) };
   }
 }

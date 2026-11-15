@@ -43,8 +43,12 @@
   --tu-regie-menu-min: 14rem;
   /* Préparation : colonne du nom d'un passage (équipe, « Question 1 »), en face de son menu. */
   --tu-regie-passage-nom: 12rem;
+  /* Préparation du blind test : le champ « début de l'extrait », en secondes. */
+  --tu-regie-debut: 7rem;
   /* Le lecteur d'écoute d'une musique au back-office (2026-11-15). */
   --tu-regie-ecoute-max: 32rem;
+  /* Le buzzer du capitaine au blind test (2026-11-15), au téléphone. */
+  --tu-buzzer: 18rem;
   /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
   --tu-tracking-code: 0.08em;
 
@@ -69,6 +73,10 @@
   --tu-stage-width: 120rem;
   --tu-stage-height: 67.5rem;
   --tu-stage-chrono: 10rem; /* chrono d'un jeu (Points communs, Surenchère, Mime, duels) */
+  /* Blind test (2026-11-15) : l'égaliseur de l'écoute et le rythme de ses barres. */
+  --tu-stage-egaliseur: 16rem;
+  --tu-stage-egaliseur-barre: 2.5rem;
+  --tu-dur-egaliseur: 420ms;
   --tu-stage-qr: 44rem; /* agrandi le 2026-10-27 : scanné du fond de la salle */
   --tu-stage-qr-partenaire: 41rem; /* sous le bandeau d'un logo partenaire (2026-11-11) */
   --tu-stage-cadre: 0.375rem;

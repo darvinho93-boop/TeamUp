@@ -15,6 +15,7 @@ import { NomEquipe } from './NomEquipe';
 import { NomPropose } from './NomPropose';
 import { Photos } from './Photos';
 import { Quiz } from './Quiz';
+import { BlindTest } from './BlindTest';
 import { SurenchereMots } from './SurenchereMots';
 import { useEtatJoueur } from './useEtatJoueur';
 import { useFilePhotos } from './useFilePhotos';
@@ -92,7 +93,7 @@ export function EcranJoueur({
     );
   }
 
-  const { joueur, equipe, manche, prochaine, evenement, quiz, photos, surenchere } = etat;
+  const { joueur, equipe, manche, prochaine, evenement, quiz, photos, surenchere, blind } = etat;
 
   // Quiz en mode téléphone : le seul moment où le téléphone sert à jouer (spec v3).
   if (quiz) {
@@ -120,6 +121,23 @@ export function EcranJoueur({
             code={code}
             surenchere={surenchere}
             decalageMs={decalageMs}
+            remplacer={remplacer}
+            relire={relire}
+          />
+        </div>
+      </Cadre>
+    );
+  }
+
+  // Blind test (2026-11-15) : le capitaine buzze, ses coéquipiers lui soufflent le titre.
+  if (blind) {
+    return (
+      <Cadre bandeau={bandeau} outil={outil}>
+        <div className="tu-player__body">
+          <BlindTest
+            code={code}
+            blind={blind}
+            capitaine={joueur.capitaine}
             remplacer={remplacer}
             relire={relire}
           />

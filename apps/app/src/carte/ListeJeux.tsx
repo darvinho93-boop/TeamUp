@@ -66,6 +66,17 @@ const PICTOS: Record<GameCode, { teinte: Teinte; trace: ReactNode }> = {
       </>
     ),
   },
+  // Blind test (2026-11-15) : une note de musique.
+  blind: {
+    teinte: 'navy',
+    trace: (
+      <>
+        <path d="M9 18V5l11-2v13" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="17" cy="16" r="3" />
+      </>
+    ),
+  },
   cup: {
     teinte: 'pierre',
     trace: (

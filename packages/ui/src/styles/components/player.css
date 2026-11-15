@@ -453,6 +453,45 @@
   color: var(--tu-danger-text);
 }
 
+/* Blind test (2026-11-15) : l'équipe qui a la main, en grand. */
+.tu-quiz__statut--fort {
+  font-size: var(--tu-size-2xl);
+}
+
+/* Le buzzer du capitaine : un disque qui occupe l'écran, corail (« à toi »), grisé quand il
+   n'a plus la main. */
+.tu-buzzer {
+  display: grid;
+  place-items: center;
+  align-self: center;
+  width: min(100%, var(--tu-buzzer));
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface-muted);
+  color: var(--tu-text-muted);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-4xl);
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tu-buzzer--pret {
+  background: var(--tu-accent);
+  color: var(--tu-on-accent);
+  box-shadow: var(--tu-shadow-lift);
+}
+
+.tu-buzzer:disabled {
+  cursor: default;
+}
+
+.tu-buzzer--pret:active {
+  transform: scale(0.96);
+}
+
 .tu-quiz__fin {
   display: flex;
   flex: 1;

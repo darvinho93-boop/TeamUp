@@ -386,6 +386,52 @@ const VISUELS: Record<VisuelExplication, () => ReactNode> = {
     </>
   ),
 
+  // ---- Blind test (2026-11-15)
+  'ecoute-blind': () => (
+    <>
+      <div className="tu-expl-ecran">
+        <span className="tu-expl-notes tu-expl-pulse">♪ ♫ ♪</span>
+      </div>
+      <Salle n={6} />
+    </>
+  ),
+  buzzer: () => (
+    <>
+      <Equipe n={3} equipe={3} />
+      <Telephone>
+        <span className="tu-expl-telephone__touche tu-expl-telephone__touche--choisie tu-expl-pulse">
+          BUZZ
+        </span>
+      </Telephone>
+    </>
+  ),
+  'reponse-blind': () => (
+    <>
+      <Equipe n={3} equipe={3} className="tu-expl-suite" />
+      <span className="tu-expl-bulle tu-expl-pulse">!</span>
+      <span className="tu-expl-anneau" />
+    </>
+  ),
+  bloquee: () => (
+    <>
+      <div className="tu-expl-groupe">
+        {[0, 1, 2].map((i) => (
+          <Perso key={i} equipe={1} className="tu-expl-perso--eteint" />
+        ))}
+      </div>
+      <div className="tu-expl-ecran">
+        <span className="tu-expl-notes tu-expl-pulse">♪ ♫ ♪</span>
+      </div>
+      <Equipe n={3} equipe={4} className="tu-expl-suite" />
+    </>
+  ),
+  'points-blind': () => (
+    <>
+      <Equipe n={3} equipe={3} />
+      <span className="tu-expl-points">+100</span>
+    </>
+  ),
+
   // ---- Duels
   'duellistes-table': () => <Duellistes milieu={<Table />} />,
   musique: () => <Duellistes milieu={<span className="tu-expl-notes tu-expl-pulse">♪ ♫ ♪</span>} />,
