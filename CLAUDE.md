@@ -1507,3 +1507,41 @@ régie la relance** ; **+100** par titre trouvé, aucune pénalité (choix laiss
 - Tests : `packages/game` (machine, position), `tests/pilotage-etapes.test.ts`, `tests/sons.test.ts`,
   `tests/blind.test.ts` (trois buzz simultanés : un seul gagne ; rien de la réponse dans
   `etat_joueur`), `e2e/blind.spec.ts`. La vitrine ne présente pas encore ce jeu (pas de vidéo).
+
+## Conventions posées le 2026-11-15 (photos de fond des jeux)
+
+Tranché le 2026-11-15 : une **photo de fond par jeu**, **déposée par soirée** à la préparation,
+**sur l'écran commun seulement**, **pendant le jeu seulement** (scène `jeu` : ni présentation, ni
+explication, ni scores), sous un **voile beige** (la photo pâle partout, les scènes inchangées ;
+préféré à une photo nette autour d'un panneau).
+
+- **Écart assumé à la charte** (« un seul fond : le beige ») : le beige reste, en voile, sur une
+  photo. Aucun téléphone, ni la carte, ni la vitrine.
+- Base (migration `20261117090000`) : `manches.fond` (chemin `<soirée>/<uuid>.jpg`, contrainte de
+  forme), une **colonne et non `options`** (la régie réécrit les options au lancement d'un jeu :
+  une photo changée en pleine soirée s'y perdrait). Bucket **privé** `fonds` (JPEG seul, 1 Mo) :
+  lister, déposer, retirer = l'animateur de la soirée (`anime()`), comme `logos`. `etat_ecran`
+  donne `fond` par manche du programme ; le client tient sans la migration.
+- Préparation (`src/regie/FondDuJeu.tsx`, sur la carte de chaque jeu) : le navigateur recadre au
+  milieu en 16:9 et réduit à 1 920 × 1 080 en JPEG dégressif (`src/regie/preparerFond.ts`, règles
+  pures `src/lib/fonds.ts`) ; aperçu sous le voile et avertissements (photo en hauteur, photo
+  petite) **avant** « Enregistrer la photo ». Possible à tout moment, même en pleine soirée.
+- `POST` / `DELETE /regie/[code]/fond/[manche]`, sous la session de l'animateur : le serveur
+  revérifie le JPEG (`dimensionsJpeg` : en-tête et dimensions), uuid neuf à chaque dépôt, ancien
+  fichier retiré, puis `signalerSalle` : l'écran suit sans recharger.
+- Écran : `useFondsDeLaSoiree` télécharge toutes les photos du programme dès l'ouverture (URL
+  signée, puis `blob:` gardé : rien à attendre au lancement, le réseau peut tomber ensuite ; un
+  échec se retente toutes les 10 s). `fondDeLaScene` dit laquelle montrer ; `FondDeScene` la pose
+  derrière la scène (`.tu-stage--fond` isole les calques, la photo en `z-index: -1`), voile
+  `--tu-stage-fond-voile` (75 %), fondu `--tu-dur-fond`. Verdicts plein écran, fête, marques et
+  bulles passent dessus. L'aperçu de la régie la montre aussi.
+- Purge : `purgerFondsExpires` (`src/lib/purge.ts`), appelée par la route cron des photos :
+  31 jours après la soirée, fichier retiré puis colonne à `null`.
+- Tests : `tests/fonds.test.ts` (recadrage, JPEG, scène), `tests/fonds-base.test.ts` (droits,
+  bucket, contrainte, `etat_ecran`, purge), `e2e/fonds.spec.ts` (aperçu et avertissements, photo
+  au jeu et pas à la présentation, remplacement en pleine soirée, scores, retrait ;
+  `CAPTURES=<dossier>` capture l'écran). Photos de test fabriquées avec `sharp` (le ffmpeg du
+  projet vidéo n'a pas les générateurs d'image).
+- e2e : un fichier choisi **avant l'hydratation** est perdu, et React ne voit un second choix que
+  si la valeur du champ change : vider le champ (`setInputFiles([])`) avant de réessayer.
+- À prévoir au lot 15 : recopier les photos de fond sur la machine de salle.
