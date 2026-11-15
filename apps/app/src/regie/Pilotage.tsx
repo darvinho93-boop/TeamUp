@@ -241,6 +241,29 @@ export function Pilotage({
     });
   };
 
+  /**
+   * Relancer un jeu depuis le début (2026-11-15) : la base annule ses points, retire ce qui s'y
+   * est joué (mises, réponses, mots) et ramène la salle à sa présentation, d'un bloc.
+   */
+  const recommencer = (mancheId: string) => {
+    const jeu = etat.programme.find((m) => m.id === mancheId)?.jeu;
+    if (!jeu) return;
+    demarrer(async () => {
+      const { error } = await supabaseNavigateur().rpc('recommencer_manche', {
+        p_manche: mancheId,
+        // Le journal des points ne s'efface pas : les points du jeu sont annulés par une ligne.
+        p_motif: t('motifRelance', { jeu: tJeux(jeu) }),
+      });
+      if (error) {
+        setAlerte(t('erreur.impossible'));
+      } else {
+        signaler();
+        setAlerte(undefined);
+      }
+      await relire();
+    });
+  };
+
   /** Surenchère en mode téléphones : la régie raye un mot hors sujet (ou le rétablit). */
   const refuser = (motId: string, refuse: boolean) => {
     demarrer(async () => {
@@ -434,6 +457,19 @@ export function Pilotage({
             agir={agir}
           />
         )}
+        {(scene === 'jeu' || scene === 'intro') && manche && manche.statut !== 'a_venir' && (
+          // Un jeu mal parti se relance d'ici, sans passer par la préparation (2026-11-15).
+          <div className="tu-cluster">
+            <BoutonConfirme
+              variant="ghost"
+              confirmation={t('confirmer', { action: t('recommencerAction') })}
+              onConfirm={() => recommencer(manche.id)}
+              data-testid="recommencer-jeu"
+            >
+              {t('recommencer')}
+            </BoutonConfirme>
+          </div>
+        )}
         {scene !== 'jeu' && scene !== 'intro' && (
           // Hors jeu, le panneau dit d'abord ce que la salle voit (inventaire du 2026-10-30).
           <>
@@ -517,6 +553,17 @@ export function Pilotage({
                 <Button variant="ghost" onClick={() => agir({ type: 'intro', mancheId: m.id })}>
                   {t('presenter')}
                 </Button>
+              )}
+              {m.statut === 'terminee' && PILOTABLES.includes(m.jeu) && (
+                // Un jeu terminé ne se présente plus : il se rejoue en repartant de zéro.
+                <BoutonConfirme
+                  variant="ghost"
+                  confirmation={t('confirmer', { action: t('recommencerAction') })}
+                  onConfirm={() => recommencer(m.id)}
+                  data-testid={`recommencer-${m.ordre}`}
+                >
+                  {t('recommencerCourt')}
+                </BoutonConfirme>
               )}
             </li>
           ))}
