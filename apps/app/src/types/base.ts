@@ -653,6 +653,7 @@ export type Database = {
       musiques: {
         Row: {
           actif: boolean;
+          artiste: string | null;
           chemin: string;
           cree_le: string;
           id: string;
@@ -661,6 +662,7 @@ export type Database = {
         };
         Insert: {
           actif?: boolean;
+          artiste?: string | null;
           chemin: string;
           cree_le?: string;
           id?: string;
@@ -669,6 +671,7 @@ export type Database = {
         };
         Update: {
           actif?: boolean;
+          artiste?: string | null;
           chemin?: string;
           cree_le?: string;
           id?: string;
@@ -1054,6 +1057,11 @@ export type Database = {
           role: Database['public']['Enums']['role_animateur'];
         }[];
       };
+      blind_du_joueur: {
+        Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
+        Returns: Json;
+      };
+      buzzer_blind: { Args: { p_jeton_hash: string }; Returns: Json };
       capitaine_aux_mots: {
         Args: { p_jeton_hash: string };
         Returns: {
@@ -1308,7 +1316,7 @@ export type Database = {
     };
     Enums: {
       etiquette: 'b2c' | 'b2b' | 'tout_public';
-      jeu: 'list2' | 'qcm2' | 'enchere2' | 'mime2' | 'photo2' | 'grab' | 'cup';
+      jeu: 'list2' | 'qcm2' | 'enchere2' | 'mime2' | 'photo2' | 'grab' | 'cup' | 'blind';
       langue: 'fr' | 'en' | 'ta';
       role_animateur: 'animateur' | 'admin';
       scene:
@@ -1448,7 +1456,7 @@ export const Constants = {
   public: {
     Enums: {
       etiquette: ['b2c', 'b2b', 'tout_public'],
-      jeu: ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'grab', 'cup'],
+      jeu: ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'grab', 'cup', 'blind'],
       langue: ['fr', 'en', 'ta'],
       role_animateur: ['animateur', 'admin'],
       scene: [
