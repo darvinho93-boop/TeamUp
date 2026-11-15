@@ -186,6 +186,14 @@
   min-height: var(--tu-tap-min);
 }
 
+/* Écoute d'une musique de la bibliothèque, au back-office (2026-11-15). */
+.tu-regie-ecoute {
+  align-self: stretch;
+  width: 100%;
+  max-width: var(--tu-regie-ecoute-max);
+  margin-block-start: var(--tu-space-2);
+}
+
 /* Listes : événements, manches, joueurs. */
 .tu-regie-list {
   display: flex;

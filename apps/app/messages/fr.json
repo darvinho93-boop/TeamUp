@@ -328,6 +328,13 @@
         "statutCachee": "La soirée ne paraît pas sur la carte (il lui faut la case cochée et un titre).",
         "enregistrer": "Enregistrer la carte"
       },
+      "musique": {
+        "titre": "Musique sous le chrono",
+        "aide": "Musiques sous les chronos (elles tournent d’une question ou d’un thème à l’autre) :",
+        "vide": "Aucune musique dans la bibliothèque : ajoute-les au back-office.",
+        "inactive": "{titre} (désactivée)",
+        "enregistrer": "Enregistrer les musiques"
+      },
       "partenaire": {
         "titre": "Logo partenaire",
         "aide": "Le logo du partenaire de la soirée paraît en haut à gauche du grand écran, en face du logo Team Up!, sur toutes les scènes. Déposez un fichier sans fond (PNG, WebP ou SVG) : les marges vides sont retirées et la taille se règle seule.",
@@ -851,7 +858,8 @@
       "contenus": "Contenus",
       "animateurs": "Animateurs",
       "evenements": "Historique",
-      "mesure": "Mesure"
+      "mesure": "Mesure",
+      "musiques": "Musiques"
     },
     "etiquettes": {
       "b2c": "B2C",
@@ -905,6 +913,33 @@
       "reactiver": "Réactiver",
       "aideDesactiver": "Un contenu ne se supprime pas : désactivé, il quitte la préparation mais reste dans les soirées qui l’utilisent.",
       "aideReactiver": "Réactivé, il sera de nouveau proposé à la préparation."
+    },
+    "musiques": {
+      "titre": "Musiques",
+      "intro": "Les MP3 joués sur le grand écran sous les chronos du quiz et de la Surenchère. Chaque soirée choisit les siens à la préparation.",
+      "liste": "Bibliothèque · {n, plural, =0 {aucune musique} one {# musique} other {# musiques}}",
+      "aucune": "Aucune musique pour l’instant.",
+      "active": "active",
+      "inactive": "désactivée",
+      "ecouter": "Écouter {titre}",
+      "desactiver": "Désactiver",
+      "reactiver": "Réactiver",
+      "confirmerDesactiver": "Désactiver « {titre} » ?",
+      "ajouter": "Ajouter une musique",
+      "titreMusique": "Titre",
+      "fichier": "Fichier MP3",
+      "aideFichier": "MP3 seulement, 15 Mo au plus. Un extrait de 1 à 3 minutes suffit : il tourne en boucle.",
+      "ajouterBouton": "Ajouter",
+      "envoi": "Envoi…",
+      "ajoutee": "« {titre} » est ajoutée.",
+      "erreur": {
+        "titre": "Donne un titre de 1 à 80 caractères.",
+        "format": "Ce fichier n’est pas un MP3.",
+        "taille": "Le fichier dépasse 15 Mo.",
+        "vide": "Choisis un fichier MP3.",
+        "envoi": "L’envoi n’a pas abouti : réessaie.",
+        "echec": "La modification n’a pas abouti : réessaie."
+      }
     },
     "animateurs": {
       "titre": "Animateurs",

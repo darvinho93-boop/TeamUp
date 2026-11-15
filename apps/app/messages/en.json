@@ -328,6 +328,13 @@
         "statutCachee": "The event does not appear on the card (it needs the box ticked and a title).",
         "enregistrer": "Save card"
       },
+      "musique": {
+        "titre": "Music under the timer",
+        "aide": "Music under the timers (they rotate from one question or topic to the next):",
+        "vide": "No music in the library: add some in the back office.",
+        "inactive": "{titre} (disabled)",
+        "enregistrer": "Save the music"
+      },
       "partenaire": {
         "titre": "Partner logo",
         "aide": "The event partner's logo appears at the top left of the big screen, opposite the Team Up! logo, on every scene. Upload a file with no background (PNG, WebP or SVG): empty margins are removed and the size adjusts itself.",
@@ -851,7 +858,8 @@
       "contenus": "Content",
       "animateurs": "Hosts",
       "evenements": "History",
-      "mesure": "Metrics"
+      "mesure": "Metrics",
+      "musiques": "Music"
     },
     "etiquettes": {
       "b2c": "B2C",
@@ -905,6 +913,33 @@
       "reactiver": "Reactivate",
       "aideDesactiver": "Content is never deleted: once deactivated, it leaves preparation but stays in the events that use it.",
       "aideReactiver": "Once reactivated, it will be offered during preparation again."
+    },
+    "musiques": {
+      "titre": "Music",
+      "intro": "MP3 files played on the big screen under the quiz and Bidding timers. Each event picks its own during preparation.",
+      "liste": "Library · {n, plural, =0 {no tracks} one {# track} other {# tracks}}",
+      "aucune": "No music yet.",
+      "active": "active",
+      "inactive": "disabled",
+      "ecouter": "Listen to {titre}",
+      "desactiver": "Disable",
+      "reactiver": "Enable",
+      "confirmerDesactiver": "Disable “{titre}”?",
+      "ajouter": "Add a track",
+      "titreMusique": "Title",
+      "fichier": "MP3 file",
+      "aideFichier": "MP3 only, 15 MB max. A 1 to 3 minute excerpt is enough: it loops.",
+      "ajouterBouton": "Add",
+      "envoi": "Uploading…",
+      "ajoutee": "“{titre}” has been added.",
+      "erreur": {
+        "titre": "Enter a title of 1 to 80 characters.",
+        "format": "This file isn’t an MP3.",
+        "taille": "The file is over 15 MB.",
+        "vide": "Choose an MP3 file.",
+        "envoi": "The upload failed: try again.",
+        "echec": "The change failed: try again."
+      }
     },
     "animateurs": {
       "titre": "Hosts",

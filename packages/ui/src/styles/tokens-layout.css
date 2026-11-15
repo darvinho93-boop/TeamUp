@@ -43,6 +43,8 @@
   --tu-regie-menu-min: 14rem;
   /* Préparation : colonne du nom d'un passage (équipe, « Question 1 »), en face de son menu. */
   --tu-regie-passage-nom: 12rem;
+  /* Le lecteur d'écoute d'une musique au back-office (2026-11-15). */
+  --tu-regie-ecoute-max: 32rem;
   /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
   --tu-tracking-code: 0.08em;
 
