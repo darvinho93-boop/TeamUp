@@ -41,3 +41,48 @@ export async function purgerPhotosExpirees(
     if (photos.length < LOT) return total;
   }
 }
+
+/** Le dernier jour de soirée dont les photos sont expirées : 31 jours avant aujourd'hui (UTC). */
+export function derniereSoireeExpiree(maintenant: Date): string {
+  const jour = new Date(
+    Date.UTC(maintenant.getUTCFullYear(), maintenant.getUTCMonth(), maintenant.getUTCDate()),
+  );
+  jour.setUTCDate(jour.getUTCDate() - 31);
+  return jour.toISOString().slice(0, 10);
+}
+
+/**
+ * Retire les photos de fond des jeux (2026-11-15) des soirées passées depuis 31 jours, comme les
+ * photos du Photo challenge : ce sont souvent des photos de famille. Le fichier part d'abord, puis
+ * la colonne revient à `null`. Rend le nombre de photos retirées.
+ */
+export async function purgerFondsExpires(
+  client: SupabaseClient,
+  maintenant: Date = new Date(),
+): Promise<number> {
+  let total = 0;
+  for (;;) {
+    const { data, error } = await client
+      .from('manches')
+      .select('id, fond, evenements!inner(date_evenement)')
+      .not('fond', 'is', null)
+      .lte('evenements.date_evenement', derniereSoireeExpiree(maintenant))
+      .limit(LOT);
+    if (error) throw new Error(`lecture des fonds expirés : ${error.message}`);
+    const fonds = (data ?? []) as unknown as { id: string; fond: string }[];
+    if (fonds.length === 0) return total;
+
+    const retrait = await client.storage.from('fonds').remove(fonds.map((f) => f.fond));
+    if (retrait.error) throw new Error(`retrait des fonds : ${retrait.error.message}`);
+    const { error: oubli } = await client
+      .from('manches')
+      .update({ fond: null })
+      .in(
+        'id',
+        fonds.map((f) => f.id),
+      );
+    if (oubli) throw new Error(`oubli des fonds : ${oubli.message}`);
+    total += fonds.length;
+    if (fonds.length < LOT) return total;
+  }
+}
