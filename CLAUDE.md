@@ -1387,3 +1387,45 @@ envois** ; la régie écrit aussi, sous **« Team Up! »**.
   confirmation**.
 - Tests : `tests/messages-salle.test.ts` (base), `tests/messages-ecran.test.ts` (planning),
   `e2e/messages-ecran.spec.ts`.
+
+## Conventions posées le 2026-11-15 (fin du quiz, relance d'un jeu)
+
+Tranché le 2026-11-15, après le Bar à jeux du 14 : le quiz aux jetons s'y est fini sans que ses
+points soient écrits (« Scores » touché avant « Valider les jetons restants », classement à zéro ;
+aucune erreur dans les journaux, la validation n'est jamais partie). En modes **téléphone et
+jetons**, « Fin des questions » **donne les points du même geste** ; un quiz qui n'a pas donné ses
+points **ne se quitte pas** ; un jeu lancé se **reprend** (« Reprendre : … ») ; un jeu se
+**relance depuis le début** d'une touche confirmée.
+
+- Machine (`packages/game/src/pilotage/quiz.ts`) : `fin` accepte `survivants`, le compte de l'app,
+  et va alors droit à `resultat` avec les points. Sans compte (mode croix), `fin` mène à
+  `survivants`, saisie puis « Valider les survivants », comme avant.
+- `survivantsComptes` (`src/lib/pilotage.ts`) : les survivants de la base au téléphone, les jetons
+  restants aux jetons ; `null` à la croix **et quand l'état ne porte pas ce compte** (jamais de
+  zéros validés par défaut : on retombe alors sur l'étape `survivants` et son bouton). La régie
+  relit l'état avant d'écrire, comme pour le classement de la Surenchère.
+- `quizEnSuspens` : `fin` (dernière réponse révélée, plus de question) ou `valider` (étape
+  `survivants`). Dans ces deux états, scène libre, « Présenter » et « Dévoiler les équipes » sont
+  refusés (`calculerEtape` rend `null`) et la régie dit quelle touche le quiz attend
+  (`erreur.finirDAbord`, `erreur.validerDAbord`). Entre deux questions, les scores se montrent
+  toujours. L'étape `survivants` reste atteinte par une dernière question annulée ou la reprise
+  d'une manche d'avant ce changement.
+- Reprise : une manche `en_cours` présentée à nouveau dit « Reprendre : <jeu> » (`reprendre`), plus
+  « Commencer ». Les e2e qui passent un passage puis reprennent attendent ce libellé.
+- Relance (migration `20261115100000`) : `recommencer_manche(p_manche, p_motif)`, security definer
+  - `anime()`, une transaction. Les points du jeu sont **annulés par une ligne contraire par
+    équipe** (le journal `scores` reste append-only ; une seconde relance n'annule rien deux fois),
+    mises, réponses et mots de ses passages retirés, gagnantes des photos remises à faux (les photos
+    restent), passages et manche de nouveau `a_venir`, `options` sans `mode`, `jetons`, `fin` ni
+    `survivants` (le mode se rechoisit ; réglages de la préparation et `ordre_tire` gardés), pilotage
+    ramené à la présentation du jeu. Refusé pour une manche annulée (`PT409`). Les envois de photos
+    ne sont pas rouverts.
+- Régie : « Recommencer ce jeu depuis le début » sous les touches d'un jeu lancé (présentation et
+  jeu), « Recommencer » sur un jeu terminé dans le programme ; `BoutonConfirme`, deux appuis.
+  Le motif de l'annulation vient de la régie, dans sa langue (`motifRelance`).
+- Tests : `packages/game` (fin avec compte), `tests/pilotage-etapes.test.ts`,
+  `tests/recommencer.test.ts` (base), `e2e/recommencer.spec.ts` ; `quiz-jetons`, `quiz` et le
+  scénario 4 de `scenarios-regie` n'attendent plus de validation à part au téléphone ni aux jetons.
+- Journaux en ligne : la régie écrit dans Supabase sans passer par Vercel. Ceux de Supabase se
+  lisent par l'API de gestion (`…/analytics/endpoints/logs`, table `logs`, colonne `source`),
+  environ un jour de conservation ; le contenu d'une touche n'y est pas.
