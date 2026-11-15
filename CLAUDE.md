@@ -1429,3 +1429,37 @@ points **ne se quitte pas** ; un jeu lancé se **reprend** (« Reprendre : … �
 - Journaux en ligne : la régie écrit dans Supabase sans passer par Vercel. Ceux de Supabase se
   lisent par l'API de gestion (`…/analytics/endpoints/logs`, table `logs`, colonne `source`),
   environ un jour de conservation ; le contenu d'une touche n'y est pas.
+
+## Conventions posées le 2026-11-15 (musique sous les chronos)
+
+Tranché le 2026-11-15 : des **MP3 déposés au back-office** (une bibliothèque commune à toutes
+les soirées) ; la préparation **coche plusieurs musiques** par Quiz et par Surenchère, qui
+**tournent** d'une question ou d'un thème à l'autre ; elles jouent **pendant le chrono d'une
+question du quiz et d'un thème de la Surenchère** (voix et téléphones) et **s'effacent pour le
+tic-tac** des dix dernières secondes.
+
+- Base (migration `20261116090000`) : table `musiques` (titre, chemin `<uuid>.mp3`, taille,
+  `actif`), lue par tout animateur actif, écrite par un admin ; rien ne se supprime, on
+  désactive. Bucket **privé** `musiques` (MP3 seul, 15 Mo) : un admin dépose, un animateur lit
+  (URL signée). Retirer un fichier n'existe que pour défaire un dépôt dont la ligne a échoué.
+- Back-office `/admin/musiques` (`src/admin/FormulaireMusique.tsx`, `BasculeMusique.tsx`) : le
+  fichier part **du navigateur droit vers le stockage** (une fonction Vercel plafonne une requête
+  à 4,5 Mo). `refusMusique` (`src/lib/musiques.ts`) contrôle titre, taille et en-tête MP3 avant
+  l'envoi ; le bucket refuse de lui-même un autre type.
+- Préparation : `options.musiques` (identifiants, `musiquesDe`) par `enregistrerMusiques`,
+  seulement avant le lancement du jeu (une fois lancé, `enregistrer_etape` réécrit les options).
+- Écran : `musiqueA` (`src/lib/sons.ts`, pure, testée) donne la musique du moment et l'heure où
+  elle s'efface ; rotation `musiques[(passage.ordre - 1) % n]` parmi les cochées encore actives.
+  Le premier battement (« 10 ») tombe quand il reste **moins de onze** secondes (`tempsRestant`
+  arrondit par défaut) : la musique commence son fondu (`FONDU_MUSIQUE_MS`, 800 ms, celui du
+  lecteur) d'autant avant. `useSons` lit les musiques du jeu présenté, les télécharge d'avance
+  (`lecteur.charger`, gardées en MP3 dans un blob : un MP3 décodé pèserait dix fois plus, et le
+  réseau peut tomber ensuite), puis suit `musiqueA` ; son minuteur se réarme s'il part trop tôt.
+- Lecteur : `lecteur.musique(cle)` joue par un `<audio>` relié au contexte Web Audio (volume et
+  coupure de la régie, effacée sous un bruitage comme l'ambiance) ; le journal note
+  `musique:<id>` et `musique:-`.
+- Tests : `tests/musiques.test.ts`, `tests/sons.test.ts`, `tests/musiques-base.test.ts` (droits,
+  bucket), `e2e/musiques.spec.ts` (dépôt, choix, musique au chrono puis silence avant le premier
+  battement). Fichier de test : `e2e/fichiers/la-440.mp3` (4 s, fait avec le ffmpeg du projet
+  vidéo).
+- À prévoir au lot 15 (réseau local) : la bibliothèque doit être recopiée sur la machine.
