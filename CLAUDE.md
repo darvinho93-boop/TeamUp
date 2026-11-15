@@ -1463,3 +1463,47 @@ tic-tac** des dix dernières secondes.
   battement). Fichier de test : `e2e/fichiers/la-440.mp3` (4 s, fait avec le ffmpeg du projet
   vidéo).
 - À prévoir au lot 15 (réseau local) : la bibliothèque doit être recopiée sur la machine.
+
+## Conventions posées le 2026-11-15 (Blind test)
+
+Tranché le 2026-11-15 : un **sixième jeu**, le **Blind test** (l'objectif est d'enrichir la
+bibliothèque de jeux : écart assumé à « 5 jeux et 2 duels ») ; le **capitaine** de chaque équipe a
+un **buzzer** sur son téléphone ; l'équipe qui buzze a **7 s** pour répondre à voix haute, la régie
+juge ; une mauvaise réponse **bloque l'équipe sur ce titre** et la musique ne reprend que **quand la
+régie la relance** ; **+100** par titre trouvé, aucune pénalité (choix laissé à Claude).
+
+- Moteur : `blind` dans `SOCLE_GAMES` (60 s par titre pour la durée prévue), machine
+  `packages/game/src/pilotage/blind.ts` (`pret` → `ecoute` → `buzz` → `revele`, ou `pause` après
+  une mauvaise réponse, puis `relancer`), `positionExtraitMs`, script d'explication `blind`.
+- Base (migrations `20261116100000`, seule pour l'énumération, et `20261116110000`) : ligne
+  `blind` de `public.jeux`, `musiques.artiste` (facultatif ; la réponse est « titre — artiste »),
+  `buzzer_blind(p_jeton_hash)` (rôle de service, sous le verrou du pilotage : le premier arrivé
+  gagne, les autres reçoivent `PT409` « trop tard » ; refuse non-capitaine, équipe bloquée,
+  extrait écoulé ; écrit l'écoute cumulée et l'équipe dans le passage, passe le pilotage à `buzz`
+  avec le chrono de 7 s posé par la base), `blind_du_joueur` et `etat_joueur.blind` (étape, titre,
+  qui a la main, `peut_buzzer`, **jamais** la musique ni la réponse).
+- Les titres vivent dans `manches.options.titres` (`[{ musique, debut_s }]`, un par passage, dans
+  l'ordre) et la durée d'écoute dans `options.extrait_s` (30 s par défaut) : aucune colonne sur les
+  passages, aucun changement d'`etat_ecran`. Le résultat d'un passage : `ecoute_ms`, `bloquees`,
+  `buzz`, `trouve_par` (`resultatBlindDe` / `resultatBlindVers`).
+- Téléphone : `POST /api/partie/[code]/buzz` (`buzzerBlind`), puis le signal `relire` (tout le
+  monde relit : l'écran montre l'équipe, les autres buzzers se ferment). `src/joueur/BlindTest.tsx` :
+  le disque BUZZ (`.tu-buzzer`, corail) pour le capitaine pendant l'écoute, vibration au buzz.
+- Régie : « Commencer : Blind test » grisé tant qu'une équipe qui a des joueurs n'a pas de
+  capitaine (`CapitainesAuTelephone mode="blind"`) ; `PanneauBlind` montre la réponse à
+  l'animateur, les touches, et « Buzz <équipe> » en secours. `quizEnSuspens` rend `juger` pendant
+  un buzz : la régie ne quitte pas un titre sans avoir jugé. `PILOTABLES` contient `blind`.
+- Écran : `src/ecran/BlindTest.tsx` (égaliseur, chrono, équipes bloquées barrées ; buzz et
+  mauvaise réponse en plein écran à la couleur de l'équipe, comme un verdict ; titre et artiste à
+  `revele` seulement). L'extrait part par `lecteur.extrait(cle, depuisS)` (`extraitA`, pure,
+  testée) : à la seconde où il en est, donc un second écran ou un rechargement retombe juste ; il
+  s'arrête net au buzz. La régie et l'écran lisent la bibliothèque sous la session de l'animateur
+  (`useMusiquesDuJeu`).
+- Préparation : « Ajouter Blind test » (3 à 20 titres, 10 à 90 s d'écoute), puis par titre une
+  musique active et le début de l'extrait (`choisirTitreBlind`) ; l'alerte « sans contenu » compte
+  les titres sans musique. La relance d'un jeu (`recommencer_manche`) vaut aussi pour lui.
+- Latence buzz → écran mesurée sur le poste : 610 et 819 ms (`e2e/blind.spec.ts`, annotation).
+  `CAPTURES=<dossier>` y produit les captures de l'écran, de la régie et des téléphones.
+- Tests : `packages/game` (machine, position), `tests/pilotage-etapes.test.ts`, `tests/sons.test.ts`,
+  `tests/blind.test.ts` (trois buzz simultanés : un seul gagne ; rien de la réponse dans
+  `etat_joueur`), `e2e/blind.spec.ts`. La vitrine ne présente pas encore ce jeu (pas de vidéo).
