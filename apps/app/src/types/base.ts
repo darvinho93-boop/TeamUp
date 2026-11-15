@@ -650,6 +650,33 @@ export type Database = {
           },
         ];
       };
+      musiques: {
+        Row: {
+          actif: boolean;
+          chemin: string;
+          cree_le: string;
+          id: string;
+          taille: number;
+          titre: string;
+        };
+        Insert: {
+          actif?: boolean;
+          chemin: string;
+          cree_le?: string;
+          id?: string;
+          taille: number;
+          titre: string;
+        };
+        Update: {
+          actif?: boolean;
+          chemin?: string;
+          cree_le?: string;
+          id?: string;
+          taille?: number;
+          titre?: string;
+        };
+        Relationships: [];
+      };
       passages: {
         Row: {
           commence_le: string | null;
