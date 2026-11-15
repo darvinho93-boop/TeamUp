@@ -429,6 +429,7 @@ export type Database = {
           commence_le: string | null;
           cree_le: string;
           evenement_id: string;
+          fond: string | null;
           id: string;
           jeu: Database['public']['Enums']['jeu'];
           options: Json;
@@ -440,6 +441,7 @@ export type Database = {
           commence_le?: string | null;
           cree_le?: string;
           evenement_id: string;
+          fond?: string | null;
           id?: string;
           jeu: Database['public']['Enums']['jeu'];
           options?: Json;
@@ -451,6 +453,7 @@ export type Database = {
           commence_le?: string | null;
           cree_le?: string;
           evenement_id?: string;
+          fond?: string | null;
           id?: string;
           jeu?: Database['public']['Enums']['jeu'];
           options?: Json;
