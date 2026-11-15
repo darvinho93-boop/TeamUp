@@ -1385,8 +1385,15 @@ envois** ; la régie écrit aussi, sous **« Team Up! »**.
 - Régie (`src/regie/PanneauMessages.tsx`, au pilotage sous le son) : envois ouverts ou fermés,
   message de Team Up!, derniers messages avec « Retirer » / « Remettre », **un appui, sans
   confirmation**.
+- **Pendant le quiz** (scène `jeu` d'une manche `qcm2`), les bulles deviennent un **bandeau d'une
+  ligne** dans la marge du bas, **une à la fois** (`BANDEAU_MAX`, même planning à l'heure de la
+  base, une seule place), le texte trop long finissant par des points de suspension
+  (`.tu-bulles--bandeau`). Tranché le 2026-11-15 : à 8 équipes, trois bulles cachaient la case D et
+  les pastilles de la case B. Le bouton « Activer le son » passe dessus tant que le son n'est pas
+  activé.
 - Tests : `tests/messages-salle.test.ts` (base), `tests/messages-ecran.test.ts` (planning),
-  `e2e/messages-ecran.spec.ts`.
+  `e2e/messages-ecran.spec.ts` ; `e2e/quiz-jetons.spec.ts` (8 équipes) vérifie qu'aucune case n'est
+  couverte par un message.
 
 ## Conventions posées le 2026-11-15 (fin du quiz, relance d'un jeu)
 
