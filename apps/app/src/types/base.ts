@@ -1211,6 +1211,10 @@ export type Database = {
           joueur_id: string;
         }[];
       };
+      recommencer_manche: {
+        Args: { p_manche: string; p_motif: string };
+        Returns: string;
+      };
       refuser_mot: {
         Args: { p_mot: string; p_refuse: boolean };
         Returns: undefined;
