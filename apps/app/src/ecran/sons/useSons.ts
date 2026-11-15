@@ -1,18 +1,26 @@
 'use client';
 
 import { createContext, useCallback, useEffect, useRef, useState } from 'react';
+import { musiquesDe } from '@/lib/musiques';
 import {
   deroule,
   fondA,
   instantDe,
+  musiqueA,
   reglageDe,
   sonsPour,
   type Instant,
   type Montee,
   type Son,
 } from '@/lib/sons';
-import type { EtatSalle } from '@/lib/salle';
+import { mancheCourante, type EtatSalle } from '@/lib/salle';
+import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 import { creerLecteur, type Lecteur } from './lecteur';
+
+/** Une URL signée de musique ne sert qu'au téléchargement d'avance : une heure suffit. */
+const URL_MUSIQUE_S = 60 * 60;
+/** Ce qu'on ajoute à un minuteur, qui part parfois une milliseconde avant l'heure. */
+const MARGE_MINUTEUR_MS = 20;
 
 /**
  * De quoi jouer un son, pour les composants qui en déclenchent d'eux-mêmes (le chrono, l'arrêt
@@ -96,6 +104,57 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
     const fin = setTimeout(() => lecteur.fond(null), reste);
     return () => clearTimeout(fin);
   }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs, depart, duree, decalageMs]);
+
+  // Les musiques du jeu présenté (2026-11-15) : lues dans la bibliothèque dès la présentation,
+  // puis téléchargées d'avance. Seules les actives jouent ; une musique retirée de la bibliothèque
+  // après coup se tait.
+  const cochees = musiquesDe(mancheCourante(etat)?.options).join('|');
+  const [actives, setActives] = useState<ReadonlySet<string>>(() => new Set());
+  useEffect(() => {
+    if (!lecteur || !cochees) {
+      // Déjà vide (le cas de presque tous les écrans) : aucun rendu de plus.
+      setActives((avant) => (avant.size ? new Set() : avant));
+      return;
+    }
+    let actif = true;
+    void (async () => {
+      const supabase = supabaseNavigateur();
+      const { data } = await supabase
+        .from('musiques')
+        .select('id, chemin')
+        .in('id', cochees.split('|'))
+        .eq('actif', true);
+      const lignes = data ?? [];
+      if (!actif) return;
+      setActives(new Set(lignes.map((l) => l.id)));
+      if (lignes.length === 0) return;
+      const { data: signees } = await supabase.storage.from('musiques').createSignedUrls(
+        lignes.map((l) => l.chemin),
+        URL_MUSIQUE_S,
+      );
+      for (const ligne of lignes) {
+        const url = signees?.find((x) => x.path === ligne.chemin)?.signedUrl;
+        if (url) void lecteur.charger(ligne.id, url);
+      }
+    })();
+    return () => {
+      actif = false;
+    };
+  }, [lecteur, cochees]);
+
+  // La musique du chrono : de son départ aux dix dernières secondes, puis le tic-tac seul.
+  // Le minuteur peut partir un peu tôt : chaque passage le réarme jusqu'à l'heure dite.
+  const [passage, relancer] = useState(0);
+  const musique = lecteur ? musiqueA(etat, Date.now() + decalageMs, actives) : null;
+  const musiqueId = musique?.id ?? null;
+  const jusquA = musique?.jusquA ?? null;
+  useEffect(() => {
+    lecteur?.musique(musiqueId);
+    if (!lecteur || jusquA === null) return;
+    const reste = jusquA - (Date.now() + decalageMs);
+    const fin = setTimeout(() => relancer((n) => n + 1), Math.max(0, reste) + MARGE_MINUTEUR_MS);
+    return () => clearTimeout(fin);
+  }, [lecteur, musiqueId, jusquA, decalageMs, passage]);
 
   const jouer = useCallback(
     (son: Son, apresMs?: number, montee?: Montee, dansLeSonMs?: number) =>

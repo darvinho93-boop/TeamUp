@@ -1,4 +1,5 @@
 import type { GameCode } from '@teamup/game';
+import { musiquesDe } from './musiques';
 import { FINALE } from './ouverture';
 import { ETAPE_FORMATION, ETAPE_TIRAGE_ORDRE } from './pilotage';
 import { mancheCourante, type EtatSalle } from './salle';
@@ -236,4 +237,60 @@ export interface Montee {
 export function monteeDuChrono(reste: number): Montee {
   const p = Math.min(1, Math.max(0, (DERNIERES_SECONDES - reste) / (DERNIERES_SECONDES - 1)));
   return { gain: 0.7 + 0.8 * p, vitesse: 1 + 0.35 * p };
+}
+
+/**
+ * Musique sous les chronos (2026-11-15) : les MP3 de la bibliothèque, cochés à la préparation
+ * pour chaque Quiz et chaque Surenchère (`options.musiques`). Plus fort que l'ambiance, sous les
+ * bruitages.
+ */
+export const NIVEAU_MUSIQUE = 0.45;
+
+/**
+ * Le fondu des musiques, à l'entrée comme à la sortie (le lecteur s'en sert pour toutes). Celle
+ * du chrono commence à s'effacer d'autant avant les dix dernières secondes, pour que le premier
+ * battement tombe sur le silence.
+ */
+export const FONDU_MUSIQUE_MS = 800;
+
+/** La musique qui doit jouer, et l'instant (heure de la base, ms) où elle doit s'effacer. */
+export interface MusiqueDuMoment {
+  id: string;
+  jusquA: number;
+}
+
+/**
+ * Ce que joue l'écran sous un chrono : pendant celui d'une question du quiz (lancé) et celui d'un
+ * thème de la Surenchère, à la voix comme aux téléphones ; jusqu'aux dix dernières secondes, où le
+ * tic-tac prend toute la place (elle s'est effacée juste avant). Les musiques cochées et encore actives tournent, une par question
+ * ou par thème, dans l'ordre des passages : deux écrans et un rechargement jouent la même.
+ * `maintenantMs` est à l'heure de la base.
+ */
+export function musiqueA(
+  etat: Pick<EtatSalle, 'pilotage' | 'programme'>,
+  maintenantMs: number,
+  actives: ReadonlySet<string>,
+): MusiqueDuMoment | null {
+  const {
+    scene,
+    etape,
+    passage_id,
+    chrono_depart_ms: depart,
+    chrono_duree_s: duree,
+  } = etat.pilotage;
+  if (scene !== 'jeu' || depart === null || duree === null) return null;
+  const manche = etat.programme.find((m) => m.id === etat.pilotage.manche_id);
+  const sousChrono =
+    (manche?.jeu === 'qcm2' && etape === 'question') ||
+    (manche?.jeu === 'enchere2' && etape === 'chrono');
+  if (!manche || !sousChrono) return null;
+  const liste = musiquesDe(manche.options).filter((id) => actives.has(id));
+  const passage = manche.passages.find((p) => p.id === passage_id);
+  if (liste.length === 0 || !passage) return null;
+  // Le chrono affiche la seconde entamée par défaut (`tempsRestant`) : « 10 », le premier
+  // battement, paraît quand il reste moins de onze secondes.
+  const premierBattement = depart + (duree - DERNIERES_SECONDES - 1) * 1000;
+  const jusquA = premierBattement - FONDU_MUSIQUE_MS;
+  if (maintenantMs >= jusquA) return null;
+  return { id: liste[(Math.max(1, passage.ordre) - 1) % liste.length]!, jusquA };
 }

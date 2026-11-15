@@ -12,13 +12,16 @@ import {
   NIVEAUX,
   reglageDe,
   SONS,
+  FONDU_MUSIQUE_MS,
   monteeDuChrono,
+  musiqueA,
   sonDuChrono,
   sonsDeLaFinale,
   sonsPour,
   type Instant,
 } from '../src/lib/sons';
 import { FINALE } from '../src/lib/ouverture';
+import type { EtatSalle, MancheSalle } from '../src/lib/salle';
 
 const instant = (extra: Partial<Instant> = {}): Instant => ({
   scene: 'accueil',
@@ -257,5 +260,83 @@ describe('la page Instagram et la clôture', () => {
     expect(fondA(instant({ scene: 'instagram' }))).toBe('ambiance');
     expect(fondA(instant({ scene: 'cloture' }))).toBe('ambiance');
     expect(fondA(instant({ scene: 'podium' }))).toBeNull();
+  });
+});
+
+describe('la musique sous les chronos (2026-11-15)', () => {
+  const T0 = 1_000_000;
+  const passage = (id: string, ordre: number) => ({
+    id,
+    ordre,
+    statut: 'en_cours' as const,
+    equipe_id: null,
+    points: null,
+    resultat: {},
+    contenu_id: null,
+    public: {},
+    secret: null,
+  });
+  const manche = (jeu: MancheSalle['jeu'], musiques: unknown): MancheSalle => ({
+    id: 'm1',
+    jeu,
+    ordre: 1,
+    statut: 'en_cours',
+    options: { musiques },
+    passages: [passage('p1', 1), passage('p2', 2), passage('p3', 3)],
+  });
+  const salle = (
+    jeu: MancheSalle['jeu'],
+    etape: string,
+    passage_id = 'p1',
+    musiques: unknown = ['a', 'b'],
+    depart: number | null = T0,
+  ): Pick<EtatSalle, 'pilotage' | 'programme'> => ({
+    pilotage: {
+      scene: 'jeu',
+      manche_id: 'm1',
+      passage_id,
+      etape,
+      indices: 4,
+      chrono_depart_ms: depart,
+      chrono_duree_s: depart === null ? null : 30,
+      version: 'v1',
+    },
+    programme: [manche(jeu, musiques)],
+  });
+  const toutes = new Set(['a', 'b', 'c']);
+
+  it('joue pendant le chrono d’une question, jusqu’aux dix dernières secondes', () => {
+    expect(musiqueA(salle('qcm2', 'question'), T0 + 1000, toutes)).toEqual({
+      id: 'a',
+      // 30 s de chrono : « 10 » paraît à 19 s (secondes arrondies par défaut), et la musique
+      // finit son fondu de sortie juste avant.
+      jusquA: T0 + 19_000 - FONDU_MUSIQUE_MS,
+    });
+    expect(musiqueA(salle('qcm2', 'question'), T0 + 18_200, toutes)).toBeNull();
+    // La question affichée, chrono pas encore lancé : rien.
+    expect(musiqueA(salle('qcm2', 'question', 'p1', ['a'], null), T0, toutes)).toBeNull();
+    expect(musiqueA(salle('qcm2', 'reponse'), T0 + 1000, toutes)).toBeNull();
+  });
+
+  it('joue pendant le chrono d’un thème de la Surenchère, pas sur la grille ni au verdict', () => {
+    expect(musiqueA(salle('enchere2', 'chrono'), T0, toutes)?.id).toBe('a');
+    for (const etape of ['themes', 'sujet', 'tenu', 'podium']) {
+      expect(musiqueA(salle('enchere2', etape), T0, toutes)).toBeNull();
+    }
+    // Un autre jeu, même à une étape du même nom, n'en a pas.
+    expect(musiqueA(salle('list2', 'chrono'), T0, toutes)).toBeNull();
+  });
+
+  it('tourne d’une question à l’autre, dans l’ordre des passages', () => {
+    expect(musiqueA(salle('qcm2', 'question', 'p2'), T0, toutes)?.id).toBe('b');
+    expect(musiqueA(salle('qcm2', 'question', 'p3'), T0, toutes)?.id).toBe('a');
+  });
+
+  it('ne joue que les musiques cochées et encore actives', () => {
+    expect(musiqueA(salle('qcm2', 'question', 'p1', []), T0, toutes)).toBeNull();
+    expect(musiqueA(salle('qcm2', 'question', 'p1', null), T0, toutes)).toBeNull();
+    // « a » désactivée : la rotation se fait sur ce qui reste.
+    expect(musiqueA(salle('qcm2', 'question', 'p1'), T0, new Set(['b']))?.id).toBe('b');
+    expect(musiqueA(salle('qcm2', 'question', 'p1'), T0, new Set())).toBeNull();
   });
 });
