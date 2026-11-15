@@ -6,3 +6,4 @@ export * from './quiz';
 export * from './mime';
 export * from './photo';
 export * from './duel';
+export * from './blind';

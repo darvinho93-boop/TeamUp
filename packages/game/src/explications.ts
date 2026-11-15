@@ -56,7 +56,12 @@ export type VisuelExplication =
   | 'duellistes-gobelet'
   | 'tete-epaule'
   | 'gobelet'
-  | 'points-duel';
+  | 'points-duel'
+  | 'ecoute-blind'
+  | 'buzzer'
+  | 'reponse-blind'
+  | 'bloquee'
+  | 'points-blind';
 
 export interface CarteExplication {
   /** Clé de la phrase, sous `ecran.explications.<script>`. */
@@ -117,6 +122,14 @@ export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplic
     carte('musique', 8),
     carte('attrape', 9),
     carte('points', 8, 'points-duel'),
+  ],
+  // Blind test (2026-11-15) : le capitaine buzze, l'équipe répond, une erreur lui ôte la main.
+  blind: [
+    carte('ecoute', 9, 'ecoute-blind'),
+    carte('buzzer', 9),
+    carte('reponse', 9, 'reponse-blind'),
+    carte('bloquee', 9),
+    carte('points', 8, 'points-blind'),
   ],
   cup: [
     carte('duellistes-gobelet', 9),

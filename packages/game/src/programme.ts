@@ -19,7 +19,8 @@ export type ElementProgramme =
   | { jeu: 'enchere2'; themes: number }
   /** La prise de vue dure toute la soirée ; seule la diffusion finale prend du créneau. */
   | { jeu: 'photo2' }
-  | { jeu: 'grab' | 'cup'; duels: number };
+  | { jeu: 'grab' | 'cup'; duels: number }
+  | { jeu: 'blind'; titres: number };
 
 export interface DureeProgramme {
   parJeu: { jeu: GameCode; secondes: number }[];
@@ -48,6 +49,8 @@ function unites(element: ElementProgramme): number {
     case 'grab':
     case 'cup':
       return element.duels;
+    case 'blind':
+      return element.titres;
   }
 }
 

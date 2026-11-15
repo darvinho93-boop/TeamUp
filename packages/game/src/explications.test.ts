@@ -14,7 +14,7 @@ import {
 const SCRIPTS = Object.keys(SCRIPTS_EXPLICATION) as ScriptExplication[];
 
 describe('scripts des explications', () => {
-  it('couvrent les 5 jeux et les 2 duels, rien de plus', () => {
+  it('couvrent les jeux du catalogue et les 2 duels, rien de plus', () => {
     expect(new Set(SCRIPTS)).toEqual(
       new Set([
         ...SOCLE_GAMES,

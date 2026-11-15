@@ -1,12 +1,13 @@
 /**
- * Catalogue fermé de la spec v3 : cinq jeux socles et deux duels en bêta.
- * Rien d'autre n'existe, et rien d'autre ne doit être ajouté.
+ * Catalogue des jeux : les cinq jeux socles de la spec v3, le Blind test (ajouté le 2026-11-15 :
+ * l'objectif est d'enrichir la bibliothèque de jeux) et deux duels en bêta. Un jeu ne s'ajoute
+ * qu'avec sa ligne dans `public.jeux`, sa machine de pilotage et son explication.
  *
  * Les fiches reprennent la table `public.jeux` (migration `programme_et_scores`) :
  * toute modification passe par une migration et par ce fichier, ensemble.
  */
 
-export const SOCLE_GAMES = ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2'] as const;
+export const SOCLE_GAMES = ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'blind'] as const;
 export const BETA_DUELS = ['grab', 'cup'] as const;
 
 export type SocleGame = (typeof SOCLE_GAMES)[number];
@@ -31,6 +32,8 @@ export const FICHES: Readonly<Record<GameCode, FicheJeu>> = {
   enchere2: { nom: 'Surenchère', sequentiel: false, chronoPassageS: 120, beta: false },
   mime2: { nom: 'Mime', sequentiel: true, chronoPassageS: 150, beta: false },
   photo2: { nom: 'Photo challenge', sequentiel: false, chronoPassageS: 300, beta: false },
+  // Un titre : l'écoute (30 s par défaut), les réponses, la révélation.
+  blind: { nom: 'Blind test', sequentiel: false, chronoPassageS: 60, beta: false },
   grab: { nom: "Attrape l'objet", sequentiel: false, chronoPassageS: 30, beta: true },
   cup: { nom: 'Tête, épaule, gobelet', sequentiel: false, chronoPassageS: 45, beta: true },
 };
