@@ -8,6 +8,7 @@ node_modules/
 dist/
 .astro/
 .next/
+.next-machine/
 out/
 .vercel/
 *.tsbuildinfo
@@ -34,3 +35,13 @@ Thumbs.db
 
 # Régénéré par Next à chaque dev/build, et son contenu diffère entre les deux.
 apps/app/next-env.d.ts
+
+# Machine de la salle (lot 15) : binaires téléchargés, certificat, clés et secrets, base recopiée.
+machine/bin/
+machine/certs/
+machine/lego/
+machine/journaux/
+machine/supabase/migrations/
+machine/supabase/.temp/
+machine/supabase/.branches/
+machine/supabase/signing_keys.json

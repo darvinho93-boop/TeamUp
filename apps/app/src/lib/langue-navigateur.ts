@@ -1,10 +1,17 @@
+import { domaineDuCookie } from './cookies';
 import { COOKIE_LANGUE, type Langue } from './partie';
 
 const UN_AN_S = 365 * 24 * 60 * 60;
 
-/** La langue suit le navigateur d'une page à l'autre : le serveur la lit pour choisir les textes. */
+/**
+ * La langue suit le navigateur d'une page à l'autre : le serveur la lit pour choisir les textes.
+ * Posée pour tout `teamup-game.fr` (lot 15), elle suit aussi l'invité sur la machine de la salle.
+ */
 export function memoriserLangue(langue: Langue) {
-  document.cookie = `${COOKIE_LANGUE}=${langue}; path=/; max-age=${UN_AN_S}; samesite=lax`;
+  const domaine = domaineDuCookie(window.location.hostname);
+  // Un ancien cookie posé pour la seule adresse passerait avant celui du domaine : il part.
+  if (domaine) document.cookie = `${COOKIE_LANGUE}=; path=/; max-age=0`;
+  document.cookie = `${COOKIE_LANGUE}=${langue}; path=/; max-age=${UN_AN_S}; samesite=lax${domaine ? `; domain=${domaine}` : ''}`;
 }
 
 /** Chaque langue se nomme dans sa propre langue. */
