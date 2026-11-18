@@ -1659,3 +1659,30 @@ eliminees, tours, verdict: { trouvees, eliminees } }` (le verdict du dernier tou
   vitrine depuis le 2026-11-18 (fiche 07, « Nouveau »).
 - Tests : `packages/game` (machine), `tests/portrait.test.ts`, `tests/portrait-base.test.ts`
   (proches, grille, votes, aucune fuite), `tests/pilotage-etapes.test.ts`, `e2e/portrait.spec.ts`.
+
+## Conventions posées le 2026-11-18 (refonte éditoriale de la vitrine)
+
+Tranché le 2026-11-18 : la vitrine suit le document « Des mots pour créer des liens »
+(`correction Site vitrine/TeamUp_Wording_Site_Premium.pdf`, hors dépôt), page par page. Il remplace
+la ligne du 2026-10-10 (« l'émotion d'abord… ») : **une expérience événementielle collective**,
+l'univers du jeu télévisé pour concept, la rencontre pour finalité ; **ton premium**, chaleureux et
+sobre ; **particuliers et entreprises à parts égales** sur l'accueil.
+
+- Accroche : « Le jeu télévisé s'invite à votre événement. » ; bénéfice : « Vous les réunissez. Le
+  jeu les rapproche. » ; signature (déjà le slogan de `MARQUE`) : « On joue. On se rencontre. On
+  crée du lien. », portée par le bandeau final de l'accueil (`CtaBanner signature`).
+- **À éviter**, et à ne pas réintroduire : « On fait le show », « soirée de folie », « tout le
+  monde debout », « ambiance garantie », « on casse les silos », « des inconnus deviennent amis »,
+  « met le feu à la salle », « vous n'avez rien à faire ». Aucune promesse d'obligation à se lever
+  ni de participation uniforme : la participation s'adapte.
+- Le nouveau texte **introduit** le détail sans le supprimer : règles en étapes sur Les jeux
+  (accroche du document en gras, puis sa phrase de conclusion, puis les étapes), FAQ, prix, tableau
+  des durées, matériel. Les mentions légales restent ; seules leurs introductions changent.
+- Composants : `PageIntro` prend `lead` en un ou plusieurs paragraphes, `chapo` (question en gras
+  avant) et `fort` (phrase en gras après) ; `Recit` (`components/layout/`) pour les passages
+  racontés, un paragraphe pouvant être `{ texte, fort: true }` ; `CtaBanner` prend `signature`.
+- Le formulaire de devis garde ses champs : seuls les libellés sont ceux du document. Les e-mails
+  gardent leurs libellés courts.
+- Comment ça marche : une rangée qui défile sur téléphone doit contenir ses éléments en position
+  absolue (`.surface { position: relative }`), sinon une légende cachée élargit la page (vu sous
+  `prefers-reduced-motion`, déjà en ligne avant la refonte).
