@@ -201,7 +201,7 @@ avecBase('avis des joueurs', () => {
     } finally {
       await service.from('evenements').update({ statut: 'en_cours' }).eq('id', evenement.id);
     }
-    const kavin = (await lireAvis()).find((a) => a.positifs[0] === 'எல்லாம்');
+    const kavin = (await lireAvis()).find((a) => (a.positifs as string[])[0] === 'எல்லாம்');
     expect(kavin?.langue).toBe('ta');
   });
 

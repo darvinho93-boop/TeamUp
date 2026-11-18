@@ -1,4 +1,5 @@
 import 'server-only';
+import type { AvisDuJoueur } from '@/lib/avis';
 import type {
   EtatJoueur,
   EvenementPublic,
@@ -400,6 +401,47 @@ export async function changerLangue(
     return { ok: false, refus };
   }
   return { ok: true, etat: (await etatPourJeton(code, jeton)) ?? etat };
+}
+
+export type RefusAvis = 'session' | 'fermes' | 'avis';
+
+/**
+ * Le joueur de ce cookie donne (ou remplace) son avis sur la soirée (2026-11-18). La base décide
+ * seule (avis ouverts, textes) ; puis le signal `mises`, que seuls l'écran et la régie écoutent
+ * (ils comptent les avis). Renvoie l'état à jour, qui porte l'avis enregistré.
+ */
+export async function donnerAvis(
+  code: string,
+  avis: AvisDuJoueur,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusAvis }> {
+  const jeton = await jetonDe(code);
+  if (!jeton) return { ok: false, refus: 'session' };
+
+  const { data, error } = await supabaseService().rpc('donner_avis', {
+    p_jeton_hash: hacher(jeton),
+    p_positifs: avis.positifs,
+    // Avec « rien à redire », la base ignore ce texte ; sans, un texte vide est refusé.
+    p_negatif: avis.negatif ?? '',
+    p_rien_a_redire: avis.rien_a_redire,
+    p_citable: avis.citable,
+  });
+  if (error) {
+    const refus: RefusAvis | null = /session/.test(error.message)
+      ? 'session'
+      : /fermés/.test(error.message)
+        ? 'fermes'
+        : /avis invalide/.test(error.message)
+          ? 'avis'
+          : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  const { evenement_id } = data as { evenement_id: string };
+  const [etat] = await Promise.all([
+    etatPourJeton(code, jeton),
+    signalerSalle(evenement_id, 'mises'),
+  ]);
+  return etat ? { ok: true, etat } : { ok: false, refus: 'session' };
 }
 
 export type RefusMessage = 'session' | 'fermes' | 'termine' | 'message' | 'cadence';

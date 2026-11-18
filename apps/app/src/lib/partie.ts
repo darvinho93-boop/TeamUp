@@ -4,6 +4,7 @@
  */
 
 import type { GameCode } from '@teamup/game';
+import type { AvisDuJoueur } from './avis';
 
 export const LANGUES = ['fr', 'en', 'ta'] as const;
 export type Langue = (typeof LANGUES)[number];
@@ -176,6 +177,8 @@ export interface EtatJoueur {
     photos_closes: boolean;
     /** Le bouton « Message pour le grand écran » ; absent sans la migration du 2026-11-15. */
     messages_ouverts?: boolean;
+    /** Le bouton « Donner mon avis » ; absent sans la migration du 2026-11-18. */
+    avis_ouverts?: boolean;
   };
   equipe: {
     id: string;
@@ -196,6 +199,8 @@ export interface EtatJoueur {
   blind?: BlindJoueur | null;
   /** `null` tant que la soirée n'a pas de manche photo. */
   photos: PhotosJoueur | null;
+  /** L'avis déjà donné par ce joueur ; absent sans la migration du 2026-11-18. */
+  avis?: AvisDuJoueur | null;
 }
 
 /** Réponses d'erreur des routes de la partie : le client les traduit. */
