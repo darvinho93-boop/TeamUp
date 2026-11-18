@@ -1093,7 +1093,9 @@
         "question": "Question",
         "theme": "Thème",
         "sujet": "Sujet",
-        "mot": "Mot"
+        "mot": "Mot",
+        "nom": "Nom (à l’écran)",
+        "indice3": "Indice 3"
       },
       "erreurs": {
         "requis": "Champ obligatoire.",

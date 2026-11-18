@@ -34,6 +34,40 @@ describe('saisie d’un contenu', () => {
     });
   });
 
+  it('range un portrait : le nom en public, trois indices secrets ; le nom tient en 60 caractères', () => {
+    const saisie = lireSaisie(
+      'portrait',
+      formulaire({
+        etiquette: 'tout_public',
+        'fr.nom': ' Marie Curie ',
+        'fr.indice1': 'Deux prix Nobel',
+        'fr.indice2': 'Polonaise de naissance',
+        'fr.indice3': 'Le radium',
+      }),
+    );
+    expect(saisie).toEqual({
+      ok: true,
+      etiquette: 'tout_public',
+      langues: {
+        fr: {
+          public: { nom: 'Marie Curie' },
+          secret: { indices: ['Deux prix Nobel', 'Polonaise de naissance', 'Le radium'] },
+        },
+      },
+    });
+    const long = lireSaisie(
+      'portrait',
+      formulaire({
+        etiquette: 'tout_public',
+        'fr.nom': 'x'.repeat(61),
+        'fr.indice1': 'a',
+        'fr.indice2': 'b',
+        'fr.indice3': 'c',
+      }),
+    );
+    expect(long).toEqual({ ok: false, erreurs: { 'fr.nom': 'trop_long' } });
+  });
+
   it('exige le français, champ par champ', () => {
     const saisie = lireSaisie('enchere2', formulaire({ etiquette: 'b2b', 'fr.theme': 'Sport' }));
     expect(saisie).toEqual({ ok: false, erreurs: { 'fr.sujet': 'requis' } });

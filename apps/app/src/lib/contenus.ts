@@ -10,7 +10,7 @@
 import { z } from 'zod';
 import { LANGUES, type Langue } from './partie';
 
-export const JEUX_CONTENUS = ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2'] as const;
+export const JEUX_CONTENUS = ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'portrait'] as const;
 export type JeuContenu = (typeof JEUX_CONTENUS)[number];
 
 export const ETIQUETTES = ['b2c', 'b2b', 'tout_public'] as const;
@@ -27,6 +27,8 @@ export const CHAMPS = {
   enchere2: ['theme', 'sujet'],
   mime2: ['mot'],
   photo2: ['theme'],
+  // Portrait mystère (2026-11-18) : le nom à l'écran, trois indices secrets, du plus dur au plus facile.
+  portrait: ['nom', 'indice1', 'indice2', 'indice3'],
 } as const satisfies Record<JeuContenu, readonly string[]>;
 
 export type Champ = (typeof CHAMPS)[JeuContenu][number];
@@ -35,7 +37,12 @@ export type Champ = (typeof CHAMPS)[JeuContenu][number];
 export const nomChamp = (langue: Langue, champ: string) => `${langue}.${champ}`;
 
 export const TEXTE_MAX = 300;
-const Texte = z.string().trim().min(1).max(TEXTE_MAX);
+
+/** La longueur permise d'un champ : 300 caractères, sauf le Portrait mystère (nom 60, indice 200). */
+export function longueurMax(jeu: JeuContenu, champ: string): number {
+  if (jeu !== 'portrait') return TEXTE_MAX;
+  return champ === 'nom' ? 60 : 200;
+}
 
 type Valeur = Record<string, unknown>;
 export interface Bloc {
@@ -77,6 +84,11 @@ function versBloc(jeu: JeuContenu, v: Record<string, string>, bonne: number): Bl
       return { public: {}, secret: { mot: v['mot'] } };
     case 'photo2':
       return { public: { theme: v['theme'] } };
+    case 'portrait':
+      return {
+        public: { nom: v['nom'] },
+        secret: { indices: [v['indice1'], v['indice2'], v['indice3']] },
+      };
   }
 }
 
@@ -108,7 +120,7 @@ export function lireSaisie(jeu: JeuContenu, lire: (nom: string) => unknown): Sai
     // Une langue facultative laissée vide est simplement absente.
     if (langue !== 'fr' && champs.every((c) => valeurs[c] === '')) continue;
     for (const c of champs) {
-      const lu = Texte.safeParse(valeurs[c]);
+      const lu = z.string().trim().min(1).max(longueurMax(jeu, c)).safeParse(valeurs[c]);
       if (!lu.success) erreurs[nomChamp(langue, c)] = valeurs[c] ? 'trop_long' : 'requis';
     }
     langues[langue] = versBloc(jeu, valeurs, bonne);
@@ -147,6 +159,7 @@ export function libelleContenu(
   if (jeu === 'qcm2') return texte(p, 'question');
   if (jeu === 'mime2') return texte(s, 'mot');
   if (jeu === 'photo2') return texte(p, 'theme');
+  if (jeu === 'portrait') return texte(p, 'nom');
   return '—';
 }
 
@@ -174,6 +187,8 @@ export function valeursDuFormulaire(
       theme: chaine(p['theme']),
       sujet: chaine(s['sujet']),
       mot: chaine(s['mot']),
+      nom: chaine(p['nom']),
+      indice3: liste(s['indices'], 2),
     };
     for (const c of CHAMPS[jeu]) valeurs[nomChamp(langue, c)] = champs[c] ?? '';
     if (jeu === 'qcm2' && typeof s['bonne'] === 'number') valeurs['bonne'] = String(s['bonne']);

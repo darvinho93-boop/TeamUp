@@ -7,8 +7,8 @@ import { enregistrerContenu } from '@/app/admin/contenus/actions';
 import {
   CHAMPS,
   ETIQUETTES,
+  longueurMax,
   nomChamp,
-  TEXTE_MAX,
   type Champ,
   type JeuContenu,
 } from '@/lib/contenus';
@@ -39,7 +39,9 @@ export function FormulaireContenu({
   const valeurs = etat?.valeurs ?? initiales;
   const erreur = (nom: string) => {
     const code = etat?.erreurs[nom];
-    return code ? t(`erreurs.${code}`, { max: TEXTE_MAX }) : undefined;
+    return code
+      ? t(`erreurs.${code}`, { max: longueurMax(jeu, nom.split('.').pop() ?? '') })
+      : undefined;
   };
 
   return (
@@ -98,7 +100,7 @@ export function FormulaireContenu({
                   }
                   name={nom}
                   defaultValue={valeurs[nom] ?? ''}
-                  maxLength={TEXTE_MAX}
+                  maxLength={longueurMax(jeu, champ)}
                   required={langue === 'fr'}
                   {...(message ? { error: message } : {})}
                   lang={langue}

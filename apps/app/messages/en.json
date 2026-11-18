@@ -1093,7 +1093,9 @@
         "question": "Question",
         "theme": "Theme",
         "sujet": "Topic",
-        "mot": "Word"
+        "mot": "Word",
+        "nom": "Name (on screen)",
+        "indice3": "Clue 3"
       },
       "erreurs": {
         "requis": "Required field.",

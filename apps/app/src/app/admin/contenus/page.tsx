@@ -33,6 +33,8 @@ export default async function Contenus({ searchParams }: PageProps<'/admin/conte
       'id, jeu, etiquette, actif, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
     )
     .eq('jeu', jeu)
+    // La banque seulement : les proches d'une soirée (Portrait mystère) restent à sa préparation.
+    .is('evenement_id', null)
     .order('actif', { ascending: false })
     .order('cree_le', { ascending: false });
   if (etiquette) requete = requete.eq('etiquette', etiquette);
