@@ -505,6 +505,11 @@
   font-size: var(--tu-size-4xl);
 }
 
+/* L'invitation à donner son avis (2026-11-18), quand la régie a ouvert le questionnaire. */
+.tu-stage-cloture__avis {
+  font-weight: 700;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .tu-stage-insta > * {
     animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease) both;
@@ -525,6 +530,15 @@
 
   .tu-stage-cloture__insta {
     animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease) var(--tu-cloture-insta) both;
+  }
+
+  /* Ouverte après coup : elle paraît aussitôt ; ouverte dès le début : avec Instagram. */
+  .tu-stage-cloture__avis {
+    animation: tu-revelation var(--tu-dur-reveal) var(--tu-ease) both;
+  }
+
+  .tu-stage-cloture__avis--suite {
+    animation-delay: var(--tu-cloture-insta);
   }
 }
 

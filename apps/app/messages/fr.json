@@ -1008,7 +1008,8 @@
       "trouvePar": "Trouvé par {equipe} !",
       "personne": "Personne ne l’a trouvé !",
       "bloquees": "Plus de buzz sur ce titre"
-    }
+    },
+    "avis": "Donnez votre avis sur votre téléphone !"
   },
   "admin": {
     "nav": {

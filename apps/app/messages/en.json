@@ -1008,7 +1008,8 @@
       "trouvePar": "Found by {equipe}!",
       "personne": "Nobody found it!",
       "bloquees": "No more buzzing on this song"
-    }
+    },
+    "avis": "Share your feedback on your phone!"
   },
   "admin": {
     "nav": {

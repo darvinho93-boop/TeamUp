@@ -1033,6 +1033,9 @@ function Instagram({ etat }: { etat: EtatSalle }) {
  */
 function Cloture({ etat }: { etat: EtatSalle }) {
   const langues = etat.evenement.langues;
+  // Avis ouverts dès l'arrivée de la scène : l'invitation suit la cinématique, avec Instagram.
+  // Ouverts ensuite, elle paraît aussitôt (2026-11-18).
+  const [avisDesLeDebut] = useState(() => etat.avis?.ouverts === true);
   return (
     <div className="tu-stage__body tu-stage-cloture" data-scene="cloture">
       <div className="tu-stage-cloture__logo">
@@ -1043,6 +1046,16 @@ function Cloture({ etat }: { etat: EtatSalle }) {
         testId="merci"
         textes={langues.map((langue) => ({ langue, texte: MESSAGES[langue].ecran.cloture }))}
       />
+      {etat.avis?.ouverts && (
+        <Multilingue
+          className={cx(
+            'tu-stage-cloture__avis',
+            avisDesLeDebut && 'tu-stage-cloture__avis--suite',
+          )}
+          testId="invitation-avis"
+          textes={langues.map((langue) => ({ langue, texte: MESSAGES[langue].ecran.avis }))}
+        />
+      )}
       <div className="tu-stage-cloture__insta">
         <BlocInstagram langues={langues} compact />
       </div>
