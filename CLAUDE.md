@@ -1689,3 +1689,56 @@ sobre ; **particuliers et entreprises à parts égales** sur l'accueil.
 - Comment ça marche : une rangée qui défile sur téléphone doit contenir ses éléments en position
   absolue (`.surface { position: relative }`), sinon une légende cachée élargit la page (vu sous
   `prefers-reduced-motion`, déjà en ligne avant la refonte).
+
+## Conventions posées le 2026-11-19 (audit UX du 18/11 et cartes « Faisons connaissance »)
+
+Audit UX, UI et éditorial du 18/11 (`correction Site vitrine/Audit_Team_Up_2026-11-18.pdf`, hors
+dépôt). Tranché le 2026-11-19 : ses textes du parcours joueur sont appliqués ; « représentant »
+remplace « champion » pour les joueurs (la régie garde « champion ») ; « Rejoindre votre partie »
+sur la page Rejoindre du site ; **« Loading… » gardé** (choix d'identité du 09/10).
+
+- Téléphone : « Souhaitez-vous être capitaine ? » / « Je préfère être participant » ; écran de
+  l'équipe avec le **numéro** (sous un nom choisi), la consigne inclusive (montrer son écran est
+  facultatif, l'animateur aide qui reste assis) et la **liste des coéquipiers**
+  (`etat_joueur.equipe.membres`, son équipe seulement) ; « Retour à la partie ». Attente : sans jeu
+  en cours, « En attente du lancement par l'animateur. » et « Vous n'avez rien à faire pour le
+  moment. » ; « À venir : {jeu} » ; « Comment jouer » ; action texte « Message au grand écran »
+  (`ouvrirMessageEcran`, même fenêtre que l'icône). Message : « Publier sur le grand écran »,
+  « Annuler », états d'envoi. « Connexion à la partie… » pendant l'inscription.
+- Le bouton du prénom garde « Continuer » (d'autres étapes suivent) ; « Comment jouer » dit
+  « Rejoindre la partie » à l'inscription, « Retour à la partie » ensuite.
+- Vidéo des règles (`VideoJeu`) : **« Les règles en bref »**, toutes les phrases du script sous le
+  lecteur ; commandes « Mettre en pause », « Reprendre », « Revoir les règles », « Fermer les
+  règles » ; lien « Voir les règles en vidéo · 36 s », 44 px au moins.
+- Règle courte de la Surenchère : « Un thème, un chrono : quelle équipe citera le plus de réponses ? »
+  (vraie dans les deux modes) ; son explication animée reprend les quatre phrases de l'audit.
+- Page Rejoindre du site : `novalidate`, erreur en français, « Caractère n sur 6 ».
+
+Cartes « Faisons connaissance » (tranché le 2026-11-18) : à la victoire d'une équipe, montrer l'un
+de ses membres avec **âge, métier et anecdote**, s'il veut les partager ; **questions guidées, texte
+seul** ; affichées **sur une touche de la régie**.
+
+- **Écart assumé** à « joueurs anonymes, prénom seul » : carte facultative, publique seulement avec
+  l'accord (case décochée par défaut), modifiable et supprimable, **effacée le lendemain** de la
+  soirée (`purgerCartesExpirees`, tâche quotidienne `/api/cron/purge-photos`).
+- Base (migrations `20261120090000`, la scène `connaissance` seule, et `20261120100000`) :
+  `cartes_joueurs` (une par joueur, âge 10 à 110, métier 60, anecdote 120, `accord`, `ecartee`),
+  écrite **uniquement** par `enregistrer_carte` (rôle de service ; tout vide la supprime) ;
+  `tirages_cartes` (clé `id` seule), écrite par `tirer_carte` (`anime()` : cartes autorisées et non
+  écartées de l'équipe, jamais tirées d'abord, la dernière tirée en dernier ; joueur nul s'il n'y en
+  a aucune) ; `ecarter_carte`. Le tirage est gardé : un rechargement ne retire pas au sort.
+- `etat_joueur.carte` (la sienne, `tiree`) ; `etat_ecran.connaissance` (dernier tirage : équipe,
+  points sur ce jeu, carte revérifiée au rendu, autres membres), hors régie seulement à la scène
+  `connaissance` ; `cartes_pretes` pour la régie. Le client tient sans la migration.
+- Téléphone : `src/joueur/CarteJoueur.tsx`, « Créer ma carte » / « Ma carte » sur l'attente, aperçu,
+  `POST /api/partie/[code]/carte` puis le signal `mises`. Pure : `src/lib/cartes.ts`.
+- Régie : `src/regie/PanneauConnaissance.tsx` au pilotage hors jeu (jeu terminé, équipe qui y a le
+  plus marqué, ex aequo signalé ; « Tirer une carte », aperçu pour l'animateur seul, « Afficher à
+  l'écran », « Autre carte », « Écarter cette carte ») ; commande `connaissance` (chrono de 4 s).
+- Écran : `src/ecran/Connaissance.tsx`, `connaissance.css` : l'équipe célébrée (son `reussite`,
+  fête), puis la carte se retourne à 2,5 s (`CONNAISSANCE_CARTE_MS`, son `revelation`), puis les
+  autres membres. Délais comptés depuis le départ ; sous `prefers-reduced-motion`, tout d'emblée.
+- Tests : `tests/cartes.test.ts`, `tests/cartes-base.test.ts`, `e2e/cartes.spec.ts`.
+- `playwright.config.ts` n'exclut aucun fichier : ne jamais lancer toute la suite e2e en local avec
+  les scripts non suivis (`recette-en-ligne`, `recette-soiree`, `soiree-100`, `_captures-*`) dans
+  `e2e/` ; lancer les fichiers voulus un par un.
