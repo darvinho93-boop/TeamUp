@@ -206,8 +206,11 @@ export function Pilotage({
       // version que l'animateur a vue : une autre régie passée entre-temps la rend périmée.
       // Même précaution pour la fin d'un quiz que l'app compte (téléphone, jetons) : elle donne
       // les points du même geste (2026-11-15).
+      // Portrait mystère : la fin d'un tour compte les votes de la base, dont le dernier arrivé
+      // juste avant l'appui (vu en e2e le 2026-11-18 : un vote une fraction de seconde trop tôt).
       const compteParLApp =
         commande.type === 'classer' ||
+        (commande.type === 'portrait' && commande.action.type === 'cloturer') ||
         (commande.type === 'quiz' &&
           commande.action === 'fin' &&
           affichee.pilotage.etape === 'resultat');
