@@ -14,8 +14,10 @@ export function Multilingue({
   className?: string;
   testId?: string;
 }) {
-  if (textes.length === 0) return null;
-  const [premier, ...autres] = textes;
+  // Une traduction identique (un nom propre, « E = mc² ») ne se répète pas.
+  const uniques = textes.filter((t, i) => textes.findIndex((x) => x.texte === t.texte) === i);
+  if (uniques.length === 0) return null;
+  const [premier, ...autres] = uniques;
   return (
     <div className={cx('tu-stage-multi', className)} data-testid={testId}>
       <p lang={premier!.langue} className="tu-stage-multi__premier">
