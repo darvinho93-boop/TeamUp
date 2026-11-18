@@ -15,6 +15,7 @@ import { MessageEcran } from './MessageEcran';
 import { NomEquipe } from './NomEquipe';
 import { NomPropose } from './NomPropose';
 import { Photos } from './Photos';
+import { Portrait } from './Portrait';
 import { Quiz } from './Quiz';
 import { BlindTest } from './BlindTest';
 import { SurenchereMots } from './SurenchereMots';
@@ -94,7 +95,18 @@ export function EcranJoueur({
     );
   }
 
-  const { joueur, equipe, manche, prochaine, evenement, quiz, photos, surenchere, blind } = etat;
+  const {
+    joueur,
+    equipe,
+    manche,
+    prochaine,
+    evenement,
+    quiz,
+    photos,
+    surenchere,
+    blind,
+    portrait,
+  } = etat;
 
   // Quiz en mode téléphone : le seul moment où le téléphone sert à jouer (spec v3).
   if (quiz) {
@@ -142,6 +154,17 @@ export function EcranJoueur({
             remplacer={remplacer}
             relire={relire}
           />
+        </div>
+      </Cadre>
+    );
+  }
+
+  // Portrait mystère (2026-11-18) : la grille à lire de près ; le capitaine y vote.
+  if (portrait) {
+    return (
+      <Cadre bandeau={bandeau} outil={outil}>
+        <div className="tu-player__body">
+          <Portrait code={code} portrait={portrait} remplacer={remplacer} relire={relire} />
         </div>
       </Cadre>
     );

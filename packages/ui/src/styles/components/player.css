@@ -1568,3 +1568,59 @@
 .tu-carte-insta__icone {
   color: var(--tu-sage-500);
 }
+
+/* Portrait mystère au téléphone (2026-11-18) : les 25 cartes sur deux colonnes, repère puis nom.
+   Le capitaine touche celle de son équipe ; les cibles déjà trouvées sont barrées. */
+.tu-portrait-cartes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tu-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-portrait-carte {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--tu-space-1);
+  width: 100%;
+  min-height: var(--tu-tap-min);
+  padding: var(--tu-space-2) var(--tu-space-3);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+  color: var(--tu-text);
+  font: inherit;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+button.tu-portrait-carte {
+  border-color: var(--tu-primary);
+  cursor: pointer;
+}
+
+.tu-portrait-carte--choisie {
+  border-color: var(--tu-primary);
+  background: var(--tu-primary);
+  color: var(--tu-text-invert);
+}
+
+.tu-portrait-carte--retournee {
+  color: var(--tu-text-muted);
+  text-decoration: line-through;
+}
+
+.tu-portrait-carte__repere {
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-sm);
+  font-weight: 700;
+}
+
+.tu-portrait-carte__nom {
+  font-size: var(--tu-size-base);
+  font-weight: 600;
+  line-height: var(--tu-leading-tight);
+}

@@ -1306,5 +1306,29 @@
     "nousSuite": "This is only the beginning: new games are coming soon. Follow the adventure!",
     "nousOrganiser": "Planning an event?",
     "devis": "Request a quote"
+  },
+  "portrait": {
+    "sansEquipe": "You don't have a team yet: watch the big screen!",
+    "cible": "Target {n} of {total}",
+    "tour": "clue {n}",
+    "grille": "The 25 cards",
+    "pret": "Eyes on the big screen: the first clue is coming!",
+    "voix": "Your team tells the host its answer.",
+    "aVous": "Captain: tap the right person!",
+    "voteCapitaine": "Your vote: {carte}. You can change it until the timer ends.",
+    "voteEquipe": "Your captain voted: {carte}.",
+    "coequipier": "Whisper the answer to your captain!",
+    "finDuTour": "End of round: eyes on the big screen!",
+    "revele": "The answer is on the big screen!",
+    "noire": "The black card is revealed!",
+    "eliminee": "Black card! Your team is out of this game.",
+    "trouvee": "Found on clue {tour}: well done!",
+    "refus": {
+      "capitaine": "Only the captain votes for the team.",
+      "ferme": "Too late: the round is over.",
+      "eliminee": "Your team is out of this game.",
+      "trouve": "Your team already found this person.",
+      "carte": "This card is no longer in play."
+    }
   }
 }

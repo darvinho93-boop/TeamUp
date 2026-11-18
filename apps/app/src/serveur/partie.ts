@@ -6,6 +6,7 @@ import type {
   Langue,
   RefusMise,
   RefusBuzz,
+  RefusPortrait,
   RefusMot,
   RefusQuiz,
   SoireeDuJour,
@@ -301,6 +302,47 @@ export async function buzzerBlind(
     etatPourJeton(code, jeton),
   ]);
   return { ok: true, etat: suivant ?? etat };
+}
+
+/**
+ * Portrait mystère (2026-11-18) : le capitaine vote pour une carte (0 à 24), et peut changer d'avis
+ * tant que le tour est ouvert. La base décide seule ; puis le signal `mises` (l'écran montre
+ * « a voté », la régie le vote) : un vote ne fait pas relire les 150 téléphones.
+ */
+export async function voterPortrait(
+  code: string,
+  carte: number,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusPortrait }> {
+  const jeton = await jetonDe(code);
+  if (!jeton) return { ok: false, refus: 'session' };
+
+  const { data, error } = await supabaseService().rpc('voter_portrait', {
+    p_jeton_hash: hacher(jeton),
+    p_carte: carte,
+  });
+  if (error) {
+    const refus: RefusPortrait | null = /session/.test(error.message)
+      ? 'session'
+      : /pas capitaine|sans équipe/.test(error.message)
+        ? 'capitaine'
+        : /tour fermé/.test(error.message)
+          ? 'ferme'
+          : /éliminée/.test(error.message)
+            ? 'eliminee'
+            : /déjà trouvé/.test(error.message)
+              ? 'trouve'
+              : /carte invalide/.test(error.message)
+                ? 'carte'
+                : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  const { evenement_id } = data as { evenement_id: string };
+  const [etat] = await Promise.all([
+    etatPourJeton(code, jeton),
+    signalerSalle(evenement_id, 'mises'),
+  ]);
+  return etat ? { ok: true, etat } : { ok: false, refus: 'session' };
 }
 
 export type RefusNom = 'session' | 'capitaine' | 'fige' | 'nom';

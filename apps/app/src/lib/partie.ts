@@ -240,6 +240,9 @@ export type RefusMise = 'session' | 'fermee' | 'capitaine' | 'deja' | 'temps' | 
 /** Refus d'un buzz du blind test : une autre équipe a buzzé avant, ou l'extrait est fini. */
 export type RefusBuzz = 'session' | 'capitaine' | 'tard' | 'bloquee';
 
+/** Refus d'un vote du Portrait mystère (2026-11-18), dans l'ordre où la base les vérifie. */
+export type RefusPortrait = 'session' | 'capitaine' | 'ferme' | 'eliminee' | 'trouve' | 'carte';
+
 /** Refus d'un mot de la Surenchère, dans l'ordre où la base les vérifie. */
 export type RefusMot = 'session' | 'fermee' | 'capitaine' | 'mot' | 'trop' | 'doublon';
 
