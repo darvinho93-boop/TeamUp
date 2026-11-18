@@ -27,6 +27,63 @@ export type Database = {
         };
         Relationships: [];
       };
+      avis_joueurs: {
+        Row: {
+          citable: boolean;
+          cree_le: string;
+          evenement_id: string;
+          id: string;
+          joueur_id: string | null;
+          langue: Database['public']['Enums']['langue'];
+          modifie_le: string;
+          negatif: string | null;
+          positifs: string[];
+          prenom: string | null;
+          rien_a_redire: boolean;
+        };
+        Insert: {
+          citable?: boolean;
+          cree_le?: string;
+          evenement_id: string;
+          id?: string;
+          joueur_id?: string | null;
+          langue: Database['public']['Enums']['langue'];
+          modifie_le?: string;
+          negatif?: string | null;
+          positifs: string[];
+          prenom?: string | null;
+          rien_a_redire?: boolean;
+        };
+        Update: {
+          citable?: boolean;
+          cree_le?: string;
+          evenement_id?: string;
+          id?: string;
+          joueur_id?: string | null;
+          langue?: Database['public']['Enums']['langue'];
+          modifie_le?: string;
+          negatif?: string | null;
+          positifs?: string[];
+          prenom?: string | null;
+          rien_a_redire?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'avis_joueurs_evenement_id_fkey';
+            columns: ['evenement_id'];
+            isOneToOne: false;
+            referencedRelation: 'evenements';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'avis_joueurs_joueur_id_fkey';
+            columns: ['joueur_id'];
+            isOneToOne: true;
+            referencedRelation: 'joueurs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       contenus: {
         Row: {
           actif: boolean;
@@ -838,6 +895,7 @@ export type Database = {
       };
       pilotage: {
         Row: {
+          avis_ouverts: boolean;
           chrono_depart: string | null;
           chrono_duree_s: number | null;
           etape: string | null;
@@ -853,6 +911,7 @@ export type Database = {
           son_volume: number;
         };
         Insert: {
+          avis_ouverts?: boolean;
           chrono_depart?: string | null;
           chrono_duree_s?: number | null;
           etape?: string | null;
@@ -868,6 +927,7 @@ export type Database = {
           son_volume?: number;
         };
         Update: {
+          avis_ouverts?: boolean;
           chrono_depart?: string | null;
           chrono_duree_s?: number | null;
           etape?: string | null;
@@ -1060,6 +1120,10 @@ export type Database = {
           role: Database['public']['Enums']['role_animateur'];
         }[];
       };
+      avis_positifs_valides: {
+        Args: { p_positifs: string[] };
+        Returns: boolean;
+      };
       blind_du_joueur: {
         Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
         Returns: Json;
@@ -1110,6 +1174,16 @@ export type Database = {
       debloquer_mise: {
         Args: { p_equipe: string; p_passage: string };
         Returns: undefined;
+      };
+      donner_avis: {
+        Args: {
+          p_citable: boolean;
+          p_jeton_hash: string;
+          p_negatif: string;
+          p_positifs: string[];
+          p_rien_a_redire: boolean;
+        };
+        Returns: Json;
       };
       echanger_manches: {
         Args: { p_a: string; p_b: string };
@@ -1191,6 +1265,10 @@ export type Database = {
         };
         Returns: Json;
       };
+      nettoyer_avis: {
+        Args: { p_lignes: boolean; p_max: number; p_texte: string };
+        Returns: string;
+      };
       nettoyer_message: { Args: { p_texte: string }; Returns: string };
       nouveau_code: { Args: never; Returns: string };
       ordonner_passages: {
@@ -1255,6 +1333,10 @@ export type Database = {
       };
       refuser_mot: {
         Args: { p_mot: string; p_refuse: boolean };
+        Returns: undefined;
+      };
+      regler_avis: {
+        Args: { p_evenement: string; p_ouverts: boolean };
         Returns: undefined;
       };
       regler_membres: {
