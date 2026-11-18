@@ -1612,6 +1612,10 @@ soirée. Deux modes au lancement : **téléphones** (le capitaine vote) ou **à 
 eliminees, tours, verdict: { trouvees, eliminees } }` (le verdict du dernier tour, pour
   l'écran). Une équipe qui a trouvé a fini pour la cible ; un leurre ne coûte rien. Après le
   3e tour ou quand plus personne n'est en lice, seulement « Révéler ».
+- **Jamais une clé primaire qui contient deux clés étrangères** (vers `passages` et `equipes`,
+  par exemple) : PostgREST en fait une table de jonction, et l'imbrication `equipes(...)` depuis
+  `passages` devient ambiguë (PGRST201). Un `id` pour clé et le reste en contrainte d'unicité,
+  comme `mots_surenchere` et `votes_portrait` (corrigée par `20261119110000`, vu en CI).
 - Base (migrations `20261119090000`, l'énumération seule, et `20261119100000`) : la cible =
   `passages.contenu_id` ; `grilles_portrait` (une par manche : `cartes uuid[25]` tous différents,
   `noire` position), écrite sous la session de l'animateur ; `votes_portrait` (passage, équipe,
