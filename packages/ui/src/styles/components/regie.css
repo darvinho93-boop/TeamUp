@@ -996,3 +996,49 @@ button.tu-regie-chip:disabled {
   inset: 0;
   background: color-mix(in srgb, var(--tu-bg) var(--tu-stage-fond-voile), transparent);
 }
+
+/* Portrait mystère à la préparation (2026-11-18) : la grille en 5 × 5, chaque carte avec son
+   repère ; les cibles bordées de sauge, la carte noire sur fond marine profond. */
+.tu-regie-grille {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--tu-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie-grille__carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-1);
+  min-width: 0;
+  padding: var(--tu-space-2);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-sm);
+  font-size: var(--tu-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.tu-regie-grille__carte--cible {
+  border-color: var(--tu-success);
+}
+
+.tu-regie-grille__carte--noire {
+  border-color: var(--tu-navy-900);
+  background: var(--tu-navy-900);
+  color: var(--tu-text-invert);
+}
+
+.tu-regie-grille__repere {
+  color: var(--tu-text-muted);
+  font-weight: 700;
+}
+
+.tu-regie-grille__carte--noire .tu-regie-grille__repere {
+  color: inherit;
+}
+
+.tu-regie-grille__role {
+  font-weight: 700;
+}

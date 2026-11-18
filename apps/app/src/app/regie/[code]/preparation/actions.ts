@@ -15,11 +15,19 @@ import {
   TITRES_BLIND_MIN,
   QUESTIONS_QUIZ,
   QUESTIONS_QUIZ_DEFAUT,
+  CHRONO_TOUR_PORTRAIT_DEFAUT_S,
+  CHRONO_TOUR_PORTRAIT_MAX_S,
+  CHRONO_TOUR_PORTRAIT_MIN_S,
+  CIBLES_PORTRAIT_DEFAUT,
+  CIBLES_PORTRAIT_MAX,
+  CIBLES_PORTRAIT_MIN,
   tirerContenus,
+  tirerOrdre,
   type GameCode,
 } from '@teamup/game';
 import { etiquettesDe, proposable } from '@/lib/contenus';
 import { MAX_GROUPES } from '@/lib/groupes';
+import { completerGrille, melangerGrille } from '@/lib/portrait';
 import { evenementDeLaRegie, type EvenementRegie } from '@/serveur/regie';
 import type { ClientAnimateur } from '@/serveur/supabase-animateur';
 import type { Json } from '@/types/base';
@@ -110,6 +118,8 @@ async function contenusLibres(
     .eq('jeu', jeu)
     .eq('actif', true)
     .in('etiquette', etiquettesDe(evenement.type_client))
+    // La banque, plus les proches de cette soirée (Portrait mystère) ; jamais ceux d'une autre.
+    .or(`evenement_id.is.null,evenement_id.eq.${evenement.id}`)
     .order('cree_le');
   const { data: utilises } = await supabase
     .from('passages')
@@ -536,13 +546,194 @@ export async function retirerManche(code: string, mancheId: string) {
   rafraichir();
 }
 
+// ---------------------------------------------------------------------------
+// Portrait mystère (2026-11-18)
+// ---------------------------------------------------------------------------
+
+const Portrait = z.object({
+  cibles: z.coerce
+    .number()
+    .int()
+    .min(CIBLES_PORTRAIT_MIN)
+    .max(CIBLES_PORTRAIT_MAX)
+    .catch(CIBLES_PORTRAIT_DEFAUT),
+  chrono: z.coerce
+    .number()
+    .int()
+    .min(CHRONO_TOUR_PORTRAIT_MIN_S)
+    .max(CHRONO_TOUR_PORTRAIT_MAX_S)
+    .catch(CHRONO_TOUR_PORTRAIT_DEFAUT_S),
+});
+
+/** Tous les portraits que la soirée peut mettre dans une grille : banque et proches, complets. */
+async function portraitsDisponibles(
+  supabase: ClientAnimateur,
+  evenement: EvenementRegie,
+): Promise<string[]> {
+  const { data } = await supabase
+    .from('contenus')
+    .select('id, jeu, etiquette, contenus_traductions(langue), contenus_secrets(langue)')
+    .eq('jeu', 'portrait')
+    .eq('actif', true)
+    .in('etiquette', etiquettesDe(evenement.type_client))
+    .or(`evenement_id.is.null,evenement_id.eq.${evenement.id}`);
+  return (data ?? []).filter((c) => proposable(c, evenement)).map((c) => c.id);
+}
+
+/**
+ * (Re)fait la grille d'une manche : ses cibles, la carte noire voulue (sinon celle d'avant, sinon
+ * une au hasard), le reste tiré au hasard parmi les portraits disponibles, le tout mélangé. Ne
+ * touche à rien tant qu'une cible manque ou qu'il n'y a pas de quoi arriver à 25 cartes.
+ */
+async function refaireGrille(
+  supabase: ClientAnimateur,
+  evenement: EvenementRegie,
+  mancheId: string,
+  noireVoulue?: string,
+) {
+  const [{ data: passages }, { data: avant }, disponibles] = await Promise.all([
+    supabase.from('passages').select('contenu_id').eq('manche_id', mancheId).order('ordre'),
+    supabase
+      .from('grilles_portrait')
+      .select('cartes, noire')
+      .eq('manche_id', mancheId)
+      .maybeSingle(),
+    portraitsDisponibles(supabase, evenement),
+  ]);
+  const cibles = (passages ?? []).flatMap((p) => (p.contenu_id ? [p.contenu_id] : []));
+  if (cibles.length === 0 || cibles.length !== (passages ?? []).length) return;
+  const libres = disponibles.filter((id) => !cibles.includes(id));
+  const ancienne = avant ? avant.cartes[avant.noire] : undefined;
+  const noire =
+    (noireVoulue && !cibles.includes(noireVoulue) ? noireVoulue : undefined) ??
+    (ancienne && libres.includes(ancienne) ? ancienne : undefined) ??
+    tirerOrdre(libres, aleaServeur)[0];
+  if (!noire) return;
+  const grille = completerGrille({ cibles, noire, disponibles, alea: aleaServeur });
+  if (!grille) return;
+  await supabase
+    .from('grilles_portrait')
+    .upsert({ manche_id: mancheId, cartes: grille.cartes, noire: grille.noire });
+}
+
+/**
+ * Portrait mystère : une cible par passage, tirée au hasard parmi les portraits libres (banque et
+ * proches), le chrono d'un tour de vote, puis la grille complétée d'office.
+ */
+export async function ajouterPortrait(code: string, donnees: FormData) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const { cibles, chrono } = Portrait.parse({
+    cibles: donnees.get('cibles'),
+    chrono: donnees.get('chrono'),
+  });
+  const mancheId = await nouvelleManche(supabase, evenement, 'portrait', {
+    chrono_s: chrono,
+    cibles_n: cibles,
+  });
+  const libres = tirerOrdre(await contenusLibres(supabase, evenement, 'portrait'), aleaServeur);
+  await supabase.from('passages').insert(
+    Array.from({ length: cibles }, (_, i) => ({
+      manche_id: mancheId,
+      evenement_id: evenement.id,
+      equipe_id: null,
+      ordre: i + 1,
+      contenu_id: libres[i] ?? null,
+    })),
+  );
+  await refaireGrille(supabase, evenement, mancheId);
+  rafraichir();
+}
+
+/** Refaire la grille au hasard, cibles et carte noire gardées. */
+export async function refaireGrillePortrait(code: string, mancheId: string) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  await refaireGrille(supabase, evenement, mancheId);
+  rafraichir();
+}
+
+/** Mélanger la grille, sans changer ses cartes. */
+export async function melangerGrillePortrait(code: string, mancheId: string) {
+  const { supabase, rafraichir } = await contexte(code);
+  const { data } = await supabase
+    .from('grilles_portrait')
+    .select('cartes, noire')
+    .eq('manche_id', mancheId)
+    .maybeSingle();
+  if (!data) return;
+  const grille = melangerGrille(data, aleaServeur);
+  await supabase
+    .from('grilles_portrait')
+    .update({ cartes: grille.cartes, noire: grille.noire })
+    .eq('manche_id', mancheId);
+  rafraichir();
+}
+
+/** Choisir la carte noire : la grille se refait autour d'elle. */
+export async function choisirNoirePortrait(code: string, mancheId: string, contenuId: string) {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  if (contenuId) await refaireGrille(supabase, evenement, mancheId, contenuId);
+  rafraichir();
+}
+
+export interface EtatProche {
+  erreur?: 'champs' | 'serveur';
+  ok?: boolean;
+  /** Ce qui avait été saisi, rendu après une erreur : React vide le formulaire à l'envoi. */
+  valeurs?: Record<string, string>;
+  instant: number;
+}
+
+/**
+ * Un proche de la soirée (le marié, la grand-mère…) : son nom et trois indices, dans chaque langue
+ * de la soirée. Il rejoint les portraits proposés à cette soirée seulement.
+ */
+export async function ajouterProche(
+  code: string,
+  _avant: EtatProche | undefined,
+  donnees: FormData,
+): Promise<EtatProche> {
+  const { supabase, evenement, rafraichir } = await contexte(code);
+  const valeurs = Object.fromEntries(
+    [...donnees.entries()].flatMap(([cle, v]) => (typeof v === 'string' ? [[cle, v]] : [])),
+  );
+  const texte = (nom: string, max: number) => {
+    const brut = donnees.get(nom);
+    const valeur = typeof brut === 'string' ? brut.trim() : '';
+    return valeur && valeur.length <= max ? valeur : null;
+  };
+  const langues: Record<string, { public: { nom: string }; secret: { indices: string[] } }> = {};
+  for (const langue of evenement.langues) {
+    const nom = texte(`${langue}.nom`, 60);
+    const indices = [1, 2, 3].map((n) => texte(`${langue}.indice${n}`, 200));
+    if (!nom || indices.some((i) => i === null)) {
+      return { erreur: 'champs', valeurs, instant: Date.now() };
+    }
+    langues[langue] = { public: { nom }, secret: { indices: indices as string[] } };
+  }
+  const { error } = await supabase.rpc('enregistrer_proche', {
+    p_evenement: evenement.id,
+    // Le type généré ne connaît pas null : la fonction crée un proche quand l'id est absent.
+    p_id: null as unknown as string,
+    p_langues: langues as unknown as Json,
+  });
+  if (error) return { erreur: 'serveur', valeurs, instant: Date.now() };
+  rafraichir();
+  return { ok: true, instant: Date.now() };
+}
+
 export async function choisirContenu(code: string, passageId: string, contenuId: string) {
   const { supabase, evenement, rafraichir } = await contexte(code);
-  await supabase
+  const { data: passage } = await supabase
     .from('passages')
     .update({ contenu_id: contenuId || null })
     .eq('id', passageId)
     .eq('evenement_id', evenement.id)
-    .eq('statut', 'a_venir');
+    .eq('statut', 'a_venir')
+    .select('manche_id, manches(jeu)')
+    .maybeSingle();
+  // Portrait mystère : une nouvelle cible entre dans la grille, refaite autour d'elle.
+  if (passage?.manches?.jeu === 'portrait') {
+    await refaireGrille(supabase, evenement, passage.manche_id);
+  }
   rafraichir();
 }

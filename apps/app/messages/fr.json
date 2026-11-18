@@ -438,6 +438,29 @@
         "aChoisir": "— musique à choisir —",
         "extrait": "écoute de {secondes} s par titre",
         "enregistrer": "Enregistrer"
+      },
+      "portrait": {
+        "cibles": "Cibles (3 à 8)",
+        "chronoChamp": "Chrono d’un tour de vote (s)",
+        "meta": "{cibles} cibles · {secondes} s par tour",
+        "cible": "Cible {numero}",
+        "grille": "La grille de 25 cartes",
+        "grillePrete": "Grille prête : 25 cartes, les cibles et une carte noire.",
+        "grilleManque": "Grille incomplète : une cible sans portrait, ou pas assez de portraits ({n} disponibles, 25 nécessaires). Ajoutez des proches ou des portraits au back-office.",
+        "noire": "Carte noire",
+        "noireAuHasard": "Au hasard",
+        "noireCourt": "noire",
+        "cibleCourt": "cible {numero}",
+        "refaire": "Refaire la grille au hasard",
+        "melanger": "Mélanger",
+        "proches": "{n, plural, =0 {Proches de la soirée} other {Proches de la soirée (#)}}",
+        "procheAide": "Le marié, la grand-mère, la directrice… Son nom et trois indices, du plus difficile au plus facile. Il ne sert qu’à cette soirée.",
+        "procheNom": "Nom (à l’écran)",
+        "procheIndice": "Indice {n}",
+        "procheAjouter": "Ajouter ce proche",
+        "procheAjoute": "Proche ajouté.",
+        "procheIncomplet": "Le nom et les trois indices sont obligatoires, dans chaque langue.",
+        "procheErreur": "Ça n’a pas marché : réessaie."
       }
     },
     "pilotage": {

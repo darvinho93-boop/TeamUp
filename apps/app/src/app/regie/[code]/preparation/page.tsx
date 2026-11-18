@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { Button } from '@teamup/ui/react';
+import { Button, cx } from '@teamup/ui/react';
 import {
   CHRONO_SURENCHERE_DEFAUT_S,
   CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
@@ -15,6 +15,13 @@ import {
   formatDuree,
   QUESTIONS_QUIZ,
   QUESTIONS_QUIZ_DEFAUT,
+  CHRONO_TOUR_PORTRAIT_DEFAUT_S,
+  CHRONO_TOUR_PORTRAIT_MAX_S,
+  CHRONO_TOUR_PORTRAIT_MIN_S,
+  CIBLES_PORTRAIT_DEFAUT,
+  CIBLES_PORTRAIT_MAX,
+  CIBLES_PORTRAIT_MIN,
+  repereCarte,
 } from '@teamup/game';
 import { etiquettesDe, libelleContenu, proposable } from '@/lib/contenus';
 import { MAX_GROUPES } from '@/lib/groupes';
@@ -25,6 +32,8 @@ import { urlLogo } from '@/lib/logo';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { FondDuJeu } from '@/regie/FondDuJeu';
+import { FormulaireProche } from '@/regie/FormulaireProche';
+import { chronoTourPortrait } from '@/lib/portrait';
 import { LogoPartenaire } from '@/regie/LogoPartenaire';
 import { SelectContenu, type OptionContenu } from '@/regie/SelectContenu';
 import {
@@ -34,15 +43,19 @@ import {
   ajouterMime,
   ajouterPhoto,
   ajouterPointsCommuns,
+  ajouterPortrait,
   ajouterQuiz,
   ajouterSurenchere,
   choisirContenuReserve,
+  choisirNoirePortrait,
   choisirTitreBlind,
   deplacerManche,
   enregistrerCarte,
   enregistrerEquipesPrevues,
   enregistrerGroupes,
   enregistrerMusiques,
+  melangerGrillePortrait,
+  refaireGrillePortrait,
   retirerManche,
 } from './actions';
 
@@ -89,9 +102,10 @@ export default async function Preparation({
     supabase
       .from('contenus')
       .select(
-        'id, jeu, etiquette, actif, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
+        'id, jeu, etiquette, actif, evenement_id, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
       )
-      .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2'])
+      .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2', 'portrait'])
+      .or(`evenement_id.is.null,evenement_id.eq.${evenement.id}`)
       .order('cree_le'),
     supabase.from('photos').select('theme_id').eq('evenement_id', evenement.id),
     supabase.from('groupes').select('ordre, nom').eq('evenement_id', evenement.id),
@@ -125,6 +139,28 @@ export default async function Preparation({
     }),
   );
   const musiques = bibliotheque ?? [];
+  // Portrait mystère (2026-11-18) : les grilles, les noms des portraits, les proches de la soirée.
+  const manchesPortrait = (manches ?? []).filter((m) => m.jeu === 'portrait').map((m) => m.id);
+  const { data: lignesGrilles } = manchesPortrait.length
+    ? await supabase
+        .from('grilles_portrait')
+        .select('manche_id, cartes, noire')
+        .in('manche_id', manchesPortrait)
+    : { data: [] };
+  const grilles = new Map((lignesGrilles ?? []).map((g) => [g.manche_id, g]));
+  const portraits = (banque ?? []).filter((c) => c.jeu === 'portrait');
+  const nomPortrait = new Map(
+    portraits.map((c) => [
+      c.id,
+      libelleContenu('portrait', c.contenus_traductions, c.contenus_secrets, langue),
+    ]),
+  );
+  const proches = portraits
+    .filter((c) => c.evenement_id === evenement.id && c.actif)
+    .map((c) => nomPortrait.get(c.id) ?? '—');
+  const portraitsDisponibles = portraits.filter(
+    (c) => c.actif && proposable(c, evenement, tout),
+  ).length;
   // Sans la migration 20261022100000, la lecture échoue : proposé, comme avant.
   const groupeFacultatif = reglageGroupes?.groupe_facultatif ?? true;
   const groupeDeRang = new Map((groupes ?? []).map((g) => [g.ordre, g.nom]));
@@ -157,7 +193,9 @@ export default async function Preparation({
   // l'écran (la banque en ligne n'avait aucun thème photo). La préparation le dit.
   const sansContenu =
     programme
-      .filter((m) => m.statut === 'a_venir' && ['enchere2', 'qcm2', 'photo2'].includes(m.jeu))
+      .filter(
+        (m) => m.statut === 'a_venir' && ['enchere2', 'qcm2', 'photo2', 'portrait'].includes(m.jeu),
+      )
       .reduce((n, m) => n + m.passages.filter((p) => p.contenu_id === null).length, 0) +
     programme
       .filter((m) => m.statut === 'a_venir' && m.jeu === 'blind')
@@ -330,7 +368,14 @@ export default async function Preparation({
           <ol className="tu-regie-list">
             {programme.map((m, i) => {
               const modifiable = m.statut === 'a_venir';
-              const preparable = ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2'].includes(m.jeu);
+              const preparable = [
+                'list2',
+                'enchere2',
+                'qcm2',
+                'mime2',
+                'photo2',
+                'portrait',
+              ].includes(m.jeu);
               // Un passage par équipe (Points communs, Mime), ou un par thème, par question.
               const parEquipe = m.jeu === 'list2' || m.jeu === 'mime2';
               return (
@@ -343,6 +388,8 @@ export default async function Preparation({
                       {t(`statut.${m.statut}`)}
                       {m.jeu === 'blind' &&
                         ` · ${t('blind.extrait', { secondes: extraitBlind(m) })}`}
+                      {m.jeu === 'portrait' &&
+                        ` · ${t('portrait.meta', { cibles: m.passages.length, secondes: chronoTourPortrait(m) })}`}
                       {m.jeu === 'enchere2' &&
                         ` · ${t('chrono', { secondes: Number(m.options['chrono_s'] ?? CHRONO_SURENCHERE_DEFAUT_S) })} · ${t('chronoTelephones', { secondes: Number(m.options['chrono_telephones_s'] ?? CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S) })}`}
                     </span>
@@ -501,7 +548,9 @@ export default async function Preparation({
                                 ? (nomEquipe.get(p.equipe_id ?? '')?.nom ?? '—')
                                 : m.jeu === 'qcm2'
                                   ? t('question', { numero: p.ordre })
-                                  : t('theme', { numero: p.ordre })}
+                                  : m.jeu === 'portrait'
+                                    ? t('portrait.cible', { numero: p.ordre })
+                                    : t('theme', { numero: p.ordre })}
                             </span>
                             <SelectContenu
                               code={code}
@@ -520,6 +569,107 @@ export default async function Preparation({
                         ))}
                       </ul>
                     )}
+                    {m.jeu === 'portrait' &&
+                      (() => {
+                        const grille = grilles.get(m.id);
+                        const cibles = m.passages.flatMap((p) =>
+                          p.contenu_id ? [p.contenu_id] : [],
+                        );
+                        const noire = grille ? grille.cartes[grille.noire] : undefined;
+                        const prete =
+                          grille !== undefined &&
+                          cibles.length === m.passages.length &&
+                          cibles.every((c) => grille.cartes.includes(c)) &&
+                          noire !== undefined &&
+                          !cibles.includes(noire);
+                        return (
+                          <div className="tu-regie__section" data-testid={`grille-${m.ordre}`}>
+                            <p
+                              className={prete ? 'tu-regie__muted' : 'tu-regie__alert'}
+                              role="status"
+                            >
+                              {prete
+                                ? t('portrait.grillePrete')
+                                : t('portrait.grilleManque', { n: portraitsDisponibles })}
+                            </p>
+                            <div className="tu-regie-passage">
+                              <span className="tu-regie-passage__nom">{t('portrait.noire')}</span>
+                              <SelectContenu
+                                code={code}
+                                enregistrer={choisirNoirePortrait.bind(null, code, m.id)}
+                                valeur={noire ?? null}
+                                options={options('portrait', noire ?? null).filter(
+                                  (o) => !cibles.includes(o.id),
+                                )}
+                                desactive={!modifiable}
+                                libelle={t('portrait.noire')}
+                                aucun={t('portrait.noireAuHasard')}
+                              />
+                            </div>
+                            {grille && (
+                              <ol className="tu-regie-grille" aria-label={t('portrait.grille')}>
+                                {grille.cartes.map((id, position) => {
+                                  const rang = cibles.indexOf(id);
+                                  const role =
+                                    position === grille.noire
+                                      ? 'noire'
+                                      : rang >= 0
+                                        ? 'cible'
+                                        : 'leurre';
+                                  return (
+                                    <li
+                                      key={id}
+                                      className={cx(
+                                        'tu-regie-grille__carte',
+                                        `tu-regie-grille__carte--${role}`,
+                                      )}
+                                    >
+                                      <span className="tu-regie-grille__repere">
+                                        {repereCarte(position)}
+                                      </span>
+                                      <span>{nomPortrait.get(id) ?? '—'}</span>
+                                      {role !== 'leurre' && (
+                                        <span className="tu-regie-grille__role">
+                                          {role === 'noire'
+                                            ? t('portrait.noireCourt')
+                                            : t('portrait.cibleCourt', { numero: rang + 1 })}
+                                        </span>
+                                      )}
+                                    </li>
+                                  );
+                                })}
+                              </ol>
+                            )}
+                            {modifiable && (
+                              <form className="tu-cluster">
+                                <Button
+                                  type="submit"
+                                  variant="ghost"
+                                  formAction={refaireGrillePortrait.bind(null, code, m.id)}
+                                >
+                                  {t('portrait.refaire')}
+                                </Button>
+                                {grille && (
+                                  <Button
+                                    type="submit"
+                                    variant="ghost"
+                                    formAction={melangerGrillePortrait.bind(null, code, m.id)}
+                                  >
+                                    {t('portrait.melanger')}
+                                  </Button>
+                                )}
+                              </form>
+                            )}
+                            {modifiable && (
+                              <FormulaireProche
+                                code={code}
+                                langues={evenement.langues}
+                                proches={proches}
+                              />
+                            )}
+                          </div>
+                        );
+                      })()}
                   </div>
                   {modifiable && (
                     <form className="tu-regie-item__actions">
@@ -661,6 +811,32 @@ export default async function Preparation({
               />
             </label>
             <Button type="submit">{t('ajouter', { jeu: tJeux('blind') })}</Button>
+          </form>
+          <form action={ajouterPortrait.bind(null, code)} className="tu-regie-item">
+            <label className="tu-field">
+              <span className="tu-field__label">{t('portrait.cibles')}</span>
+              <input
+                className="tu-field__control"
+                name="cibles"
+                type="number"
+                min={CIBLES_PORTRAIT_MIN}
+                max={CIBLES_PORTRAIT_MAX}
+                defaultValue={CIBLES_PORTRAIT_DEFAUT}
+              />
+            </label>
+            <label className="tu-field">
+              <span className="tu-field__label">{t('portrait.chronoChamp')}</span>
+              <input
+                className="tu-field__control"
+                name="chrono"
+                type="number"
+                min={CHRONO_TOUR_PORTRAIT_MIN_S}
+                max={CHRONO_TOUR_PORTRAIT_MAX_S}
+                step={5}
+                defaultValue={CHRONO_TOUR_PORTRAIT_DEFAUT_S}
+              />
+            </label>
+            <Button type="submit">{t('ajouter', { jeu: tJeux('portrait') })}</Button>
           </form>
           <form action={ajouterMime.bind(null, code)} className="tu-regie-item">
             <label className="tu-field">

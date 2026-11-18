@@ -438,6 +438,29 @@
         "aChoisir": "— choose a track —",
         "extrait": "{secondes} s of listening per song",
         "enregistrer": "Save"
+      },
+      "portrait": {
+        "cibles": "Targets (3 to 8)",
+        "chronoChamp": "Voting round timer (s)",
+        "meta": "{cibles} targets · {secondes} s per round",
+        "cible": "Target {numero}",
+        "grille": "The 25-card grid",
+        "grillePrete": "Grid ready: 25 cards, the targets and one black card.",
+        "grilleManque": "Incomplete grid: a target without a portrait, or not enough portraits ({n} available, 25 needed). Add relatives or portraits in the back office.",
+        "noire": "Black card",
+        "noireAuHasard": "At random",
+        "noireCourt": "black",
+        "cibleCourt": "target {numero}",
+        "refaire": "Redraw the grid",
+        "melanger": "Shuffle",
+        "proches": "{n, plural, =0 {Guests to guess} other {Guests to guess (#)}}",
+        "procheAide": "The groom, grandma, the CEO… Their name and three clues, from hardest to easiest. Used for this event only.",
+        "procheNom": "Name (on screen)",
+        "procheIndice": "Clue {n}",
+        "procheAjouter": "Add this person",
+        "procheAjoute": "Person added.",
+        "procheIncomplet": "The name and all three clues are required, in every language.",
+        "procheErreur": "That didn’t work: try again."
       }
     },
     "pilotage": {
