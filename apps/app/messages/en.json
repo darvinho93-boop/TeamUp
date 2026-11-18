@@ -1018,7 +1018,8 @@
       "animateurs": "Hosts",
       "evenements": "History",
       "mesure": "Metrics",
-      "musiques": "Music"
+      "musiques": "Music",
+      "avis": "Feedback"
     },
     "etiquettes": {
       "b2c": "B2C",
@@ -1161,6 +1162,22 @@
       "connexionAucune": "No event has entered its expected guests.",
       "vitrine": "Website conversion",
       "vitrineAide": "In Vercel Web Analytics (website project): /confirmation page views ÷ visitors."
+    },
+    "avis": {
+      "titre": "Player feedback",
+      "aucun": "No feedback yet: open the survey from the control panel at the end of an event.",
+      "parSoiree": "By event",
+      "date": "Date",
+      "client": "Client",
+      "recus": "Responses",
+      "rienARedire": "“Nothing to add”",
+      "citables": "Quotable",
+      "lire": "Details",
+      "ouvrir": "Read",
+      "temoignages": "Quotable testimonials",
+      "aideTemoignages": "Players agreed that Team Up! may quote these words with their first name: ready for the website.",
+      "aucunTemoignage": "No quotable testimonials yet.",
+      "aime": "What they loved"
     }
   },
   "explication": {

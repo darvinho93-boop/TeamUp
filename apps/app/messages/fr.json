@@ -1018,7 +1018,8 @@
       "animateurs": "Animateurs",
       "evenements": "Historique",
       "mesure": "Mesure",
-      "musiques": "Musiques"
+      "musiques": "Musiques",
+      "avis": "Avis"
     },
     "etiquettes": {
       "b2c": "B2C",
@@ -1161,6 +1162,22 @@
       "connexionAucune": "Aucune soirée n’a renseigné ses invités attendus.",
       "vitrine": "Conversion de la vitrine",
       "vitrineAide": "Dans Vercel Web Analytics (projet de la vitrine) : visites de la page /confirmation ÷ visiteurs."
+    },
+    "avis": {
+      "titre": "Avis des joueurs",
+      "aucun": "Aucun avis pour l'instant : ouvrez le questionnaire au pilotage, en fin de soirée.",
+      "parSoiree": "Par soirée",
+      "date": "Date",
+      "client": "Client",
+      "recus": "Avis",
+      "rienARedire": "« Rien à redire »",
+      "citables": "Citables",
+      "lire": "Détail",
+      "ouvrir": "Lire",
+      "temoignages": "Témoignages citables",
+      "aideTemoignages": "Les joueurs ont accepté que Team Up! cite ces mots avec leur prénom : à reprendre sur la vitrine.",
+      "aucunTemoignage": "Aucun témoignage citable pour le moment.",
+      "aime": "Ce qui a plu"
     }
   },
   "explication": {

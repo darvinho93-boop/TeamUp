@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   AVIS_NEGATIF_MAX,
   AVIS_POSITIF_MAX,
+  avisParSoiree,
   negatifValide,
   nettoyerLigne,
   nettoyerTexte,
@@ -78,6 +79,23 @@ describe('syntheseAvis', () => {
   it('taux borné à 1 (un joueur retiré garde son avis), nul sans joueur', () => {
     expect(syntheseAvis([avis(), avis({ id: 'b' })], 1).taux).toBe(1);
     expect(syntheseAvis([], 0).taux).toBeNull();
+  });
+});
+
+describe('avisParSoiree', () => {
+  it('regroupe par soirée, dans l’ordre d’arrivée des avis', () => {
+    const fete = { code: 'FETE24', client: 'Famille Martin', date: '2026-11-14' };
+    const bureau = { code: 'BUREAU', client: 'Acme', date: '2026-11-07' };
+    expect(
+      avisParSoiree([
+        { rien_a_redire: true, citable: true, soiree: fete },
+        { rien_a_redire: false, citable: false, soiree: bureau },
+        { rien_a_redire: false, citable: true, soiree: fete },
+      ]),
+    ).toEqual([
+      { ...fete, recus: 2, rienARedire: 1, citables: 2 },
+      { ...bureau, recus: 1, rienARedire: 0, citables: 0 },
+    ]);
   });
 });
 

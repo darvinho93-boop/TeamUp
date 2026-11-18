@@ -89,6 +89,43 @@ export interface SyntheseAvis {
   citables: number;
 }
 
+/** Une ligne du tableau du back-office : les avis d'une soirée. */
+export interface AvisDeSoiree {
+  code: string;
+  client: string;
+  date: string;
+  recus: number;
+  rienARedire: number;
+  citables: number;
+}
+
+/**
+ * Les avis regroupés par soirée, dans l'ordre où les soirées apparaissent (les avis arrivent
+ * triés du plus récent au plus ancien : la soirée du dernier avis vient en tête).
+ */
+export function avisParSoiree(
+  avis: readonly {
+    rien_a_redire: boolean;
+    citable: boolean;
+    soiree: { code: string; client: string; date: string };
+  }[],
+): AvisDeSoiree[] {
+  const soirees = new Map<string, AvisDeSoiree>();
+  for (const a of avis) {
+    const ligne = soirees.get(a.soiree.code) ?? {
+      ...a.soiree,
+      recus: 0,
+      rienARedire: 0,
+      citables: 0,
+    };
+    ligne.recus++;
+    if (a.rien_a_redire) ligne.rienARedire++;
+    if (a.citable) ligne.citables++;
+    soirees.set(a.soiree.code, ligne);
+  }
+  return [...soirees.values()];
+}
+
 /**
  * Les chiffres de la page Avis. Un joueur retiré garde son avis : le taux est borné à 1.
  */
