@@ -3,7 +3,15 @@ import { BETA_DUELS, FICHES, isGameCode, SOCLE_GAMES } from './catalogue';
 
 describe('catalogue de jeux', () => {
   it('contient les cinq jeux socles de la spec v3, puis le Blind test (2026-11-15)', () => {
-    expect(SOCLE_GAMES).toEqual(['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'blind']);
+    expect(SOCLE_GAMES).toEqual([
+      'list2',
+      'qcm2',
+      'enchere2',
+      'mime2',
+      'photo2',
+      'blind',
+      'portrait',
+    ]);
   });
 
   it('ne contient que les deux duels en bêta', () => {
@@ -30,6 +38,7 @@ describe('catalogue de jeux', () => {
       ['mime2', true, 150, false],
       ['photo2', false, 300, false],
       ['blind', false, 60, false],
+      ['portrait', false, 90, false],
       ['grab', false, 30, true],
       ['cup', false, 45, true],
     ]);

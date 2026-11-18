@@ -77,6 +77,18 @@ const PICTOS: Record<GameCode, { teinte: Teinte; trace: ReactNode }> = {
       </>
     ),
   },
+  // Portrait mystère (2026-11-18) : une silhouette et un point d'interrogation.
+  portrait: {
+    teinte: 'sage',
+    trace: (
+      <>
+        <circle cx="10" cy="8" r="4" />
+        <path d="M3 21c0-3.9 3.1-7 7-7 1.4 0 2.7.4 3.8 1.1" />
+        <path d="M17 14.5a2.5 2.5 0 1 1 3 2.4c-.6.2-1 .7-1 1.3v.3" />
+        <path d="M19 21h.01" />
+      </>
+    ),
+  },
   cup: {
     teinte: 'pierre',
     trace: (

@@ -7,3 +7,4 @@ export * from './mime';
 export * from './photo';
 export * from './duel';
 export * from './blind';
+export * from './portrait';

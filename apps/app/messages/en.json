@@ -243,7 +243,8 @@
     "photo2": "Photo challenge",
     "grab": "Grab the object",
     "cup": "Head, shoulders, cup",
-    "blind": "Blind test"
+    "blind": "Blind test",
+    "portrait": "Mystery portrait"
   },
   "regie": {
     "accueil": "My events",
@@ -865,7 +866,8 @@
       "photo2": "Your photos of the evening, theme by theme: which one will win?",
       "grab": "The music starts: grab the matching object!",
       "cup": "Head, shoulders… cup! Grab it first!",
-      "blind": "One song, one buzzer: name it before anyone else!"
+      "blind": "One song, one buzzer: name it before anyone else!",
+      "portrait": "25 names, three clues: vote for the right person… but avoid the black card!"
     },
     "yeuxFermes": "{equipe}: back to the screen, eyes closed!",
     "pointCommun": "What they have in common",
@@ -985,6 +987,13 @@
         "reponse": "The music stops: their team has 7 seconds to name the song.",
         "bloquee": "Wrong? That team can’t buzz again on this song, and the music resumes for the others.",
         "points": "Song found: +100 points!"
+      },
+      "portrait": {
+        "grille": "25 names on the big screen: one of them is the mystery person.",
+        "indices": "The host gives a first clue. Then a second, then a third.",
+        "vote": "After each clue, every team votes for a card: on the captain’s phone, or out loud.",
+        "points": "Found on the 1st clue: +100. On the 2nd: +60. On the 3rd: +30.",
+        "noire": "Careful: a black card hides in the grid. The team that picks it is out!"
       }
     },
     "ordre": {

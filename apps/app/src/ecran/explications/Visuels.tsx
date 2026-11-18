@@ -104,6 +104,24 @@ function Telephone({ children }: { children: ReactNode }) {
   return <div className="tu-expl-telephone">{children}</div>;
 }
 
+/** La grille du Portrait mystère : 25 cartes sans texte, la cible et la carte noire en couleur. */
+function Grille({ cible, noire }: { cible?: number; noire?: number }) {
+  return (
+    <div className="tu-expl-grille">
+      {Array.from({ length: 25 }, (_, i) => (
+        <span
+          key={i}
+          className={cx(
+            'tu-expl-grille__case',
+            i === cible && 'tu-expl-grille__case--cible tu-expl-pulse',
+            i === noire && 'tu-expl-grille__case--noire tu-expl-pulse',
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
 /**
  * Des mots tapés, en traits sans texte (la phrase de la carte porte le sens) : `rayes` donne les
  * rangs des mots rayés par l'animateur.
@@ -429,6 +447,50 @@ const VISUELS: Record<VisuelExplication, () => ReactNode> = {
     <>
       <Equipe n={3} equipe={3} />
       <span className="tu-expl-points">+100</span>
+    </>
+  ),
+
+  // ---- Portrait mystère (2026-11-18)
+  'grille-portrait': () => (
+    <div className="tu-expl-ecran">
+      <Grille />
+    </div>
+  ),
+  'indices-portrait': () => (
+    <>
+      <div className="tu-expl-ecran">
+        <Grille />
+      </div>
+      <span className="tu-expl-bulle tu-expl-pulse">1</span>
+      <span className="tu-expl-bulle">2</span>
+      <span className="tu-expl-bulle">3</span>
+    </>
+  ),
+  'vote-portrait': () => (
+    <>
+      <Equipe n={3} equipe={3} />
+      <Telephone>
+        <Grille cible={7} />
+      </Telephone>
+    </>
+  ),
+  'points-portrait': () => (
+    <>
+      <span className="tu-expl-points">+100</span>
+      <span className="tu-expl-points tu-expl-points--petits">+60</span>
+      <span className="tu-expl-points tu-expl-points--petits">+30</span>
+    </>
+  ),
+  'carte-noire': () => (
+    <>
+      <div className="tu-expl-ecran">
+        <Grille noire={13} />
+      </div>
+      <div className="tu-expl-groupe">
+        {[0, 1, 2].map((i) => (
+          <Perso key={i} equipe={4} className="tu-expl-perso--eteint" />
+        ))}
+      </div>
     </>
   ),
 

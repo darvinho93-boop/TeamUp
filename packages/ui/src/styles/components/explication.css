@@ -169,6 +169,38 @@
 }
 
 /* Grand nombre : points gagnés, multiplicateurs. */
+/* Portrait mystère (2026-11-18) : une grille de 5 × 5 cartes, sans texte ; la cible en sauge,
+   la carte noire en marine profond. */
+.tu-expl-grille {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--tu-space-1);
+  width: 60%;
+}
+
+.tu-expl-telephone .tu-expl-grille {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.tu-expl-grille__case {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-border);
+}
+
+.tu-expl-grille__case--cible {
+  background: var(--tu-success);
+}
+
+.tu-expl-grille__case--noire {
+  background: var(--tu-navy-900);
+}
+
+.tu-expl-points--petits {
+  font-size: var(--tu-size-3xl);
+}
+
 .tu-expl-points {
   white-space: nowrap;
   align-self: center;

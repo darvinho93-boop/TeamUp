@@ -61,7 +61,12 @@ export type VisuelExplication =
   | 'buzzer'
   | 'reponse-blind'
   | 'bloquee'
-  | 'points-blind';
+  | 'points-blind'
+  | 'grille-portrait'
+  | 'indices-portrait'
+  | 'vote-portrait'
+  | 'points-portrait'
+  | 'carte-noire';
 
 export interface CarteExplication {
   /** Clé de la phrase, sous `ecran.explications.<script>`. */
@@ -130,6 +135,14 @@ export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplic
     carte('reponse', 9, 'reponse-blind'),
     carte('bloquee', 9),
     carte('points', 8, 'points-blind'),
+  ],
+  // Portrait mystère (2026-11-18) : 25 noms, trois indices, un vote par tour, une carte noire.
+  portrait: [
+    carte('grille', 9, 'grille-portrait'),
+    carte('indices', 9, 'indices-portrait'),
+    carte('vote', 9, 'vote-portrait'),
+    carte('points', 9, 'points-portrait'),
+    carte('noire', 9, 'carte-noire'),
   ],
   cup: [
     carte('duellistes-gobelet', 9),

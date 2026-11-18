@@ -7,7 +7,15 @@
  * toute modification passe par une migration et par ce fichier, ensemble.
  */
 
-export const SOCLE_GAMES = ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'blind'] as const;
+export const SOCLE_GAMES = [
+  'list2',
+  'qcm2',
+  'enchere2',
+  'mime2',
+  'photo2',
+  'blind',
+  'portrait',
+] as const;
 export const BETA_DUELS = ['grab', 'cup'] as const;
 
 export type SocleGame = (typeof SOCLE_GAMES)[number];
@@ -34,6 +42,8 @@ export const FICHES: Readonly<Record<GameCode, FicheJeu>> = {
   photo2: { nom: 'Photo challenge', sequentiel: false, chronoPassageS: 300, beta: false },
   // Un titre : l'écoute (30 s par défaut), les réponses, la révélation.
   blind: { nom: 'Blind test', sequentiel: false, chronoPassageS: 60, beta: false },
+  // Une cible : trois tours d'indice et de vote (20 s chacun par défaut), puis la révélation.
+  portrait: { nom: 'Portrait mystère', sequentiel: false, chronoPassageS: 90, beta: false },
   grab: { nom: "Attrape l'objet", sequentiel: false, chronoPassageS: 30, beta: true },
   cup: { nom: 'Tête, épaule, gobelet', sequentiel: false, chronoPassageS: 45, beta: true },
 };

@@ -243,7 +243,8 @@
     "photo2": "Photo challenge",
     "grab": "Attrape l'objet",
     "cup": "Tête, épaule, gobelet",
-    "blind": "Blind test"
+    "blind": "Blind test",
+    "portrait": "Portrait mystère"
   },
   "regie": {
     "accueil": "Mes événements",
@@ -865,7 +866,8 @@
       "photo2": "Vos photos de la soirée, thème par thème : laquelle gagnera ?",
       "grab": "La musique part : attrapez l'objet qui va avec !",
       "cup": "Tête, épaule… gobelet ! Attrapez-le en premier !",
-      "blind": "Une musique, un buzzer : trouvez le titre avant les autres !"
+      "blind": "Une musique, un buzzer : trouvez le titre avant les autres !",
+      "portrait": "25 noms, trois indices : votez pour la bonne personne… sans tomber sur la carte noire !"
     },
     "yeuxFermes": "{equipe} : dos à l'écran, yeux fermés !",
     "pointCommun": "Le point commun",
@@ -985,6 +987,13 @@
         "reponse": "La musique s’arrête : son équipe a 7 secondes pour donner le titre.",
         "bloquee": "Raté ? L’équipe ne buzze plus sur ce titre, et la musique reprend pour les autres.",
         "points": "Titre trouvé : +100 points !"
+      },
+      "portrait": {
+        "grille": "25 noms sur le grand écran : l’un d’eux est la personne mystère.",
+        "indices": "L’animateur donne un premier indice. Puis un deuxième, puis un troisième.",
+        "vote": "À chaque indice, chaque équipe vote pour une carte : sur le téléphone du capitaine, ou à voix haute.",
+        "points": "Trouvé au 1er indice : +100. Au 2e : +60. Au 3e : +30.",
+        "noire": "Attention : une carte noire se cache dans la grille. L’équipe qui la choisit est éliminée !"
       }
     },
     "ordre": {
