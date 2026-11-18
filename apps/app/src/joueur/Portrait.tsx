@@ -72,6 +72,13 @@ export function Portrait({
               ? t('noire')
               : t('revele');
 
+  // Le titre reste court ; ce qu'il faut savoir en plus vient dessous, en plus petit.
+  const aide = p.eliminee
+    ? t('elimineeAide')
+    : p.etape === 'vote' && p.mode === 'telephones' && p.capitaine && vote && p.trouvee === null
+      ? t('voteAide')
+      : null;
+
   return (
     <div className="tu-quiz" data-testid="portrait-joueur" data-etape={p.etape ?? ''}>
       {p.cible !== null && (
@@ -92,6 +99,7 @@ export function Portrait({
       >
         {statut}
       </p>
+      {aide && <p className="tu-player__lead">{aide}</p>}
       {refus && (
         <p className="tu-player__error" role="alert">
           {t(`refus.${refus}`)}

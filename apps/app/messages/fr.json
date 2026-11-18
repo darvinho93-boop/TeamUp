@@ -1328,13 +1328,13 @@
     "pret": "Les yeux sur le grand écran : le premier indice arrive !",
     "voix": "Votre équipe dit sa réponse à l'animateur.",
     "aVous": "Capitaine : touchez la bonne personne !",
-    "voteCapitaine": "Votre vote : {carte}. Vous pouvez changer jusqu'à la fin du chrono.",
+    "voteCapitaine": "Votre vote : {carte}",
     "voteEquipe": "Votre capitaine a voté : {carte}.",
     "coequipier": "Soufflez la réponse à votre capitaine !",
     "finDuTour": "Fin du tour : les yeux sur le grand écran !",
     "revele": "La réponse est sur le grand écran !",
     "noire": "La carte noire est révélée !",
-    "eliminee": "Carte noire ! Votre équipe est éliminée de ce jeu.",
+    "eliminee": "Carte noire !",
     "trouvee": "Trouvé à l'indice {tour} : bravo !",
     "refus": {
       "capitaine": "Seul le capitaine vote pour l'équipe.",
@@ -1342,6 +1342,8 @@
       "eliminee": "Votre équipe est éliminée de ce jeu.",
       "trouve": "Votre équipe a déjà trouvé cette personne.",
       "carte": "Cette carte n'est plus en jeu."
-    }
+    },
+    "elimineeAide": "Votre équipe est éliminée de ce jeu.",
+    "voteAide": "Vous pouvez changer jusqu'à la fin du chrono."
   }
 }

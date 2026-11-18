@@ -1328,13 +1328,13 @@
     "pret": "Eyes on the big screen: the first clue is coming!",
     "voix": "Your team tells the host its answer.",
     "aVous": "Captain: tap the right person!",
-    "voteCapitaine": "Your vote: {carte}. You can change it until the timer ends.",
+    "voteCapitaine": "Your vote: {carte}",
     "voteEquipe": "Your captain voted: {carte}.",
     "coequipier": "Whisper the answer to your captain!",
     "finDuTour": "End of round: eyes on the big screen!",
     "revele": "The answer is on the big screen!",
     "noire": "The black card is revealed!",
-    "eliminee": "Black card! Your team is out of this game.",
+    "eliminee": "Black card!",
     "trouvee": "Found on clue {tour}: well done!",
     "refus": {
       "capitaine": "Only the captain votes for the team.",
@@ -1342,6 +1342,8 @@
       "eliminee": "Your team is out of this game.",
       "trouve": "Your team already found this person.",
       "carte": "This card is no longer in play."
-    }
+    },
+    "elimineeAide": "Your team is out of this game.",
+    "voteAide": "You can change it until the timer ends."
   }
 }
