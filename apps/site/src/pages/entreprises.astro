@@ -4,6 +4,7 @@ import Button from '@teamup/ui/astro/Button.astro';
 import PageIntro from '../components/layout/PageIntro.astro';
 import Section from '../components/layout/Section.astro';
 import StepList from '../components/layout/StepList.astro';
+import Recit from '../components/layout/Recit.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
 import Faq from '../components/layout/Faq.astro';
 import type { FaqItem } from '../components/layout/Faq.astro';
@@ -17,46 +18,53 @@ import { PREUVES_FOURNIES } from '../data/preuves';
 const formats = [
   {
     title: 'Team building',
-    body: 'Un moment dédié pour souder un pôle, une direction ou une équipe projet.',
+    sousTitre: 'Partager un défi. Découvrir ses collègues autrement.',
+    body: "Une expérience collective qui fait appel à l'écoute, à la créativité et à l'esprit d'équipe, dans une atmosphère conviviale et stimulante.",
   },
   {
-    title: 'Séminaire',
-    body: 'Une respiration entre deux sessions de travail, ou le temps fort de la soirée.',
+    title: 'Séminaires',
+    sousTitre: 'Un temps fort qui change le rythme.',
+    body: "Entre deux sessions de travail ou lors d'une soirée d'entreprise, Team Up! réunit les participants autour d'une expérience commune, loin des présentations et des réunions.",
   },
   {
-    title: 'Intégration',
-    body: 'Les nouveaux arrivants rencontrent leurs collègues de tous les services, dans la bonne humeur.',
+    title: "Journées d'intégration",
+    sousTitre: 'Faire connaissance autrement que par les présentations.',
+    body: 'Offrez aux nouveaux arrivants une occasion de rencontrer leurs collègues de différents services et de trouver naturellement leur place dans le collectif.',
   },
 ];
 
 const benefices = [
   {
-    title: 'Des équipes transverses',
-    body: "En arrivant, chaque participant indique son service ou son site : il rejoint l'équipe où ses collègues directs sont les moins nombreux.",
+    title: 'Favoriser les rencontres transversales',
+    body: 'La répartition des participants encourage les échanges entre services, métiers ou sites qui se côtoient peu.',
   },
   {
-    title: 'Tout le monde participe',
-    body: "Jusqu'à 150 participants, et pas un spectateur : on se lève, on mime, on négocie à voix haute. Du stagiaire au comité de direction.",
+    title: 'Valoriser la diversité des talents',
+    body: 'Réflexion, intuition, mémoire, créativité ou aisance à communiquer : les défis permettent à différentes personnalités de contribuer au jeu.',
   },
   {
-    title: 'Des contenus pensés pour le cadre pro',
-    body: "Questions, mots et thèmes choisis pour un public professionnel, et adaptables à votre entreprise. Rien de gênant, rien d'intrusif.",
+    title: 'Encourager la participation',
+    body: "Chaque activité est présentée et accompagnée par l'animateur. Le format peut être ajusté aux profils et aux possibilités de participation de vos collaborateurs.",
+  },
+  {
+    title: 'Intégrer votre univers',
+    body: 'Questions, thématiques et références internes peuvent être personnalisées pour créer une expérience en accord avec la culture et le contexte de votre entreprise.',
   },
 ];
 
-/* Ce que gagne celui qui organise : un interlocuteur, rien à installer, tout prêt avant le début. */
+/* Ce que gagne celui qui organise : un programme préparé, rien à installer, une partie rythmée. */
 const organisation = [
   {
-    title: 'Un seul interlocuteur',
-    body: "Du devis au podium, vous parlez à la même personne. Le programme, les équipes et les contenus se décident avec vous, avant l'événement.",
+    title: 'Un programme construit avec vous',
+    body: "Nous construisons le programme avec vous, préparons les contenus et assurons l'animation sur place.",
   },
   {
-    title: 'Rien à installer, rien à faire valider',
-    body: 'Ni application, ni compte : les participants scannent un QR code et jouent sous leur seul prénom. Aucune adresse e-mail, aucun numéro de téléphone collecté.',
+    title: 'Rien à installer',
+    body: "Les participants rejoignent la partie depuis leur téléphone, sans installation d'application ni création de compte.",
   },
   {
-    title: 'Tout est prêt avant le début',
-    body: "L'animateur arrive en avance, branche l'écran, teste le son et le réseau. Quand vos équipes entrent dans la salle, tout fonctionne déjà.",
+    title: "Jusqu'au classement final",
+    body: "L'animateur coordonne les manches, le grand écran rythme la progression et les équipes vivent ensemble les moments forts, jusqu'au classement final.",
   },
 ];
 
@@ -97,23 +105,27 @@ const faq: FaqItem[] = [
 
 <Base
   title="Team building, séminaire, intégration — Team Up!"
-  description="Team building, séminaire, intégration : un temps fort animé de bout en bout, jusqu'à 150 participants, partout en France. Un seul interlocuteur."
+  description="Team building, séminaires, intégration : une expérience collective inspirée des jeux télévisés, jusqu'à 150 participants, partout en France."
   accent="entreprises"
 >
   <PageIntro
-    eyebrow="Entreprises"
-    title="Faites se parler des équipes qui ne se croisent jamais."
-    lead="Team building, séminaire, intégration : un temps fort animé de bout en bout, où les services jouent ensemble au lieu de rester entre eux. Vous n'avez rien à animer, et personne ne reste spectateur."
+    eyebrow="Team building · Séminaires · Intégration"
+    title="L'esprit d'équipe se cultive aussi en dehors du bureau."
+    lead={[
+      "Vos collaborateurs partagent une entreprise, des projets, parfois les mêmes locaux. Mais ont-ils vraiment l'occasion de se découvrir ?",
+      'Avec Team Up!, donnez une autre dimension à vos événements professionnels grâce à une expérience collective inspirée des jeux télévisés.',
+      'Des équipes transversales, des défis accessibles et le plaisir de partager un moment différent du quotidien.',
+    ]}
   >
     <p slot="footnote" class="intro-note">
       Sur devis, gratuit et sans engagement
     </p>
     <Fragment slot="actions">
       <Button href="/devis?type=entreprise" variant="accent" size="cta">
-        Demander un devis
+        Organiser mon événement
       </Button>
       <Button href="#formats" variant="outline" size="cta">
-        Voir les formats
+        Découvrir les formats
       </Button>
     </Fragment>
     <Stage slot="visual" class="hero-stage">
@@ -122,11 +134,26 @@ const faq: FaqItem[] = [
     </Stage>
   </PageIntro>
 
-  <Section id="formats" eyebrow="Les formats" title="Un temps fort qui s'insère dans votre agenda.">
+  <Section title="Au-delà des fonctions, le plaisir de jouer ensemble.">
+    <Recit
+      paragraphes={[
+        'Dans une entreprise, les échanges suivent naturellement les habitudes de travail. On retrouve son service, son équipe, ses interlocuteurs réguliers.',
+        'Team Up! propose de changer de perspective.',
+        "Pendant une partie, les collaborateurs de différents métiers ou services deviennent coéquipiers. Ils réfléchissent ensemble, confrontent leurs idées, s'encouragent et découvrent d'autres facettes de leurs collègues.",
+        {
+          texte: 'Un cadre ludique pour favoriser des échanges plus spontanés, sans les imposer.',
+          fort: true,
+        },
+      ]}
+    />
+  </Section>
+
+  <Section id="formats" eyebrow="Les formats" title="Une expérience adaptée à vos temps forts.">
     <div class="formats tu-rail">
       {formats.map((format) => (
         <article class="tu-panel format" data-tu-apparait>
           <h3 class="format__title">{format.title}</h3>
+          <p class="format__sous-titre">{format.sousTitre}</p>
           <p class="format__body">{format.body}</p>
         </article>
       ))}
@@ -139,14 +166,17 @@ const faq: FaqItem[] = [
       <div class="benefits__text">
         <div class="benefits__header">
           <p class="tu-eyebrow">Ce que vos équipes y gagnent</p>
-          <h2 class="tu-title">Des silos qui se mélangent, pour de vrai.</h2>
+          <h2 class="tu-title">Des équipes différentes. Une expérience commune.</h2>
         </div>
         <StepList steps={benefices} variant="plain" />
       </div>
     </div>
   </section>
 
-  <Section title="Pour vous qui organisez.">
+  <Section
+    eyebrow="Pour vous qui organisez"
+    title="Le dynamisme d'un jeu télévisé. La simplicité d'une prestation accompagnée."
+  >
     <div class="formats tu-rail">
       {organisation.map((point) => (
         <article class="tu-panel format" data-tu-apparait>
@@ -155,6 +185,18 @@ const faq: FaqItem[] = [
         </article>
       ))}
     </div>
+    <p class="organisation__fort">
+      Jusqu'à 150 participants, dans un format ajusté à votre événement.
+    </p>
+  </Section>
+
+  <Section title="Un moment partagé qui ouvre de nouvelles conversations.">
+    <Recit
+      paragraphes={[
+        'Au-delà des points et du podium, ce sont souvent les échanges, les initiatives inattendues et les souvenirs collectifs qui restent.',
+        "Parce qu'il est parfois plus facile de faire connaissance en cherchant une réponse ensemble qu'en se retrouvant autour d'une table de réunion.",
+      ]}
+    />
   </Section>
 
   <section class="equipment-section">
@@ -182,7 +224,11 @@ const faq: FaqItem[] = [
     <Faq items={faq} />
   </Section>
 
-  <CtaBanner title="Parlons de votre prochain événement d'équipe." href="/devis?type=entreprise" />
+  <CtaBanner
+    title="Imaginons votre prochain temps fort."
+    note="Parlons de votre événement, de vos équipes et de l'expérience que vous souhaitez leur proposer. Nous concevons avec vous un programme adapté à vos objectifs, à vos participants et à votre organisation."
+    href="/devis?type=entreprise"
+  />
 </Base>
 
 <style>
@@ -208,8 +254,17 @@ const faq: FaqItem[] = [
     font-size: 1.375rem;
   }
 
+  .format__sous-titre {
+    font-weight: 600;
+  }
+
   .format__body {
     color: var(--tu-text-muted);
+  }
+
+  .organisation__fort {
+    margin-top: var(--tu-space-6);
+    font-weight: 600;
   }
 
   .benefits-section,

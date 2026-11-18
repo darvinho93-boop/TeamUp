@@ -4,6 +4,7 @@ import Button from '@teamup/ui/astro/Button.astro';
 import PageIntro from '../components/layout/PageIntro.astro';
 import Section from '../components/layout/Section.astro';
 import StepList from '../components/layout/StepList.astro';
+import Recit from '../components/layout/Recit.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
 import Faq from '../components/layout/Faq.astro';
 import type { FaqItem } from '../components/layout/Faq.astro';
@@ -17,39 +18,43 @@ import type { TimelineItem } from '../components/jeux/Timeline.astro';
 
 const occasions = [
   {
-    title: 'Anniversaire',
-    body: "Amis d'enfance, collègues, famille : tous les cercles de la personne fêtée se rencontrent enfin, et jouent ensemble.",
+    title: 'Mariages',
+    sousTitre: 'Deux histoires qui se rejoignent.',
+    body: "Vos familles et vos amis se retrouvent pour célébrer votre union. Team Up! leur offre une occasion originale de faire connaissance, de jouer ensemble et de partager les premiers souvenirs d'une nouvelle histoire commune.",
   },
   {
-    title: 'Mariage',
-    body: "Les deux familles et les deux bandes d'amis dans les mêmes équipes, entre le dîner et l'ouverture du bal. Les mariés regardent leurs deux mondes n'en faire qu'un.",
+    title: 'Anniversaires',
+    sousTitre: "Tous vos univers réunis autour d'un même jeu.",
+    body: "Amis d'enfance, famille, collègues, proches de différentes générations : réunissez ceux qui comptent pour vous et regardez les affinités se créer au fil des défis.",
   },
   {
-    title: 'Anniversaire de mariage',
-    body: 'Plusieurs générations réunies autour du couple, avec des jeux que chacun comprend en une phrase.',
+    title: 'Anniversaires de mariage',
+    sousTitre: 'Des générations, des souvenirs et de nouvelles complicités.',
+    body: "Une belle occasion de réunir vos proches autour d'une expérience qui traverse les âges, entre clins d'œil, découvertes et émotions partagées.",
   },
   {
-    title: 'Fête de famille',
-    body: 'Cousins éloignés, nouvelles pièces rapportées, petits et grands : chacun repart en connaissant les autres.',
+    title: 'Fêtes de famille',
+    sousTitre: 'Le plaisir de se retrouver. La surprise de se redécouvrir.',
+    body: "Cousins, parents, nouveaux venus et amis de la famille deviennent les partenaires d'une aventure commune, le temps d'une partie.",
   },
 ];
 
 const raisons = [
   {
-    title: "Des équipes mélangées d'office",
-    body: "En arrivant, chaque invité indique de quel côté il vient : famille, amis, collègues. Il rejoint l'équipe où les siens sont les moins nombreux. Vous n'avez personne à présenter : le jeu s'en charge.",
+    title: 'Des équipes qui mélangent les invités',
+    body: "En réunissant des personnes de différents cercles, Team Up! crée des occasions de se parler que l'on n'aurait peut-être pas saisies naturellement.",
   },
   {
-    title: 'Tout le monde debout, personne sur son écran',
-    body: 'Le téléphone sert à rejoindre la partie, recevoir un secret ou envoyer une photo. Tout le reste se joue dans la salle, ensemble.',
+    title: 'Une place pour chaque personnalité',
+    body: "Les jeux font appel à des qualités variées : intuition, observation, mémoire, imagination ou esprit d'équipe. Les modalités de participation peuvent être adaptées pour que chacun prenne part à l'expérience à son rythme.",
   },
   {
-    title: 'Les héros de la fête au centre',
-    body: 'Ce sont eux qui désignent les plus belles photos de la soirée, devant tous leurs invités.',
+    title: 'Des moments de complicité spontanés',
+    body: "On se concerte, on s'encourage, on se surprend. Et parfois, une simple réponse devient le début d'une conversation.",
   },
   {
-    title: 'Tout est prêt avant vos invités',
-    body: "Tout se prépare avec vous avant la soirée. Le jour venu, l'animateur arrive en avance, installe, teste, puis tient la salle jusqu'au podium.",
+    title: 'Une fête dont vous profitez pleinement',
+    body: "Nous préparons le programme avec vous et assurons l'animation le jour J, pour que vous puissiez vivre l'événement aux côtés de vos invités.",
   },
 ];
 
@@ -114,12 +119,16 @@ const faq: FaqItem[] = [
 
 <Base
   title="Anniversaire, mariage, fête de famille — Team Up!"
-  description="Mariage, anniversaire, fête de famille : un animateur fait jouer tous vos invités ensemble, jusqu'à 150, partout en France. Vous profitez, l'esprit libre."
+  description="Mariages, anniversaires, fêtes de famille : une expérience inspirée des jeux télévisés, à partager avec vos invités, jusqu'à 150, partout en France."
 >
   <PageIntro
-    eyebrow="Particuliers"
-    title="Une fête où tout le monde finit par se parler."
-    lead="Mariage, anniversaire, fête de famille : nous transformons des tablées qui s'observent en équipes qui rient ensemble. Vous n'avez rien à animer : vous profitez de vos invités, l'esprit libre."
+    eyebrow="Mariages · Anniversaires · Fêtes de famille"
+    title="Les plus beaux événements sont ceux qui nous rapprochent."
+    lead={[
+      "Une famille, des amis, plusieurs générations, des invités qui se connaissent depuis toujours… et d'autres qui se rencontrent pour la première fois.",
+      "Avec Team Up!, offrez-leur bien plus qu'une animation : une expérience inspirée des jeux télévisés, à partager ensemble.",
+      'Les équipes se mélangent, les échanges naissent et la fête prend une nouvelle dimension.',
+    ]}
   >
     <p slot="footnote" class="intro-note">
       Offre de lancement : à partir de 470 € TTC pour les dix premières soirées réservées avant le
@@ -127,10 +136,10 @@ const faq: FaqItem[] = [
     </p>
     <Fragment slot="actions">
       <Button href="/devis?type=particulier" variant="accent" size="cta">
-        Demander un devis
+        Imaginer mon événement
       </Button>
       <Button href="#programme" variant="outline" size="cta">
-        Voir un exemple de soirée
+        Découvrir le déroulement
       </Button>
     </Fragment>
     <Stage slot="visual" class="hero-stage">
@@ -139,11 +148,12 @@ const faq: FaqItem[] = [
     </Stage>
   </PageIntro>
 
-  <Section eyebrow="Les occasions" title="Dès que plusieurs cercles se retrouvent.">
+  <Section eyebrow="Les occasions" title="Chaque occasion mérite un moment à partager.">
     <div class="occasions tu-rail">
       {occasions.map((occasion) => (
         <article class="tu-panel occasion" data-tu-apparait>
           <h3 class="occasion__title">{occasion.title}</h3>
+          <p class="occasion__sous-titre">{occasion.sousTitre}</p>
           <p class="occasion__body">{occasion.body}</p>
         </article>
       ))}
@@ -158,7 +168,7 @@ const faq: FaqItem[] = [
       <div class="why__text">
         <div class="why__header">
           <p class="tu-eyebrow">Pourquoi ça marche</p>
-          <h2 class="tu-title">Le mélange ne se fait pas tout seul. On l'organise.</h2>
+          <h2 class="tu-title">Parce que les rencontres ne se décrètent pas. Elles se vivent.</h2>
         </div>
         <StepList steps={raisons} variant="plain" />
       </div>
@@ -168,25 +178,44 @@ const faq: FaqItem[] = [
   <Section
     id="programme"
     eyebrow="Exemple de soirée"
-    title="Cinq jeux, un final en photos."
+    title="Et si votre fête prenait des airs de jeu télévisé ?"
     tone="dark"
   >
+    <Recit
+      paragraphes={[
+        "Les équipes sont formées. L'animateur présente le premier défi. Sur le grand écran, le chronomètre démarre.",
+        "Les réponses se succèdent, les équipes se concertent, les points s'accumulent et les surprises ponctuent la partie.",
+      ]}
+    />
     <Timeline items={programme} />
-    <p class="programme__note">
-      Les photos se prennent tout au long de la soirée, entre deux jeux, puis sont dévoilées en
-      grand avant le podium. Le programme s'ajuste au nombre de vos invités.
-    </p>
+    <Recit
+      paragraphes={[
+        "Entre les manches, les invités poursuivent leur Photo challenge. Leurs créations sont dévoilées lors d'un final collectif, avant le podium.",
+        {
+          texte:
+            "Ici, les candidats, ce sont vos invités. Et le plus beau résultat, c'est ce qu'ils auront partagé.",
+          fort: true,
+        },
+      ]}
+    />
+    <Button slot="action" href="/les-jeux" variant="outline" size="cta">
+      Découvrir les sept jeux
+    </Button>
   </Section>
 
   <section class="multi-section">
     <div class="tu-container multi">
       <div class="multi__text">
-        <p class="tu-eyebrow">Multilingue</p>
-        <h2 class="tu-title">Chacun joue dans sa langue.</h2>
+        <p class="tu-eyebrow">Sur mesure</p>
+        <h2 class="tu-title">Une expérience pensée pour vos invités.</h2>
         <p class="multi__body">
-          Vos invités ne parlent pas tous la même langue ? Chacun choisit la sienne en rejoignant la
-          partie, et les contenus sont traduits pour votre soirée, relus avec vous. Les jeux, eux,
-          reposent sur le geste et le mouvement plus que sur les mots.
+          Chaque événement est différent. Nous adaptons le programme à sa durée, à la composition de
+          vos invités, aux langues parlées et, si nécessaire, aux possibilités de déplacement ou de
+          participation de chacun.
+        </p>
+        <p class="multi__body">
+          Pas besoin d'être expert en quiz, particulièrement extraverti ou à l'aise devant un public
+          : l'important est de prendre plaisir à jouer ensemble.
         </p>
       </div>
       <div class="multi__visual">
@@ -199,7 +228,12 @@ const faq: FaqItem[] = [
     <Faq items={faq} />
   </Section>
 
-  <CtaBanner title="Racontez-nous votre fête." href="/devis?type=particulier" />
+  <CtaBanner
+    title="Offrez à vos invités un souvenir commun."
+    note="Parlons de votre événement et imaginons une expérience qui vous ressemble, avec ce supplément de convivialité qui fait toute la différence."
+    label="Demander mon devis gratuit"
+    href="/devis?type=particulier"
+  />
 </Base>
 
 <style>
@@ -223,6 +257,10 @@ const faq: FaqItem[] = [
 
   .occasion__title {
     font-size: 1.375rem;
+  }
+
+  .occasion__sous-titre {
+    font-weight: 600;
   }
 
   .occasion__body {
@@ -267,11 +305,6 @@ const faq: FaqItem[] = [
 
   .multi__body {
     font-size: 1.125rem;
-    color: var(--tu-text-muted);
-  }
-
-  .programme__note {
-    max-width: 47.5rem;
     color: var(--tu-text-muted);
   }
 
