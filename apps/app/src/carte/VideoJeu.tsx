@@ -158,6 +158,18 @@ function Lecteur({ jeu, fermer }: { jeu: GameCode; fermer: () => void }) {
         </svg>
         {t(finie ? 'carte.revoir' : joue ? 'carte.pause' : 'carte.lecture')}
       </Button>
+
+      {/* Toutes les phrases, à relire à son rythme, sans attendre l'animation (audit du 18/11). */}
+      <section className="tu-carte-video__resume" aria-labelledby="resume-video">
+        <h3 id="resume-video" className="tu-carte-video__resume-titre">
+          {t('carte.resume')}
+        </h3>
+        <ol className="tu-carte-video__etapes" data-testid="resume-video">
+          {cartes.map((c) => (
+            <li key={c.cle}>{phrases[c.cle] ?? ''}</li>
+          ))}
+        </ol>
+      </section>
     </div>
   );
 }

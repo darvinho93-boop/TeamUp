@@ -52,7 +52,7 @@ export function ListeIllustree({
                 {e.action.libelle}
                 <span className="tu-visually-hidden"> : {e.nom}</span>
                 {e.action.detail && (
-                  <span className="tu-carte-item__detail">({e.action.detail})</span>
+                  <span className="tu-carte-item__detail">· {e.action.detail}</span>
                 )}
               </button>
             )}
