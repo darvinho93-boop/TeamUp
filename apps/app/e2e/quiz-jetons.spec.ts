@@ -484,7 +484,14 @@ test('à 8 équipes, les mises tiennent dans les cases de l’écran', async ({ 
   const bulle = ecran.getByTestId('bulle');
   await expect(bulle).toHaveCount(1, { timeout: 15_000 });
   await expect(ecran.getByTestId('bulles')).toHaveClass(/tu-bulles--bandeau/);
-  await ecran.waitForTimeout(1000);
+  // La bulle entre par le bas (`tu-bulle-entree`, 0,5 s) : mesurer une fois posée, sinon la
+  // mesure tombe en pleine animation (vu en CI le 2026-11-19, 19 px sous le cadre).
+  await expect
+    .poll(async () => {
+      const b = (await bulle.boundingBox())!;
+      return b.y + b.height;
+    })
+    .toBeLessThanOrEqual(1080);
   const boite = (await bulle.boundingBox())!;
   // Une ligne, dans la scène.
   expect(boite.height).toBeLessThan(60);
