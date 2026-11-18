@@ -593,7 +593,8 @@ consentement pour la mesure d'audience ; sur « Les jeux », **une vidéo par je
   France, Instagram) et dans `Faq.astro` (les questions qui ont une réponse). **Pas de prix**
   dans ces données tant que l'offre de lancement court. Les descriptions disent « partout en
   France ». Search Console : à relier par l'utilisateur (compte Google, ligne DNS chez OVH).
-- Vidéos des jeux : `video/src/site/BoucleJeu.tsx`, cinq compositions `Jeu-<fichier>`
+- Vidéos des jeux : `video/src/site/BoucleJeu.tsx`, sept compositions `Jeu-<fichier>` (Blind test et
+  Portrait mystère ajoutés le 2026-11-18, mini-scènes `blind` et `portrait` de `teaser/scenes.tsx`)
   (4,8 s, même plateau que la boucle de l'accueil), rendues en 720 × 480
   (`--muted --crf=28 --scale=0.75`, environ 400 Ko), affiche à l'image 84, déposées dans
   `apps/site/public/videos/jeux/`. `les-jeux.astro` les joue avec `VideoEcran` ; les écrans
@@ -1516,7 +1517,7 @@ régie la relance** ; **+100** par titre trouvé, aucune pénalité (choix laiss
   `CAPTURES=<dossier>` y produit les captures de l'écran, de la régie et des téléphones.
 - Tests : `packages/game` (machine, position), `tests/pilotage-etapes.test.ts`, `tests/sons.test.ts`,
   `tests/blind.test.ts` (trois buzz simultanés : un seul gagne ; rien de la réponse dans
-  `etat_joueur`), `e2e/blind.spec.ts`. La vitrine ne présente pas encore ce jeu (pas de vidéo).
+  `etat_joueur`), `e2e/blind.spec.ts`. Sur la vitrine depuis le 2026-11-18 (fiche 06, « Nouveau »).
 
 ## Conventions posées le 2026-11-15 (photos de fond des jeux)
 
@@ -1654,7 +1655,7 @@ eliminees, tours, verdict: { trouvees, eliminees } }` (le verdict du dernier tou
   sur le beige), chrono au centre de l'en-tête (le coin droit porte la marque). Un texte identique
   dans deux langues (un nom propre) ne s'affiche qu'une fois (`Multilingue`). Deux échelles : `--tu-portrait-echelle` (indices), `--tu-portrait-noms` (grille). Sons :
   `indice` à chaque tour, `reussite` / `echec` au verdict (depuis la scène), `revelation`.
-- Explication `portrait` (45 s, cinq cartes), pictogramme et règle sur la carte Team Up!. La vitrine
-  ne le présente pas encore.
+- Explication `portrait` (45 s, cinq cartes), pictogramme et règle sur la carte Team Up!. Sur la
+  vitrine depuis le 2026-11-18 (fiche 07, « Nouveau »).
 - Tests : `packages/game` (machine), `tests/portrait.test.ts`, `tests/portrait-base.test.ts`
   (proches, grille, votes, aucune fuite), `tests/pilotage-etapes.test.ts`, `e2e/portrait.spec.ts`.
