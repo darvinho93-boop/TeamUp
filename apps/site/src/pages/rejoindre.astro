@@ -17,20 +17,17 @@ const slots = [1, 2, 3, 4, 5, 6];
 <Base
   partage={false}
   title="Rejoindre une partie — Team Up!"
-  description="Saisissez le code à six caractères affiché sur le grand écran pour rejoindre votre événement. Pas d'application à installer, pas de compte à créer."
+  description="Rejoignez votre partie Team Up! avec les 6 caractères du code affiché sur le grand écran. Sans application à installer ni compte à créer."
 >
   <div class="tu-container rejoindre">
     <div class="rejoindre__form-side">
       <p class="tu-eyebrow">Bienvenue sur Team Up!</p>
-      <h1 class="rejoindre__title">Votre équipe vous attend.</h1>
-      <p class="rejoindre__lead">
-        La partie commence ici. Saisissez le code à six caractères affiché sur le grand écran pour
-        rejoindre votre événement.
-      </p>
+      <h1 class="rejoindre__title">Rejoindre votre partie</h1>
+      <p class="rejoindre__lead">Saisissez les 6 caractères du code affiché sur le grand écran.</p>
 
-      <form class="rejoindre__form" data-tu-join data-app-url={appUrl}>
+      <form class="rejoindre__form" data-tu-join data-app-url={appUrl} novalidate>
         <fieldset class="rejoindre__fieldset">
-          <legend class="tu-visually-hidden">Code de la partie, six caractères</legend>
+          <legend class="tu-visually-hidden">Code de la partie · 6 caractères</legend>
           <div class="rejoindre__slots">
             {slots.map((slot) => (
               <input
@@ -42,7 +39,7 @@ const slots = [1, 2, 3, 4, 5, 6];
                 spellcheck="false"
                 maxlength="1"
                 size="1"
-                aria-label={`Caractère ${slot}`}
+                aria-label={`Caractère ${slot} sur 6`}
                 data-tu-slot
                 required
               />
@@ -50,8 +47,8 @@ const slots = [1, 2, 3, 4, 5, 6];
           </div>
         </fieldset>
 
-        <p class="rejoindre__error" data-tu-join-error hidden>
-          Vérifiez votre code : il doit comporter six caractères.
+        <p class="rejoindre__error" id="rejoindre-erreur" role="alert" data-tu-join-error hidden>
+          Saisissez les 6 caractères du code.
         </p>
 
         <Button type="submit" variant="accent" size="cta" class="rejoindre__submit">
@@ -60,11 +57,11 @@ const slots = [1, 2, 3, 4, 5, 6];
       </form>
 
       <p class="rejoindre__tip">
-        Vous avez un QR code ? Scannez-le avec l'appareil photo de votre téléphone pour accéder
-        directement au jeu.
+        Vous avez un QR code ? Scannez-le avec l'appareil photo de votre téléphone pour ouvrir
+        directement la partie.
       </p>
       <p class="rejoindre__tip rejoindre__tip--fort">
-        Pas d'application à installer. Pas de compte à créer.
+        Sans application à installer ni compte à créer.
       </p>
     </div>
 
@@ -74,7 +71,7 @@ const slots = [1, 2, 3, 4, 5, 6];
         layout="code"
         class="rejoindre__screen"
       />
-      <p class="rejoindre__where">Le code est affiché sur l'écran principal de votre événement.</p>
+      <p class="rejoindre__where">Retrouvez le code sur le grand écran de votre événement.</p>
     </div>
   </div>
 </Base>
