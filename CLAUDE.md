@@ -1593,3 +1593,60 @@ questionnaire s'ouvre et se ferme **par une touche de la régie** ; une **case t
 - Réseau local : les avis remontent de la machine avec le reste (lot 16, `docs/lots.md`).
 - Tests : `tests/avis.test.ts`, `tests/avis-base.test.ts` (refus, remplacement, prénom seulement
   si citable, RLS, retrait d'un joueur), `e2e/avis.spec.ts`.
+
+## Conventions posées le 2026-11-18 (Portrait mystère)
+
+Tranché le 2026-11-18 : un **septième jeu**, le **Portrait mystère** (code `portrait` ; ni
+« Codenames » ni « Qui est-ce ? », noms déposés). Une grille de **25 noms** à l'écran ; par cible,
+l'animateur donne **3 indices préparés**, un par tour ; **à chaque tour, toutes les équipes encore
+en lice votent** pour une carte ; trouver au tour 1, 2 ou 3 vaut **100, 60 ou 30**. Une **carte
+noire** est cachée : l'équipe qui la vote est **éliminée jusqu'à la fin du jeu**, et la carte **reste
+cachée** (montrée à la fin). Noms tirés de la **banque** (back-office) **et des proches** de la
+soirée. Deux modes au lancement : **téléphones** (le capitaine vote) ou **à voix** (la régie saisit).
+
+- **Écarts assumés** : un septième jeu (spec v3 : cinq) ; le téléphone du capitaine sert à jouer
+  (comme les jetons et le Blind test) ; des contenus propres à une soirée (les proches).
+- Machine pure (`packages/game/src/pilotage/portrait.ts`) : `pret` → `vote` (indice n, chrono)
+  → `tour` (verdict) → `vote`… → `revele`, puis `noire` après la dernière cible. Le tour en cours
+  vit dans `pilotage.indices` ; le résultat d'un passage : `{ trouvees: { numéro: tour },
+eliminees, tours, verdict: { trouvees, eliminees } }` (le verdict du dernier tour, pour
+  l'écran). Une équipe qui a trouvé a fini pour la cible ; un leurre ne coûte rien. Après le
+  3e tour ou quand plus personne n'est en lice, seulement « Révéler ».
+- Base (migrations `20261119090000`, l'énumération seule, et `20261119100000`) : la cible =
+  `passages.contenu_id` ; `grilles_portrait` (une par manche : `cartes uuid[25]` tous différents,
+  `noire` position), écrite sous la session de l'animateur ; `votes_portrait` (passage, équipe,
+  tour, carte), écrite **uniquement** par `voter_portrait` (rôle de service ; refus : pas
+  capitaine, tour fermé à l'heure de la base + 1 s, mode à voix, équipe éliminée, déjà trouvé,
+  carte retournée) et `voter_portrait_regie` (`anime()`, pendant le tour, `null` retire).
+  `recommencer_manche` retire aussi les votes.
+- **Secrets gardés en base** : `etat_joueur.portrait` ne donne que la grille (noms dans la langue
+  du joueur, cartes retournées), l'étape, le tour et le vote de **son** équipe — jamais la cible, la
+  carte noire ni un indice. `etat_ecran` hors régie : `contenu_id` nul et `public` vide pour une
+  cible non révélée, indices seulement ceux donnés (`secret_visible`), votes réduits à « a voté »,
+  `grille.noire` seulement à l'étape `noire` ou jeu terminé, `grille.retournees` (passage → position).
+- Contenu « Portrait mystère » : public `{nom}` (60 au plus), secret `{indices: [3]}` (200 au plus),
+  vérifié par `contenu_bien_forme`. **Proches** : `contenus.evenement_id` (null = la banque), écrits
+  par `enregistrer_proche` (toutes les langues de la soirée), lus par son seul animateur (et
+  l'admin) ; le back-office ne liste que la banque ; la préparation filtre
+  `evenement_id is null or = la soirée`.
+- Préparation : « Ajouter Portrait mystère » (3 à 8 cibles, 5 ; chrono d'un tour 10 à 60 s, 20) tire
+  les cibles au hasard parmi les portraits libres et **complète la grille d'office** (hasard du
+  serveur) ; changer une cible ou la carte noire refait la grille autour ; « Refaire la grille au
+  hasard », « Mélanger ». Il faut **25 portraits** complets dans les langues de la soirée.
+- Régie (`PanneauPortrait`) : la cible, ses indices et la carte noire pour l'animateur seul ;
+  « Indice n », « Fin du tour » (points et éliminations), « Révéler la cible », « Cible suivante »,
+  « Montrer la carte noire ». **« Fin du tour » relit l'état de la base avant de calculer** (un vote
+  arrivé juste avant l'appui manquait, vu en e2e). Un tour ouvert ne se quitte pas
+  (`quizEnSuspens` → `tour`). En mode à voix, un menu par équipe saisit son vote.
+- Téléphone (`src/joueur/Portrait.tsx`) : les 25 cartes sur deux colonnes ; le capitaine touche une
+  carte, **le vote part aussitôt** et se change tant que le tour est ouvert (plus simple qu'un
+  « Valider ») ; signal `mises` (écran et régie seulement).
+- Écran (`src/ecran/Portrait.tsx`, `portrait.css`) : cible et indices (langues de la soirée), grille
+  5 × 5 repérée A1 à E5 (au moins la moitié de la scène), état des équipes ; fin de tour en plein
+  écran (trouvé en vert ; carte noire à la couleur de l'équipe, sans nommer la carte ; personne sur
+  le beige). Deux échelles : `--tu-portrait-echelle` (indices), `--tu-portrait-noms` (grille). Sons :
+  `indice` à chaque tour, `reussite` / `echec` au verdict (depuis la scène), `revelation`.
+- Explication `portrait` (45 s, cinq cartes), pictogramme et règle sur la carte Team Up!. La vitrine
+  ne le présente pas encore.
+- Tests : `packages/game` (machine), `tests/portrait.test.ts`, `tests/portrait-base.test.ts`
+  (proches, grille, votes, aucune fuite), `tests/pilotage-etapes.test.ts`, `e2e/portrait.spec.ts`.
