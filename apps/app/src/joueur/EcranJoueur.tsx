@@ -7,6 +7,7 @@ import { Button, cx, teamModifier } from '@teamup/ui/react';
 import { memoriserLangue } from '@/lib/langue-navigateur';
 import type { EtatJoueur, GroupePublic, Langue } from '@/lib/partie';
 import { AjoutInvite } from './AjoutInvite';
+import { AvisJoueur } from './AvisJoueur';
 import { Cadre } from './Cadre';
 import { ChoixLangueJoueur } from './ChoixLangueJoueur';
 import { Explication } from './Explication';
@@ -20,7 +21,7 @@ import { SurenchereMots } from './SurenchereMots';
 import { useEtatJoueur } from './useEtatJoueur';
 import { useFilePhotos } from './useFilePhotos';
 
-type Vue = 'equipe' | 'attente' | 'photos' | 'ajout' | 'nom' | 'explication' | 'propose';
+type Vue = 'equipe' | 'attente' | 'photos' | 'ajout' | 'nom' | 'explication' | 'propose' | 'avis';
 
 /** Le joueur a rejoint : « Mon équipe », puis l'attente, tenus à jour en continu. */
 export function EcranJoueur({
@@ -172,6 +173,27 @@ export function EcranJoueur({
     );
   }
 
+  // L'avis de fin de soirée (2026-11-18), tant que la régie l'a ouvert, même partie terminée ;
+  // fermé pendant la saisie, la vue se ferme d'elle-même.
+  const avisOuverts = evenement.avis_ouverts === true;
+  if (vue === 'avis' && avisOuverts) {
+    return (
+      <Cadre bandeau={bandeau} outil={outil}>
+        <AvisJoueur
+          code={code}
+          avis={etat.avis ?? null}
+          remplacer={remplacer}
+          retour={() => setVue('attente')}
+        />
+      </Cadre>
+    );
+  }
+  const boutonAvis = avisOuverts && (
+    <Button variant="outline" size="lg" block onClick={() => setVue('avis')}>
+      {etat.avis ? t('avis.revoir') : t('avis.ouvrir')}
+    </Button>
+  );
+
   if (vue === 'explication') {
     return (
       <Cadre bandeau={bandeau} outil={outil}>
@@ -253,9 +275,14 @@ export function EcranJoueur({
           </p>
         ) : null}
 
+        {evenement.statut === 'termine' && boutonAvis && (
+          <div className="tu-player__actions">{boutonAvis}</div>
+        )}
+
         {evenement.statut !== 'termine' && (
           <div className="tu-player__actions">
             <p className="tu-wait-look">{t('attente.regarde')}</p>
+            {boutonAvis}
             {joueur.capitaine && equipe && (
               <p className="tu-player__lead" data-testid="capitaine">
                 {t('attente.capitaine')}

@@ -66,6 +66,41 @@
     "termine": "La partie est terminée.",
     "serveur": "Ça n'a pas marché : réessayez."
   },
+  "avis": {
+    "ouvrir": "Donner mon avis",
+    "revoir": "Mon avis",
+    "etape": "Étape {n} sur 2",
+    "retour": "Retour",
+    "precedent": "Précédent",
+    "restants": "{n, plural, =0 {Plus aucun caractère} one {# caractère restant} other {# caractères restants}}",
+    "aime": {
+      "titre": "Ce que vous avez aimé",
+      "aide": "Une à trois choses : un jeu, un moment, l'ambiance…",
+      "champ": "Coup de cœur n° {n}",
+      "citable": "Team Up! peut citer ces mots avec mon prénom",
+      "suivant": "Suivant"
+    },
+    "moins": {
+      "titre": "Ce qui vous a moins plu",
+      "aide": "Dites-le franchement : c'est ce qui nous fait progresser.",
+      "champ": "Votre remarque",
+      "envoyer": "Envoyer",
+      "rien": "Rien à redire"
+    },
+    "merci": {
+      "titre": "Merci !",
+      "aide": "Votre avis est bien arrivé. Vous pouvez le modifier tant que le questionnaire est ouvert.",
+      "modifier": "Modifier mon avis"
+    },
+    "erreur": {
+      "aimeVide": "Écrivez au moins une chose que vous avez aimée.",
+      "aimeLong": "200 caractères au plus par coup de cœur.",
+      "moinsVide": "Écrivez ce qui vous a moins plu, ou touchez « Rien à redire ».",
+      "moinsLong": "500 caractères au plus.",
+      "fermes": "Le questionnaire est fermé pour le moment.",
+      "serveur": "Ça n'a pas marché : réessayez."
+    }
+  },
   "ajout": {
     "ouvrir": "Ajouter quelqu'un sans téléphone",
     "titre": "Quelqu'un sans téléphone ?",

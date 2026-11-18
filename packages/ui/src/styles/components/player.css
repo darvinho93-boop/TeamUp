@@ -104,6 +104,32 @@
   font-weight: 600;
 }
 
+/* Avis de fin de soirée (2026-11-18) : l'étape (1/2, 2/2) et la case témoignage. */
+.tu-avis__etape {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-sm);
+  font-weight: 700;
+  color: var(--tu-text-muted);
+}
+
+.tu-avis__case {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-3);
+  min-height: var(--tu-tap-min);
+  font-size: var(--tu-size-base);
+  cursor: pointer;
+}
+
+.tu-avis__case input {
+  flex: none;
+  inline-size: var(--tu-space-6);
+  block-size: var(--tu-space-6);
+  margin: 0;
+  accent-color: var(--tu-primary);
+}
+
 /* Occupe la hauteur restante : l'action principale tombe en bas de l'écran. */
 .tu-player__body {
   display: flex;

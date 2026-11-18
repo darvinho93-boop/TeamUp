@@ -66,6 +66,41 @@
     "termine": "The game is over.",
     "serveur": "That didn't work: please try again."
   },
+  "avis": {
+    "ouvrir": "Give my feedback",
+    "revoir": "My feedback",
+    "etape": "Step {n} of 2",
+    "retour": "Back",
+    "precedent": "Previous",
+    "restants": "{n, plural, =0 {No characters left} one {# character left} other {# characters left}}",
+    "aime": {
+      "titre": "What you loved",
+      "aide": "One to three things: a game, a moment, the atmosphere…",
+      "champ": "Highlight {n}",
+      "citable": "Team Up! may quote these words with my first name",
+      "suivant": "Next"
+    },
+    "moins": {
+      "titre": "What you liked less",
+      "aide": "Be honest: it's how we get better.",
+      "champ": "Your comment",
+      "envoyer": "Send",
+      "rien": "Nothing to add"
+    },
+    "merci": {
+      "titre": "Thank you!",
+      "aide": "Your feedback is in. You can change it while the survey is open.",
+      "modifier": "Change my feedback"
+    },
+    "erreur": {
+      "aimeVide": "Write at least one thing you loved.",
+      "aimeLong": "200 characters at most per highlight.",
+      "moinsVide": "Write what you liked less, or tap “Nothing to add”.",
+      "moinsLong": "500 characters at most.",
+      "fermes": "The survey is closed for now.",
+      "serveur": "That didn't work: please try again."
+    }
+  },
   "ajout": {
     "ouvrir": "Add someone without a phone",
     "titre": "Someone without a phone?",
