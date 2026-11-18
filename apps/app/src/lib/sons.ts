@@ -145,6 +145,9 @@ const VERDICTS: Partial<Record<GameCode, Record<string, Son>>> = {
   mime2: { trouve: 'reussite', rate: 'echec' },
   photo2: { gagnante: 'reussite' },
   grab: { gagne: 'reussite' },
+  // Portrait mystère (2026-11-18) : un indice par tour, la cible puis la carte noire révélées ; le
+  // verdict d'un tour sonne depuis la scène (réussite ou échec selon ce qu'il dit).
+  portrait: { vote: 'indice', revele: 'revelation', noire: 'revelation' },
   cup: { gagne: 'reussite' },
   // Blind test (2026-11-15) : le buzz, la mauvaise réponse, la révélation.
   blind: { buzz: 'indice', pause: 'echec', revele: 'revelation' },

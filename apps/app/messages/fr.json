@@ -1067,7 +1067,20 @@
       "personne": "Personne ne l’a trouvé !",
       "bloquees": "Plus de buzz sur ce titre"
     },
-    "avis": "Donnez votre avis sur votre téléphone !"
+    "avis": "Donnez votre avis sur votre téléphone !",
+    "portrait": {
+      "cible": "Cible {n} sur {total}",
+      "pret": "Qui se cache dans la grille ? Le premier indice arrive…",
+      "aVote": "a voté",
+      "noireTitre": "Carte noire !",
+      "eliminee": "{equipe} : éliminée",
+      "trouveTitre": "Trouvé !",
+      "trouvePar": "{equipe} : +{points}",
+      "personne": "Personne n’a trouvé…",
+      "suivant": "Indice suivant !",
+      "cetait": "C’était…",
+      "noireEtait": "La carte noire était…"
+    }
   },
   "admin": {
     "nav": {

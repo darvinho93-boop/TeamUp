@@ -13,6 +13,7 @@ import {
 } from './portrait';
 
 const CIBLE = 7;
+const VIDE = { trouvees: [], eliminees: [] };
 const NOIRE = 13;
 
 const etat = (partiel: Partial<EtatPortrait> = {}): EtatPortrait => ({
@@ -46,7 +47,12 @@ describe('Portrait mystère : une cible', () => {
     expect(suite).toMatchObject({
       etape: 'tour',
       chrono: 'arreter',
-      resultat: { trouvees: { 1: 1 }, eliminees: [2], tours: 1 },
+      resultat: {
+        trouvees: { 1: 1 },
+        eliminees: [2],
+        tours: 1,
+        verdict: { trouvees: [1], eliminees: [2] },
+      },
       points: { 1: 100 },
     });
     // Restent en lice : l'équipe 3 (leurre) et la 4 (pas de vote).
@@ -57,7 +63,7 @@ describe('Portrait mystère : une cible', () => {
     let e = etat({
       etape: 'tour',
       tour: 1,
-      resultat: { trouvees: { 1: 1 }, eliminees: [], tours: 1 },
+      resultat: { trouvees: { 1: 1 }, eliminees: [], tours: 1, verdict: VIDE },
     });
     let s = appliquerPortrait(e, { type: 'indice' });
     expect(s).toMatchObject({ etape: 'vote', tour: 2 });
@@ -77,7 +83,11 @@ describe('Portrait mystère : une cible', () => {
   it('après le troisième tour, ou personne en lice : seulement révéler', () => {
     expect(
       actionsPortrait(
-        etat({ etape: 'tour', tour: 3, resultat: { trouvees: {}, eliminees: [], tours: 3 } }),
+        etat({
+          etape: 'tour',
+          tour: 3,
+          resultat: { trouvees: {}, eliminees: [], tours: 3, verdict: VIDE },
+        }),
       ),
     ).toEqual(['reveler']);
     expect(
@@ -86,13 +96,17 @@ describe('Portrait mystère : une cible', () => {
           etape: 'tour',
           tour: 1,
           equipes: [1, 2],
-          resultat: { trouvees: { 1: 1 }, eliminees: [2], tours: 1 },
+          resultat: { trouvees: { 1: 1 }, eliminees: [2], tours: 1, verdict: VIDE },
         }),
       ),
     ).toEqual(['reveler']);
     expect(
       actionsPortrait(
-        etat({ etape: 'tour', tour: 1, resultat: { trouvees: {}, eliminees: [], tours: 1 } }),
+        etat({
+          etape: 'tour',
+          tour: 1,
+          resultat: { trouvees: {}, eliminees: [], tours: 1, verdict: VIDE },
+        }),
       ),
     ).toEqual(['indice', 'reveler']);
   });
@@ -126,8 +140,18 @@ describe('Portrait mystère : outils', () => {
   });
 
   it('le résultat se lit sans confiance et se réécrit à l’identique', () => {
-    const r = resultatPortraitDe({ trouvees: { '1': 1, '2': 'x' }, eliminees: [3, 'y'], tours: 2 });
-    expect(r).toEqual({ trouvees: { 1: 1 }, eliminees: [3], tours: 2 });
+    const r = resultatPortraitDe({
+      trouvees: { '1': 1, '2': 'x' },
+      eliminees: [3, 'y'],
+      tours: 2,
+      verdict: { trouvees: [1], eliminees: ['z', 3] },
+    });
+    expect(r).toEqual({
+      trouvees: { 1: 1 },
+      eliminees: [3],
+      tours: 2,
+      verdict: { trouvees: [1], eliminees: [3] },
+    });
     expect(resultatPortraitDe(resultatPortraitVers(r))).toEqual(r);
     expect(resultatPortraitDe(null)).toEqual(RESULTAT_PORTRAIT_VIDE);
   });

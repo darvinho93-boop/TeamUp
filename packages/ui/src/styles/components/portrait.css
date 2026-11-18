@@ -1,0 +1,184 @@
+/* Portrait mystère à l'écran commun (2026-11-18) : la cible et ses indices en haut, la grille de
+   25 noms au milieu (elle prend la place qui reste, mais jamais moins de la moitié de la scène),
+   l'état des équipes en bas. Deux échelles réglées par `useAjusterTexte` : celle des indices
+   (`--tu-portrait-echelle`) et celle des noms (`--tu-portrait-noms`). Jamais le corail. */
+
+.tu-stage-portrait {
+  --tu-portrait-echelle: 1;
+  --tu-portrait-noms: 1;
+
+  gap: var(--tu-space-4);
+}
+
+.tu-stage-portrait__tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tu-space-6);
+}
+
+.tu-stage-portrait__chrono {
+  font-family: var(--tu-font-numeric);
+  font-size: calc(var(--tu-size-5xl) * var(--tu-portrait-echelle));
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tu-stage-portrait__pret {
+  margin: 0;
+  text-align: center;
+}
+
+.tu-stage-portrait__indices {
+  --tu-multi-taille: calc(var(--tu-size-3xl) * var(--tu-portrait-echelle));
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-portrait__indice {
+  display: flex;
+  align-items: baseline;
+  gap: var(--tu-space-4);
+  color: var(--tu-text-muted);
+}
+
+.tu-stage-portrait__indice--dernier {
+  color: var(--tu-text);
+  font-weight: 700;
+}
+
+.tu-stage-portrait__rang {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: calc(var(--tu-size-4xl) * var(--tu-portrait-echelle));
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-primary);
+  color: var(--tu-text-invert);
+  font-family: var(--tu-font-display);
+  font-size: calc(var(--tu-size-2xl) * var(--tu-portrait-echelle));
+  font-weight: 700;
+}
+
+.tu-stage-portrait__reponse {
+  --tu-multi-taille: calc(var(--tu-size-4xl) * var(--tu-portrait-echelle));
+
+  text-align: center;
+}
+
+.tu-stage-portrait__reponse p {
+  margin: 0;
+}
+
+.tu-stage-portrait__grille {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: var(--tu-space-3);
+  min-height: calc(var(--tu-stage-height) / 2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-portrait__carte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-1);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--tu-space-2) var(--tu-space-3);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+  text-align: center;
+  overflow: hidden;
+}
+
+.tu-stage-portrait__repere {
+  color: var(--tu-text-muted);
+  font-family: var(--tu-font-display);
+  font-size: calc(var(--tu-size-lg) * var(--tu-portrait-noms));
+  font-weight: 700;
+}
+
+.tu-stage-portrait__nom {
+  font-family: var(--tu-font-display);
+  font-size: calc(var(--tu-size-2xl) * var(--tu-portrait-noms));
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+/* Le tamoul ne se coupe pas par une césure. */
+.tu-stage-portrait__nom:lang(ta) {
+  hyphens: manual;
+}
+
+.tu-stage-portrait__carte--trouvee,
+.tu-stage-portrait__carte--cible {
+  border-color: var(--tu-success);
+  background: var(--tu-success);
+  color: var(--tu-text-invert);
+}
+
+.tu-stage-portrait__carte--noire {
+  border-color: var(--tu-navy-900);
+  background: var(--tu-navy-900);
+  color: var(--tu-text-invert);
+}
+
+.tu-stage-portrait__carte--trouvee .tu-stage-portrait__repere,
+.tu-stage-portrait__carte--cible .tu-stage-portrait__repere,
+.tu-stage-portrait__carte--noire .tu-stage-portrait__repere {
+  color: inherit;
+}
+
+.tu-stage-portrait__carte--trouvee .tu-stage-portrait__nom {
+  text-decoration: line-through;
+}
+
+.tu-stage-portrait__equipes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--tu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-portrait__equipe--eliminee {
+  text-decoration: line-through;
+}
+
+/* Le verdict de la carte noire, à la couleur de l'équipe tombée dessus. */
+.tu-stage-portrait__noire {
+  --tu-text: var(--tu-team-on);
+  --tu-text-muted: var(--tu-team-on);
+
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-portrait__carte--cible {
+    animation: tu-portrait-cible var(--tu-dur-reveal) var(--tu-ease) both;
+  }
+}
+
+@keyframes tu-portrait-cible {
+  from {
+    transform: scale(0.85);
+  }
+}

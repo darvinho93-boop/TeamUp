@@ -1067,7 +1067,20 @@
       "personne": "Nobody found it!",
       "bloquees": "No more buzzing on this song"
     },
-    "avis": "Share your feedback on your phone!"
+    "avis": "Share your feedback on your phone!",
+    "portrait": {
+      "cible": "Target {n} of {total}",
+      "pret": "Who’s hiding in the grid? The first clue is coming…",
+      "aVote": "voted",
+      "noireTitre": "Black card!",
+      "eliminee": "{equipe}: out",
+      "trouveTitre": "Found!",
+      "trouvePar": "{equipe}: +{points}",
+      "personne": "Nobody found it…",
+      "suivant": "Next clue!",
+      "cetait": "It was…",
+      "noireEtait": "The black card was…"
+    }
   },
   "admin": {
     "nav": {

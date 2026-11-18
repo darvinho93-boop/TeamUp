@@ -62,6 +62,7 @@ import { Chrono, useMaintenant, useMonte } from './Chrono';
 import { Recompense } from './Recompense';
 import { SonsContexte } from './sons/useSons';
 import { BlindTest } from './BlindTest';
+import { Portrait } from './Portrait';
 import { Explication } from './Explication';
 import { SurenchereTelephones } from './SurenchereTelephones';
 import { useAjusterQuiz } from './useAjusterQuiz';
@@ -603,6 +604,7 @@ function Jeu(props: Props) {
   if (manche?.jeu === 'photo2') return <Photo {...props} manche={manche} />;
   if (manche?.jeu === 'grab' || manche?.jeu === 'cup') return <Duel {...props} jeu={manche.jeu} />;
   if (manche?.jeu === 'blind') return <BlindTest {...props} manche={manche} />;
+  if (manche?.jeu === 'portrait') return <Portrait {...props} manche={manche} />;
   return null;
 }
 

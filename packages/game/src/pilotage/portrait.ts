@@ -45,9 +45,16 @@ export interface ResultatPortrait {
   eliminees: number[];
   /** Le dernier tour terminé (0 avant le premier). */
   tours: number;
+  /** Le verdict de ce dernier tour, que l'écran annonce : qui a trouvé, qui est tombé sur la noire. */
+  verdict: { trouvees: number[]; eliminees: number[] };
 }
 
-export const RESULTAT_PORTRAIT_VIDE: ResultatPortrait = { trouvees: {}, eliminees: [], tours: 0 };
+export const RESULTAT_PORTRAIT_VIDE: ResultatPortrait = {
+  trouvees: {},
+  eliminees: [],
+  tours: 0,
+  verdict: { trouvees: [], eliminees: [] },
+};
 
 export interface EtatPortrait {
   etape: EtapePortrait;
@@ -129,21 +136,24 @@ export function appliquerPortrait(etat: EtatPortrait, action: ActionPortrait): T
     case 'cloturer': {
       const trouvees = { ...r.trouvees };
       const eliminees = [...r.eliminees];
+      const verdict = { trouvees: [] as number[], eliminees: [] as number[] };
       const points: Record<number, number> = {};
       for (const equipe of equipesEnLice(etat)) {
         const carte = etat.votes[equipe];
         if (carte === etat.cible) {
           trouvees[equipe] = etat.tour;
           points[equipe] = pointsPortrait(etat.tour);
+          verdict.trouvees.push(equipe);
         } else if (carte === etat.noire) {
           eliminees.push(equipe);
+          verdict.eliminees.push(equipe);
         }
       }
       return {
         etape: 'tour',
         tour: etat.tour,
         chrono: 'arreter',
-        resultat: { trouvees, eliminees, tours: etat.tour },
+        resultat: { trouvees, eliminees, tours: etat.tour, verdict },
         points,
       };
     }
@@ -190,10 +200,23 @@ export function resultatPortraitDe(
         return n === null ? [] : [n];
       })
     : [];
-  return { trouvees, eliminees, tours: entier(brut?.['tours']) ?? 0 };
+  const liste = (v: unknown) =>
+    Array.isArray(v)
+      ? v.flatMap((x) => {
+          const n = entier(x);
+          return n === null ? [] : [n];
+        })
+      : [];
+  const verdict = (brut?.['verdict'] ?? {}) as Record<string, unknown>;
+  return {
+    trouvees,
+    eliminees,
+    tours: entier(brut?.['tours']) ?? 0,
+    verdict: { trouvees: liste(verdict['trouvees']), eliminees: liste(verdict['eliminees']) },
+  };
 }
 
 /** Le même, prêt à écrire en base. */
 export function resultatPortraitVers(r: ResultatPortrait): Record<string, unknown> {
-  return { trouvees: r.trouvees, eliminees: r.eliminees, tours: r.tours };
+  return { trouvees: r.trouvees, eliminees: r.eliminees, tours: r.tours, verdict: r.verdict };
 }
