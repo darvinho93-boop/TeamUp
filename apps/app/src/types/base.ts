@@ -1117,6 +1117,7 @@ export type Database = {
         Row: {
           carte: number;
           equipe_id: string;
+          id: string;
           passage_id: string;
           tour: number;
           vote_le: string;
@@ -1124,6 +1125,7 @@ export type Database = {
         Insert: {
           carte: number;
           equipe_id: string;
+          id?: string;
           passage_id: string;
           tour: number;
           vote_le?: string;
@@ -1131,6 +1133,7 @@ export type Database = {
         Update: {
           carte?: number;
           equipe_id?: string;
+          id?: string;
           passage_id?: string;
           tour?: number;
           vote_le?: string;
