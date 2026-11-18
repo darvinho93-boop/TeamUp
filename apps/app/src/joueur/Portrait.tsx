@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx } from '@teamup/ui/react';
 import { repereCarte } from '@teamup/game';
@@ -26,6 +26,18 @@ export function Portrait({
   const t = useTranslations('portrait');
   const [envoi, setEnvoi] = useState<number | null>(null);
   const [refus, setRefus] = useState<Exclude<RefusPortrait, 'session'> | null>(null);
+  const haut = useRef<HTMLDivElement>(null);
+
+  // La grille est longue : le capitaine vote souvent tout en bas. Quand le statut change (tour
+  // ouvert, verdict, cible suivante), on remonte, sinon « Carte noire ! » restait hors de vue.
+  const moment = `${p.cible}-${p.etape}-${p.tour}-${p.eliminee}-${p.trouvee}`;
+  const momentVu = useRef(moment);
+  useEffect(() => {
+    if (momentVu.current === moment) return;
+    momentVu.current = moment;
+    const calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    haut.current?.scrollIntoView({ block: 'start', behavior: calme ? 'auto' : 'smooth' });
+  }, [moment]);
 
   async function voter(carte: number) {
     if (envoi !== null) return;
@@ -80,7 +92,7 @@ export function Portrait({
       : null;
 
   return (
-    <div className="tu-quiz" data-testid="portrait-joueur" data-etape={p.etape ?? ''}>
+    <div ref={haut} className="tu-quiz" data-testid="portrait-joueur" data-etape={p.etape ?? ''}>
       {p.cible !== null && (
         <div className="tu-quiz__tete">
           <span className="tu-quiz__numero">
