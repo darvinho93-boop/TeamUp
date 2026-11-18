@@ -140,6 +140,29 @@ export interface BlindJoueur {
   peut_buzzer: boolean;
 }
 
+/** Portrait mystère (2026-11-18), ce que voit un téléphone : jamais la cible ni la carte noire. */
+export interface PortraitJoueur {
+  mode: 'voix' | 'telephones';
+  serveur_ms: number;
+  /** `pret`, `vote`, `tour`, `revele` ou `noire` (`packages/game`, pilotage du Portrait mystère). */
+  etape: string | null;
+  cible: number | null;
+  cibles: number;
+  /** Le tour en cours (les indices donnés), 0 avant le premier. */
+  tour: number;
+  chrono_depart_ms: number | null;
+  chrono_duree_s: number | null;
+  equipe: number | null;
+  capitaine: boolean;
+  eliminee: boolean;
+  /** Le tour où l'équipe a trouvé cette cible, `null` sinon. */
+  trouvee: number | null;
+  /** La carte votée par l'équipe pour ce tour, `null` sinon. */
+  vote: number | null;
+  peut_voter: boolean;
+  cartes: { nom: string | null; retournee: boolean }[];
+}
+
 export interface MotJoueur {
   id: string;
   mot: string;
@@ -197,6 +220,8 @@ export interface EtatJoueur {
   surenchere?: SurenchereJoueur | null;
   /** Blind test ; absent sans la migration du 2026-11-16. */
   blind?: BlindJoueur | null;
+  /** Portrait mystère ; absent sans la migration du 2026-11-19. */
+  portrait?: PortraitJoueur | null;
   /** `null` tant que la soirée n'a pas de manche photo. */
   photos: PhotosJoueur | null;
   /** L'avis déjà donné par ce joueur ; absent sans la migration du 2026-11-18. */

@@ -40,6 +40,23 @@ export interface PassageSalle {
   photos?: PhotoSalle[] | null;
   /** Surenchère en mode téléphones : les mots de chaque équipe (par numéro). */
   mots?: Record<string, MotsEquipeSalle> | null;
+  /**
+   * Portrait mystère, cible en cours : les votes du tour par numéro d'équipe, la carte (0 à 24)
+   * pour la régie, `true` (« a voté ») pour l'écran.
+   */
+  votes?: Record<string, number | true> | null;
+}
+
+/** La grille d'un Portrait mystère (2026-11-18). */
+export interface GrilleSalle {
+  /** Les 25 noms, dans les langues de la soirée (`{ fr: { nom } }`). */
+  cartes: ParLangue[];
+  /** Les contenus des 25 cartes : la régie seulement. */
+  ids: string[] | null;
+  /** La carte noire : la régie, puis l'écran une fois montrée (étape « noire ») ou le jeu fini. */
+  noire: number | null;
+  /** Les cibles révélées : id du passage → position de la carte retournée. */
+  retournees: Record<string, number>;
 }
 
 /**
@@ -88,6 +105,8 @@ export interface MancheSalle {
   jetons?: Record<string, { depart: number; restants: number }> | null;
   /** La photo de fond du jeu (bucket privé « fonds ») ; absente sans la migration 20261117090000. */
   fond?: string | null;
+  /** Portrait mystère : la grille ; absente avant la préparation ou sans la migration. */
+  grille?: GrilleSalle | null;
   passages: PassageSalle[];
 }
 
