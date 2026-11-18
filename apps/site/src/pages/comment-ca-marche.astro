@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageIntro from '../components/layout/PageIntro.astro';
 import Section from '../components/layout/Section.astro';
 import StepList from '../components/layout/StepList.astro';
+import Recit from '../components/layout/Recit.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
 import Equipment from '../components/layout/Equipment.astro';
 import Icon from '../components/Icon.astro';
@@ -12,29 +13,29 @@ import RegiePanel from '../components/visuels/RegiePanel.astro';
 
 const avant = [
   {
-    title: 'Demande de devis',
-    body: "Deux minutes pour nous décrire votre événement : date, lieu, nombre d'invités, groupes à mélanger.",
+    title: 'Vous nous présentez votre projet',
+    body: 'Une date, un lieu, un nombre de participants et quelques informations sur le public que vous réunissez.',
   },
   {
-    title: 'Un premier échange',
-    body: "Nous faisons connaissance et fixons ensemble le format, les langues de vos invités et l'ambiance que vous souhaitez.",
+    title: 'Nous imaginons votre expérience',
+    body: "Nous échangeons sur l'ambiance souhaitée, les groupes à mélanger, les langues parlées et les éventuels besoins d'adaptation.",
   },
   {
-    title: 'Préparation',
-    body: 'Nous définissons les groupes à mélanger, calons le programme sur votre soirée et choisissons les contenus avec vous.',
+    title: 'Nous construisons votre programme',
+    body: 'Sélection des jeux, contenus personnalisés, constitution des équipes et organisation du déroulement : les détails sont préparés avec vous.',
   },
   {
-    title: 'Le jour J',
-    body: "L'animateur arrive en avance : il branche l'écran, teste le son et le réseau. Quand la salle se remplit, tout fonctionne déjà.",
+    title: "Nous préparons l'installation",
+    body: "Le jour J, l'animateur arrive en avance pour mettre en place le matériel de jeu et vérifier les équipements nécessaires.",
   },
 ];
 
 const deroule = [
-  'Les invités rejoignent la partie',
-  'Les équipes se découvrent',
-  "Les jeux s'enchaînent",
-  'Le final en photos',
-  'Le podium',
+  'Les participants rejoignent la partie.',
+  'Les équipes se découvrent.',
+  "L'animateur lance les différents jeux.",
+  'Les photos et les moments forts sont révélés.',
+  "Le podium final vient clôturer l'expérience.",
 ];
 
 const durees = [
@@ -52,54 +53,58 @@ const durees = [
 
 <Base
   title="Comment se déroule une animation de soirée — Team Up!"
-  description="Un seul interlocuteur, une soirée préparée avec vous, un animateur qui arrive en avance et teste tout. Le jour J, il ne vous reste qu'à accueillir."
+  description="Une expérience préparée avec vous, de la préparation au podium final : un animateur, un grand écran, et vos invités au cœur du jeu."
 >
   <PageIntro
     wide
-    eyebrow="Comment ça marche"
-    title="Le jour J, il ne vous reste qu'à accueillir."
-    lead="Un seul interlocuteur, de votre demande au podium. Nous préparons la soirée avec vous ; le jour venu, l'animateur arrive en avance, teste tout, puis fait vibrer la salle. Vos invités, eux, n'ont rien à installer."
+    eyebrow="Une expérience préparée avec vous"
+    title="Laissez-vous porter par l'événement. Nous donnons vie au jeu."
+    lead={[
+      "Team Up! associe la convivialité d'un jeu collectif à la simplicité d'une animation accompagnée.",
+      "De la préparation au podium final, nous coordonnons l'expérience pour que vous puissiez vous consacrer à l'essentiel : vos invités.",
+    ]}
   />
 
-  <Section eyebrow="Avant la soirée" title="Quatre étapes, un seul interlocuteur.">
+  <Section eyebrow="Avant l'événement" title="Une préparation en quatre étapes.">
     <StepList steps={avant} variant="cards" />
   </Section>
 
-  <Section
-    eyebrow="Pendant la soirée"
-    title="Un animateur, un grand écran, et les téléphones dans les poches."
-  >
+  <Section eyebrow="Pendant l'événement" title="Place à l'expérience.">
     <div class="surfaces tu-rail">
       <article class="surface" data-tu-apparait>
         <RegiePanel class="surface__visual" />
-        <h3 class="surface__title">L'animateur</h3>
+        <h3 class="surface__title">Un animateur pour orchestrer la partie</h3>
         <p class="surface__body">
-          Il tient la salle au micro, donne le rythme et pilote chaque jeu. Jusqu'à 150 invités, et
-          personne sur le côté.
+          Il accueille les participants, explique les règles, lance les défis et donne le rythme,
+          jusqu'à la révélation des résultats.
         </p>
       </article>
 
       <article class="surface" data-tu-apparait>
         <ScreenMimeLive class="surface__visual" />
-        <h3 class="surface__title">L'écran de la salle</h3>
+        <h3 class="surface__title">Un grand écran au cœur de l'expérience</h3>
         <p class="surface__body">
-          Projeté en grand : règles animées, chronos, scores et révélations. C'est lui que toute la
-          salle regarde.
+          Questions, chronomètres, scores et surprises apparaissent en direct, pour que chacun
+          puisse suivre la progression du jeu.
         </p>
       </article>
 
       <article class="surface" data-tu-apparait>
         <PhonePeek class="surface__visual" />
-        <h3 class="surface__title">Le téléphone des invités</h3>
+        <h3 class="surface__title">Un téléphone utilisé avec simplicité</h3>
         <p class="surface__body">
-          Un scan du QR code et l'invité rejoint la partie, dans sa langue. Ensuite, le téléphone
-          reste presque toujours dans la poche.
+          Les participants rejoignent la partie grâce à un QR code, sans application ni compte à
+          créer. Selon les jeux, le téléphone peut également servir à recevoir une consigne,
+          utiliser un buzzer ou transmettre une photo.
+        </p>
+        <p class="surface__body">
+          L'essentiel de l'expérience se vit entre les participants, dans la salle.
         </p>
       </article>
     </div>
   </Section>
 
-  <Section eyebrow="Le déroulé" title="Du QR code au podium." tone="dark">
+  <Section eyebrow="Le déroulé" title="Du premier défi au podium final." tone="dark">
     <ol class="flow tu-rail">
       {deroule.map((step, index) => (
         <li class="flow__step" data-tu-apparait>
@@ -111,44 +116,48 @@ const durees = [
         </li>
       ))}
     </ol>
-    <p class="flow__note">
-      Les photos se prennent tout au long de la soirée, entre deux jeux. L'animateur annonce les
-      scores après chaque jeu, pour garder le suspense jusqu'au podium.
-    </p>
   </Section>
 
   <Section
     eyebrow="Combien de temps ?"
-    title="Tout dépend du nombre d'équipes."
-    lead="Deux jeux se jouent une équipe après l'autre : plus il y a d'équipes, plus la partie dure."
+    title="Un format qui s'intègre à votre événement."
     layout="aside"
   >
-    <div class="tu-panel durees" data-tu-apparait>
-      <table class="durees__table">
-        <thead>
-          <tr>
-            <th scope="col">Équipes</th>
-            <th scope="col">Temps de jeu</th>
-            <th scope="col">Durée prévue</th>
-            <th scope="col">Programme</th>
-          </tr>
-        </thead>
-        <tbody>
-          {durees.map((row) => (
+    <div class="durees-bloc">
+      <Recit
+        paragraphes={[
+          "La partie principale dure généralement entre 40 minutes et une heure, selon le nombre d'équipes et le programme retenu.",
+          "Certains défis, comme le Photo challenge, peuvent se dérouler entre les manches, tout au long de l'événement.",
+          "Le programme et les modalités de participation sont définis avec vous en amont pour s'adapter au lieu, au public et au rythme souhaité.",
+        ]}
+      />
+      <div class="tu-panel durees" data-tu-apparait>
+        <table class="durees__table">
+          <thead>
             <tr>
-              <th scope="row" class="durees__teams">
-                {row.teams}
-              </th>
-              <td class="durees__jeu">
-                <span class="durees__prefix">jeu </span>
-                {row.jeu}
-              </td>
-              <td class="durees__creneau">{row.creneau}</td>
-              <td class="durees__programme">{row.programme}</td>
+              <th scope="col">Équipes</th>
+              <th scope="col">Temps de jeu</th>
+              <th scope="col">Durée prévue</th>
+              <th scope="col">Programme</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {durees.map((row) => (
+              <tr>
+                <th scope="row" class="durees__teams">
+                  {row.teams}
+                </th>
+                <td class="durees__jeu">
+                  <span class="durees__prefix">jeu </span>
+                  {row.jeu}
+                </td>
+                <td class="durees__creneau">{row.creneau}</td>
+                <td class="durees__programme">{row.programme}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   </Section>
 
@@ -156,12 +165,16 @@ const durees = [
     <div class="tu-container">
       <Equipment />
       <p class="equipment__note">
-        Un doute sur votre salle ? Nous le vérifions avec vous pendant la préparation.
+        Nous vérifions ensemble les besoins techniques avant l'événement.
       </p>
     </div>
   </section>
 
-  <CtaBanner title="Première étape : nous décrire votre événement." />
+  <CtaBanner
+    title="Votre événement mérite une expérience qui lui ressemble."
+    note="Imaginons ensemble le programme le plus adapté à vos participants et à l'ambiance que vous souhaitez créer."
+    label="Parlons de votre projet"
+  />
 </Base>
 
 <style>
@@ -172,7 +185,10 @@ const durees = [
     align-items: start;
   }
 
+  /* Relative : la légende cachée d'un visuel (position absolue) reste dans la rangée qui défile,
+     sinon elle élargissait la page sur téléphone. */
   .surface {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-4);
@@ -235,9 +251,12 @@ const durees = [
     line-height: 1.3;
   }
 
-  .flow__note {
-    max-width: 47.5rem;
-    color: var(--tu-text-muted);
+  /* Le texte et le tableau dans la même colonne, à droite du titre. */
+  .durees-bloc {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-6);
+    min-width: 0;
   }
 
   .durees {
