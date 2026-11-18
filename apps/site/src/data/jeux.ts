@@ -1,8 +1,8 @@
 /**
  * Les sept jeux et les deux duels en bêta. Les cinq premiers sont ceux de la spec v3 ; le Blind
  * test (2026-11-15) et le Portrait mystère (2026-11-18) sont venus ensuite, marqués « Nouveau ».
- * `body` est l'accroche d'un jeu, partagée par l'accueil et la page Les jeux : elle raconte
- * ce que vit la salle, la règle détaillée reste sur Les jeux.
+ * `body` est l'accroche d'un jeu (refonte éditoriale du 2026-11-18), en tête de sa fiche sur
+ * Les jeux ; la règle détaillée suit, en étapes.
  */
 export type GameSummary = {
   id: string;
@@ -21,42 +21,42 @@ export const games: GameSummary[] = [
     icon: 'users',
     tone: 'navy',
     title: 'Points communs',
-    body: "Toute la salle est dans la confidence, sauf une équipe. Ceux qui se lèvent sont l'indice : à elle de deviner ce qui les rassemble.",
+    body: 'Et si vous aviez plus en commun que vous ne le pensiez ?',
   },
   {
     id: 'quiz',
     icon: 'cross',
     tone: 'sage',
     title: 'Quiz',
-    body: "Une question, quatre coins de la salle. Chacun file vers sa réponse… et découvre qui l'a suivi.",
+    body: 'Une question. Quatre possibilités. À vous de choisir.',
   },
   {
     id: 'surenchere',
     icon: 'hand',
     tone: 'amber',
     title: 'Surenchère',
-    body: "« J'en cite dix ! — Douze ! » Les champions font monter les enchères, puis doivent tenir parole devant tout le monde.",
+    body: "Jusqu'où oserez-vous aller ?",
   },
   {
     id: 'mime',
     icon: 'mime',
     tone: 'mint',
     title: 'Mime',
-    body: 'Le mot passe de joueur en joueur, mimé puis chuchoté. Ce qui arrive au bout de la file fait toujours rire la salle.',
+    body: 'Quand un simple geste devient toute une histoire.',
   },
   {
     id: 'photo',
     icon: 'camera',
     tone: 'stone',
     title: 'Photo challenge',
-    body: 'Tout au long de la soirée, chaque équipe met en scène ses plus belles photos. Elles sont dévoilées en grand, en final.',
+    body: "Vos invités ont de l'imagination. À eux de le montrer.",
   },
   {
     id: 'blind-test',
     icon: 'music',
     tone: 'navy',
     title: 'Blind test',
-    body: 'Quelques notes suffisent : toute la salle fredonne, mais seul le capitaine le plus rapide peut buzzer.',
+    body: 'Quelques notes. Et soudain, tout le monde reconnaît la chanson.',
     nouveau: true,
   },
   {
@@ -64,7 +64,7 @@ export const games: GameSummary[] = [
     icon: 'portrait',
     tone: 'sage',
     title: 'Portrait mystère',
-    body: 'Vingt-cinq noms sur le grand écran, un seul est le bon. Trois indices pour le trouver… et une carte noire à éviter.',
+    body: 'Trois indices. Une identité. Et un choix décisif.',
     nouveau: true,
   },
 ];
@@ -72,12 +72,12 @@ export const games: GameSummary[] = [
 export const duels = [
   {
     title: 'Tête, épaule, gobelet',
-    body: "L'animateur enchaîne les consignes et glisse des pièges. Au mot « gobelet », le plus rapide l'attrape et l'emporte.",
+    body: 'Écoutez les consignes et soyez le premier à saisir le gobelet.',
     duration: 'Environ 45 s par duel',
   },
   {
     title: "Attrape l'objet",
-    body: "Une musique démarre : les deux duellistes se jettent sur l'objet qui va avec. Le premier qui le tient gagne.",
+    body: "À partir d'un signal musical, retrouvez l'objet demandé avant votre adversaire.",
     duration: 'Environ 30 s par duel',
   },
 ];

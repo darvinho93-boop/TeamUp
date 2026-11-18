@@ -6,7 +6,7 @@ import GameDetail from '../components/jeux/GameDetail.astro';
 import VideoEcran from '../components/visuels/VideoEcran.astro';
 import { duels, games } from '../data/jeux';
 
-/** L'accroche de chaque jeu est celle de l'accueil : une seule source. */
+/** L'accroche de chaque jeu vient des données des jeux : une seule source. */
 const accroche = (id: string) => games.find((game) => game.id === id)?.body ?? '';
 
 /** Une courte boucle par jeu (`video/src/site/BoucleJeu.tsx`), dans le décor de celle de l'accueil. */
@@ -22,9 +22,13 @@ const video = (fichier: string) => ({
 >
   <PageIntro
     wide
-    eyebrow="Les jeux"
-    title="Sept jeux pensés pour la salle, pas pour l'écran."
-    lead="Sept jeux pour rire, se découvrir et se surprendre. Chacun s'explique en une phrase et se joue debout, ensemble ; avant chaque jeu, une courte animation sur le grand écran en montre les règles. Personne n'est perdu, personne ne reste assis."
+    eyebrow="L'expérience Team Up!"
+    title="Sept jeux. Une expérience à vivre ensemble."
+    lead={[
+      "Retrouvez l'énergie, le suspense et les surprises des jeux télévisés à travers sept expériences conçues pour faire participer vos invités.",
+      "Des défis où l'on réfléchit, où l'on ose, où l'on se découvre. Et surtout, où l'on joue en équipe.",
+      "Chaque jeu est présenté par l'animateur et s'intègre dans un programme composé pour votre événement.",
+    ]}
   >
     <nav slot="footnote" class="toc" aria-label="Aller à un jeu">
       {games.map((game) => (
@@ -39,10 +43,11 @@ const video = (fichier: string) => ({
     id="points-communs"
     number="01"
     title="Points communs"
-    lead={accroche('points-communs')}
+    accroche={accroche('points-communs')}
+    lead="Un jeu d'observation qui révèle parfois des points communs inattendus."
     steps={[
-      "L'équipe ferme les yeux ; le point commun s'affiche pour toute la salle.",
-      "Les invités concernés se lèvent : à l'équipe de deviner ce qui les rassemble, chrono lancé.",
+      'Une équipe ferme les yeux pendant que le reste de la salle découvre un point commun.',
+      "Les personnes concernées se manifestent. À l'équipe de deviner ce qui les relie, avant la fin du chronomètre.",
       'Plus elle trouve vite, plus elle marque. Si elle sèche, un indice vient à son secours.',
     ]}
     reversed
@@ -57,11 +62,12 @@ const video = (fichier: string) => ({
     id="quiz"
     number="02"
     title="Quiz"
-    lead={accroche('quiz')}
+    accroche={accroche('quiz')}
+    lead="Un quiz qui se vit collectivement, bien au-delà de l'écran."
     steps={[
-      "La question s'affiche sur le grand écran, avec quatre réponses.",
-      'Chacun file dans le coin de la salle qui correspond à la sienne, marqué au sol.',
-      'Les bonnes réponses restent en jeu. Chaque joueur encore debout à la fin rapporte des points à son équipe.',
+      "Les questions s'affichent sur grand écran et les participants prennent position pour défendre leur réponse.",
+      'Culture, intuition ou simple coup de chance : les choix provoquent des réactions, des échanges et quelques surprises.',
+      'Les bonnes réponses restent en jeu : chaque joueur encore en lice à la fin rapporte des points à son équipe.',
     ]}
   >
     <VideoEcran
@@ -74,11 +80,12 @@ const video = (fichier: string) => ({
     id="surenchere"
     number="03"
     title="Surenchère"
-    lead={accroche('surenchere')}
+    accroche={accroche('surenchere')}
+    lead="Un jeu où l'audace se confronte au chronomètre."
     steps={[
-      "Les thèmes sont annoncés à l'avance : chaque équipe choisit son champion.",
-      "Les champions s'avancent, le sujet précis n'est dévoilé qu'au dernier moment.",
-      'Chacun surenchérit à voix haute. Le plus audacieux doit tenir parole, chrono en main, devant toute la salle.',
+      "Les champions de chaque équipe se défient autour d'un thème. Les propositions s'enchaînent, les enchères montent…",
+      'Mais annoncer une performance ne suffit pas. Encore faut-il la réaliser !',
+      'Le plus audacieux doit tenir parole, chrono en main, devant toute la salle.',
     ]}
     reversed
   >
@@ -92,11 +99,12 @@ const video = (fichier: string) => ({
     id="mime"
     number="04"
     title="Mime"
-    lead={accroche('mime')}
+    accroche={accroche('mime')}
+    lead="Un mot à transmettre, une chaîne de participants et une communication qui réserve quelques surprises. Un moment de créativité et de complicité à partager."
     steps={[
       'Seul le premier joueur de la file découvre le mot.',
       'Il le mime au suivant, qui le chuchote au suivant, et ainsi de suite.',
-      "Le dernier annonce sa réponse, puis l'écran révèle le mot : vert s'il est trouvé, rouge sinon.",
+      "Au fil des interprétations, le message évolue. Jusqu'à la révélation finale sur grand écran.",
     ]}
   >
     <VideoEcran
@@ -109,11 +117,12 @@ const video = (fichier: string) => ({
     id="photo"
     number="05"
     title="Photo challenge"
-    lead={accroche('photo')}
+    accroche={accroche('photo')}
+    lead="Des instants de spontanéité qui deviennent de véritables souvenirs."
     steps={[
       'Les thèmes sont annoncés en début de soirée.',
-      'Entre deux jeux, au bar ou dehors, chaque équipe met en scène ses photos ; le capitaine les envoie.',
-      'En final, les photos sont dévoilées thème par thème, et les héros de la fête désignent leur préférée.',
+      "Tout au long de l'événement, les équipes relèvent des défis photographiques et imaginent ensemble leurs mises en scène ; le capitaine envoie les photos.",
+      'Lors du final, leurs créations sont révélées sur grand écran, et les héros de la fête désignent leur préférée.',
     ]}
     reversed
   >
@@ -127,10 +136,11 @@ const video = (fichier: string) => ({
     id="blind-test"
     number="06"
     title="Blind test"
-    lead={accroche('blind-test')}
+    accroche={accroche('blind-test')}
+    lead="Un grand classique revisité dans l'esprit des jeux télévisés."
     steps={[
-      'Un extrait de musique démarre sur le grand écran ; chaque équipe se serre autour de son capitaine.',
-      'Le premier capitaine qui buzze sur son téléphone coupe la musique : son équipe a sept secondes pour donner le titre.',
+      'Les premières notes retentissent. Les équipes écoutent, hésitent et se concertent.',
+      'Le capitaine le plus rapide déclenche son buzzer pour tenter de donner le bon titre.',
       'Bonne réponse : 100 points. Sinon, son équipe passe son tour sur ce titre et la musique repart pour les autres.',
     ]}
     nouveau
@@ -145,10 +155,11 @@ const video = (fichier: string) => ({
     id="portrait-mystere"
     number="07"
     title="Portrait mystère"
-    lead={accroche('portrait-mystere')}
+    accroche={accroche('portrait-mystere')}
+    lead="Un jeu de déduction où chaque décision compte."
     steps={[
-      'La grille mêle des personnalités connues et, si vous le souhaitez, des proches des héros de la fête.',
-      "L'animateur donne un indice : chaque équipe vote pour une carte, depuis le téléphone du capitaine ou à voix haute.",
+      'Face à une grille de vingt-cinq personnalités, les équipes confrontent leurs intuitions pour retrouver la bonne.',
+      "Chaque indice fait avancer l'enquête. Mais attention aux pièges !",
       "Trouvé au premier indice : 100 points, puis 60, puis 30. L'équipe qui vote la carte noire est éliminée !",
     ]}
     reversed
@@ -164,9 +175,12 @@ const video = (fichier: string) => ({
     <div class="tu-container">
       <div class="tu-panel duels">
         <div class="duels__intro">
-          <p class="tu-eyebrow tu-eyebrow--navy">En option</p>
-          <h2 class="duels__title">Les duels en un contre un</h2>
-          <p class="duels__lead">Pour relancer l'ambiance lors des soirées les plus longues.</p>
+          <p class="tu-eyebrow tu-eyebrow--navy">En complément</p>
+          <h2 class="duels__title">Les duels</h2>
+          <p class="duels__lead">
+            Quelques secondes pour faire basculer l'ambiance. Pour ponctuer certaines animations,
+            les duels opposent deux participants autour de défis courts et dynamiques.
+          </p>
         </div>
         {duels.map((duel) => (
           <article class="duel">
@@ -179,7 +193,11 @@ const video = (fichier: string) => ({
     </div>
   </section>
 
-  <CtaBanner title="Nous composons votre programme avec vous." />
+  <CtaBanner
+    title="À chaque événement, sa sélection de jeux."
+    note="Nous choisissons ensemble les activités les plus adaptées à votre public, à votre lieu et au temps disponible. Les modalités peuvent être ajustées pour tenir compte des possibilités de déplacement et de participation de vos invités."
+    label="Composer mon expérience Team Up!"
+  />
 </Base>
 
 <style>

@@ -3,6 +3,8 @@ type Props = {
   id: string;
   number: string;
   title: string;
+  /** L'accroche du jeu, en gras sous le titre. */
+  accroche?: string;
   lead: string;
   steps: string[];
   /** Pastille « Nouveau » à côté du numéro (sauge : ce n'est pas une action). */
@@ -11,7 +13,7 @@ type Props = {
   reversed?: boolean;
 };
 
-const { id, number, title, lead, steps, reversed = false, nouveau = false } = Astro.props;
+const { id, number, title, accroche, lead, steps, reversed = false, nouveau = false } = Astro.props;
 ---
 
 <section class:list={['game', reversed && 'game--reversed']} id={id}>
@@ -24,6 +26,7 @@ const { id, number, title, lead, steps, reversed = false, nouveau = false } = As
         {nouveau && <span class="game__nouveau">Nouveau</span>}
       </span>
       <h2 class="game__title">{title}</h2>
+      {accroche && <p class="game__accroche">{accroche}</p>}
       <p class="game__lead">{lead}</p>
       <ol class="game__steps">
         {steps.map((step, index) => (
@@ -104,6 +107,11 @@ const { id, number, title, lead, steps, reversed = false, nouveau = false } = As
     line-height: 1.1;
   }
 
+  .game__accroche {
+    font-size: 1.1875rem;
+    font-weight: 600;
+  }
+
   .game__lead {
     font-size: 1.1875rem;
     color: var(--tu-text-muted);
@@ -162,6 +170,7 @@ const { id, number, title, lead, steps, reversed = false, nouveau = false } = As
       font-size: 1.75rem;
     }
 
+    .game__accroche,
     .game__lead {
       font-size: var(--tu-size-base);
     }
