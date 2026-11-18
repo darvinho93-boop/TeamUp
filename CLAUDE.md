@@ -1552,3 +1552,44 @@ préféré à une photo nette autour d'un panneau).
 - e2e : un fichier choisi **avant l'hydratation** est perdu, et React ne voit un second choix que
   si la valeur du champ change : vider le champ (`setInputFiles([])`) avant de réessayer.
 - À prévoir au lot 15 : recopier les photos de fond sur la machine de salle.
+
+## Conventions posées le 2026-11-18 (avis des joueurs)
+
+Tranché le 2026-11-17 : un **retour en deux temps, en texte libre**, d'abord ce que le joueur a
+aimé (**une à trois choses**), puis **ce qui lui a moins plu** (ou « Rien à redire ») ; le
+questionnaire s'ouvre et se ferme **par une touche de la régie** ; une **case témoignage**
+(décochée) autorise Team Up! à citer les choses aimées **avec le prénom**. L'anonymat était laissé
+à mon choix : **anonyme**, sauf case cochée.
+
+- **Écarts assumés** : à la spec v3 (« deux principes »), un usage du téléphone hors jeu, comme
+  les messages ; à « joueurs anonymes », le prénom est recopié sur l'avis seulement si la case est
+  cochée. Un invité sans téléphone n'a pas de session, donc pas d'avis.
+- Base (migration `20261118090000`) : `pilotage.avis_ouverts` (faux par défaut), écrit par
+  `regler_avis` (comme `regler_messages` : ne touche pas à `maj_le`) ; table `avis_joueurs`, un
+  avis par joueur (`joueur_id` unique, `set null` au retrait : l'avis reste), lue par l'animateur
+  (`anime()`, donc l'admin), écrite **uniquement** par `donner_avis` (rôle de service ; refus :
+  session inconnue, avis fermés `PT403`, textes invalides). Le dernier envoi remplace le
+  précédent. Partie terminée : accepté (on répond souvent après la clôture).
+- Textes : `nettoyer_avis` en base, `nettoyerLigne` / `nettoyerTexte` dans `src/lib/avis.ts`
+  (mêmes règles, testées des deux côtés) ; 200 caractères par chose aimée, 500 pour le reste ;
+  trop long : refusé, jamais tronqué. Les sauts de ligne sont permis en base dans ce qui a moins
+  plu, mais le champ du téléphone (`TextField multiline`) n'en saisit pas.
+- `etat_joueur` donne `evenement.avis_ouverts` et l'avis **de ce seul joueur** (index unique, rien
+  de la soirée : règle du 2026-10-31) ; `etat_ecran.avis` : `{ ouverts, recus }`. Le client tient
+  sans la migration : ni bouton, ni panneau, ni invitation.
+- Temps réel : `POST /api/partie/[code]/avis`, puis le signal `mises` (l'écran et la régie
+  comptent) ; la bascule de la régie envoie `relire` (les téléphones font paraître le bouton).
+- Téléphone (`src/joueur/AvisJoueur.tsx`) : « Donner mon avis » (puis « Mon avis ») sur l'écran
+  d'attente, aussi sous « La partie est terminée » ; étape 1/2 (trois champs, la case), étape 2/2
+  (« Envoyer », « Rien à redire »), puis « Merci ! » et « Modifier mon avis ».
+- Régie : panneau « Avis des joueurs » au pilotage, sous les messages (un appui, sans
+  confirmation) ; page **Avis** de la soirée (résumé, cartes, prénom seulement si citable, export
+  `avis.csv`, relue toutes les 10 s). Back-office `/admin/avis` : tableau par soirée et
+  **témoignages citables**, à reprendre sur la vitrine (`PREUVES_FOURNIES`).
+- Écran : dans la scène Clôture, « Donnez votre avis sur votre téléphone ! » quand c'est ouvert ;
+  avec l'invitation Instagram si c'était ouvert dès l'arrivée de la scène, aussitôt sinon.
+- Lien d'avis Google : à ajouter quand il existera, **proposé à tout le monde** (Google interdit de
+  ne solliciter que les avis positifs).
+- Réseau local : les avis remontent de la machine avec le reste (lot 16, `docs/lots.md`).
+- Tests : `tests/avis.test.ts`, `tests/avis-base.test.ts` (refus, remplacement, prénom seulement
+  si citable, RLS, retrait d'un joueur), `e2e/avis.spec.ts`.
