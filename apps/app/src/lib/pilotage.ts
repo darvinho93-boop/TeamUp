@@ -15,6 +15,13 @@ import {
   appliquerMime,
   appliquerPhoto,
   appliquerPointsCommuns,
+  appliquerPortrait,
+  resultatPortraitDe,
+  resultatPortraitVers,
+  totalPortrait,
+  type ActionPortrait,
+  type EtapePortrait,
+  type ModePortrait,
   appliquerQuiz,
   appliquerSurenchere,
   CHRONO_QUESTION_S,
@@ -56,6 +63,14 @@ import {
 import { DUREE_DEVOILEMENT_MS } from './devoilement';
 import { capitainesManquants, jetonsDeDepartDe } from './jetons';
 import {
+  chronoTourPortrait,
+  elimineesDeLaManche,
+  grillePrete,
+  modeDuPortrait,
+  positionsDuPassage,
+  votesDuTour,
+} from './portrait';
+import {
   indicesMsDe,
   mancheCourante,
   passageCourant,
@@ -84,6 +99,8 @@ export type Commande =
   | { type: 'mime'; action: ActionMime }
   /** Blind test (2026-11-15) ; `buzz` est le secours de la régie, le capitaine buzze en base. */
   | { type: 'blind'; action: ActionBlind }
+  /** Portrait mystère (2026-11-18) ; les votes, eux, s'écrivent par leurs fonctions. */
+  | { type: 'portrait'; action: ActionPortrait }
   | { type: 'duel'; action: ActionDuel }
   | {
       type: 'photo';
@@ -142,6 +159,8 @@ export interface Motifs {
   duel: (prenom: string, equipe: string) => string;
   /** Blind test : le numéro du titre trouvé. */
   blind: (titre: number) => string;
+  /** Portrait mystère : le numéro de la cible et le tour où elle a été trouvée. */
+  portrait: (cible: number, tour: number) => string;
 }
 
 /**
@@ -269,11 +288,13 @@ export function survivantsComptes(etat: EtatSalle, manche: MancheSalle): ScoresP
  * touché avant la validation a montré un classement à zéro, et les points du quiz n'ont jamais
  * été écrits. Entre deux questions, on montre les scores librement.
  */
-export function quizEnSuspens(etat: EtatSalle): 'fin' | 'valider' | 'juger' | null {
+export function quizEnSuspens(etat: EtatSalle): 'fin' | 'valider' | 'juger' | 'tour' | null {
   const manche = mancheCourante(etat);
   const { scene, etape, passage_id } = etat.pilotage;
   // Blind test : une équipe a buzzé, sa réponse attend la régie (2026-11-15).
   if (scene === 'jeu' && manche?.jeu === 'blind' && etape === 'buzz') return 'juger';
+  // Portrait mystère : un tour de vote ouvert attend « Fin du tour », qui donne ses points.
+  if (scene === 'jeu' && manche?.jeu === 'portrait' && etape === 'vote') return 'tour';
   if (scene !== 'jeu' || manche?.jeu !== 'qcm2') return null;
   if (etape === 'survivants') return 'valider';
   const reste = manche.passages.some((x) => x.id !== passage_id && x.statut !== 'termine');
@@ -475,6 +496,13 @@ export function calculerEtape(
           if (manche.statut === 'a_venir' && capitainesManquants(etat).length > 0) return null;
           ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'pret' };
           ecriture.passage = { id: premier.id, statut: 'en_cours' };
+        } else if (manche.jeu === 'portrait') {
+          // La grille d'abord : 25 cartes, chaque cible dedans, une carte noire à part.
+          const premier = passageSuivant(manche);
+          if (!premier) return null;
+          if (manche.statut === 'a_venir' && !grillePrete(manche)) return null;
+          ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'pret' };
+          ecriture.passage = { id: premier.id, statut: 'en_cours' };
         } else if (estDuel(manche.jeu)) {
           // Un passage par duel : on commence par tirer les duellistes.
           const premier = passageSuivant(manche);
@@ -516,6 +544,20 @@ export function calculerEtape(
             id: manche.id,
             statut: 'en_cours',
             ...(modeSurenchereFixe ? {} : { options: { mode: voulu } }),
+          };
+          ecriture.ouvrirLaSoiree = etat.evenement.statut === 'preparation';
+          return ecriture;
+        }
+        if (manche.jeu === 'portrait') {
+          // Le mode se choisit au lancement (2026-11-18), comme la Surenchère : la voix d'abord ;
+          // au téléphone, un capitaine par équipe. Une reprise garde le mode choisi.
+          const fixe = modeDuPortrait(manche);
+          const voulu: ModePortrait = commande.mode === 'telephones' ? 'telephones' : 'voix';
+          if (!fixe && voulu === 'telephones' && capitainesManquants(etat).length > 0) return null;
+          ecriture.manche = {
+            id: manche.id,
+            statut: 'en_cours',
+            ...(fixe ? {} : { options: { mode: voulu } }),
           };
           ecriture.ouvrirLaSoiree = etat.evenement.statut === 'preparation';
           return ecriture;
@@ -603,7 +645,8 @@ export function calculerEtape(
           (manche?.jeu === 'mime2' && (p.etape === 'trouve' || p.etape === 'rate')) ||
           (manche?.jeu === 'photo2' && (p.etape === 'gagnante' || p.etape === 'aucune')) ||
           (estDuel(manche?.jeu) && p.etape === 'gagne') ||
-          (manche?.jeu === 'blind' && p.etape === 'revele');
+          (manche?.jeu === 'blind' && p.etape === 'revele') ||
+          (manche?.jeu === 'portrait' && p.etape === 'revele');
         if (!manche || !fini) return null;
         const suivant = passageSuivant(manche);
         if (!suivant) return null;
@@ -806,6 +849,54 @@ export function calculerEtape(
             equipe_id: equipe.id,
             points,
             motif: motifs.blind(passage.ordre),
+            manche_id: manche.id,
+          });
+        }
+        return ecriture;
+      }
+
+      case 'portrait': {
+        if (manche?.jeu !== 'portrait' || !passage) return null;
+        const positions = positionsDuPassage(manche, passage);
+        if (!positions) return null;
+        const reste = manche.passages.some((x) => x.id !== passage.id && x.statut !== 'termine');
+        const suite = appliquerPortrait(
+          {
+            etape: p.etape as EtapePortrait,
+            tour: p.indices,
+            resultat: resultatPortraitDe(passage.resultat),
+            equipes: etat.equipes.filter((e) => e.joueurs > 0).map((e) => e.numero),
+            elimineesAvant: elimineesDeLaManche(manche, passage.id),
+            cible: positions.cible,
+            noire: positions.noire,
+            votes: votesDuTour(passage),
+            derniere: !reste,
+            chronoTourS: chronoTourPortrait(manche),
+          },
+          commande.action,
+        );
+        Object.assign(ecriture.pilotage, {
+          etape: suite.etape,
+          indices: suite.tour,
+          ...chronoDe(suite.chrono),
+        });
+        // La carte noire montrée en fin de jeu ne touche plus à la dernière cible, déjà révélée.
+        if (commande.action.type !== 'noire') {
+          const revele = suite.etape === 'revele';
+          ecriture.passage = {
+            id: passage.id,
+            statut: revele ? 'termine' : 'en_cours',
+            resultat: resultatPortraitVers(suite.resultat),
+            ...(revele ? { points: totalPortrait(suite.resultat) } : {}),
+          };
+        }
+        for (const [numero, points] of Object.entries(suite.points ?? {})) {
+          const equipe = etat.equipes.find((e) => e.numero === Number(numero));
+          if (!equipe || points <= 0) continue;
+          ecriture.scores.push({
+            equipe_id: equipe.id,
+            points,
+            motif: motifs.portrait(passage.ordre, suite.tour),
             manche_id: manche.id,
           });
         }

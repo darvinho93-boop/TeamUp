@@ -78,6 +78,8 @@ import { BoutonConfirme } from './BoutonConfirme';
 import { PanneauDuel } from './PanneauDuel';
 import { PanneauAvis } from './PanneauAvis';
 import { PanneauMessages } from './PanneauMessages';
+import { PanneauPortrait } from './PanneauPortrait';
+import { grillePrete, modeDuPortrait } from '@/lib/portrait';
 
 /** Jeux que la régie sait piloter (lots 6 à 8, duels en bêta au lot 10, blind test le 2026-11-15). */
 const PILOTABLES: readonly GameCode[] = [
@@ -87,6 +89,7 @@ const PILOTABLES: readonly GameCode[] = [
   'mime2',
   'photo2',
   'blind',
+  'portrait',
   'grab',
   'cup',
 ];
@@ -104,8 +107,14 @@ function libelleMode(
   | 'quiz.modeCroix'
   | 'surenchereMots.modeVoix'
   | 'surenchereMots.modeTelephones'
+  | 'portrait.modeVoix'
+  | 'portrait.modeTelephones'
   | null {
   const mode = manche.options['mode'];
+  if (manche.jeu === 'portrait') {
+    const fixe = modeDuPortrait(manche);
+    return fixe === 'telephones' ? 'portrait.modeTelephones' : fixe ? 'portrait.modeVoix' : null;
+  }
   if (manche.jeu === 'enchere2') {
     if (mode === 'telephones') return 'surenchereMots.modeTelephones';
     if (mode === 'voix') return 'surenchereMots.modeVoix';
@@ -164,6 +173,7 @@ export function Pilotage({
         photo: (equipe) => t('motifPhoto', { equipe }),
         duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
         blind: (n) => t('motifBlind', { n }),
+        portrait: (cible, tour) => t('motifPortrait', { cible, tour }),
       });
     // Un quiz qui n'a pas encore donné ses points ne se quitte pas : « Scores » montrerait un
     // classement à zéro (vu le 2026-11-14). La régie dit quelle touche il attend.
@@ -175,7 +185,9 @@ export function Pilotage({
             ? 'erreur.finirDAbord'
             : suspens === 'juger'
               ? 'erreur.jugerDAbord'
-              : 'erreur.validerDAbord',
+              : suspens === 'tour'
+                ? 'erreur.tourDAbord'
+                : 'erreur.validerDAbord',
         ),
       );
       return;
@@ -282,6 +294,21 @@ export function Pilotage({
     });
   };
 
+  /** Portrait mystère : la régie saisit (ou retire) le vote d'une équipe pour le tour en cours. */
+  const voterPour = (passageId: string, equipeId: string, carte: number | null) => {
+    demarrer(async () => {
+      const { error } = await supabaseNavigateur().rpc('voter_portrait_regie', {
+        p_passage: passageId,
+        p_equipe: equipeId,
+        // Le type généré ne connaît pas null : la fonction l'accepte (retirer le vote).
+        p_carte: carte as number,
+      });
+      if (error) setAlerte(t('erreur.impossible'));
+      else signaler();
+      await relire();
+    });
+  };
+
   /** Surenchère en mode téléphones : la régie raye un mot hors sujet (ou le rétablit). */
   const refuser = (motId: string, refuse: boolean) => {
     demarrer(async () => {
@@ -349,6 +376,7 @@ export function Pilotage({
           manche &&
           manche.jeu !== 'qcm2' &&
           !(manche.jeu === 'enchere2' && manche.statut === 'a_venir') &&
+          !(manche.jeu === 'portrait' && manche.statut === 'a_venir') &&
           !mancheATerminer(manche) &&
           !(jeuParEquipe(manche.jeu) && manche.passages.length === 0) && (
             <Button
@@ -394,6 +422,39 @@ export function Pilotage({
               </Button>
             </div>
             <CapitainesAuTelephone etat={etat} code={code} mode="telephones" />
+          </>
+        )}
+        {scene === 'intro' && manche?.jeu === 'portrait' && manche.statut === 'a_venir' && (
+          // Portrait mystère (2026-11-18) : la grille d'abord, puis le mode, la voix d'abord.
+          <>
+            {!grillePrete(manche) && (
+              <p className="tu-regie__alert" role="status" data-testid="portrait-grille-dabord">
+                {t('portrait.grilleDAbord')}{' '}
+                <Link href={`/regie/${code}/preparation`} className="tu-regie__lien">
+                  {t('portrait.preparation')}
+                </Link>
+              </p>
+            )}
+            <div className="tu-regie-keys">
+              <Button
+                variant="accent"
+                size="lg"
+                className="tu-regie-keys__wide"
+                disabled={!grillePrete(manche)}
+                onClick={() => agir({ type: 'commencer', mode: 'voix' })}
+              >
+                {t('portrait.commencerVoix')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="tu-regie-keys__wide"
+                disabled={!grillePrete(manche) || capitainesManquants(etat).length > 0}
+                onClick={() => agir({ type: 'commencer', mode: 'telephones' })}
+              >
+                {t('portrait.commencerTelephones')}
+              </Button>
+            </div>
+            <CapitainesAuTelephone etat={etat} code={code} mode="portrait" />
           </>
         )}
         {scene === 'intro' &&
@@ -475,6 +536,15 @@ export function Pilotage({
         )}
         {scene === 'jeu' && manche?.jeu === 'blind' && (
           <PanneauBlind etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+        )}
+        {scene === 'jeu' && manche?.jeu === 'portrait' && (
+          <PanneauPortrait
+            etat={etat}
+            manche={manche}
+            decalageMs={decalageMs}
+            agir={agir}
+            voter={voterPour}
+          />
         )}
         {scene === 'jeu' && manche?.jeu === 'photo2' && (
           <PanneauPhoto etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
@@ -1087,18 +1157,21 @@ function CapitainesAuTelephone({
 }: {
   etat: EtatSalle;
   code: string;
-  mode: 'jetons' | 'telephones' | 'blind';
+  mode: 'jetons' | 'telephones' | 'blind' | 'portrait';
 }) {
   const tq = useTranslations('regie.pilotage.quiz');
   const ts = useTranslations('regie.pilotage.surenchereMots');
   const tb = useTranslations('regie.pilotage.blind');
+  const tp = useTranslations('regie.pilotage.portrait');
   const manquants = capitainesManquants(etat);
   const titre =
     mode === 'jetons'
       ? tq('capitainesTitre')
       : mode === 'blind'
         ? tb('capitainesTitre')
-        : ts('capitainesTitre');
+        : mode === 'portrait'
+          ? tp('capitainesTitre')
+          : ts('capitainesTitre');
   return (
     <section className="tu-regie-secret" aria-label={titre} data-testid={`capitaines-${mode}`}>
       <p className="tu-regie-item__title">{titre}</p>

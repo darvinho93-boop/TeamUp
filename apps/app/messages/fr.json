@@ -520,7 +520,8 @@
         "finirDAbord": "Le quiz n’est pas fini : touche d’abord « Fin des questions », sinon ses points ne comptent pas.",
         "validerDAbord": "Le quiz n’est pas validé : touche d’abord « Valider », sinon ses points sont perdus.",
         "impossible": "Action impossible à cette étape.",
-        "jugerDAbord": "Une équipe a buzzé : juge d’abord sa réponse (« Bonne » ou « Mauvaise »)."
+        "jugerDAbord": "Une équipe a buzzé : juge d’abord sa réponse (« Bonne » ou « Mauvaise »).",
+        "tourDAbord": "Un tour de vote est ouvert : touche d’abord « Fin du tour », sinon ses points ne comptent pas."
       },
       "motifPointsCommuns": "Points communs — {equipe}",
       "motifTenu": "Surenchère — pari tenu",
@@ -687,6 +688,31 @@
         "fermes": "Questionnaire fermé",
         "recus": "{n, plural, =0 {Aucun avis reçu} one {# avis reçu} other {# avis reçus}}",
         "lire": "Lire les avis"
+      },
+      "motifPortrait": "Portrait mystère – cible {cible}, indice {tour}",
+      "portrait": {
+        "titre": "Portrait mystère",
+        "commencerVoix": "Commencer Portrait mystère à voix",
+        "commencerTelephones": "Mode téléphones (le capitaine vote)",
+        "modeVoix": "à voix",
+        "modeTelephones": "téléphones",
+        "capitainesTitre": "Portrait mystère au téléphone : un capitaine par équipe",
+        "grilleDAbord": "La grille n’est pas prête : 25 cartes, chaque cible dedans et une carte noire.",
+        "preparation": "Préparer la grille",
+        "grilleIncomplete": "Grille incomplète : vérifie la préparation.",
+        "cible": "Cible {n} sur {total}",
+        "tour": "tour {n}",
+        "reponse": "Réponse et indices (pour toi seul)",
+        "noire": "Carte noire : {carte}",
+        "indice": "Indice {n}",
+        "cloturer": "Fin du tour",
+        "reveler": "Révéler la cible",
+        "suivante": "Cible suivante",
+        "montrerNoire": "Montrer la carte noire",
+        "eliminee": "Éliminée (carte noire)",
+        "trouvee": "Trouvé au tour {tour} (+{points})",
+        "voteDe": "Vote de {equipe}",
+        "pasDeVote": "Pas encore de vote"
       }
     },
     "salle": {

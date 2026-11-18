@@ -20,6 +20,7 @@ const motifs = {
   photo: (equipe: string) => `Photo ${equipe}`,
   duel: (prenom: string, equipe: string) => `Duel ${prenom} ${equipe}`,
   blind: (n: number) => `Blind ${n}`,
+  portrait: (cible: number, tour: number) => `Portrait ${cible} (${tour})`,
 };
 
 function passage(id: string, ordre: number, extra: Partial<PassageSalle> = {}): PassageSalle {
@@ -1088,5 +1089,102 @@ describe('le blind test, touche par touche', () => {
       pilotage: { passage_id: 'b2', etape: 'pret', chrono: 'arreter' },
       passage: { id: 'b2', statut: 'en_cours' },
     });
+  });
+});
+
+// Portrait mystère (2026-11-18) : la grille d'abord, un tour par indice, les points à la fin de
+// chaque tour, la carte noire montrée après la dernière cible.
+describe('le Portrait mystère, touche par touche', () => {
+  const ids = Array.from({ length: 25 }, (_, i) => `c${i}`);
+  const portrait = (
+    passages = [passage('r1', 1, { contenu_id: 'c7' }), passage('r2', 2, { contenu_id: 'c3' })],
+    noire: number | null = 13,
+  ): MancheSalle => ({
+    id: 'pm',
+    jeu: 'portrait',
+    ordre: 1,
+    statut: 'en_cours',
+    options: { mode: 'voix', chrono_s: 25 },
+    grille: { cartes: [], ids, noire, retournees: {} },
+    passages,
+  });
+  const enJeu = (
+    etape: string,
+    tour: number,
+    extra: Partial<PassageSalle> = {},
+    autres: PassageSalle[] = [passage('r2', 2, { contenu_id: 'c3' })],
+  ) =>
+    etat({ scene: 'jeu', manche_id: 'pm', passage_id: 'r1', etape, indices: tour }, [
+      portrait([passage('r1', 1, { contenu_id: 'c7', statut: 'en_cours', ...extra }), ...autres]),
+    ]);
+
+  it('se lance seulement grille prête ; au téléphone, un capitaine par équipe', () => {
+    const intro = (m: MancheSalle) =>
+      etat({ scene: 'intro', manche_id: 'pm' }, [{ ...m, statut: 'a_venir', options: {} }]);
+    expect(etape(intro(portrait(undefined, null)), { type: 'commencer', mode: 'voix' })).toBeNull();
+    expect(etape(intro(portrait()), { type: 'commencer', mode: 'voix' })).toMatchObject({
+      pilotage: { scene: 'jeu', passage_id: 'r1', etape: 'pret' },
+      manche: { id: 'pm', statut: 'en_cours', options: { mode: 'voix' } },
+    });
+    const telephones = intro(portrait());
+    expect(etape(telephones, { type: 'commencer', mode: 'telephones' })).toBeNull();
+    telephones.equipes[0]!.capitaine = 'Alice';
+    telephones.equipes[1]!.capitaine = 'Bruno';
+    expect(etape(telephones, { type: 'commencer', mode: 'telephones' })).toMatchObject({
+      manche: { options: { mode: 'telephones' } },
+    });
+  });
+
+  it('un indice ouvre un tour de vote, au chrono de la préparation', () => {
+    expect(etape(enJeu('pret', 0), { type: 'portrait', action: { type: 'indice' } })).toMatchObject(
+      {
+        pilotage: { etape: 'vote', indices: 1, chrono: 'demarrer', chrono_duree_s: 25 },
+        passage: { id: 'r1', statut: 'en_cours' },
+      },
+    );
+  });
+
+  it('fin du tour : points à qui a trouvé, la noire élimine ; un tour ouvert ne se quitte pas', () => {
+    const vote = enJeu('vote', 1, { votes: { 1: 7, 2: 13 } });
+    expect(quizEnSuspens(vote)).toBe('tour');
+    expect(etape(vote, { type: 'scene', scene: 'scores' })).toBeNull();
+    const fin = etape(vote, { type: 'portrait', action: { type: 'cloturer' } });
+    expect(fin).toMatchObject({
+      pilotage: { etape: 'tour', indices: 1, chrono: 'arreter' },
+      passage: {
+        statut: 'en_cours',
+        resultat: { trouvees: { 1: 1 }, eliminees: [2], tours: 1 },
+      },
+    });
+    expect(fin?.scores).toEqual([
+      { equipe_id: 'e1', points: 100, motif: 'Portrait 1 (1)', manche_id: 'pm' },
+    ]);
+  });
+
+  it('révéler termine la cible avec son total ; la suivante attend « Cible suivante »', () => {
+    const revele = etape(
+      enJeu('tour', 1, { resultat: { trouvees: { 1: 1 }, eliminees: [2], tours: 1 } }),
+      { type: 'portrait', action: { type: 'reveler' } },
+    );
+    expect(revele).toMatchObject({
+      pilotage: { etape: 'revele' },
+      passage: { id: 'r1', statut: 'termine', points: 100 },
+    });
+    expect(etape(enJeu('revele', 1, { statut: 'termine' }), { type: 'suivant' })).toMatchObject({
+      pilotage: { passage_id: 'r2', etape: 'pret', indices: 0 },
+    });
+  });
+
+  it('après la dernière cible, la carte noire se montre sans toucher à la cible', () => {
+    const derniere = enJeu('revele', 2, { statut: 'termine' }, []);
+    const noire = etape(derniere, { type: 'portrait', action: { type: 'noire' } });
+    expect(noire).toMatchObject({ pilotage: { etape: 'noire' }, passage: null });
+    // Pas avant : il reste une cible.
+    expect(
+      etape(enJeu('revele', 2, { statut: 'termine' }), {
+        type: 'portrait',
+        action: { type: 'noire' },
+      }),
+    ).toBeNull();
   });
 });

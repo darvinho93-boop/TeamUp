@@ -15,6 +15,7 @@ const SANS_MOTIF: Motifs = {
   photo: () => '',
   duel: () => '',
   blind: () => '',
+  portrait: () => '',
 };
 
 /**

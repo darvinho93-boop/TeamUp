@@ -520,7 +520,8 @@
         "finirDAbord": "The quiz isn’t over yet: tap “End of questions” first, or its points won’t count.",
         "validerDAbord": "The quiz isn’t confirmed yet: tap “Confirm” first, or its points are lost.",
         "impossible": "This action isn't possible at this step.",
-        "jugerDAbord": "A team buzzed: judge their answer first (“Right” or “Wrong”)."
+        "jugerDAbord": "A team buzzed: judge their answer first (“Right” or “Wrong”).",
+        "tourDAbord": "A voting round is open: tap “End of round” first, or its points won’t count."
       },
       "motifPointsCommuns": "Common ground — {equipe}",
       "motifTenu": "Bidding war — bet kept",
@@ -687,6 +688,31 @@
         "fermes": "Survey closed",
         "recus": "{n, plural, =0 {No feedback yet} one {# response} other {# responses}}",
         "lire": "Read the feedback"
+      },
+      "motifPortrait": "Mystery portrait – target {cible}, clue {tour}",
+      "portrait": {
+        "titre": "Mystery portrait",
+        "commencerVoix": "Start Mystery portrait out loud",
+        "commencerTelephones": "Phone mode (the captain votes)",
+        "modeVoix": "out loud",
+        "modeTelephones": "phones",
+        "capitainesTitre": "Mystery portrait on phones: one captain per team",
+        "grilleDAbord": "The grid isn’t ready: 25 cards, every target in it and one black card.",
+        "preparation": "Prepare the grid",
+        "grilleIncomplete": "Incomplete grid: check the preparation.",
+        "cible": "Target {n} of {total}",
+        "tour": "round {n}",
+        "reponse": "Answer and clues (for you only)",
+        "noire": "Black card: {carte}",
+        "indice": "Clue {n}",
+        "cloturer": "End of round",
+        "reveler": "Reveal the target",
+        "suivante": "Next target",
+        "montrerNoire": "Show the black card",
+        "eliminee": "Out (black card)",
+        "trouvee": "Found in round {tour} (+{points})",
+        "voteDe": "{equipe}’s vote",
+        "pasDeVote": "No vote yet"
       }
     },
     "salle": {

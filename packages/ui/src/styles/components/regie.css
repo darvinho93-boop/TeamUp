@@ -250,6 +250,34 @@
   justify-content: flex-start;
 }
 
+/* Portrait mystère (2026-11-18) : les indices de la cible, ceux déjà donnés en clair ; le vote
+   de chaque équipe, saisi dans un menu en mode à voix. */
+.tu-regie-indices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-1);
+  margin: 0;
+  padding-inline-start: var(--tu-space-6);
+}
+
+.tu-regie-indices__indice {
+  color: var(--tu-text-muted);
+}
+
+.tu-regie-indices__indice--donne {
+  color: var(--tu-text);
+  font-weight: 600;
+}
+
+.tu-regie-item--portrait {
+  justify-content: flex-start;
+}
+
+.tu-regie-item--portrait select {
+  flex: 1;
+  min-width: 0;
+}
+
 /* Préparation : un jeu du programme. Ses commandes (↑ ↓ Retirer) restent en face de son titre,
    pas au milieu d'une longue liste de passages (inventaire du 2026-10-30). */
 .tu-regie-item--manche {
