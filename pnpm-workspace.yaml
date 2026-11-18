@@ -12,3 +12,9 @@ onlyBuiltDependencies:
 overrides:
   source-map-js: ^1.2.2
   vite@>=8.3.0 <8.3.3: ^8.3.3
+  # Audit du 2026-11-18 : zod (épuisement mémoire), undici (via unifont d'Astro), smol-toml et
+  # @vercel/nft (glob, minimatch), tous par @astrojs/vercel ou astro. À retirer quand ils suivent.
+  zod@>=4.0.0 <4.6.6: ^4.6.7
+  undici@>=8.0.0 <8.12.2: ^8.12.4
+  smol-toml@<1.9.0: ^1.9.1
+  '@vercel/nft@<1.11.7': ^1.11.7

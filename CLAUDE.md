@@ -877,10 +877,13 @@ choix de l'animateur.
   PostgREST 14 réessaie seul ces erreurs, sans fin si la cause demeure. Un refus que le client doit
   voir prend un code `PTxxx` (PostgREST en fait le statut HTTP, ex. `PT409`) ou une classe 22/23/P0.
 - Dépendances : `pnpm audit --prod` sans critique ni haute exploitable. Overrides dans
-  `pnpm-workspace.yaml` (source-map-js, vite), à retirer quand next et astro suivent. Reste une
-  haute sans correctif publié (`http-cache-semantics`, cache d'images distantes d'Astro, inutilisé
-  par la vitrine). La vitrine ne monte pas d'Astro au-delà de 7.3 tant que le projet est en Node
-  22.20 (les suivantes exigent 22.23).
+  `pnpm-workspace.yaml` (source-map-js, vite ; depuis le 2026-11-18 zod, undici, smol-toml et
+  `@vercel/nft`, tirés par astro et `@astrojs/vercel`), à retirer quand next et astro suivent.
+  Restent (2026-11-18) : picomatch, haute **sans correctif publié** (motifs de fichiers internes,
+  jamais une saisie), et deux alertes d'Astro 7.4 inapplicables (`@astrojs/node`, balises
+  dynamiques). La vitrine ne monte pas d'Astro au-delà de 7.3 tant que le projet est en Node
+  22.20 (les suivantes exigent 22.23). Next à jour dans sa branche 16.4 : `next build` refuse
+  sinon une fois sur deux (« SecurityFatalError »).
 - App : en-têtes de protection dans `apps/app/vercel.json` (comme la vitrine). L'appareil photo
   reste permis (`camera=(self)`).
 - Le canal `salle:<id>` est public (les téléphones n'ont que la clé anon) : il ne transporte
