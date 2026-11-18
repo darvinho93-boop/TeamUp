@@ -5,6 +5,7 @@
 
 import type { GameCode } from '@teamup/game';
 import type { AvisDuJoueur } from './avis';
+import type { CarteDuJoueur } from './cartes';
 
 export const LANGUES = ['fr', 'en', 'ta'] as const;
 export type Langue = (typeof LANGUES)[number];
@@ -228,6 +229,8 @@ export interface EtatJoueur {
   photos: PhotosJoueur | null;
   /** L'avis déjà donné par ce joueur ; absent sans la migration du 2026-11-18. */
   avis?: AvisDuJoueur | null;
+  /** Sa carte « Faisons connaissance » (2026-11-18) ; absente sans la migration. */
+  carte?: CarteDuJoueur | null;
 }
 
 /** Réponses d'erreur des routes de la partie : le client les traduit. */

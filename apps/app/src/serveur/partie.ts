@@ -1,5 +1,6 @@
 import 'server-only';
 import type { AvisDuJoueur } from '@/lib/avis';
+import type { CarteSaisie } from '@/lib/cartes';
 import type {
   EtatJoueur,
   EvenementPublic,
@@ -474,6 +475,46 @@ export async function donnerAvis(
         ? 'fermes'
         : /avis invalide/.test(error.message)
           ? 'avis'
+          : null;
+    if (!refus) throw new Error(error.message);
+    return { ok: false, refus };
+  }
+  const { evenement_id } = data as { evenement_id: string };
+  const [etat] = await Promise.all([
+    etatPourJeton(code, jeton),
+    signalerSalle(evenement_id, 'mises'),
+  ]);
+  return etat ? { ok: true, etat } : { ok: false, refus: 'session' };
+}
+
+export type RefusCarte = 'session' | 'termine' | 'carte';
+
+/**
+ * Le joueur de ce cookie écrit sa carte « Faisons connaissance » (2026-11-18). La base tranche
+ * (session, partie en cours, longueurs) ; tous les champs vides, la carte est supprimée. Puis le
+ * signal `mises` : la régie compte les cartes prêtes, les téléphones n'ont rien à relire.
+ */
+export async function enregistrerCarte(
+  code: string,
+  carte: CarteSaisie,
+): Promise<{ ok: true; etat: EtatJoueur } | { ok: false; refus: RefusCarte }> {
+  const jeton = await jetonDe(code);
+  if (!jeton) return { ok: false, refus: 'session' };
+
+  const { data, error } = await supabaseService().rpc('enregistrer_carte', {
+    p_jeton_hash: hacher(jeton),
+    p_age: carte.age as number,
+    p_metier: carte.metier as string,
+    p_anecdote: carte.anecdote as string,
+    p_accord: carte.accord,
+  });
+  if (error) {
+    const refus: RefusCarte | null = /session/.test(error.message)
+      ? 'session'
+      : /terminée/.test(error.message)
+        ? 'termine'
+        : /carte invalide/.test(error.message)
+          ? 'carte'
           : null;
     if (!refus) throw new Error(error.message);
     return { ok: false, refus };

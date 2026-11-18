@@ -9,6 +9,7 @@ import { trierMembres } from '@/lib/membres';
 import type { EtatJoueur, GroupePublic, Langue } from '@/lib/partie';
 import { AjoutInvite } from './AjoutInvite';
 import { AvisJoueur } from './AvisJoueur';
+import { CarteJoueur } from './CarteJoueur';
 import { Cadre } from './Cadre';
 import { ChoixLangueJoueur } from './ChoixLangueJoueur';
 import { Explication } from './Explication';
@@ -23,7 +24,8 @@ import { SurenchereMots } from './SurenchereMots';
 import { useEtatJoueur } from './useEtatJoueur';
 import { useFilePhotos } from './useFilePhotos';
 
-type Vue = 'equipe' | 'attente' | 'photos' | 'ajout' | 'nom' | 'explication' | 'propose' | 'avis';
+type Vue =
+  'equipe' | 'attente' | 'photos' | 'ajout' | 'nom' | 'explication' | 'propose' | 'avis' | 'carte';
 
 /** Le joueur a rejoint : « Mon équipe », puis l'attente, tenus à jour en continu. */
 export function EcranJoueur({
@@ -243,6 +245,22 @@ export function EcranJoueur({
     </Button>
   );
 
+  // La carte « Faisons connaissance » (2026-11-18) : tant que la partie n'est pas terminée.
+  const cartesActives = etat.carte !== undefined && evenement.statut !== 'termine';
+  if (vue === 'carte' && cartesActives) {
+    return (
+      <Cadre bandeau={bandeau} outil={outil}>
+        <CarteJoueur
+          code={code}
+          prenom={joueur.prenom}
+          carte={etat.carte ?? null}
+          remplacer={remplacer}
+          retour={() => setVue('attente')}
+        />
+      </Cadre>
+    );
+  }
+
   if (vue === 'explication') {
     return (
       <Cadre bandeau={bandeau} outil={outil}>
@@ -379,6 +397,18 @@ export function EcranJoueur({
               <Button variant="outline" size="lg" block onClick={() => setVue('propose')}>
                 {t('proposition.ouvrir')}
               </Button>
+            )}
+            {cartesActives && (
+              <>
+                {!etat.carte && (
+                  <p className="tu-player__lead" data-testid="invitation-carte">
+                    {t('maCarte.invitation')}
+                  </p>
+                )}
+                <Button variant="outline" size="lg" block onClick={() => setVue('carte')}>
+                  {etat.carte ? t('maCarte.revoir') : t('maCarte.ouvrir')}
+                </Button>
+              </>
             )}
             <Button variant="ghost" size="lg" block onClick={() => setVue('explication')}>
               {t('explication.revoir')}

@@ -484,7 +484,8 @@
         "scores": "Scores",
         "podium": "Podium",
         "instagram": "Instagram",
-        "cloture": "Closing"
+        "cloture": "Closing",
+        "connaissance": "Get to know"
       },
       "devoilerEquipes": "Reveal the teams",
       "programme": "Tonight's programme",
@@ -901,6 +902,26 @@
         "rienARedire": "Nothing to add",
         "citable": "Quotable (first name)"
       }
+    },
+    "connaissance": {
+      "titre": "Get to know each other",
+      "aide": "Celebrate the team that scored the most in a game, then introduce one of its members, drawn from the authorised cards.",
+      "pretes": "{n, plural, =0 {No card ready} one {# card ready} other {# cards ready}} out of {joueurs} players",
+      "jeu": "Game",
+      "aucunJeu": "No game finished yet.",
+      "equipe": "Team",
+      "pointsEquipe": "{nom} · {points} points",
+      "egalite": "Tie: choose the team to celebrate.",
+      "tirer": "Draw a card",
+      "apercu": "For your eyes only:",
+      "aucune": "No card available: the team will be celebrated on its own.",
+      "ans": "{age} years old",
+      "afficher": "Show on screen",
+      "affichee": "On screen",
+      "autre": "Another card",
+      "ecarter": "Discard this card",
+      "retour": "Back to the programme",
+      "erreur": "That didn't work: please try again."
     }
   },
   "ecran": {
@@ -1087,6 +1108,13 @@
       "suivant": "Next clue!",
       "cetait": "It was…",
       "noireEtait": "The black card was…"
+    },
+    "connaissance": {
+      "bravo": "Well done, team {nom}!",
+      "points": "{points, plural, one {+# point} other {+# points}} in {jeu}",
+      "faisons": "Let's get to know {prenom}",
+      "ans": "{age} years old",
+      "equipe": "And the whole team"
     }
   },
   "admin": {
@@ -1354,5 +1382,38 @@
     },
     "elimineeAide": "Your team is out of this game.",
     "voteAide": "You can change it until the timer ends."
+  },
+  "maCarte": {
+    "ouvrir": "Create my card",
+    "revoir": "My card",
+    "invitation": "A card to get to know each other: share your job or a fun fact, if you like.",
+    "titre": "A card to get to know each other",
+    "intro": "If your team wins a game, your card may be drawn at random and shown on the big screen. Every question is optional.",
+    "age": "How old are you?",
+    "metier": "What do you do for a living?",
+    "anecdote": "A fun fact about you?",
+    "exemple": "For example: I play the drums.",
+    "accord": "I agree to my card being shown to the participants of this event.",
+    "apercu": "Preview on the big screen",
+    "ans": "{age} years old",
+    "restants": "{n, plural, =0 {No characters left} one {# character left} other {# characters left}}",
+    "enregistrer": "Save my card",
+    "plusTard": "Later",
+    "merci": "Your card is saved.",
+    "merciAide": "You can edit it before it is shown.",
+    "sansAccord": "It will not be shown until you agree to it being displayed.",
+    "tiree": "Your card has already been shown on the big screen.",
+    "modifier": "Edit my card",
+    "supprimer": "Delete my card",
+    "supprimee": "Your card has been deleted.",
+    "retour": "Back to the game",
+    "erreur": {
+      "vide": "Answer at least one question to create your card.",
+      "age": "Enter an age between 10 and 110, or leave it blank.",
+      "metierLong": "60 characters at most.",
+      "anecdoteLong": "120 characters at most.",
+      "termine": "The game is over.",
+      "serveur": "That didn't work: please try again."
+    }
   }
 }

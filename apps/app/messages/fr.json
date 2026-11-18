@@ -484,7 +484,8 @@
         "scores": "Scores",
         "podium": "Podium",
         "instagram": "Instagram",
-        "cloture": "Clôture"
+        "cloture": "Clôture",
+        "connaissance": "Faire connaissance"
       },
       "devoilerEquipes": "Dévoiler les équipes",
       "programme": "Programme de la soirée",
@@ -901,6 +902,26 @@
         "rienARedire": "Rien à redire",
         "citable": "Citable (prénom)"
       }
+    },
+    "connaissance": {
+      "titre": "Faire connaissance",
+      "aide": "Célébrez l'équipe qui a le plus marqué sur un jeu, puis présentez l'un de ses membres, tiré au sort parmi les cartes autorisées.",
+      "pretes": "{n, plural, =0 {Aucune carte prête} one {# carte prête} other {# cartes prêtes}} sur {joueurs} joueurs",
+      "jeu": "Jeu",
+      "aucunJeu": "Aucun jeu terminé pour l'instant.",
+      "equipe": "Équipe",
+      "pointsEquipe": "{nom} · {points} points",
+      "egalite": "Égalité : choisissez l'équipe à célébrer.",
+      "tirer": "Tirer une carte",
+      "apercu": "Pour vous seul :",
+      "aucune": "Aucune carte disponible : l'équipe sera célébrée seule.",
+      "ans": "{age} ans",
+      "afficher": "Afficher à l'écran",
+      "affichee": "À l'écran",
+      "autre": "Autre carte",
+      "ecarter": "Écarter cette carte",
+      "retour": "Retour au programme",
+      "erreur": "Ça n'a pas marché : réessayez."
     }
   },
   "ecran": {
@@ -1087,6 +1108,13 @@
       "suivant": "Indice suivant !",
       "cetait": "C’était…",
       "noireEtait": "La carte noire était…"
+    },
+    "connaissance": {
+      "bravo": "Bravo à toute l'équipe {nom} !",
+      "points": "{points, plural, one {+# point} other {+# points}} sur {jeu}",
+      "faisons": "Faisons connaissance avec {prenom}",
+      "ans": "{age} ans",
+      "equipe": "Et toute l'équipe"
     }
   },
   "admin": {
@@ -1354,5 +1382,38 @@
     },
     "elimineeAide": "Votre équipe est éliminée de ce jeu.",
     "voteAide": "Vous pouvez changer jusqu'à la fin du chrono."
+  },
+  "maCarte": {
+    "ouvrir": "Créer ma carte",
+    "revoir": "Ma carte",
+    "invitation": "Une carte pour faire connaissance : partagez votre métier ou une anecdote, si vous le souhaitez.",
+    "titre": "Une carte pour faire connaissance",
+    "intro": "Si votre équipe gagne un jeu, votre carte pourra être tirée au sort et affichée sur le grand écran. Chaque question est facultative.",
+    "age": "Quel âge avez-vous ?",
+    "metier": "Que faites-vous dans la vie ?",
+    "anecdote": "Une anecdote à votre sujet ?",
+    "exemple": "Par exemple : je joue de la batterie.",
+    "accord": "J'accepte l'affichage de ma carte devant les participants de cet événement.",
+    "apercu": "Aperçu sur le grand écran",
+    "ans": "{age} ans",
+    "restants": "{n, plural, =0 {Plus aucun caractère} one {# caractère restant} other {# caractères restants}}",
+    "enregistrer": "Enregistrer ma carte",
+    "plusTard": "Plus tard",
+    "merci": "Votre carte est enregistrée.",
+    "merciAide": "Vous pouvez la modifier avant son affichage.",
+    "sansAccord": "Elle ne sera pas affichée tant que vous n'acceptez pas son affichage.",
+    "tiree": "Votre carte a déjà été présentée sur le grand écran.",
+    "modifier": "Modifier ma carte",
+    "supprimer": "Supprimer ma carte",
+    "supprimee": "Votre carte est supprimée.",
+    "retour": "Retour à la partie",
+    "erreur": {
+      "vide": "Répondez à au moins une question pour créer votre carte.",
+      "age": "Indiquez un âge entre 10 et 110 ans, ou laissez vide.",
+      "metierLong": "60 caractères au plus.",
+      "anecdoteLong": "120 caractères au plus.",
+      "termine": "La partie est terminée.",
+      "serveur": "Ça n'a pas marché : réessayez."
+    }
   }
 }
