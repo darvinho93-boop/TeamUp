@@ -90,6 +90,7 @@ export type Database = {
           cree_le: string;
           cree_par: string | null;
           etiquette: Database['public']['Enums']['etiquette'];
+          evenement_id: string | null;
           id: string;
           jeu: Database['public']['Enums']['jeu'];
         };
@@ -98,6 +99,7 @@ export type Database = {
           cree_le?: string;
           cree_par?: string | null;
           etiquette?: Database['public']['Enums']['etiquette'];
+          evenement_id?: string | null;
           id?: string;
           jeu: Database['public']['Enums']['jeu'];
         };
@@ -106,6 +108,7 @@ export type Database = {
           cree_le?: string;
           cree_par?: string | null;
           etiquette?: Database['public']['Enums']['etiquette'];
+          evenement_id?: string | null;
           id?: string;
           jeu?: Database['public']['Enums']['jeu'];
         };
@@ -115,6 +118,13 @@ export type Database = {
             columns: ['cree_par'];
             isOneToOne: false;
             referencedRelation: 'animateurs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'contenus_evenement_id_fkey';
+            columns: ['evenement_id'];
+            isOneToOne: false;
+            referencedRelation: 'evenements';
             referencedColumns: ['id'];
           },
           {
@@ -341,6 +351,35 @@ export type Database = {
             columns: ['animateur_id'];
             isOneToOne: false;
             referencedRelation: 'animateurs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      grilles_portrait: {
+        Row: {
+          cartes: string[];
+          maj_le: string;
+          manche_id: string;
+          noire: number;
+        };
+        Insert: {
+          cartes: string[];
+          maj_le?: string;
+          manche_id: string;
+          noire: number;
+        };
+        Update: {
+          cartes?: string[];
+          maj_le?: string;
+          manche_id?: string;
+          noire?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'grilles_portrait_manche_id_fkey';
+            columns: ['manche_id'];
+            isOneToOne: true;
+            referencedRelation: 'manches';
             referencedColumns: ['id'];
           },
         ];
@@ -1074,6 +1113,52 @@ export type Database = {
           },
         ];
       };
+      votes_portrait: {
+        Row: {
+          carte: number;
+          equipe_id: string;
+          passage_id: string;
+          tour: number;
+          vote_le: string;
+        };
+        Insert: {
+          carte: number;
+          equipe_id: string;
+          passage_id: string;
+          tour: number;
+          vote_le?: string;
+        };
+        Update: {
+          carte?: number;
+          equipe_id?: string;
+          passage_id?: string;
+          tour?: number;
+          vote_le?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'votes_portrait_equipe_id_fkey';
+            columns: ['equipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'classement';
+            referencedColumns: ['equipe_id'];
+          },
+          {
+            foreignKeyName: 'votes_portrait_equipe_id_fkey';
+            columns: ['equipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'equipes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'votes_portrait_passage_id_fkey';
+            columns: ['passage_id'];
+            isOneToOne: false;
+            referencedRelation: 'passages';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       classement: {
@@ -1137,6 +1222,10 @@ export type Database = {
           passage_id: string;
         }[];
       };
+      cartes_portrait_valides: {
+        Args: { p_cartes: string[] };
+        Returns: boolean;
+      };
       changer_langue: {
         Args: {
           p_jeton_hash: string;
@@ -1157,6 +1246,7 @@ export type Database = {
         };
         Returns: boolean;
       };
+      contenu_lisible: { Args: { p_contenu: string }; Returns: boolean };
       contenu_public: {
         Args: {
           p_contenu: string;
@@ -1209,6 +1299,15 @@ export type Database = {
         };
         Returns: string;
       };
+      enregistrer_proche: {
+        Args: {
+          p_actif?: boolean;
+          p_evenement: string;
+          p_id: string;
+          p_langues: Json;
+        };
+        Returns: string;
+      };
       envoyer_message: {
         Args: { p_jeton_hash: string; p_texte: string };
         Returns: Json;
@@ -1230,6 +1329,15 @@ export type Database = {
       former_equipes: {
         Args: { p_equipes: Json; p_evenement: string; p_passages: Json };
         Returns: number;
+      };
+      grille_portrait_ecran: {
+        Args: {
+          p_langues: Database['public']['Enums']['langue'][];
+          p_manche: Database['public']['Tables']['manches']['Row'];
+          p_pilotage: Database['public']['Tables']['pilotage']['Row'];
+          p_regie: boolean;
+        };
+        Returns: Json;
       };
       jetons_quiz: {
         Args: { p_manche: string };
@@ -1291,6 +1399,12 @@ export type Database = {
         };
         Returns: Json;
       };
+      portrait_du_joueur: {
+        Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
+        Returns: Json;
+      };
+      portrait_eliminees: { Args: { p_manche: string }; Returns: number[] };
+      portrait_retournees: { Args: { p_manche: string }; Returns: number[] };
       pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json };
       prenom_disponible: {
         Args: { p_code: string; p_prenom: string };
@@ -1398,10 +1512,32 @@ export type Database = {
       survivants_quiz: { Args: { p_manche: string }; Returns: Json };
       texte_rempli: { Args: { p_valeur: Json }; Returns: boolean };
       tirer_capitaines: { Args: { p_evenement: string }; Returns: number };
+      verifier_vote_portrait: {
+        Args: {
+          p_carte: number;
+          p_manche: string;
+          p_numero: number;
+          p_passage: Database['public']['Tables']['passages']['Row'];
+        };
+        Returns: undefined;
+      };
+      voter_portrait: {
+        Args: { p_carte: number; p_jeton_hash: string };
+        Returns: Json;
+      };
+      voter_portrait_regie: {
+        Args: { p_carte: number; p_equipe: string; p_passage: string };
+        Returns: undefined;
+      };
+      votes_portrait_ecran: {
+        Args: { p_passage: string; p_regie: boolean; p_tour: number };
+        Returns: Json;
+      };
     };
     Enums: {
       etiquette: 'b2c' | 'b2b' | 'tout_public';
-      jeu: 'list2' | 'qcm2' | 'enchere2' | 'mime2' | 'photo2' | 'grab' | 'cup' | 'blind';
+      jeu:
+        'list2' | 'qcm2' | 'enchere2' | 'mime2' | 'photo2' | 'grab' | 'cup' | 'blind' | 'portrait';
       langue: 'fr' | 'en' | 'ta';
       role_animateur: 'animateur' | 'admin';
       scene:
@@ -1541,7 +1677,7 @@ export const Constants = {
   public: {
     Enums: {
       etiquette: ['b2c', 'b2b', 'tout_public'],
-      jeu: ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'grab', 'cup', 'blind'],
+      jeu: ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'grab', 'cup', 'blind', 'portrait'],
       langue: ['fr', 'en', 'ta'],
       role_animateur: ['animateur', 'admin'],
       scene: [

@@ -177,4 +177,6 @@ export const TABLES = [
   'groupes',
   'equipes_groupes',
   'avis_joueurs',
+  'grilles_portrait',
+  'votes_portrait',
 ] as const;
