@@ -86,3 +86,63 @@ export async function purgerFondsExpires(
     if (fonds.length < LOT) return total;
   }
 }
+
+/** La veille d'aujourd'hui (UTC) : les cartes des soirées jusqu'à ce jour-là s'effacent. */
+export function derniereSoireeDesCartes(maintenant: Date): string {
+  const jour = new Date(
+    Date.UTC(maintenant.getUTCFullYear(), maintenant.getUTCMonth(), maintenant.getUTCDate()),
+  );
+  jour.setUTCDate(jour.getUTCDate() - 1);
+  return jour.toISOString().slice(0, 10);
+}
+
+/**
+ * Efface les cartes « Faisons connaissance » (2026-11-18) le lendemain de la soirée, et leurs
+ * tirages : âge, métier et anecdote ne servent qu'à la soirée. Rend le nombre de cartes effacées.
+ */
+export async function purgerCartesExpirees(
+  client: SupabaseClient,
+  maintenant: Date = new Date(),
+): Promise<number> {
+  const limite = derniereSoireeDesCartes(maintenant);
+  let total = 0;
+  for (;;) {
+    const { data, error } = await client
+      .from('cartes_joueurs')
+      .select('joueur_id, evenements!inner(date_evenement)')
+      .lte('evenements.date_evenement', limite)
+      .limit(LOT);
+    if (error) throw new Error(`lecture des cartes expirées : ${error.message}`);
+    const cartes = (data ?? []) as unknown as { joueur_id: string }[];
+    if (cartes.length === 0) break;
+    const { error: suppression } = await client
+      .from('cartes_joueurs')
+      .delete()
+      .in(
+        'joueur_id',
+        cartes.map((c) => c.joueur_id),
+      );
+    if (suppression) throw new Error(`suppression des cartes : ${suppression.message}`);
+    total += cartes.length;
+    if (cartes.length < LOT) break;
+  }
+  for (;;) {
+    const { data, error } = await client
+      .from('tirages_cartes')
+      .select('id, evenements!inner(date_evenement)')
+      .lte('evenements.date_evenement', limite)
+      .limit(LOT);
+    if (error) throw new Error(`lecture des tirages expirés : ${error.message}`);
+    const tirages = (data ?? []) as unknown as { id: string }[];
+    if (tirages.length === 0) return total;
+    const { error: suppression } = await client
+      .from('tirages_cartes')
+      .delete()
+      .in(
+        'id',
+        tirages.map((t) => t.id),
+      );
+    if (suppression) throw new Error(`suppression des tirages : ${suppression.message}`);
+    if (tirages.length < LOT) return total;
+  }
+}

@@ -1,9 +1,9 @@
 import { timingSafeEqual } from 'node:crypto';
-import { purgerFondsExpires, purgerPhotosExpirees } from '@/lib/purge';
+import { purgerCartesExpirees, purgerFondsExpires, purgerPhotosExpirees } from '@/lib/purge';
 import { supabaseService } from '@/serveur/supabase';
 
 /**
- * Purge quotidienne des photos expirées (et des photos de fond des jeux), appelée par Vercel Cron (`vercel.json`). Vercel envoie
+ * Purge quotidienne des photos expirées (et des photos de fond des jeux, et des cartes des joueurs), appelée par Vercel Cron (`vercel.json`). Vercel envoie
  * `Authorization: Bearer <CRON_SECRET>` ; sans ce secret, rien ne se passe.
  */
 export async function GET(req: Request) {
@@ -20,5 +20,7 @@ export async function GET(req: Request) {
   const supprimees = await purgerPhotosExpirees(service);
   // Les photos de fond des jeux (2026-11-15) suivent la même conservation.
   const fonds = await purgerFondsExpires(service);
-  return Response.json({ supprimees, fonds });
+  // Les cartes « Faisons connaissance » (2026-11-18) : effacées le lendemain de la soirée.
+  const cartes = await purgerCartesExpirees(service);
+  return Response.json({ supprimees, fonds, cartes });
 }

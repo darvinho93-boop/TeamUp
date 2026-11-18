@@ -84,6 +84,54 @@ export type Database = {
           },
         ];
       };
+      cartes_joueurs: {
+        Row: {
+          accord: boolean;
+          age: number | null;
+          anecdote: string | null;
+          ecartee: boolean;
+          evenement_id: string;
+          joueur_id: string;
+          maj_le: string;
+          metier: string | null;
+        };
+        Insert: {
+          accord?: boolean;
+          age?: number | null;
+          anecdote?: string | null;
+          ecartee?: boolean;
+          evenement_id: string;
+          joueur_id: string;
+          maj_le?: string;
+          metier?: string | null;
+        };
+        Update: {
+          accord?: boolean;
+          age?: number | null;
+          anecdote?: string | null;
+          ecartee?: boolean;
+          evenement_id?: string;
+          joueur_id?: string;
+          maj_le?: string;
+          metier?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'cartes_joueurs_evenement_id_fkey';
+            columns: ['evenement_id'];
+            isOneToOne: false;
+            referencedRelation: 'evenements';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'cartes_joueurs_joueur_id_fkey';
+            columns: ['joueur_id'];
+            isOneToOne: true;
+            referencedRelation: 'joueurs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       contenus: {
         Row: {
           actif: boolean;
@@ -1113,6 +1161,69 @@ export type Database = {
           },
         ];
       };
+      tirages_cartes: {
+        Row: {
+          cree_le: string;
+          equipe_id: string;
+          evenement_id: string;
+          id: string;
+          joueur_id: string | null;
+          manche_id: string | null;
+        };
+        Insert: {
+          cree_le?: string;
+          equipe_id: string;
+          evenement_id: string;
+          id?: string;
+          joueur_id?: string | null;
+          manche_id?: string | null;
+        };
+        Update: {
+          cree_le?: string;
+          equipe_id?: string;
+          evenement_id?: string;
+          id?: string;
+          joueur_id?: string | null;
+          manche_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'tirages_cartes_equipe_id_fkey';
+            columns: ['equipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'classement';
+            referencedColumns: ['equipe_id'];
+          },
+          {
+            foreignKeyName: 'tirages_cartes_equipe_id_fkey';
+            columns: ['equipe_id'];
+            isOneToOne: false;
+            referencedRelation: 'equipes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tirages_cartes_evenement_id_fkey';
+            columns: ['evenement_id'];
+            isOneToOne: false;
+            referencedRelation: 'evenements';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tirages_cartes_joueur_id_fkey';
+            columns: ['joueur_id'];
+            isOneToOne: false;
+            referencedRelation: 'joueurs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tirages_cartes_manche_id_fkey';
+            columns: ['manche_id'];
+            isOneToOne: false;
+            referencedRelation: 'manches';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       votes_portrait: {
         Row: {
           carte: number;
@@ -1229,6 +1340,7 @@ export type Database = {
         Args: { p_cartes: string[] };
         Returns: boolean;
       };
+      cartes_pretes: { Args: { p_evenement: string }; Returns: number };
       changer_langue: {
         Args: {
           p_jeton_hash: string;
@@ -1241,6 +1353,14 @@ export type Database = {
         Returns: boolean;
       };
       cle_prenom: { Args: { p_prenom: string }; Returns: string };
+      connaissance_ecran: {
+        Args: {
+          p_evenement: string;
+          p_pilotage: Database['public']['Tables']['pilotage']['Row'];
+          p_regie: boolean;
+        };
+        Returns: Json;
+      };
       contenu_bien_forme: {
         Args: {
           p_jeu: Database['public']['Enums']['jeu'];
@@ -1278,9 +1398,20 @@ export type Database = {
         };
         Returns: Json;
       };
+      ecarter_carte: { Args: { p_joueur: string }; Returns: undefined };
       echanger_manches: {
         Args: { p_a: string; p_b: string };
         Returns: undefined;
+      };
+      enregistrer_carte: {
+        Args: {
+          p_accord: boolean;
+          p_age: number;
+          p_anecdote: string;
+          p_jeton_hash: string;
+          p_metier: string;
+        };
+        Returns: Json;
       };
       enregistrer_contenu: {
         Args: {
@@ -1515,6 +1646,10 @@ export type Database = {
       survivants_quiz: { Args: { p_manche: string }; Returns: Json };
       texte_rempli: { Args: { p_valeur: Json }; Returns: boolean };
       tirer_capitaines: { Args: { p_evenement: string }; Returns: number };
+      tirer_carte: {
+        Args: { p_equipe: string; p_evenement: string; p_manche: string };
+        Returns: Json;
+      };
       verifier_vote_portrait: {
         Args: {
           p_carte: number;
@@ -1551,6 +1686,7 @@ export type Database = {
         | 'intro'
         | 'jeu'
         | 'scores'
+        | 'connaissance'
         | 'podium'
         | 'instagram'
         | 'cloture';
@@ -1691,6 +1827,7 @@ export const Constants = {
         'intro',
         'jeu',
         'scores',
+        'connaissance',
         'podium',
         'instagram',
         'cloture',
