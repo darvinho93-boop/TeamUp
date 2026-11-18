@@ -25,7 +25,8 @@ import { useAjusterTexte } from './useAjusterTexte';
  * donnés, dans les langues de la soirée ; au milieu, la grille de 25 noms (repères A1 à E5), les
  * cibles déjà trouvées retournées ; en bas, l'état de chaque équipe (a voté, a trouvé, éliminée).
  * La fin d'un tour s'annonce en plein écran : qui a trouvé, qui est tombé sur la carte noire, sans
- * jamais dire laquelle c'était. La cible se retourne à la révélation ; la carte noire, à la fin.
+ * jamais dire laquelle c'était (sur fond noir, sans fête). La cible se retourne à la révélation ;
+ * la carte noire, à la fin.
  */
 export function Portrait({
   etat,
@@ -68,7 +69,7 @@ export function Portrait({
           'tu-stage__body tu-stage-centre tu-stage-reveal',
           // Plein écran, comme un verdict : la marque du coin passe en clair dessus. Personne n'a
           // trouvé : le beige, sans verdict.
-          noire && cx('tu-stage-verdict tu-stage-portrait__noire', teamModifier(eliminees[0]!)),
+          noire && 'tu-stage-verdict tu-stage-portrait__noire',
           !noire && trouvees.length > 0 && 'tu-stage-verdict tu-stage-verdict--vert',
         )}
         data-scene="portrait"
@@ -102,7 +103,7 @@ export function Portrait({
             {tour < TOURS_PORTRAIT && <p className="tu-stage__xl">{t('suivant')}</p>}
           </>
         )}
-        {trouveeAuTour && <Celebration force={tour === 1 ? 3 : 1} />}
+        {trouveeAuTour && !noire && <Celebration force={tour === 1 ? 3 : 1} />}
       </div>
     );
   }

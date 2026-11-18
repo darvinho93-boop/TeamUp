@@ -1643,8 +1643,9 @@ eliminees, tours, verdict: { trouvees, eliminees } }` (le verdict du dernier tou
   « Valider ») ; signal `mises` (écran et régie seulement).
 - Écran (`src/ecran/Portrait.tsx`, `portrait.css`) : cible et indices (langues de la soirée), grille
   5 × 5 repérée A1 à E5 (au moins la moitié de la scène), état des équipes ; fin de tour en plein
-  écran (trouvé en vert ; carte noire à la couleur de l'équipe, sans nommer la carte ; personne sur
-  le beige). Deux échelles : `--tu-portrait-echelle` (indices), `--tu-portrait-noms` (grille). Sons :
+  écran (trouvé en vert ; carte noire sur fond marine 900, sans fête ni nom de carte ; personne
+  sur le beige), chrono au centre de l'en-tête (le coin droit porte la marque). Un texte identique
+  dans deux langues (un nom propre) ne s'affiche qu'une fois (`Multilingue`). Deux échelles : `--tu-portrait-echelle` (indices), `--tu-portrait-noms` (grille). Sons :
   `indice` à chaque tour, `reussite` / `echec` au verdict (depuis la scène), `revelation`.
 - Explication `portrait` (45 s, cinq cartes), pictogramme et règle sur la carte Team Up!. La vitrine
   ne le présente pas encore.

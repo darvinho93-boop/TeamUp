@@ -10,10 +10,11 @@
   gap: var(--tu-space-4);
 }
 
+/* Le chrono au centre : le coin haut droit porte la marque Team Up!. */
 .tu-stage-portrait__tete {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: var(--tu-space-6);
 }
 
@@ -162,13 +163,9 @@
   text-decoration: line-through;
 }
 
-/* Le verdict de la carte noire, à la couleur de l'équipe tombée dessus. */
+/* Le verdict de la carte noire : noir marine, quelle que soit l'équipe tombée dessus. */
 .tu-stage-portrait__noire {
-  --tu-text: var(--tu-team-on);
-  --tu-text-muted: var(--tu-team-on);
-
-  background: var(--tu-team-color);
-  color: var(--tu-team-on);
+  background: var(--tu-navy-900);
 }
 
 @media (prefers-reduced-motion: no-preference) {
