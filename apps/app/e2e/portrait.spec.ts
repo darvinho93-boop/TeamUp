@@ -75,7 +75,8 @@ async function preparer(browser: Browser, equipes: number) {
 async function positions(regie: Page) {
   const lire = async (testId: string) => {
     const texte = (await regie.getByTestId(testId).textContent()) ?? '';
-    const [, repere, nom] = /([A-E][1-5]) · (Proche \d\d)/.exec(texte) ?? [];
+    // Tout nom : la grille pioche aussi dans la banque, si elle a des portraits.
+    const [, repere, nom] = /([A-E][1-5]) · (.+)$/.exec(texte.trim()) ?? [];
     return { position: positionDe(repere!), nom: nom! };
   };
   return { cible: await lire('portrait-cible'), noire: await lire('portrait-noire') };
@@ -131,9 +132,10 @@ test('Portrait mystère au téléphone : votes, verdicts, carte noire cachée pu
   const leurre = [0, 1, 2, 3].find((p) => p !== cible.position && p !== noire.position)!;
 
   // --- Premier indice : les trois capitaines votent.
+  const indice1 = (await regie.locator('.tu-regie-indices__indice').first().textContent())!.trim();
   await regie.getByRole('button', { name: 'Indice 1' }).click();
   await expect(scene('vote')).toBeVisible({ timeout: 10_000 });
-  await expect(ecran.getByTestId('portrait-indices')).toContainText('Indice A');
+  await expect(ecran.getByTestId('portrait-indices')).toContainText(indice1);
   for (const [telephone, carte] of [
     [ana, cible.position],
     [bao, noire.position],
