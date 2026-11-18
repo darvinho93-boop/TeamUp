@@ -28,8 +28,12 @@
   color: var(--tu-text-muted);
 }
 
-.tu-field__control:hover:not(:disabled) {
-  border-color: var(--tu-text-muted);
+/* À la souris seulement : au doigt, le survol reste accroché au champ arrivé sous le doigt (vu
+   sur l'avis de fin de soirée, 2026-11-18), comme pour les boutons. */
+@media (hover: hover) {
+  .tu-field__control:hover:not(:disabled) {
+    border-color: var(--tu-text-muted);
+  }
 }
 
 .tu-field__control:disabled {
