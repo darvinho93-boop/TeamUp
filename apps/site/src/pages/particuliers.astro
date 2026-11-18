@@ -109,11 +109,6 @@ const faq: FaqItem[] = [
     answer:
       'Celles de vos invités. Indiquez-les dans votre demande : nous traduisons les contenus de la soirée et les relisons avec vous. Chaque invité choisit ensuite la sienne sur son téléphone.',
   },
-  {
-    question: 'Combien ça coûte ?',
-    answer:
-      "À partir de 690 € TTC. Ce prix comprend la préparation avec vous, la saisie de vos jeux et l'animation le jour J ; le déplacement est chiffré dans le devis, selon le lieu de votre soirée. Offre de lancement : à partir de 470 € TTC pour les dix premières soirées réservées, et au plus tard jusqu'au 31 décembre 2026. Le devis est gratuit et sans engagement.",
-  },
 ];
 ---
 
@@ -130,10 +125,6 @@ const faq: FaqItem[] = [
       'Les équipes se mélangent, les échanges naissent et la fête prend une nouvelle dimension.',
     ]}
   >
-    <p slot="footnote" class="intro-note">
-      Offre de lancement : à partir de 470 € TTC pour les dix premières soirées réservées avant le
-      31 décembre 2026. Ensuite, à partir de 690 € TTC.
-    </p>
     <Fragment slot="actions">
       <Button href="/devis?type=particulier" variant="accent" size="cta">
         Imaginer mon événement
@@ -237,11 +228,6 @@ const faq: FaqItem[] = [
 </Base>
 
 <style>
-  .intro-note {
-    font-size: var(--tu-size-sm);
-    color: var(--tu-text-muted);
-  }
-
   .occasions {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

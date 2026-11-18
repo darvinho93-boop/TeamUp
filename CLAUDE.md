@@ -477,6 +477,9 @@ sérénité de l'organisateur, le nombre en preuve : jusqu'à 150 invités) ; do
 **`teamup-game.fr`** (`teamup.fr` appartient à une autre société) ; particuliers **à partir de
 690 € TTC**, offre de lancement **à partir de 470 € TTC** pour les dix premières soirées et au
 plus tard jusqu'au 31/12/2026, déplacement chiffré au devis ; entreprises **sur devis**.
+**Revu le 2026-11-18 : la vitrine n'affiche plus aucun prix** (note du haut de Particuliers et
+question « Combien ça coûte ? » retirées) ; les tarifs restent ceux du devis. Le projet de CGV
+(`_cgv.astro`, masqué) les cite encore : à revoir avant de le publier.
 
 - Coordonnées et délai de rappel (48 heures) : une seule source, `apps/site/src/data/contact.ts`.
 - **Aucun crochet visible** : un contenu qui manque se cache, il ne s'affiche pas entre crochets
@@ -1676,8 +1679,8 @@ sobre ; **particuliers et entreprises à parts égales** sur l'accueil.
   « met le feu à la salle », « vous n'avez rien à faire ». Aucune promesse d'obligation à se lever
   ni de participation uniforme : la participation s'adapte.
 - Le nouveau texte **introduit** le détail sans le supprimer : règles en étapes sur Les jeux
-  (accroche du document en gras, puis sa phrase de conclusion, puis les étapes), FAQ, prix, tableau
-  des durées, matériel. Les mentions légales restent ; seules leurs introductions changent.
+  (accroche du document en gras, puis sa phrase de conclusion, puis les étapes), FAQ, tableau
+  des durées, matériel (les prix ont été retirés ensuite, le même jour). Les mentions légales restent ; seules leurs introductions changent.
 - Composants : `PageIntro` prend `lead` en un ou plusieurs paragraphes, `chapo` (question en gras
   avant) et `fort` (phrase en gras après) ; `Recit` (`components/layout/`) pour les passages
   racontés, un paragraphe pouvant être `{ texte, fort: true }` ; `CtaBanner` prend `signature`.
