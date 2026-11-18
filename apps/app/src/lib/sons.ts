@@ -175,6 +175,11 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
     sons.push('roulement');
   }
 
+  // Cartes « Faisons connaissance » (2026-11-18) : l'équipe célébrée, à chaque présentation.
+  if (apres.scene === 'connaissance' && apres.chronoDepartMs !== avant.chronoDepartMs) {
+    sons.push('reussite');
+  }
+
   if (apres.scene === 'intro') {
     const nouveauJeu = avant.scene !== 'intro' || avant.mancheId !== apres.mancheId;
     if (nouveauJeu && apres.mancheId) sons.push('jingle');

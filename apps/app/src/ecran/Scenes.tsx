@@ -71,6 +71,7 @@ import { useTenirEnLargeur } from './useTenirEnLargeur';
 import { OrdreTire, ordreDesEquipes, TirageOrdre, useMouvementReduit } from './TirageOrdre';
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
+import { Connaissance } from './Connaissance';
 
 interface Props {
   etat: EtatSalle;
@@ -103,6 +104,8 @@ export function Scene(props: Props) {
       return <Jeu {...props} />;
     case 'scores':
       return <Scores etat={etat} />;
+    case 'connaissance':
+      return <Connaissance etat={etat} decalageMs={props.decalageMs} />;
     case 'podium':
       return <Podium etat={etat} />;
     case 'instagram':

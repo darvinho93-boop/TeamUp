@@ -15,6 +15,7 @@ export type Scene =
   | 'intro'
   | 'jeu'
   | 'scores'
+  | 'connaissance'
   | 'podium'
   | 'instagram'
   | 'cloture';
@@ -123,6 +124,24 @@ export interface EquipeSalle {
   capitaine_connecte?: boolean;
 }
 
+/** Le dernier tirage d'une carte : l'équipe célébrée, ses points sur ce jeu, et la carte. */
+export interface ConnaissanceSalle {
+  tirage_id: string;
+  manche_id: string | null;
+  jeu: GameCode | null;
+  equipe: { id: string; numero: number; nom: string };
+  points: number;
+  /** Nulle : aucune carte autorisée, l'équipe est célébrée seule. */
+  carte: {
+    joueur_id: string;
+    prenom: string;
+    age: number | null;
+    metier: string | null;
+    anecdote: string | null;
+  } | null;
+  membres: { prenom: string; capitaine: boolean }[];
+}
+
 export interface EtatSalle {
   serveur_ms: number;
   evenement: {
@@ -163,6 +182,13 @@ export interface EtatSalle {
   /** Avis des joueurs : ouverts par la régie, et combien sont reçus. Absent sans la migration
    * du 2026-11-18 : ni panneau, ni invitation à l'écran. */
   avis?: { ouverts: boolean; recus: number };
+  /**
+   * Cartes « Faisons connaissance » (2026-11-18) : le dernier tirage. Hors régie, seulement à la
+   * scène `connaissance`. Absent sans la migration.
+   */
+  connaissance?: ConnaissanceSalle | null;
+  /** La régie seule : les cartes prêtes à être tirées (autorisées, non écartées). */
+  cartes_pretes?: number | null;
   equipes: EquipeSalle[];
   joueurs: number;
   /**
