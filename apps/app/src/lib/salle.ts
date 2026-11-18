@@ -141,6 +141,9 @@ export interface EtatSalle {
   messages?: MessageSalle[];
   /** Les joueurs peuvent écrire sur le grand écran ; absent sans la migration (ouverts). */
   messages_ouverts?: boolean;
+  /** Avis des joueurs : ouverts par la régie, et combien sont reçus. Absent sans la migration
+   * du 2026-11-18 : ni panneau, ni invitation à l'écran. */
+  avis?: { ouverts: boolean; recus: number };
   equipes: EquipeSalle[];
   joueurs: number;
   /**

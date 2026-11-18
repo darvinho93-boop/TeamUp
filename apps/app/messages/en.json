@@ -256,7 +256,8 @@
       "salle": "Room",
       "pilotage": "Control",
       "photos": "Photos",
-      "scores": "Scores"
+      "scores": "Scores",
+      "avis": "Feedback"
     },
     "connexion": {
       "titre": "Control room sign-in",
@@ -678,6 +679,13 @@
         "trouvePar": "Found by {equipe}",
         "personne": "Nobody found it",
         "extraitFini": "Excerpt over: reveal the song."
+      },
+      "avis": {
+        "titre": "Player feedback",
+        "ouverts": "Survey open",
+        "fermes": "Survey closed",
+        "recus": "{n, plural, =0 {No feedback yet} one {# response} other {# responses}}",
+        "lire": "Read the feedback"
       }
     },
     "salle": {
@@ -812,6 +820,30 @@
       "rouvrir": "Reopen the evening",
       "confirmerRouvrir": "Tap again to reopen",
       "echec": "The evening could not be updated. Try again."
+    },
+    "avis": {
+      "titre": "Player feedback",
+      "synthese": "Summary",
+      "recus": "{n, plural, =0 {No responses} one {# response} other {# responses}} from {joueurs, plural, =0 {0 players} one {# player} other {# players}} with a phone",
+      "rienARedire": "{n, plural, =0 {no “Nothing to add”} other {# “Nothing to add”}}",
+      "citables": "{n, plural, =0 {none quotable} one {# quotable} other {# quotable}}",
+      "ouverts": "The survey is open on the phones. Close it from the control panel.",
+      "fermes": "The survey is closed. Open it from the control panel.",
+      "export": "Download the feedback (CSV)",
+      "liste": "Responses",
+      "aucun": "No feedback yet.",
+      "citable": "Quotable: {prenom}",
+      "aime": "What they loved",
+      "moins": "What they liked less",
+      "rien": "Nothing to add",
+      "csv": {
+        "heure": "Time",
+        "langue": "Language",
+        "aime": "Loved {n}",
+        "moinsPlu": "Liked less",
+        "rienARedire": "Nothing to add",
+        "citable": "Quotable (first name)"
+      }
     }
   },
   "ecran": {

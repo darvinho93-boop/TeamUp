@@ -76,6 +76,7 @@ import { useEtatSalle } from '@/ecran/useEtatSalle';
 import { Apercu } from './Apercu';
 import { BoutonConfirme } from './BoutonConfirme';
 import { PanneauDuel } from './PanneauDuel';
+import { PanneauAvis } from './PanneauAvis';
 import { PanneauMessages } from './PanneauMessages';
 
 /** Jeux que la régie sait piloter (lots 6 à 8, duels en bêta au lot 10, blind test le 2026-11-15). */
@@ -532,6 +533,19 @@ export function Pilotage({
             evenementId={etat.evenement.id}
             messages={etat.messages}
             ouverts={etat.messages_ouverts !== false}
+            apresEcriture={async () => {
+              signaler();
+              await relire();
+            }}
+          />
+        )}
+        {/* Avis des joueurs (2026-11-18) ; absent sans la migration. */}
+        {etat.avis && (
+          <PanneauAvis
+            code={code}
+            evenementId={etat.evenement.id}
+            ouverts={etat.avis.ouverts}
+            recus={etat.avis.recus}
             apresEcriture={async () => {
               signaler();
               await relire();

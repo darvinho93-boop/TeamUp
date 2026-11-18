@@ -383,6 +383,60 @@
   accent-color: var(--tu-primary);
 }
 
+/* Avis des joueurs (2026-11-18), au pilotage : la bascule, le compte, le lien vers la page. */
+.tu-regie-avis__corps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tu-space-3) var(--tu-space-4);
+  margin-top: var(--tu-space-3);
+}
+
+/* La page Avis : une carte par avis, ce qui a plu puis ce qui a moins plu. */
+.tu-regie-avis-liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie-avis-carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+  padding: var(--tu-space-3) var(--tu-space-4);
+  border: var(--tu-btn-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+}
+
+.tu-regie-avis-carte__meta {
+  margin: 0;
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+}
+
+.tu-regie-avis-carte__aime,
+.tu-regie-avis-carte__moins {
+  margin: 0;
+  padding-inline-start: var(--tu-space-6);
+}
+
+.tu-regie-avis-carte__moins {
+  white-space: pre-line;
+}
+
+.tu-regie-avis-carte__aime li::marker {
+  color: var(--tu-success);
+  content: '+ ';
+}
+
+.tu-regie-avis-carte__moins li::marker {
+  color: var(--tu-text-muted);
+  content: '− ';
+}
+
 /* Messages sur le grand écran (2026-11-15) : les envois, le message de Team Up!, puis les
    derniers messages, le plus récent en haut, chacun avec « Retirer ». */
 .tu-regie-messages__corps {

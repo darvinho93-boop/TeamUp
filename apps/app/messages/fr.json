@@ -256,7 +256,8 @@
       "salle": "Salle",
       "pilotage": "Pilotage",
       "photos": "Photos",
-      "scores": "Scores"
+      "scores": "Scores",
+      "avis": "Avis"
     },
     "connexion": {
       "titre": "Connexion à la régie",
@@ -678,6 +679,13 @@
         "trouvePar": "Trouvé par {equipe}",
         "personne": "Personne n’a trouvé",
         "extraitFini": "Extrait terminé : révèle le titre."
+      },
+      "avis": {
+        "titre": "Avis des joueurs",
+        "ouverts": "Questionnaire ouvert",
+        "fermes": "Questionnaire fermé",
+        "recus": "{n, plural, =0 {Aucun avis reçu} one {# avis reçu} other {# avis reçus}}",
+        "lire": "Lire les avis"
       }
     },
     "salle": {
@@ -812,6 +820,30 @@
       "rouvrir": "Rouvrir la soirée",
       "confirmerRouvrir": "Toucher encore pour rouvrir",
       "echec": "La soirée n’a pas pu être mise à jour. Réessaie."
+    },
+    "avis": {
+      "titre": "Avis des joueurs",
+      "synthese": "En résumé",
+      "recus": "{n, plural, =0 {Aucun avis} one {# avis} other {# avis}} sur {joueurs, plural, =0 {0 joueur} one {# joueur} other {# joueurs}} avec un téléphone",
+      "rienARedire": "{n, plural, =0 {aucun « Rien à redire »} other {# « Rien à redire »}}",
+      "citables": "{n, plural, =0 {aucun citable} one {# citable} other {# citables}}",
+      "ouverts": "Le questionnaire est ouvert sur les téléphones. Fermez-le depuis le pilotage.",
+      "fermes": "Le questionnaire est fermé. Ouvrez-le depuis le pilotage.",
+      "export": "Télécharger les avis (CSV)",
+      "liste": "Les avis",
+      "aucun": "Aucun avis pour l'instant.",
+      "citable": "Citable : {prenom}",
+      "aime": "Ce qui a plu",
+      "moins": "Ce qui a moins plu",
+      "rien": "Rien à redire",
+      "csv": {
+        "heure": "Heure",
+        "langue": "Langue",
+        "aime": "Aimé {n}",
+        "moinsPlu": "Moins plu",
+        "rienARedire": "Rien à redire",
+        "citable": "Citable (prénom)"
+      }
     }
   },
   "ecran": {
