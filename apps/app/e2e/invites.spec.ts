@@ -17,9 +17,9 @@ test('invités sans téléphone : ajoutés par la régie et par un joueur autori
   await telephone.goto(`/${evenement.code}`);
   await telephone.getByLabel('Prénom').fill('Paul');
   await telephone.getByRole('button', { name: 'Continuer' }).click();
-  await telephone.getByRole('button', { name: 'Non merci' }).click();
-  await telephone.getByRole('button', { name: 'Compris' }).click();
-  await expect(telephone.getByText('Bienvenue, Paul !')).toBeVisible();
+  await telephone.getByRole('button', { name: 'Je préfère être participant' }).click();
+  await telephone.getByRole('button', { name: 'Retour à la partie' }).click();
+  await expect(telephone.getByText('Bienvenue, Paul')).toBeVisible();
   await expect(
     telephone.getByRole('button', { name: "Ajouter quelqu'un sans téléphone" }),
   ).toHaveCount(0);
@@ -57,7 +57,7 @@ test('invités sans téléphone : ajoutés par la régie et par un joueur autori
   await telephone.getByRole('button', { name: 'Ajouter', exact: true }).click();
   await expect(telephone.getByRole('heading', { name: /Léa rejoint Équipe \d/ })).toBeVisible();
   await telephone.getByRole('button', { name: 'Retour' }).click();
-  await expect(telephone.getByText('Bienvenue, Paul !')).toBeVisible();
+  await expect(telephone.getByText('Bienvenue, Paul')).toBeVisible();
 
   // --- La Salle compte trois joueurs, dont deux sans téléphone.
   await regie.reload();

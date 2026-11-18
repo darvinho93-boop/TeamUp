@@ -20,7 +20,7 @@ test('la régie clôture la soirée, puis la rouvre', async ({ browser, request 
   });
   expect(r.status()).toBe(200);
   await invite.goto(`/${evenement.code}`);
-  await expect(invite.getByText('Bienvenue, Vera !')).toBeVisible();
+  await expect(invite.getByText('Bienvenue, Vera')).toBeVisible();
 
   const regie = await (
     await browser.newContext({ viewport: { width: 1440, height: 900 }, isMobile: false })

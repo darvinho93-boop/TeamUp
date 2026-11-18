@@ -17,9 +17,9 @@ async function arriver(browser: Browser, prenom: string) {
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill(prenom);
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.getByRole('button', { name: 'Non merci' }).click();
-  await page.getByRole('button', { name: 'Compris' }).click();
-  await expect(page.getByText(`Bienvenue, ${prenom} !`)).toBeVisible();
+  await page.getByRole('button', { name: 'Je préfère être participant' }).click();
+  await page.getByRole('button', { name: 'Retour à la partie' }).click();
+  await expect(page.getByText(`Bienvenue, ${prenom}`)).toBeVisible();
   return page;
 }
 
@@ -50,8 +50,10 @@ test('un joueur écrit sur le grand écran ; la régie retire, écrit et ferme l
   // --- Le joueur écrit : la bulle paraît, avec son prénom, sans aucune touche de régie.
   await zoe.getByTestId('ouvrir-message').click();
   await zoe.getByLabel('Votre message').fill('  Vive les\nmariés ! 🎉 ');
-  await zoe.getByRole('button', { name: 'Envoyer' }).click();
-  await expect(zoe.getByTestId('statut-message')).toHaveText(/^C'est à l'écran\s!$/);
+  await zoe.getByRole('button', { name: 'Publier sur le grand écran' }).click();
+  await expect(zoe.getByTestId('statut-message')).toHaveText(
+    'Votre message a été envoyé au grand écran.',
+  );
   const bulle = ecran.getByTestId('bulle').filter({ hasText: 'Zoé' });
   await expect(bulle).toContainText('Vive les mariés ! 🎉', { timeout: 3000 });
 
@@ -67,7 +69,7 @@ test('un joueur écrit sur le grand écran ; la régie retire, écrit et ferme l
   await expect(zoe.locator('dialog[open]')).toHaveCount(0);
   await zoe.getByTestId('ouvrir-message').click();
   await expect(zoe.getByTestId('statut-message')).toContainText('Prochain message dans');
-  await expect(zoe.getByRole('button', { name: 'Envoyer' })).toBeDisabled();
+  await expect(zoe.getByRole('button', { name: 'Publier sur le grand écran' })).toBeDisabled();
   await zoe.getByRole('button', { name: 'Fermer' }).click();
 
   // --- La régie retire le message : il quitte l'écran tout de suite.

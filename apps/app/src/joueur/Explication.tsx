@@ -11,7 +11,16 @@ import { ListeJeux } from '@/carte/ListeJeux';
  * sert le téléphone, et rester sur le wifi de la soirée pour jouer. On peut la rouvrir depuis
  * l'écran d'attente.
  */
-export function Explication({ programme, retour }: { programme: GameCode[]; retour: () => void }) {
+export function Explication({
+  programme,
+  arrivee = false,
+  retour,
+}: {
+  programme: GameCode[];
+  /** Lue à l'inscription : le bouton mène à la partie ; rouverte, il y ramène. */
+  arrivee?: boolean;
+  retour: () => void;
+}) {
   const t = useTranslations();
   const jeux = [...new Set(programme)];
   return (
@@ -29,7 +38,7 @@ export function Explication({ programme, retour }: { programme: GameCode[]; reto
       <p className="tu-player__lead">{t('explication.reseau')}</p>
       <div className="tu-player__actions">
         <Button variant="accent" size="lg" block onClick={retour} data-testid="c-est-parti">
-          {t('explication.bouton')}
+          {arrivee ? t('explication.boutonArrivee') : t('explication.bouton')}
         </Button>
       </div>
     </div>

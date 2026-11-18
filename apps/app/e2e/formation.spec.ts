@@ -52,7 +52,7 @@ async function inscrire(browser: Browser, prenom: string, nom?: string): Promise
     await page.getByLabel("Nom d'équipe (facultatif)").fill(nom);
     await page.getByRole('button', { name: 'Valider' }).click();
   } else {
-    await page.getByRole('button', { name: 'Non merci' }).click();
+    await page.getByRole('button', { name: 'Je préfère être participant' }).click();
   }
   // Pas d'équipe encore : la page d'explication, puis l'attente.
   await expect(page.getByTestId('explication')).toBeVisible();

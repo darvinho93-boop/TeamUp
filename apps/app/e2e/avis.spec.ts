@@ -22,7 +22,7 @@ async function arriver(browser: Browser, prenom: string) {
   });
   expect(r.status()).toBe(200);
   await page.goto(`/${evenement.code}`);
-  await expect(page.getByText(`Bienvenue, ${prenom} !`)).toBeVisible();
+  await expect(page.getByText(`Bienvenue, ${prenom}`)).toBeVisible();
   return page;
 }
 

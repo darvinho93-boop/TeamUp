@@ -110,7 +110,7 @@ test('les capitaines tapent leurs mots, l’écran les dévoile, le podium du th
     expect(arrivee.status()).toBe(200);
     await placer(prenom, numero);
     await page.goto(`/${code}`);
-    await expect(page.getByText(`Bienvenue, ${prenom} !`)).toBeVisible();
+    await expect(page.getByText(`Bienvenue, ${prenom}`)).toBeVisible();
     return page;
   };
   const alice = await telephone('Alice', 1);

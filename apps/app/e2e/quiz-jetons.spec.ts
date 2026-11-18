@@ -123,7 +123,7 @@ test('le capitaine mise pour son équipe ; figée au chrono, la régie la déblo
     expect(arrivee.status()).toBe(200);
     await placer(prenom, numero);
     await page.goto(`/${code}`);
-    await expect(page.getByText(`Bienvenue, ${prenom} !`)).toBeVisible();
+    await expect(page.getByText(`Bienvenue, ${prenom}`)).toBeVisible();
     return page;
   };
   const api = async (prenom: string, numero: number) => {

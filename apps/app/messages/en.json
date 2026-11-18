@@ -13,15 +13,16 @@
     "codeInconnu": "This code doesn't open any game: check it on the big screen."
   },
   "prenom": {
-    "titre": "Your first name",
-    "champ": "First name",
-    "aide": "First name only: it will appear on the big screen.",
+    "titre": "What is your first name?",
+    "champ": "Your first name",
+    "aide": "Your first name will appear on the big screen.",
     "bouton": "Continue",
-    "vide": "Type your first name.",
+    "vide": "Enter your first name to continue.",
     "pris": "The name {prenom} is already taken: add your last initial, for example “{prenom} M.”.",
     "complet": "The game is full.",
     "codeInconnu": "This game is no longer open.",
-    "serveur": "That didn't work. Try again."
+    "serveur": "That didn't work. Try again.",
+    "connexion": "Joining the game…"
   },
   "groupe": {
     "titre": "Your group",
@@ -29,10 +30,10 @@
     "sansReponse": "I'd rather not say"
   },
   "capitaine": {
-    "titre": "Want to be captain?",
-    "aide": "The captain names the team and, depending on the games, sends its photos and bets its tokens. Drawn at random from the volunteers.",
+    "titre": "Would you like to be captain?",
+    "aide": "The captain chooses the team name and, depending on the games, sends the photos or answers for the team from their phone. The captain will be drawn at random from the volunteers.",
     "oui": "I volunteer",
-    "non": "No thanks",
+    "non": "I'd rather just play",
     "nomTitre": "A name for your team?",
     "nomAide": "If you're drawn as captain, your team will carry this name.",
     "nomChamp": "Team name (optional)",
@@ -51,20 +52,21 @@
     "serveur": "That didn't work. Try again."
   },
   "messageEcran": {
-    "ouvrir": "Message for the big screen",
+    "ouvrir": "Message to the big screen",
     "titre": "A message for the big screen",
-    "aide": "It shows up right away, with your first name. Keep it kind: the whole room reads it!",
+    "aide": "Your message will be visible to the whole room, with your first name. Choose a message you are happy to share with everyone.",
     "champ": "Your message",
     "restants": "{n, plural, =0 {No characters left} one {# character left} other {# characters left}}",
-    "envoyer": "Send",
-    "fermer": "Close",
-    "envoye": "It's on the screen!",
+    "envoyer": "Post on the big screen",
+    "fermer": "Cancel",
+    "envoye": "Your message has been sent to the big screen.",
     "attente": "Next message in {s} s",
-    "vide": "Write a message.",
+    "vide": "Write a message before posting it.",
     "long": "100 characters at most.",
     "fermes": "Messages are closed for now.",
     "termine": "The game is over.",
-    "serveur": "That didn't work: please try again."
+    "serveur": "The message was not sent. Please try again.",
+    "envoi": "Posting…"
   },
   "avis": {
     "ouvrir": "Give my feedback",
@@ -122,19 +124,24 @@
   },
   "equipe": {
     "surtitre": "Your team",
-    "aide": "Hold up your phone and find the others with the same colour!",
-    "bouton": "Got it",
-    "sansEquipe": "The teams will be formed soon: stay close!"
+    "aide": "Look for the players of team {numero}: their screen shows the same number and the same colour. You can show your screen if you like. If you stay in your seat, the host will help you find your teammates.",
+    "bouton": "Back to the game",
+    "sansEquipe": "The teams will be formed soon: stay close!",
+    "membres": "Your teammates",
+    "capitaine": "captain",
+    "numero": "Team {numero}"
   },
   "attente": {
-    "salut": "Welcome, {prenom}!",
+    "salut": "Welcome, {prenom}",
     "points": "{points, plural, one {# point} other {# points}}",
     "enCours": "Now playing: {jeu}",
-    "prochain": "Next game: {jeu}",
+    "prochain": "Coming up: {jeu}",
     "regarde": "Eyes on the big screen!",
-    "voirEquipe": "See my team",
+    "voirEquipe": "See team {nom} and its points",
     "termine": "The game is over: thanks for playing!",
-    "capitaine": "You're the captain! Keep your phone close at hand."
+    "capitaine": "You're the captain! Keep your phone close at hand.",
+    "lancement": "Waiting for the host to start.",
+    "rien": "Nothing to do for now. Watch the big screen."
   },
   "horsLigne": {
     "bandeau": "Connection lost: retrying…"
@@ -910,7 +917,7 @@
     "regles": {
       "list2": "Back to the screen, one team guesses what the people standing have in common!",
       "qcm2": "One question, four answers: only one is right!",
-      "enchere2": "One topic, one timer: which team can name the most?",
+      "enchere2": "One theme, one timer: which team will give the most answers?",
       "mime2": "The word travels down the team, mimed then whispered.",
       "photo2": "Your photos of the evening, theme by theme: which one will win?",
       "grab": "The music starts: grab the matching object!",
@@ -994,10 +1001,10 @@
         "jetons-restants": "At the end, every token left is worth 100 points!"
       },
       "enchere2": {
-        "champions": "Each team sends one champion forward.",
-        "encheres": "The topic is revealed, the bids go up: “5!” “7!”",
-        "chrono": "Whoever promises the most must keep their bet, against the clock!",
-        "verdict": "Bet kept: +100! Bet missed: +20 for every other team."
+        "champions": "One representative per team takes part, guided by the host.",
+        "encheres": "The host announces a theme. Each representative says how many answers they think they can give.",
+        "chrono": "The representative with the highest bid must give that many answers before the timer runs out.",
+        "verdict": "Challenge met: 100 points for their team. Challenge missed: 20 points for each of the other teams."
       },
       "enchere2-telephones": {
         "sujet": "The topic appears on screen and on the captains' phones.",
@@ -1255,13 +1262,14 @@
   },
   "explication": {
     "titre": "How to play",
-    "deroule": "Mixed teams: you play with people you don't know yet. The games follow one another on the big screen: keep an eye on it!",
-    "jeux": "Tonight's games",
-    "telephone": "And your phone?",
-    "telephoneAide": "It shows your team and its points, and is used in some games: the host will let you know.",
-    "reseau": "Keep it connected (to the party Wi-Fi if there is one). Between games, it's all yours: just come back to this page.",
-    "bouton": "Let's go",
-    "revoir": "See how to play again"
+    "deroule": "You play in a team with other participants. Instructions and results are shown on the big screen. The host guides you at every step.",
+    "jeux": "On this game's programme",
+    "telephone": "Your phone during the game",
+    "telephoneAide": "It shows your team and its points. Some games will also ask you to use it.",
+    "reseau": "Keep this page open. You can put your phone down; come back to this page when the host asks you to. Connect to the event Wi-Fi if there is one.",
+    "bouton": "Back to the game",
+    "revoir": "How to play",
+    "boutonArrivee": "Join the game"
   },
   "proposition": {
     "titre": "A name for your team?",
@@ -1288,12 +1296,12 @@
     "jeuxTitre": "The games",
     "commentTitre": "How to play",
     "nousTitre": "About us",
-    "voirVideo": "Watch the video",
+    "voirVideo": "Watch the rules video",
     "duree": "{s} s",
-    "fermer": "Close",
+    "fermer": "Close the rules",
     "pause": "Pause",
-    "lecture": "Play",
-    "revoir": "Watch again",
+    "lecture": "Resume",
+    "revoir": "Watch the rules again",
     "accroche": "Tonight, we <nom>Team Up!</nom>",
     "slogan": "We play. We meet. We connect.",
     "inscrire": "Join",
@@ -1318,7 +1326,8 @@
     "nousEquipe": "We are a team of five, working on the project since early 2026: the game, the platform and everything that makes the experience unique.",
     "nousSuite": "This is only the beginning: new games are coming soon. Follow the adventure!",
     "nousOrganiser": "Planning an event?",
-    "devis": "Request a quote"
+    "devis": "Request a quote",
+    "resume": "The rules in brief"
   },
   "portrait": {
     "sansEquipe": "You don't have a team yet: watch the big screen!",

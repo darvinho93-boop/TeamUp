@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
 import { memoriserLangue } from '@/lib/langue-navigateur';
+import { trierMembres } from '@/lib/membres';
 import type { EtatJoueur, GroupePublic, Langue } from '@/lib/partie';
 import { AjoutInvite } from './AjoutInvite';
 import { AvisJoueur } from './AvisJoueur';
 import { Cadre } from './Cadre';
 import { ChoixLangueJoueur } from './ChoixLangueJoueur';
 import { Explication } from './Explication';
-import { MessageEcran } from './MessageEcran';
+import { MessageEcran, ouvrirMessageEcran } from './MessageEcran';
 import { NomEquipe } from './NomEquipe';
 import { NomPropose } from './NomPropose';
 import { Photos } from './Photos';
@@ -40,6 +41,8 @@ export function EcranJoueur({
   const t = useTranslations();
   const { etat, horsLigne, decalageMs, remplacer, relire } = useEtatJoueur(code, etatInitial);
   const [vue, setVue] = useState<Vue>(vueInitiale);
+  // « Comment jouer » lu à l'inscription mène à la partie ; rouvert, il y ramène (audit 18/11).
+  const [arrivee, setArrivee] = useState(vueInitiale === 'explication');
   // La file vit ici, pas dans la vue Photos : elle se vide même quand le capitaine en sort.
   const file = useFilePhotos(code, remplacer);
   const router = useRouter();
@@ -78,14 +81,37 @@ export function EcranJoueur({
   ) : null;
 
   if (vue === 'equipe' && etat.equipe) {
+    const { numero, nom } = etat.equipe;
+    // Le numéro reste visible même sous un nom choisi par le capitaine : la couleur ne suffit
+    // pas à tout le monde (audit du 2026-11-18).
+    const numeroVisible = !nom.includes(String(numero));
+    const membres = trierMembres(etat.equipe.membres ?? []);
     return (
       <>
         {bandeau}
-        <main className={cx('tu-team-screen', teamModifier(etat.equipe.numero))}>
+        <main className={cx('tu-team-screen', teamModifier(numero))}>
           <div className="tu-team-screen__main">
             <p className="tu-team-screen__eyebrow">{t('equipe.surtitre')}</p>
-            <h1 className="tu-team-screen__name">{etat.equipe.nom}</h1>
-            <p className="tu-team-screen__hint">{t('equipe.aide')}</p>
+            <h1 className="tu-team-screen__name">{nom}</h1>
+            {numeroVisible && (
+              <p className="tu-team-screen__numero">{t('equipe.numero', { numero })}</p>
+            )}
+            <p className="tu-team-screen__hint">{t('equipe.aide', { numero })}</p>
+            {membres.length > 0 && (
+              <div className="tu-team-screen__membres" data-testid="coequipiers">
+                <p className="tu-team-screen__eyebrow">{t('equipe.membres')}</p>
+                <ul className="tu-team-screen__liste">
+                  {membres.map((membre) => (
+                    <li key={membre.prenom} className="tu-team-screen__membre">
+                      {membre.prenom}
+                      {membre.capitaine && (
+                        <span className="tu-team-screen__role"> · {t('equipe.capitaine')}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <Button size="lg" onClick={() => setVue('attente')}>
             {t('equipe.bouton')}
@@ -220,7 +246,14 @@ export function EcranJoueur({
   if (vue === 'explication') {
     return (
       <Cadre bandeau={bandeau} outil={outil}>
-        <Explication programme={etat.programme ?? []} retour={() => setVue('attente')} />
+        <Explication
+          programme={etat.programme ?? []}
+          arrivee={arrivee}
+          retour={() => {
+            setArrivee(false);
+            setVue('attente');
+          }}
+        />
       </Cadre>
     );
   }
@@ -266,7 +299,7 @@ export function EcranJoueur({
             type="button"
             className={cx('tu-wait-team', teamModifier(equipe.numero))}
             onClick={() => setVue('equipe')}
-            aria-label={`${equipe.nom}, ${t('attente.points', { points: equipe.points })}. ${t('attente.voirEquipe')}`}
+            aria-label={`${t('attente.voirEquipe', { nom: equipe.nom })} : ${t('attente.points', { points: equipe.points })}`}
           >
             <span className="tu-wait-team__name">{equipe.nom}</span>
             <span className="tu-wait-team__points" data-testid="points">
@@ -304,7 +337,15 @@ export function EcranJoueur({
 
         {evenement.statut !== 'termine' && (
           <div className="tu-player__actions">
-            <p className="tu-wait-look">{t('attente.regarde')}</p>
+            {manche ? (
+              <p className="tu-wait-look">{t('attente.regarde')}</p>
+            ) : (
+              // Aucun jeu en cours : la phase d'attente, dite en clair (audit du 2026-11-18).
+              <div className="tu-wait-state" data-testid="attente-lancement">
+                <p className="tu-wait-look">{t('attente.lancement')}</p>
+                <p className="tu-player__lead">{t('attente.rien')}</p>
+              </div>
+            )}
             {boutonAvis}
             {joueur.capitaine && equipe && (
               <p className="tu-player__lead" data-testid="capitaine">
@@ -342,6 +383,11 @@ export function EcranJoueur({
             <Button variant="ghost" size="lg" block onClick={() => setVue('explication')}>
               {t('explication.revoir')}
             </Button>
+            {evenement.messages_ouverts === true && (
+              <Button variant="ghost" size="lg" block onClick={ouvrirMessageEcran}>
+                {t('messageEcran.ouvrir')}
+              </Button>
+            )}
           </div>
         )}
       </div>

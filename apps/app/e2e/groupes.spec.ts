@@ -39,7 +39,7 @@ test('groupes nommés à la préparation, choisis au téléphone, comptés à la
   await expect(telephone.getByRole('heading', { name: 'Votre groupe' })).toBeVisible();
   await expect(telephone.getByRole('button', { name: 'Je préfère ne pas répondre' })).toBeVisible();
   await telephone.getByRole('button', { name: 'Côté mariée' }).click();
-  await telephone.getByRole('button', { name: 'Non merci' }).click();
+  await telephone.getByRole('button', { name: 'Je préfère être participant' }).click();
   await expect(telephone.getByText('Votre équipe')).toBeVisible();
 
   // --- Un autre préfère ne pas répondre : il rejoint quand même.
@@ -48,7 +48,7 @@ test('groupes nommés à la préparation, choisis au téléphone, comptés à la
   await discret.getByLabel('Prénom').fill('Noé');
   await discret.getByRole('button', { name: 'Continuer' }).click();
   await discret.getByRole('button', { name: 'Je préfère ne pas répondre' }).click();
-  await discret.getByRole('button', { name: 'Non merci' }).click();
+  await discret.getByRole('button', { name: 'Je préfère être participant' }).click();
   await expect(discret.getByText('Votre équipe')).toBeVisible();
 
   // --- La Salle montre la répartition à l'arrivée : un seul invité compté, côté mariée.
@@ -63,7 +63,7 @@ test('une soirée sans groupes saute l’étape', async ({ page }) => {
   await page.goto(`/${sansGroupes.code}`);
   await page.getByLabel('Prénom').fill('Sam');
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.getByRole('button', { name: 'Non merci' }).click();
+  await page.getByRole('button', { name: 'Je préfère être participant' }).click();
   await expect(page.getByText('Votre équipe')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Votre groupe' })).toHaveCount(0);
 });

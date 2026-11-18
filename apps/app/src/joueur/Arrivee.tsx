@@ -178,7 +178,7 @@ export function Arrivee({
           />
           <div className="tu-player__actions">
             <Button type="submit" variant="accent" size="lg" block disabled={envoi}>
-              {tCapitaine('nomBouton')}
+              {envoi ? t('connexion') : tCapitaine('nomBouton')}
             </Button>
           </div>
         </form>
@@ -272,6 +272,11 @@ export function Arrivee({
               </Button>
             </li>
           </ul>
+          {envoi && (
+            <p className="tu-player__lead" role="status">
+              {t('connexion')}
+            </p>
+          )}
           {erreur && (
             <p className="tu-player__error" role="alert">
               {t(erreur, { prenom: prenom.trim() })}

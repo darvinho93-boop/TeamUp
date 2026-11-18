@@ -210,6 +210,8 @@ export interface EtatJoueur {
     points: number;
     /** La régie a bloqué le nom : le capitaine ne peut plus le changer. */
     nom_fige?: boolean;
+    /** Les prénoms de son équipe (audit du 2026-11-18) ; absents sans la migration. */
+    membres?: { prenom: string; capitaine: boolean }[];
   } | null;
   manche: { jeu: GameCode; ordre: number } | null;
   prochaine: { jeu: GameCode; ordre: number } | null;

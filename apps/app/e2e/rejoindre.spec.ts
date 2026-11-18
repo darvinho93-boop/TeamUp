@@ -44,10 +44,10 @@ test('du code tapé à la main jusqu’à l’attente, puis retour sans ressaisi
 
   // Changer de langue en cours de route : gardé sur la fiche, même sans le cookie.
   await page.getByLabel('Language').selectOption('fr');
-  await expect(page.getByRole('heading', { name: 'Bienvenue, Asha !' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bienvenue, Asha' })).toBeVisible();
   await page.context().clearCookies({ name: 'tu_langue' });
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Bienvenue, Asha !' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bienvenue, Asha' })).toBeVisible();
   await expect(page.getByLabel('Langue')).toHaveValue('fr');
 });
 

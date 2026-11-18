@@ -166,7 +166,7 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
   });
   expect(arrivee.status()).toBe(200);
   await telephone.goto(`/${code}`);
-  await expect(telephone.getByText('Bienvenue, Zoé !')).toBeVisible();
+  await expect(telephone.getByText('Bienvenue, Zoé')).toBeVisible();
 
   // Survivants attendus : ceux qui ne tombent jamais et ne se taisent jamais (Zoé tombe).
   const attendus: Record<number, number> = { 1: 0, 2: 0, 3: 0 };

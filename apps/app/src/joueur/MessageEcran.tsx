@@ -7,8 +7,16 @@ import { CADENCE_MESSAGE_S, caracteresRestants, nettoyerMessage } from '@/lib/me
 
 type Erreur = 'vide' | 'long' | 'fermes' | 'termine' | 'serveur';
 
-/** Après « C'est à l'écran ! », la fenêtre se referme seule. */
-const FERMETURE_MS = 1500;
+/** Après la confirmation d'envoi, la fenêtre se referme seule, le temps de la lire. */
+const FERMETURE_MS = 2500;
+
+/** L'événement qui ouvre la fenêtre depuis l'écran d'attente (action texte, audit du 18/11). */
+const OUVRIR = 'tu-ouvrir-message';
+
+/** Ouvre la fenêtre du message, d'où qu'on soit : l'icône de l'en-tête reste seule à la porter. */
+export function ouvrirMessageEcran() {
+  window.dispatchEvent(new Event(OUVRIR));
+}
 
 /**
  * Un message pour le grand écran (2026-11-15) : un bouton en face du logo, qui ouvre une petite
@@ -44,6 +52,16 @@ export function MessageEcran({ code }: { code: string }) {
     dialogue.current?.showModal();
   };
   const fermer = () => dialogue.current?.close();
+
+  useEffect(() => {
+    const surDemande = () => {
+      setEnvoye(false);
+      setErreur(undefined);
+      dialogue.current?.showModal();
+    };
+    window.addEventListener(OUVRIR, surDemande);
+    return () => window.removeEventListener(OUVRIR, surDemande);
+  }, []);
 
   const attendre = (secondes: number) => {
     setAttenteJusqua(Date.now() + secondes * 1000);
@@ -128,7 +146,13 @@ export function MessageEcran({ code }: { code: string }) {
             {...(erreur ? { error: t(erreur) } : {})}
           />
           <p className="tu-message-ecran__statut" role="status" data-testid="statut-message">
-            {envoye ? t('envoye') : attenteS > 0 ? t('attente', { s: attenteS }) : ''}
+            {envoi
+              ? t('envoi')
+              : envoye
+                ? t('envoye')
+                : attenteS > 0
+                  ? t('attente', { s: attenteS })
+                  : ''}
           </p>
           <div className="tu-player__actions">
             <Button
