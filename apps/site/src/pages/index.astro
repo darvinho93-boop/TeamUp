@@ -3,80 +3,95 @@ import Base from '../layouts/Base.astro';
 import Button from '@teamup/ui/astro/Button.astro';
 import PageIntro from '../components/layout/PageIntro.astro';
 import Section from '../components/layout/Section.astro';
+import Recit from '../components/layout/Recit.astro';
 import CtaBanner from '../components/layout/CtaBanner.astro';
 import Icon from '../components/Icon.astro';
 import VideoEcran from '../components/visuels/VideoEcran.astro';
+import { MARQUE } from '../data/marque';
 import { PREUVES_FOURNIES } from '../data/preuves';
 
-const apports = [
-  {
-    title: 'Une émotion qui se partage',
-    body: "Des inconnus qui rient ensemble, plusieurs générations dans la même équipe, des photos que l'on garde. Vos invités repartent avec une soirée en commun, et vous avec la fierté de les avoir réunis.",
-  },
-  {
-    title: 'Tout est prêt avant vos invités',
-    body: "Un seul interlocuteur, du premier échange au podium. Tout se prépare avec vous avant la soirée ; le jour venu, l'animateur arrive en avance, installe et teste. Il ne vous reste qu'à accueillir.",
-  },
-  {
-    title: "Toute la salle, jusqu'à 150 invités",
-    body: "Personne ne reste à sa table. Les équipes se forment dès l'arrivée, et tout le monde joue en même temps, debout, dans la salle. L'animateur tient le rythme du début à la fin.",
-  },
-];
+/* Refonte éditoriale du 2026-11-18 (« Des mots pour créer des liens »). */
 
-const portes = [
+/** Les deux publics, à parts égales : chacun sa page. */
+const evenements = [
   {
-    icon: 'mime',
+    icon: 'users',
     tone: 'sage',
-    title: 'Sept jeux, toute la salle debout',
-    body: 'On se lève, on se mélange, on rit, quelle que soit la langue de chacun.',
-    liens: [{ href: '/les-jeux', label: 'Voir les jeux' }],
-  },
-  {
-    icon: 'screen',
-    tone: 'amber',
-    title: 'Du premier échange au podium',
-    body: "Ce que nous préparons avec vous, et tout ce dont vous n'aurez pas à vous occuper.",
-    liens: [{ href: '/comment-ca-marche', label: 'Voir le déroulé' }],
+    title: 'Événements privés',
+    sousTitre: "Pour que vos invités partagent bien plus qu'une invitation.",
+    body: "Mariages, anniversaires ou fêtes de famille : Team Up! fait se rencontrer les générations, les familles et les cercles d'amis à travers une expérience conviviale et originale.",
+    lien: { href: '/particuliers', label: 'Découvrir les événements privés' },
   },
   {
     icon: 'checkCircle',
-    tone: 'stone',
-    title: 'Un devis sur mesure',
-    body: 'Une proposition pensée pour votre événement, fête de famille ou séminaire. Gratuit, sans engagement.',
-    liens: [{ href: '/devis', label: 'Demander un devis' }],
+    tone: 'navy',
+    title: 'Événements professionnels',
+    sousTitre: 'Pour que vos collaborateurs se découvrent autrement.',
+    body: "Team buildings, séminaires, journées d'intégration : offrez à vos équipes une occasion de se rencontrer au-delà des fonctions, des services et des habitudes professionnelles.",
+    lien: { href: '/entreprises', label: "Découvrir les événements d'entreprise" },
   },
 ] as const;
+
+const apports = [
+  {
+    title: 'Des équipes qui créent la rencontre',
+    body: 'Les participants sont répartis pour favoriser les échanges entre personnes qui ne se côtoient pas habituellement.',
+  },
+  {
+    title: 'Des jeux qui font participer',
+    body: 'Observation, réflexion, créativité, musique ou défis collectifs : chacun peut trouver sa place dans une expérience accessible et adaptable.',
+  },
+  {
+    title: 'Un animateur qui donne le rythme',
+    body: 'Questions, chronomètres, révélations et classement final : tout est réuni pour retrouver le suspense et la convivialité des jeux télévisés.',
+  },
+  {
+    title: 'Une prestation préparée avec vous',
+    body: "Du choix des jeux à l'animation le jour J, nous construisons une expérience adaptée à votre événement pour que vous puissiez en profiter pleinement.",
+  },
+];
+
+const etapes = [
+  {
+    title: 'On prépare ensemble.',
+    body: "Nous échangeons sur votre événement, vos invités et l'ambiance que vous souhaitez créer.",
+  },
+  {
+    title: 'Les équipes se forment.',
+    body: 'Les participants rejoignent la partie depuis leur téléphone, sans application à installer.',
+  },
+  {
+    title: 'Le jeu prend vie.',
+    body: "L'animateur mène les défis, le grand écran rassemble les regards et les équipes entrent dans le jeu.",
+  },
+  {
+    title: 'Les souvenirs restent.',
+    body: 'Entre révélations, photos et podium final, chacun repart avec une expérience partagée.',
+  },
+];
 ---
 
 <Base
   title="Animation de soirée, mariage, team building — Team Up!"
-  description="Animation de soirée partout en France : mariages, anniversaires, séminaires. Un animateur fait jouer toute votre salle. Des rires, des rencontres, l'esprit libre."
+  description="Le jeu télévisé s'invite à votre événement : mariages, anniversaires, séminaires, partout en France. Vous les réunissez, le jeu les rapproche."
   imagePrioritaire="/videos/boucle-accueil.jpg"
 >
   <PageIntro
     size="display"
-    eyebrow="Animation de soirée sur mesure"
-    title="La soirée où toute la salle rit ensemble."
-    lead="Team Up! est une animation de soirée : un animateur fait jouer toute votre salle, en équipes mélangées, jusqu'à 150 invités. Vous n'avez rien à animer ni à surveiller : vous profitez de vos invités."
+    eyebrow="Animation événementielle · Particuliers & entreprises"
+    title="Le jeu télévisé s'invite à votre événement."
+    chapo="Et si vos invités devenaient les candidats d'une expérience à vivre ensemble ?"
+    lead="Avec Team Up!, mariages, anniversaires, séminaires et événements d'entreprise prennent une nouvelle dimension. Des équipes qui se découvrent, des défis qui rassemblent, un grand écran et un animateur pour donner vie à l'expérience."
+    fort="Vous les réunissez. Le jeu les rapproche."
   >
     <Fragment slot="actions">
       <Button href="/devis" variant="accent" size="cta">
         Demander un devis
       </Button>
-      <Button href="/les-jeux" variant="outline" size="cta">
-        Voir les jeux
+      <Button href="/comment-ca-marche" variant="outline" size="cta">
+        Découvrir l'expérience
       </Button>
     </Fragment>
-    <nav slot="footnote" class="publics" aria-label="Nos offres">
-      <a class="tu-arrow-link" href="/particuliers">
-        Pour une fête ou un mariage
-        <Icon name="arrow" size="sm" />
-      </a>
-      <a class="tu-arrow-link" href="/entreprises">
-        Pour une entreprise
-        <Icon name="arrow" size="sm" />
-      </a>
-    </nav>
     <VideoEcran
       slot="visual"
       src="/videos/boucle-accueil.mp4"
@@ -86,9 +101,41 @@ const portes = [
     />
   </PageIntro>
 
+  <Section title="Réunir des personnes est une chose. Les rapprocher en est une autre.">
+    <Recit
+      paragraphes={[
+        "Lors d'un événement, chacun retrouve naturellement ses proches, ses amis ou ses collègues habituels.",
+        "On partage un même lieu, une même occasion, sans toujours avoir l'opportunité de véritablement se rencontrer.",
+        "Team Up! est né de cette observation et d'une idée simple : et si l'on empruntait aux jeux télévisés leur formidable capacité à réunir des personnes autour d'une aventure commune ?",
+        "Le temps d'une partie, les habitudes s'effacent. Les invités deviennent coéquipiers, les échanges se multiplient et les souvenirs commencent à se construire.",
+      ]}
+    />
+  </Section>
+
+  <Section title="Une expérience qui rassemble, quel que soit l'événement.">
+    <div class="portes portes--deux tu-rail">
+      {evenements.map((evenement) => (
+        <article class="tu-panel porte porte--lien" data-tu-apparait>
+          <span class:list={['porte__icon', `porte__icon--${evenement.tone}`]}>
+            <Icon name={evenement.icon} size="md" />
+          </span>
+          <h3 class="porte__title">{evenement.title}</h3>
+          <p class="porte__sous-titre">{evenement.sousTitre}</p>
+          <p class="porte__body">{evenement.body}</p>
+          <div class="porte__liens">
+            <a class="tu-arrow-link" href={evenement.lien.href}>
+              {evenement.lien.label}
+              <Icon name="arrow" size="sm" />
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </Section>
+
   <Section
     class="apports-section"
-    title="Des rires pour vos invités. L'esprit libre pour vous."
+    title="L'énergie d'un plateau télé. Le plaisir d'être ensemble."
     tone="dark"
   >
     <div class="apports">
@@ -101,29 +148,54 @@ const portes = [
     </div>
   </Section>
 
-  <section class="portes-section" aria-label="Découvrir Team Up!">
+  <section class="portes-section" aria-label="Les jeux et le déroulement">
     <div class="tu-container">
-      <div class="portes tu-rail">
-        {portes.map((porte) => (
-          <article
-            class:list={['tu-panel', 'porte', porte.liens.length === 1 && 'porte--lien']}
-            data-tu-apparait
-          >
-            <span class:list={['porte__icon', `porte__icon--${porte.tone}`]}>
-              <Icon name={porte.icon} size="md" />
-            </span>
-            <h2 class="porte__title">{porte.title}</h2>
-            <p class="porte__body">{porte.body}</p>
-            <div class="porte__liens">
-              {porte.liens.map((lien) => (
-                <a class="tu-arrow-link" href={lien.href}>
-                  {lien.label}
-                  <Icon name="arrow" size="sm" />
-                </a>
-              ))}
-            </div>
-          </article>
-        ))}
+      <div class="portes portes--deux tu-rail">
+        <article class="tu-panel porte porte--lien" data-tu-apparait>
+          <span class="porte__icon porte__icon--sage">
+            <Icon name="mime" size="md" />
+          </span>
+          <h2 class="porte__title">Sept jeux. Des personnalités différentes. Une même aventure.</h2>
+          <p class="porte__body porte__body--court">
+            Un point commun inattendu, une réponse qui surprend, une musique que tout le monde
+            reconnaît, un défi photo qui fait sourire…
+          </p>
+          <p class="porte__body">
+            Chaque jeu devient un prétexte pour échanger, coopérer et partager un moment dont on se
+            souvient.
+          </p>
+          <div class="porte__liens">
+            <a class="tu-arrow-link" href="/les-jeux">
+              Explorer les jeux
+              <Icon name="arrow" size="sm" />
+            </a>
+          </div>
+        </article>
+
+        <article class="tu-panel porte porte--lien" data-tu-apparait>
+          <span class="porte__icon porte__icon--amber">
+            <Icon name="screen" size="md" />
+          </span>
+          <h2 class="porte__title">Une expérience simple à rejoindre, agréable à vivre.</h2>
+          <ol class="porte__etapes">
+            {etapes.map((etape, index) => (
+              <li class="porte__etape">
+                <span class="porte__etape-numero" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span>
+                  <strong class="porte__etape-titre">{etape.title}</strong> {etape.body}
+                </span>
+              </li>
+            ))}
+          </ol>
+          <div class="porte__liens">
+            <a class="tu-arrow-link" href="/comment-ca-marche">
+              Comprendre le déroulement
+              <Icon name="arrow" size="sm" />
+            </a>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -143,29 +215,23 @@ const portes = [
     </Section>
   )}
 
-  <CtaBanner title="Parlez-nous de votre événement." />
+  <CtaBanner
+    title="Et si votre prochain événement créait de nouvelles rencontres ?"
+    note="Une fête privée ou un événement professionnel en préparation ? Imaginons ensemble une expérience à la hauteur de ce moment."
+    signature={MARQUE.slogan}
+    label="Demander un devis gratuit"
+  />
 </Base>
 
 <style>
-  /* Les deux publics, sous les boutons : chacun sa page d'offre. */
-  .publics {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: var(--tu-space-8);
-  }
-
-  .publics .tu-arrow-link {
-    font-size: var(--tu-size-base);
-  }
-
-  /* Les trois apports : l'émotion, la sérénité, le nombre. Titre en deux lignes égales. */
+  /* Les quatre apports du plateau télé, deux par deux. Titre en deux lignes égales. */
   .apports-section :global(.tu-title) {
     text-wrap: balance;
   }
 
   .apports {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--tu-space-10);
   }
 
@@ -184,7 +250,7 @@ const portes = [
     color: var(--tu-text-muted);
   }
 
-  /* Les trois portes : l'accueil résume, les pages intérieures détaillent. */
+  /* Les cartes de l'accueil : il résume, les pages intérieures détaillent. Deux par rangée. */
   .portes-section {
     padding-bottom: var(--tu-section-space);
   }
@@ -193,6 +259,10 @@ const portes = [
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--tu-space-5);
+  }
+
+  .portes--deux {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .porte {
@@ -237,10 +307,45 @@ const portes = [
     font-size: var(--tu-type-card);
   }
 
+  .porte__sous-titre {
+    font-weight: 600;
+    line-height: var(--tu-leading-normal);
+  }
+
   .porte__body {
     flex: 1;
     line-height: var(--tu-leading-normal);
     color: var(--tu-text-muted);
+  }
+
+  .porte__body--court {
+    flex: none;
+  }
+
+  .porte__etapes {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+    line-height: var(--tu-leading-normal);
+    color: var(--tu-text-muted);
+  }
+
+  .porte__etape {
+    display: flex;
+    gap: var(--tu-space-3);
+  }
+
+  .porte__etape-numero {
+    flex: none;
+    font-family: var(--tu-font-display);
+    font-weight: 700;
+    color: var(--tu-success-text);
+  }
+
+  .porte__etape-titre {
+    font-weight: 600;
+    color: var(--tu-text);
   }
 
   .porte__liens {
