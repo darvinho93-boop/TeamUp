@@ -77,6 +77,7 @@ import { Apercu } from './Apercu';
 import { BoutonConfirme } from './BoutonConfirme';
 import { PanneauDuel } from './PanneauDuel';
 import { PanneauAvis } from './PanneauAvis';
+import { PanneauConnaissance } from './PanneauConnaissance';
 import { PanneauMessages } from './PanneauMessages';
 import { PanneauPortrait } from './PanneauPortrait';
 import { grillePrete, modeDuPortrait } from '@/lib/portrait';
@@ -580,6 +581,17 @@ export function Pilotage({
               {t('aLEcran', { scene: t(`scene.${scene}`) })}
             </p>
             <p className="tu-regie__muted">{t('choisirJeu')}</p>
+            {/* Cartes « Faisons connaissance » (2026-11-18) ; absent sans la migration. */}
+            {etat.connaissance !== undefined && (
+              <PanneauConnaissance
+                etat={etat}
+                agir={agir}
+                apresEcriture={async () => {
+                  signaler();
+                  await relire();
+                }}
+              />
+            )}
           </>
         )}
       </div>

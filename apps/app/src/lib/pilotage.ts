@@ -60,6 +60,7 @@ import {
   type ScoresParEquipe,
   type ScriptExplication,
 } from '@teamup/game';
+import { CONNAISSANCE_DUREE_S } from './cartes';
 import { DUREE_DEVOILEMENT_MS } from './devoilement';
 import { capitainesManquants, jetonsDeDepartDe } from './jetons';
 import {
@@ -118,7 +119,9 @@ export type Commande =
   | { type: 'retour' }
   | { type: 'terminer' }
   /** Le dévoilement animé des équipes formées (2026-11-04), rejouable. */
-  | { type: 'devoilerEquipes' };
+  | { type: 'devoilerEquipes' }
+  /** Cartes « Faisons connaissance » (2026-11-18) : le dernier tirage, présenté à l'écran. */
+  | { type: 'connaissance' };
 
 export interface Ecriture {
   pilotage: {
@@ -304,7 +307,10 @@ export function quizEnSuspens(etat: EtatSalle): 'fin' | 'valider' | 'juger' | 't
 /** Les touches qui font quitter le jeu en cours : une scène libre, un autre jeu, le dévoilement. */
 export function quitteLeJeu(commande: Commande): boolean {
   return (
-    commande.type === 'scene' || commande.type === 'intro' || commande.type === 'devoilerEquipes'
+    commande.type === 'scene' ||
+    commande.type === 'intro' ||
+    commande.type === 'devoilerEquipes' ||
+    commande.type === 'connaissance'
   );
 }
 
@@ -402,6 +408,13 @@ export function calculerEtape(
         ecriture.pilotage.scene = 'equipes';
         ecriture.pilotage.etape = ETAPE_FORMATION;
         Object.assign(ecriture.pilotage, chronoDe({ demarrer: DUREE_DEVOILEMENT_MS / 1000 }));
+        return ecriture;
+
+      case 'connaissance':
+        // Un nouveau départ à chaque présentation : l'écran rejoue célébration et carte.
+        ecriture.pilotage.scene = 'connaissance';
+        ecriture.pilotage.etape = null;
+        Object.assign(ecriture.pilotage, chronoDe({ demarrer: CONNAISSANCE_DUREE_S }));
         return ecriture;
 
       case 'intro': {
