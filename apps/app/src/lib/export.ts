@@ -50,6 +50,45 @@ export function csvScores({ classement, journal, libelles: l }: ExportScores): s
   return BOM + lignes.join('\r\n') + '\r\n';
 }
 
+export interface ExportAvis {
+  avis: {
+    heure: string;
+    langue: string;
+    positifs: readonly string[];
+    negatif: string | null;
+    rienARedire: boolean;
+    /** Seulement quand le joueur accepte d'être cité. */
+    prenom: string | null;
+  }[];
+  libelles: {
+    heure: string;
+    langue: string;
+    aime: (n: number) => string;
+    moinsPlu: string;
+    rienARedire: string;
+    citable: string;
+  };
+}
+
+/** Les avis d'une soirée (2026-11-18) : une ligne par avis, trois colonnes de choses aimées. */
+export function csvAvis({ avis, libelles: l }: ExportAvis): string {
+  const lignes = [
+    ligne([l.heure, l.langue, l.aime(1), l.aime(2), l.aime(3), l.moinsPlu, l.citable]),
+    ...avis.map((a) =>
+      ligne([
+        a.heure,
+        a.langue,
+        a.positifs[0] ?? '',
+        a.positifs[1] ?? '',
+        a.positifs[2] ?? '',
+        a.rienARedire ? l.rienARedire : (a.negatif ?? ''),
+        a.prenom ?? '',
+      ]),
+    ),
+  ];
+  return BOM + lignes.join('\r\n') + '\r\n';
+}
+
 /**
  * Un nom de fichier sûr partout (Windows compris) : sans accents, sans caractères réservés.
  * Une écriture non latine (tamoul) ne laisse rien : `secours` prend alors la place.
