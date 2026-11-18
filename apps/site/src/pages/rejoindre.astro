@@ -17,19 +17,20 @@ const slots = [1, 2, 3, 4, 5, 6];
 <Base
   partage={false}
   title="Rejoindre une partie — Team Up!"
-  description="Entrez le code de salle à six caractères affiché sur le grand écran. Pas de compte, pas d'application."
+  description="Saisissez le code à six caractères affiché sur le grand écran pour rejoindre votre événement. Pas d'application à installer, pas de compte à créer."
 >
   <div class="tu-container rejoindre">
     <div class="rejoindre__form-side">
-      <p class="tu-eyebrow">Rejoindre une partie</p>
-      <h1 class="rejoindre__title">Entrez le code de la salle.</h1>
+      <p class="tu-eyebrow">Bienvenue sur Team Up!</p>
+      <h1 class="rejoindre__title">Votre équipe vous attend.</h1>
       <p class="rejoindre__lead">
-        Six caractères, affichés sur le grand écran. Pas de compte, pas d'application.
+        La partie commence ici. Saisissez le code à six caractères affiché sur le grand écran pour
+        rejoindre votre événement.
       </p>
 
       <form class="rejoindre__form" data-tu-join data-app-url={appUrl}>
         <fieldset class="rejoindre__fieldset">
-          <legend class="tu-visually-hidden">Code de salle, six caractères</legend>
+          <legend class="tu-visually-hidden">Code de la partie, six caractères</legend>
           <div class="rejoindre__slots">
             {slots.map((slot) => (
               <input
@@ -50,17 +51,20 @@ const slots = [1, 2, 3, 4, 5, 6];
         </fieldset>
 
         <p class="rejoindre__error" data-tu-join-error hidden>
-          Ce code doit faire six caractères.
+          Vérifiez votre code : il doit comporter six caractères.
         </p>
 
         <Button type="submit" variant="accent" size="cta" class="rejoindre__submit">
-          Rejoindre
+          Rejoindre la partie
         </Button>
       </form>
 
       <p class="rejoindre__tip">
-        Vous avez un QR code sous les yeux ? Scannez-le avec l'appareil photo de votre téléphone,
-        c'est encore plus rapide.
+        Vous avez un QR code ? Scannez-le avec l'appareil photo de votre téléphone pour accéder
+        directement au jeu.
+      </p>
+      <p class="rejoindre__tip rejoindre__tip--fort">
+        Pas d'application à installer. Pas de compte à créer.
       </p>
     </div>
 
@@ -70,7 +74,7 @@ const slots = [1, 2, 3, 4, 5, 6];
         layout="code"
         class="rejoindre__screen"
       />
-      <p class="rejoindre__where">Où trouver le code : sur le grand écran, en début de soirée.</p>
+      <p class="rejoindre__where">Le code est affiché sur l'écran principal de votre événement.</p>
     </div>
   </div>
 </Base>
@@ -200,6 +204,11 @@ const slots = [1, 2, 3, 4, 5, 6];
   .rejoindre__where {
     font-size: var(--tu-btn-sm-font);
     color: var(--tu-text-muted);
+  }
+
+  .rejoindre__tip--fort {
+    font-weight: 600;
+    color: var(--tu-text);
   }
 
   .rejoindre__where {

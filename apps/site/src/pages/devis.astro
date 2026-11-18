@@ -68,9 +68,18 @@ const recapitulatif = (Object.keys(cibles) as Champ[])
   .map((champ) => ({ cible: cibles[champ], message: erreurs[champ] }));
 
 const suites = [
-  { title: 'Nous vous rappelons', body: 'Sous 48 heures, pour faire connaissance.' },
-  { title: 'Vous recevez votre devis', body: 'Avec un programme pensé pour votre soirée.' },
-  { title: 'Nous préparons tout avec vous', body: "Un seul interlocuteur, jusqu'au jour J." },
+  {
+    title: 'Nous faisons connaissance.',
+    body: `Nous vous recontactons sous ${CONTACT.delaiRappel} pour échanger sur votre événement.`,
+  },
+  {
+    title: 'Nous préparons votre proposition.',
+    body: "Vous recevez un devis détaillé, accompagné d'un programme adapté à votre projet.",
+  },
+  {
+    title: 'Nous organisons les détails ensemble.',
+    body: "Un seul interlocuteur vous accompagne jusqu'au jour J.",
+  },
 ];
 ---
 
@@ -81,12 +90,18 @@ const suites = [
 >
   <div class="tu-container devis">
     <header class="devis__intro">
-      <p class="tu-eyebrow">Demande de devis</p>
-      <h1 class="devis__title">Parlez-nous de votre événement.</h1>
+      <p class="tu-eyebrow">Votre projet</p>
+      <h1 class="devis__title">Imaginons ensemble votre prochain événement.</h1>
       <p class="devis__lead">
-        Deux minutes pour remplir, gratuit et sans engagement. Les champs marqués d'une étoile sont
-        obligatoires.
+        Mariage, anniversaire, séminaire, team building ou occasion particulière… Chaque événement a
+        son histoire, ses invités et son atmosphère. Parlez-nous du vôtre : nous vous proposerons
+        une expérience Team Up! adaptée à vos attentes.
       </p>
+      <p class="devis__lead devis__lead--fort">
+        Un formulaire de deux minutes. Un devis gratuit et sans engagement. Une réponse sous{' '}
+        {CONTACT.delaiRappel}.
+      </p>
+      <p class="devis__lead">Les champs marqués d'une étoile sont obligatoires.</p>
     </header>
 
     <div class="devis__grid">
@@ -160,7 +175,7 @@ const suites = [
         <div class="devis__row">
           <div class:list={['tu-field', erreurs.occasion && 'tu-field--invalid']}>
             <label class="tu-field__label" for="occasion">
-              Occasion{' '}
+              Quelle occasion préparez-vous ?{' '}
               <span class="tu-field__required" aria-hidden="true">
                 *
               </span>
@@ -188,7 +203,7 @@ const suites = [
           </div>
 
           <TextField
-            label="Date"
+            label="À quelle date aura lieu votre événement ?"
             name="date"
             type="date"
             required
@@ -196,7 +211,7 @@ const suites = [
             error={erreurs.date}
           />
           <TextField
-            label="Ville ou lieu"
+            label="Où se déroulera-t-il ?"
             name="lieu"
             placeholder="Strasbourg, salle des fêtes…"
             required
@@ -205,7 +220,7 @@ const suites = [
             error={erreurs.lieu}
           />
           <TextField
-            label="Nombre d'invités"
+            label="Combien de participants attendez-vous ?"
             name="invites"
             type="number"
             inputmode="numeric"
@@ -239,7 +254,7 @@ const suites = [
           />
         </div>
         <TextField
-          label="E-mail"
+          label="Adresse e-mail"
           name="email"
           type="email"
           autocomplete="email"
@@ -261,16 +276,17 @@ const suites = [
 
         <div class="devis__optional">
           <div class="devis__optional-head">
-            <h2 class="devis__legend">Pour préparer au mieux (facultatif)</h2>
+            <h2 class="devis__legend">Quelques précisions pour personnaliser votre expérience</h2>
             <p class="devis__hint">
-              Ces informations nous aident à proposer le bon programme dès le devis.
+              Ces informations sont facultatives, mais elles nous aideront à imaginer un programme
+              adapté.
             </p>
           </div>
 
           <div class="devis__row">
             <div class:list={['tu-field', erreurs.creneau && 'tu-field--invalid']}>
               <label class="tu-field__label" for="creneau">
-                Durée du créneau disponible
+                Quelle durée souhaitez-vous consacrer à l'animation ?
               </label>
               <select
                 class="tu-field__control"
@@ -292,9 +308,9 @@ const suites = [
               )}
             </div>
             <TextField
-              label="Nombre de groupes à mélanger"
+              label="Quels groupes aimeriez-vous faire se rencontrer ?"
               name="groupes"
-              placeholder="Ex. 2 familles et des amis"
+              hint="Exemples : deux familles, plusieurs cercles d'amis, différents services d'entreprise…"
               maxlength={200}
               value={saisie.groupes}
               error={erreurs.groupes}
@@ -305,7 +321,7 @@ const suites = [
             class:list={['tu-field devis__choice', erreurs.langues && 'tu-field--invalid']}
             aria-describedby={decrit('langues')}
           >
-            <legend class="tu-field__label">Langues parlées par les invités</legend>
+            <legend class="tu-field__label">Quelles langues parlent vos participants ?</legend>
             <div class="devis__checks">
               {LANGUES.map((langue) => (
                 <label class="devis__check" lang={langue.lang}>
@@ -331,7 +347,7 @@ const suites = [
             class:list={['tu-field devis__choice', erreurs.equipement && 'tu-field--invalid']}
             aria-describedby={decrit('equipement')}
           >
-            <legend class="tu-field__label">Équipement déjà présent dans la salle</legend>
+            <legend class="tu-field__label">Quels équipements seront disponibles ?</legend>
             <div class="devis__checks">
               {EQUIPEMENTS.map((equipement) => (
                 <label class="devis__check">
@@ -355,7 +371,7 @@ const suites = [
 
           <div class:list={['tu-field', erreurs.message && 'tu-field--invalid']}>
             <label class="tu-field__label" for="message">
-              Votre message
+              Un besoin particulier ou une envie à partager ?
             </label>
             <textarea
               class="tu-field__control"
@@ -363,7 +379,7 @@ const suites = [
               name="message"
               rows="4"
               maxlength="2000"
-              placeholder="Ce qui compte pour vous, les héros de la fête, le déroulé prévu…"
+              placeholder="Accessibilité, ambiance, thématique, contraintes ou simplement une idée… Nous sommes à votre écoute."
               aria-invalid={invalide('message')}
               aria-describedby={decrit('message')}
               set:text={saisie.message}
@@ -415,7 +431,7 @@ const suites = [
 
       <aside class="devis__aside">
         <div class="tu-panel tu-panel--dark devis__card devis__card--next" data-theme="stage">
-          <h2 class="devis__card-title">Et ensuite ?</h2>
+          <h2 class="devis__card-title">Et après ?</h2>
           <ol class="devis__next">
             {suites.map((suite, index) => (
               <li class="devis__next-item">
@@ -430,13 +446,13 @@ const suites = [
             ))}
           </ol>
           <p class="devis__contact devis__contact--inline">
-            Vous préférez en parler ?{' '}
+            Vous préférez échanger directement ?{' '}
             <a href={`tel:${CONTACT.telephoneLien}`}>{CONTACT.telephone}</a>
           </p>
         </div>
 
         <div class="tu-panel devis__card devis__card--contact">
-          <span class="devis__card-title">Vous préférez en parler ?</span>
+          <span class="devis__card-title">Vous préférez échanger directement ?</span>
           <p class="devis__contact">
             Mail : <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
             <br />
@@ -493,6 +509,11 @@ const suites = [
   .devis__lead {
     font-size: 1.1875rem;
     color: var(--tu-text-muted);
+  }
+
+  .devis__lead--fort {
+    font-weight: 600;
+    color: var(--tu-text);
   }
 
   .devis__grid {
