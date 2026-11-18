@@ -5,18 +5,23 @@ type Props = {
   title: string;
   lead: string;
   steps: string[];
+  /** Pastille « Nouveau » à côté du numéro (sauge : ce n'est pas une action). */
+  nouveau?: boolean;
   /** `visual-first` inverse l'ordre en desktop, pour alterner d'un jeu à l'autre. */
   reversed?: boolean;
 };
 
-const { id, number, title, lead, steps, reversed = false } = Astro.props;
+const { id, number, title, lead, steps, reversed = false, nouveau = false } = Astro.props;
 ---
 
 <section class:list={['game', reversed && 'game--reversed']} id={id}>
   <div class="tu-container game__inner">
     <div class="game__text" data-tu-apparait>
-      <span class="game__number" aria-hidden="true">
-        {number}
+      <span class="game__repere">
+        <span class="game__number" aria-hidden="true">
+          {number}
+        </span>
+        {nouveau && <span class="game__nouveau">Nouveau</span>}
       </span>
       <h2 class="game__title">{title}</h2>
       <p class="game__lead">{lead}</p>
@@ -68,6 +73,24 @@ const { id, number, title, lead, steps, reversed = false } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: var(--tu-space-6);
+  }
+
+  .game__repere {
+    display: flex;
+    align-items: center;
+    gap: var(--tu-space-3);
+  }
+
+  .game__nouveau {
+    padding: var(--tu-space-1) var(--tu-space-3);
+    border-radius: var(--tu-radius-pill);
+    background: var(--tu-sage-500);
+    color: var(--tu-navy-900);
+    font-family: var(--tu-font-display);
+    font-size: var(--tu-type-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .game__number {

@@ -1,15 +1,18 @@
 /**
- * Les cinq jeux socles et les deux duels en bêta de la spec v3. Rien d'autre n'existe.
+ * Les sept jeux et les deux duels en bêta. Les cinq premiers sont ceux de la spec v3 ; le Blind
+ * test (2026-11-15) et le Portrait mystère (2026-11-18) sont venus ensuite, marqués « Nouveau ».
  * `body` est l'accroche d'un jeu, partagée par l'accueil et la page Les jeux : elle raconte
  * ce que vit la salle, la règle détaillée reste sur Les jeux.
  */
 export type GameSummary = {
   id: string;
-  icon: 'users' | 'cross' | 'hand' | 'mime' | 'camera';
+  icon: 'users' | 'cross' | 'hand' | 'mime' | 'camera' | 'music' | 'portrait';
   /** Teinte du pictogramme, reprise des maquettes : un fond distinct par jeu. */
   tone: 'navy' | 'sage' | 'amber' | 'mint' | 'stone';
   title: string;
   body: string;
+  /** Pastille « Nouveau » sur la page Les jeux. */
+  nouveau?: boolean;
 };
 
 export const games: GameSummary[] = [
@@ -47,6 +50,22 @@ export const games: GameSummary[] = [
     tone: 'stone',
     title: 'Photo challenge',
     body: 'Tout au long de la soirée, chaque équipe met en scène ses plus belles photos. Elles sont dévoilées en grand, en final.',
+  },
+  {
+    id: 'blind-test',
+    icon: 'music',
+    tone: 'navy',
+    title: 'Blind test',
+    body: 'Quelques notes suffisent : toute la salle fredonne, mais seul le capitaine le plus rapide peut buzzer.',
+    nouveau: true,
+  },
+  {
+    id: 'portrait-mystere',
+    icon: 'portrait',
+    tone: 'sage',
+    title: 'Portrait mystère',
+    body: 'Vingt-cinq noms sur le grand écran, un seul est le bon. Trois indices pour le trouver… et une carte noire à éviter.',
+    nouveau: true,
   },
 ];
 
