@@ -46,7 +46,7 @@ async function inscrire(browser: Browser, prenom: string, nom?: string): Promise
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill(prenom);
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await expect(page.getByRole('heading', { name: "Envie d'être capitaine ?" })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Souhaitez-vous être capitaine' })).toBeVisible();
   if (nom) {
     await page.getByRole('button', { name: 'Je me propose' }).click();
     await page.getByLabel("Nom d'équipe (facultatif)").fill(nom);
@@ -59,7 +59,9 @@ async function inscrire(browser: Browser, prenom: string, nom?: string): Promise
   await expect(page.getByTestId('explication')).toContainText('Points communs');
   // Les jeux de la soirée présentés comme sur la carte Team Up!, chacun avec sa vidéo.
   await expect(
-    page.getByTestId('explication').getByRole('button', { name: /Voir la vidéo.*Points communs/ }),
+    page
+      .getByTestId('explication')
+      .getByRole('button', { name: /Voir les règles en vidéo.*Points communs/ }),
   ).toBeVisible();
   await page.getByTestId('c-est-parti').click();
   await expect(page.getByTestId('sans-equipe')).toBeVisible();

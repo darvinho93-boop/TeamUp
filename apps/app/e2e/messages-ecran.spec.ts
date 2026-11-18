@@ -70,7 +70,7 @@ test('un joueur écrit sur le grand écran ; la régie retire, écrit et ferme l
   await zoe.getByTestId('ouvrir-message').click();
   await expect(zoe.getByTestId('statut-message')).toContainText('Prochain message dans');
   await expect(zoe.getByRole('button', { name: 'Publier sur le grand écran' })).toBeDisabled();
-  await zoe.getByRole('button', { name: 'Fermer' }).click();
+  await zoe.getByRole('button', { name: 'Annuler' }).click();
 
   // --- La régie retire le message : il quitte l'écran tout de suite.
   await regie.goto(`/regie/${evenement.code}/pilotage`);

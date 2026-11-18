@@ -30,7 +30,7 @@ async function arriver(browser: Browser, prenom: string, volontaire: boolean) {
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill(prenom);
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await expect(page.getByRole('heading', { name: "Envie d'être capitaine ?" })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Souhaitez-vous être capitaine' })).toBeVisible();
   await page
     .getByRole('button', { name: volontaire ? 'Je me propose' : 'Je préfère être participant' })
     .click();
