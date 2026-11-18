@@ -5,6 +5,8 @@ import { CONTACT } from '../../data/contact';
 type Props = {
   title: string;
   note?: string;
+  /** Une phrase de marque, en gras, sous la note (la signature, sur l'accueil). */
+  signature?: string;
   label?: string;
   /** Cible du bouton : les pages Particuliers et Entreprises pré-remplissent le type. */
   href?: string;
@@ -12,6 +14,7 @@ type Props = {
 
 const {
   title,
+  signature,
   note = `Devis gratuit et sans engagement, réponse sous ${CONTACT.delaiRappel}.`,
   label = 'Demander un devis',
   href = '/devis',
@@ -24,6 +27,7 @@ const {
       <div class="cta__text">
         <h2 class="cta__title">{title}</h2>
         <p class="tu-body-lg cta__note">{note}</p>
+        {signature && <p class="tu-body-lg cta__signature">{signature}</p>}
       </div>
       <Button href={href} variant="accent" size="cta">
         {label}
@@ -56,6 +60,10 @@ const {
   .cta__title {
     font-size: 2.5rem;
     line-height: 1.1;
+  }
+
+  .cta__signature {
+    font-weight: 600;
   }
 
   .cta__inner > :global(.tu-btn) {

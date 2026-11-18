@@ -2,14 +2,21 @@
 type Props = {
   eyebrow?: string;
   title: string;
-  lead?: string;
+  /** Le chapeau : un paragraphe, ou plusieurs. */
+  lead?: string | string[];
+  /** Une question ou une phrase d'ouverture, en gras, avant le chapeau. */
+  chapo?: string;
+  /** Une phrase forte, en gras, après le chapeau. */
+  fort?: string;
   /** Taille du titre : l'accueil, les pages intérieures, les formulaires, les pages légales. */
   size?: 'display' | 'page' | 'page-sm' | 'page-xs';
   /** Titre et chapeau sur une seule colonne large, sans visuel (Les jeux, Comment ça marche). */
   wide?: boolean;
 };
 
-const { eyebrow, title, lead, size = 'page', wide = false } = Astro.props;
+const { eyebrow, title, lead, chapo, fort, size = 'page', wide = false } = Astro.props;
+const paragraphes = lead === undefined ? [] : Array.isArray(lead) ? lead : [lead];
+const aChapeau = Boolean(chapo) || paragraphes.length > 0 || Boolean(fort);
 const hasVisual = Astro.slots.has('visual');
 ---
 
@@ -18,7 +25,15 @@ const hasVisual = Astro.slots.has('visual');
     <div class="intro__text">
       {eyebrow && <p class="tu-eyebrow">{eyebrow}</p>}
       <h1 class:list={['intro__title', `intro__title--${size}`]}>{title}</h1>
-      {lead && <p class="tu-lead intro__lead">{lead}</p>}
+      {aChapeau && (
+        <div class="intro__chapeau">
+          {chapo && <p class="tu-lead intro__lead intro__fort">{chapo}</p>}
+          {paragraphes.map((paragraphe) => (
+            <p class="tu-lead intro__lead">{paragraphe}</p>
+          ))}
+          {fort && <p class="tu-lead intro__lead intro__fort">{fort}</p>}
+        </div>
+      )}
       {Astro.slots.has('actions') && (
         <div class="intro__actions">
           <slot name="actions" />
@@ -106,8 +121,20 @@ const hasVisual = Astro.slots.has('visual');
     font-size: var(--tu-type-page-xs);
   }
 
+  .intro__chapeau {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tu-space-3);
+  }
+
   .intro__lead {
     max-width: 38rem;
+  }
+
+  /* La phrase qui porte la promesse : même taille, en gras, couleur du texte. */
+  .intro__fort {
+    font-weight: 600;
+    color: var(--tu-text);
   }
 
   .intro--wide .intro__title {
