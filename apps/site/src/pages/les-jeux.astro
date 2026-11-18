@@ -17,14 +17,14 @@ const video = (fichier: string) => ({
 ---
 
 <Base
-  title="Cinq jeux d'animation de soirée pour toute la salle — Team Up!"
-  description="Points communs, Quiz, Surenchère, Mime, Photo challenge : cinq jeux qui se jouent debout, ensemble, et s'expliquent en une phrase."
+  title="Sept jeux d'animation de soirée pour toute la salle — Team Up!"
+  description="Points communs, Quiz, Surenchère, Mime, Photo challenge, Blind test, Portrait mystère : sept jeux qui se jouent ensemble et s'expliquent en une phrase."
 >
   <PageIntro
     wide
     eyebrow="Les jeux"
-    title="Cinq jeux pensés pour la salle, pas pour l'écran."
-    lead="Cinq jeux pour rire, se découvrir et se surprendre. Chacun s'explique en une phrase et se joue debout, ensemble ; avant chaque jeu, une courte animation sur le grand écran en montre les règles. Personne n'est perdu, personne ne reste assis."
+    title="Sept jeux pensés pour la salle, pas pour l'écran."
+    lead="Sept jeux pour rire, se découvrir et se surprendre. Chacun s'explique en une phrase et se joue debout, ensemble ; avant chaque jeu, une courte animation sur le grand écran en montre les règles. Personne n'est perdu, personne ne reste assis."
   >
     <nav slot="footnote" class="toc" aria-label="Aller à un jeu">
       {games.map((game) => (
@@ -120,6 +120,43 @@ const video = (fichier: string) => ({
     <VideoEcran
       {...video('photo-challenge')}
       caption="Vidéo : sur un plateau de jeu télé, une équipe prend la pose pour sa photo."
+    />
+  </GameDetail>
+
+  <GameDetail
+    id="blind-test"
+    number="06"
+    title="Blind test"
+    lead={accroche('blind-test')}
+    steps={[
+      'Un extrait de musique démarre sur le grand écran ; chaque équipe se serre autour de son capitaine.',
+      'Le premier capitaine qui buzze sur son téléphone coupe la musique : son équipe a sept secondes pour donner le titre.',
+      'Bonne réponse : 100 points. Sinon, son équipe passe son tour sur ce titre et la musique repart pour les autres.',
+    ]}
+    nouveau
+  >
+    <VideoEcran
+      {...video('blind-test')}
+      caption="Vidéo : sur un plateau de jeu télé, trois capitaines écoutent la musique ; l'un tape son buzzer le premier et marque 100 points."
+    />
+  </GameDetail>
+
+  <GameDetail
+    id="portrait-mystere"
+    number="07"
+    title="Portrait mystère"
+    lead={accroche('portrait-mystere')}
+    steps={[
+      'La grille mêle des personnalités connues et, si vous le souhaitez, des proches des héros de la fête.',
+      "L'animateur donne un indice : chaque équipe vote pour une carte, depuis le téléphone du capitaine ou à voix haute.",
+      "Trouvé au premier indice : 100 points, puis 60, puis 30. L'équipe qui vote la carte noire est éliminée !",
+    ]}
+    reversed
+    nouveau
+  >
+    <VideoEcran
+      {...video('portrait-mystere')}
+      caption="Vidéo : sur un plateau de jeu télé, une équipe se concerte devant une grille de vingt-cinq noms, puis trouve la bonne carte."
     />
   </GameDetail>
 
