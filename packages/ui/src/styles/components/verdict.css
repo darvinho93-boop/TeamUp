@@ -1,0 +1,76 @@
+/*
+ * Le verdict commun des jeux (2026-11-19, audit « jeu télé ») : la scène entière en vert, en
+ * rouge (`.tu-stage-verdict`, stage.css) ou à la couleur de l'équipe ; l'équipe, le verdict en
+ * très grand, un détail, puis les points qui défilent. Le titre entre en rebond et les points
+ * montent dessous, seulement quand l'écran a vu le verdict arriver (`data-en-direct`).
+ * Jamais le corail : ce n'est pas une action.
+ */
+
+.tu-verdict {
+  gap: var(--tu-space-6);
+}
+
+.tu-stage-verdict--equipe {
+  --tu-text: var(--tu-team-on);
+  --tu-text-muted: var(--tu-team-on);
+
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+}
+
+.tu-verdict__equipe {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.tu-verdict__titre {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+  overflow-wrap: anywhere;
+}
+
+.tu-verdict__detail {
+  margin: 0;
+  font-size: var(--tu-size-3xl);
+  font-weight: 600;
+}
+
+.tu-verdict__points {
+  margin: 0;
+  font-family: var(--tu-font-numeric);
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-verdict[data-en-direct] .tu-verdict__titre {
+    animation: tu-verdict-entree var(--tu-dur-verdict) var(--tu-ease-clac) both;
+  }
+
+  .tu-verdict[data-en-direct] .tu-verdict__points {
+    animation: tu-verdict-points var(--tu-dur-reveal) var(--tu-ease) var(--tu-dur-verdict-points)
+      both;
+  }
+}
+
+@keyframes tu-verdict-entree {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes tu-verdict-points {
+  from {
+    opacity: 0;
+    transform: translateY(var(--tu-space-8));
+  }
+}

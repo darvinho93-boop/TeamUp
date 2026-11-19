@@ -1115,7 +1115,14 @@
       "faisons": "{prenom}-ஐ அறிந்துகொள்வோம்",
       "ans": "{age} வயது",
       "equipe": "மற்றும் அணி முழுவதும்"
-    }
+    },
+    "palierVerdict": "நிலை {n} · ×{mult}",
+    "pointsAutres": "மற்ற ஒவ்வொரு அணிக்கும் {points, plural, =0 {0 புள்ளி} one {+# புள்ளி} other {+# புள்ளிகள்}}",
+    "duelGagne": "{prenom} வெற்றி!",
+    "duelContre": "{prenom} உடன்",
+    "verrouillees": "பதில்கள் பூட்டப்பட்டன!",
+    "etLaBonneReponse": "சரியான பதில்…",
+    "bonneReponse": "சரியான பதில்!"
   },
   "admin": {
     "nav": {

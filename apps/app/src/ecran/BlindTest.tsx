@@ -2,11 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
-import { resultatBlindDe, type EtapeBlind } from '@teamup/game';
+import { POINTS_BLIND, resultatBlindDe, type EtapeBlind } from '@teamup/game';
 import { extraitBlind, titresBlind } from '@/lib/pilotage';
 import { passageCourant, type EtatSalle, type MancheSalle } from '@/lib/salle';
 import { Celebration, useArrivee } from './Celebration';
 import { Chrono } from './Chrono';
+import { useCompteur } from './useCompteur';
 import { useMusiquesDuJeu } from './useMusiquesDuJeu';
 
 /**
@@ -25,10 +26,13 @@ export function BlindTest({
   manche: MancheSalle;
 }) {
   const t = useTranslations('ecran.blind');
+  const tEcran = useTranslations('ecran');
   const passage = passageCourant(etat);
   const etape = etat.pilotage.etape as EtapeBlind | null;
   const resultat = resultatBlindDe(passage?.resultat);
   const fete = useArrivee(etape === 'revele' && resultat.trouvePar !== null);
+  // Les points de l'équipe qui a trouvé défilent sous le verdict (2026-11-19).
+  const points = useCompteur(POINTS_BLIND, { actif: fete, delaiMs: 500 });
   const titres = titresBlind(manche);
   // La réponse ne s'affiche qu'à `revele` ; l'écran lit la bibliothèque sous la session de
   // l'animateur, comme la régie.
@@ -104,6 +108,7 @@ export function BlindTest({
         <p className="tu-stage__xl" data-testid="blind-verdict">
           {gagnante ? t('trouvePar', { equipe: gagnante.nom }) : t('personne')}
         </p>
+        {gagnante && <p className="tu-verdict__points">{tEcran('points', { points })}</p>}
         {fete && <Celebration force={2} />}
       </div>
     );

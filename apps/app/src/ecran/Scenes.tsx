@@ -12,6 +12,8 @@ import {
   formatChrono,
   PALIERS,
   POINTS_PAR_SURVIVANT,
+  POINTS_RATE_PAR_AUTRE_EQUIPE,
+  POINTS_TENU,
   tempsDeJeu,
 } from '@teamup/game';
 import {
@@ -72,6 +74,18 @@ import { OrdreTire, ordreDesEquipes, TirageOrdre, useMouvementReduit } from './T
 import { Multilingue } from './Multilingue';
 import { usePhotosSignees } from './usePhotosSignees';
 import { Connaissance } from './Connaissance';
+import { useCompteur } from './useCompteur';
+import { Verdict } from './Verdict';
+import { SalleContexte } from './SalleContexte';
+import { rangsDExtinction, SUSPENSE_MS } from '@/lib/suspense';
+import {
+  CHANGEMENT_DE_PLACE_MS,
+  DEPART_POUSSE_MS,
+  POUSSE_CLASSEMENT_MS,
+  rangs,
+  totauxAvant,
+} from '@/lib/classement';
+import { supabaseNavigateur } from '@/lib/supabase-navigateur';
 
 interface Props {
   etat: EtatSalle;
@@ -640,8 +654,9 @@ function PointsCommuns({ etat, decalageMs }: Props) {
   const { etape, chrono_depart_ms: depart } = etat.pilotage;
   const langues = etat.evenement.langues;
   const maintenant = useMaintenant(etape === 'lance');
-  // Mot trouvé sous les yeux de la salle : la fête, d'autant plus grande que le palier est tôt.
-  const fete = useArrivee(etape === 'trouve');
+  // Verdict vu par cet écran : la fête (d'autant plus grande que le palier est tôt) et les points
+  // qui défilent ; au rechargement, le verdict posé d'emblée.
+  const verdictVu = useArrivee(etape === 'trouve' || etape === 'echec');
   const ecouleFige = passage?.resultat['ecoule_ms'];
   const fini = typeof ecouleFige === 'number';
   const ecoule = fini
@@ -665,6 +680,32 @@ function PointsCommuns({ etat, decalageMs }: Props) {
   if (!equipe) return <UnInstant />;
 
   const { palier, restesS } = etatPaliers(jeu.jeuMs);
+
+  // Le verdict commun (2026-11-19) : plein écran, le palier, les points qui défilent.
+  if (etape === 'trouve' || etape === 'echec') {
+    const trouve = etape === 'trouve';
+    const multiplicateur = PALIERS[palier]?.multiplicateur;
+    return (
+      <Verdict
+        scene="list2"
+        etape={etape}
+        ton={trouve ? 'vert' : 'rouge'}
+        equipe={equipe}
+        titre={trouve ? t('trouve') : t('rate')}
+        detail={
+          trouve && multiplicateur ? (
+            <p className="tu-verdict__detail">
+              {t('palierVerdict', { n: palier + 1, mult: multiplicateur })}
+            </p>
+          ) : undefined
+        }
+        points={trouve ? (passage.points ?? 0) : null}
+        fete={trouve ? ((palier + 1) as Force) : null}
+        enDirect={verdictVu}
+      />
+    );
+  }
+
   const palierArrete = etape === 'lance' ? (jeu.arret?.palier ?? null) : null;
   const indices = langues.flatMap((langue) => {
     const liste = passage.secret?.[langue]?.['indices'];
@@ -703,7 +744,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
         </div>
       )}
 
-      {(etape === 'lance' || etape === 'trouve' || etape === 'echec') && (
+      {etape === 'lance' && (
         <div className="tu-stage-jeu" ref={jeuRef}>
           <Chrono
             departMs={depart}
@@ -732,7 +773,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
               </li>
             ))}
           </ol>
-          {etape === 'lance' && jeu.arret && (
+          {jeu.arret && (
             <p className="tu-stage__l" data-testid="arret" role="status">
               {jeu.arret.repriseDansMs === null
                 ? t('arretIndice')
@@ -753,23 +794,7 @@ function PointsCommuns({ etat, decalageMs }: Props) {
               ))}
             </div>
           )}
-          {etape !== 'lance' && (
-            <p
-              className={cx(
-                'tu-stage__xl tu-stage-reveal',
-                etape === 'trouve' ? 'tu-stage-gagne' : 'tu-stage-perdu',
-              )}
-              data-testid="verdict"
-            >
-              {etape === 'trouve' ? t('trouve') : t('rate')} ·{' '}
-              {t('points', { points: passage.points ?? 0 })}
-            </p>
-          )}
         </div>
-      )}
-      {/* Hors du bloc mesuré : la fête couvre tout l'écran (position fixe). */}
-      {fete && (etape === 'trouve' || etape === 'echec') && (
-        <Celebration force={(palier + 1) as Force} />
       )}
     </div>
   );
@@ -793,6 +818,7 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
   // Trois colonnes au plus (six thèmes : deux rangées), deux pour quatre thèmes.
   const nombre = manche.passages.length;
   const colonnes = nombre === 4 ? 2 : Math.min(3, Math.max(1, nombre));
+  const verdictVu = useArrivee(etape === 'tenu' || etape === 'rate');
 
   if (etape === 'themes' || !passage) {
     return (
@@ -854,6 +880,28 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
   }
 
   const champion = etat.equipes.find((e) => e.numero === passage.resultat['equipe_champion']);
+  // Le verdict commun (2026-11-19) : le pari tenu rapporte à l'équipe du champion ; raté, aux
+  // autres équipes.
+  if (etape === 'tenu' || etape === 'rate') {
+    const tenu = etape === 'tenu';
+    return (
+      <Verdict
+        scene="enchere2"
+        etape={etape}
+        ton={tenu ? 'vert' : 'rouge'}
+        equipe={champion ?? null}
+        titre={tenu ? t('tenu') : t('perdu')}
+        detail={
+          <Multilingue testId="sujet" textes={texteParLangue(passage.secret, 'sujet', langues)} />
+        }
+        points={tenu ? POINTS_TENU : POINTS_RATE_PAR_AUTRE_EQUIPE}
+        textePoints={tenu ? undefined : (n) => t('pointsAutres', { points: n })}
+        fete={tenu ? 2 : null}
+        enDirect={verdictVu}
+      />
+    );
+  }
+
   return (
     <div
       ref={corps}
@@ -881,15 +929,6 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
             className="tu-stage__giant"
           />
         )}
-        {(etape === 'tenu' || etape === 'rate') && (
-          <p
-            className={cx('tu-stage__xl', etape === 'tenu' ? 'tu-stage-gagne' : 'tu-stage-perdu')}
-            data-testid="verdict"
-          >
-            {etape === 'tenu' ? t('tenu') : t('perdu')}
-            {champion && ` · ${champion.nom}`}
-          </p>
-        )}
       </div>
     </div>
   );
@@ -901,6 +940,47 @@ function Scores({ etat }: { etat: EtatSalle }) {
   const max = Math.max(1, ...rang.map((e) => e.points));
   const liste = useRef<HTMLOListElement>(null);
   useTenirEnLargeur(liste, rang.map((e) => e.nom).join(), '.tu-stage-rank__nom');
+
+  // Le classement qui monte (2026-11-19) : vue sous les yeux de cet écran, la scène part des
+  // totaux d'avant le dernier jeu, lus dans le journal des scores (session de l'animateur, comme
+  // la régie). Au chargement, dans l'aperçu, sans mouvement ou si la lecture échoue : d'emblée.
+  const { apercu, premiere } = useContext(SalleContexte);
+  const reduit = useMouvementReduit();
+  const jouer = useContext(SonsContexte);
+  const voulu = !apercu && !premiere && !reduit;
+  const [avant, setAvant] = useState<Map<string, number> | 'aucun' | null>(voulu ? null : 'aucun');
+  const evenementId = etat.evenement.id;
+  useEffect(() => {
+    if (!voulu) return;
+    let actif = true;
+    const equipes = etat.equipes;
+    void supabaseNavigateur()
+      .from('scores')
+      .select('equipe_id, manche_id, points, cree_le')
+      .eq('evenement_id', evenementId)
+      .then(({ data, error }) => {
+        if (!actif) return;
+        const totaux = error || !data ? null : totauxAvant(data, equipes);
+        setAvant(totaux ?? 'aucun');
+        const avantRangs = totaux && rangs(equipes, totaux);
+        const bouge = avantRangs && classement(etat).some((e, i) => avantRangs.get(e.id) !== i);
+        if (bouge) jouer?.('revelation', CHANGEMENT_DE_PLACE_MS);
+      });
+    // Une base qui tarde ne retient pas la scène : le classement final.
+    const secours = setTimeout(() => {
+      if (actif) setAvant((a) => a ?? 'aucun');
+    }, 1500);
+    return () => {
+      actif = false;
+      clearTimeout(secours);
+    };
+    // Une fois, au montage : la scène est remontée à chaque passage par le classement.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const anime = avant instanceof Map;
+  const rangsAvant = anime ? rangs(rang, avant) : null;
+  const leaderAvant = rangsAvant ? [...rangsAvant].find(([, r]) => r === 0)?.[0] : undefined;
+
   return (
     <div className="tu-stage__body" data-scene="scores">
       <h1 className="tu-stage__xl">{t('scores')}</h1>
@@ -908,23 +988,70 @@ function Scores({ etat }: { etat: EtatSalle }) {
         ref={liste}
         className="tu-stage-rank"
         style={{ '--tu-rank-n': Math.max(1, rang.length) } as CSSProperties}
+        data-classement={avant === null ? 'attente' : anime ? 'anime' : undefined}
       >
-        {rang.map((e) => (
-          <li key={e.id} className={cx('tu-stage-rank__ligne', teamModifier(e.numero))}>
-            <span className="tu-stage-rank__nom">{e.nom}</span>
-            <span className="tu-stage-rank__barre">
-              <span
-                className="tu-stage-rank__remplie"
-                style={{ inlineSize: `${(e.points / max) * 100}%` }}
-              />
-            </span>
-            <span className="tu-stage-rank__points" data-testid={`points-${e.numero}`}>
-              {e.points}
-            </span>
-          </li>
+        {rang.map((e, i) => (
+          <LigneClassement
+            key={e.id}
+            equipe={e}
+            max={max}
+            avant={anime ? (avant.get(e.id) ?? 0) : null}
+            decalage={rangsAvant ? (rangsAvant.get(e.id) ?? i) - i : 0}
+            nouveauLeader={anime && i === 0 && leaderAvant !== undefined && leaderAvant !== e.id}
+          />
         ))}
       </ol>
     </div>
+  );
+}
+
+/**
+ * Une ligne du classement : sans `avant`, le total d'emblée ; avec, la barre pousse depuis le total
+ * d'avant le dernier jeu, le chiffre défile, puis la ligne glisse de son rang d'avant à sa place.
+ */
+function LigneClassement({
+  equipe,
+  max,
+  avant,
+  decalage,
+  nouveauLeader,
+}: {
+  equipe: EquipeSalle;
+  max: number;
+  avant: number | null;
+  decalage: number;
+  nouveauLeader: boolean;
+}) {
+  const points = useCompteur(equipe.points, {
+    actif: avant !== null,
+    depuis: avant ?? equipe.points,
+    delaiMs: DEPART_POUSSE_MS,
+    dureeMs: POUSSE_CLASSEMENT_MS,
+  });
+  const largeur = (n: number) => `${(Math.max(0, n) / max) * 100}%`;
+  return (
+    <li
+      className={cx(
+        'tu-stage-rank__ligne',
+        teamModifier(equipe.numero),
+        nouveauLeader && 'tu-stage-rank__ligne--leader',
+      )}
+      style={avant === null ? undefined : ({ '--tu-rank-decalage': decalage } as CSSProperties)}
+    >
+      <span className="tu-stage-rank__nom">{equipe.nom}</span>
+      <span className="tu-stage-rank__barre">
+        <span
+          className="tu-stage-rank__remplie"
+          style={{
+            inlineSize: largeur(equipe.points),
+            ...(avant === null ? {} : { '--tu-rank-avant': largeur(avant) }),
+          }}
+        />
+      </span>
+      <span className="tu-stage-rank__points" data-testid={`points-${equipe.numero}`}>
+        {points}
+      </span>
+    </li>
   );
 }
 
@@ -1124,6 +1251,21 @@ function MisesDeLaReponse({
   );
 }
 
+/** Des points qui défilent jusqu'à leur valeur quand `actif` (2026-11-19). */
+function PointsQuiDefilent({
+  points,
+  actif,
+  className,
+}: {
+  points: number;
+  actif: boolean;
+  className: string;
+}) {
+  const t = useTranslations('ecran');
+  const n = useCompteur(points, { actif, delaiMs: 300 });
+  return <span className={className}>{t('points', { points: n })}</span>;
+}
+
 function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
   const t = useTranslations('ecran');
   const { etape, chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
@@ -1152,6 +1294,34 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
     jetons ? enJeu.length : 0,
   );
 
+  // Le suspense (2026-11-19) : vue sous les yeux de cet écran, la révélation prend un roulement
+  // court ; les mauvaises cases s'éteignent une à une, puis la bonne passe en vert. Ni au
+  // rechargement, ni dans l'aperçu de la régie, ni sans mouvement.
+  const { apercu } = useContext(SalleContexte);
+  const reduit = useMouvementReduit();
+  const jouer = useContext(SonsContexte);
+  const revelationVue = useArrivee(etape === 'reponse');
+  const suspense = revelationVue && !reduit && !apercu;
+  const [suspenseFini, setSuspenseFini] = useState<string | null>(null);
+  const passageId = passage?.id ?? null;
+  useEffect(() => {
+    if (!revelationVue) return;
+    if (!suspense) {
+      jouer?.('revelation');
+      return;
+    }
+    jouer?.('presentation');
+    jouer?.('revelation', SUSPENSE_MS);
+    const fin = setTimeout(() => setSuspenseFini(passageId), SUSPENSE_MS);
+    return () => clearTimeout(fin);
+    // Une fois par révélation : elle repasse à faux à la question suivante.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revelationVue, passageId]);
+  // Chrono écoulé : « Réponses verrouillées ! » (l'heure de la base, corrigée).
+  const maintenant = useMaintenant(etape === 'question' && depart !== null);
+  // La fin du quiz, vue sous les yeux de l'écran : les points de chaque équipe défilent.
+  const resultatVu = useArrivee(etape === 'resultat');
+
   if (etape === 'survivants' || etape === 'resultat') {
     const survivants = survivantsDe(manche);
     const valide = etape === 'resultat';
@@ -1179,9 +1349,11 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
                     {t(jetons ? 'jetons' : 'survivants', { n })}
                   </span>
                   {valide && (
-                    <span className="tu-stage-fin-quiz__points">
-                      {t('points', { points: n * POINTS_PAR_SURVIVANT })}
-                    </span>
+                    <PointsQuiDefilent
+                      className="tu-stage-fin-quiz__points"
+                      points={n * POINTS_PAR_SURVIVANT}
+                      actif={resultatVu}
+                    />
                   )}
                 </li>
               );
@@ -1236,18 +1408,35 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
 
   // Mode jetons : combien d'équipes qui ont encore des jetons ont validé leur mise.
   const validees = enJeu.filter((e) => passage.mises?.[String(e.numero)]?.valide).length;
+  const verrouillees =
+    lance &&
+    depart !== null &&
+    maintenant + decalageMs >= depart + (duree ?? CHRONO_QUESTION_S) * 1000;
+  const enSuspens = revelee && suspense && suspenseFini !== passage.id;
+  const rangs = revelee && typeof bonne === 'number' ? rangsDExtinction(passage.id, bonne) : null;
 
   return (
     <div className="tu-stage__body" data-scene="qcm2" data-etape={etape ?? ''}>
       <div className="tu-stage-quiz__tete">
-        <p className="tu-stage__m tu-stage__muted" data-testid="quiz-tete">
-          {numero}
-          {lance &&
-            (jetons
-              ? ` · ${t('misesValidees', { n: validees, total: enJeu.length })}`
-              : telephone
-                ? ` · ${t('reponses', { n: passage.reponses ?? 0 })}`
-                : ` · ${t('croix')}`)}
+        <p
+          className={cx('tu-stage__m tu-stage__muted', verrouillees && 'tu-stage-quiz__verrou')}
+          data-testid="quiz-tete"
+        >
+          {enSuspens ? (
+            t('etLaBonneReponse')
+          ) : (
+            <>
+              {numero}
+              {lance &&
+                (verrouillees
+                  ? ` · ${t('verrouillees')}`
+                  : jetons
+                    ? ` · ${t('misesValidees', { n: validees, total: enJeu.length })}`
+                    : telephone
+                      ? ` · ${t('reponses', { n: passage.reponses ?? 0 })}`
+                      : ` · ${t('croix')}`)}
+            </>
+          )}
         </p>
         {lance && (
           <Chrono
@@ -1269,6 +1458,7 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
         key={passage.id}
         ref={zones}
         className={cx('tu-stage-quiz', jetons && 'tu-stage-quiz--jetons')}
+        data-suspense={enSuspens || undefined}
       >
         {LETTRES.map((lettre, i) =>
           i >= affichees ? (
@@ -1287,10 +1477,18 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
               className={cx(
                 'tu-stage-quiz__zone',
                 revelee &&
-                  (i === bonne ? 'tu-stage-quiz__zone--bonne' : 'tu-stage-quiz__zone--fausse'),
+                  (i === bonne
+                    ? !enSuspens && 'tu-stage-quiz__zone--bonne'
+                    : 'tu-stage-quiz__zone--fausse'),
               )}
+              style={
+                enSuspens && typeof rangs?.[i] === 'number'
+                  ? ({ '--tu-extinction': rangs[i] } as CSSProperties)
+                  : undefined
+              }
               data-testid={i === bonne ? 'bonne-reponse' : `zone-${lettre}`}
               data-affichee="true"
+              data-revelee={(revelee && i === bonne && !enSuspens) || undefined}
             >
               {jetons ? (
                 <>
@@ -1306,6 +1504,11 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
                   <Multilingue textes={propositions(i)} />
                 </>
               )}
+              {revelee && i === bonne && !enSuspens && (
+                <span className="tu-stage-quiz__bravo" data-testid="bonne-reponse-bandeau">
+                  {t('bonneReponse')}
+                </span>
+              )}
             </li>
           ),
         )}
@@ -1319,33 +1522,36 @@ function Mime({ etat, decalageMs }: Props) {
   const passage = passageCourant(etat);
   const equipe = equipeDe(etat, passage?.equipe_id ?? null);
   const { etape, chrono_depart_ms: depart } = etat.pilotage;
+  const verdictVu = useArrivee(etape === 'trouve' || etape === 'rate');
   if (!passage) return null;
   // Équipe supprimée (panne du 2026-10-31) : plus une scène vide ; la régie peut passer.
   if (!equipe) return <UnInstant />;
 
   if (etape === 'trouve' || etape === 'rate') {
-    // Plein écran vert si le mot est trouvé, rouge sinon (spec v3, jeu 04).
+    // Plein écran vert si le mot est trouvé, rouge sinon (spec v3, jeu 04) : le verdict commun
+    // depuis le 2026-11-19, avec la fête et les points qui défilent.
+    const trouve = etape === 'trouve';
     return (
-      <div
-        className={cx(
-          'tu-stage__body tu-stage-centre tu-stage-reveal tu-stage-verdict',
-          etape === 'trouve' ? 'tu-stage-verdict--vert' : 'tu-stage-verdict--rouge',
-        )}
-        data-scene="mime2"
-        data-etape={etape}
-      >
-        <Pastille equipe={equipe} grande />
-        <p className="tu-stage__m">{t('leMot')}</p>
-        <Multilingue
-          testId="mot"
-          className="tu-stage-multi--geant"
-          textes={texteParLangue(passage.secret, 'mot', etat.evenement.langues)}
-        />
-        <p className="tu-stage__xl" data-testid="verdict">
-          {etape === 'trouve' ? t('trouve') : t('rate')} ·{' '}
-          {t('points', { points: passage.points ?? 0 })}
-        </p>
-      </div>
+      <Verdict
+        scene="mime2"
+        etape={etape}
+        ton={trouve ? 'vert' : 'rouge'}
+        equipe={equipe}
+        titre={trouve ? t('trouve') : t('rate')}
+        detail={
+          <div className="tu-stage-centre">
+            <p className="tu-stage__m">{t('leMot')}</p>
+            <Multilingue
+              testId="mot"
+              className="tu-stage-multi--geant"
+              textes={texteParLangue(passage.secret, 'mot', etat.evenement.langues)}
+            />
+          </div>
+        }
+        points={trouve ? (passage.points ?? 0) : null}
+        fete={trouve ? 2 : null}
+        enDirect={verdictVu}
+      />
     );
   }
 
@@ -1402,6 +1608,7 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
   );
   const { etape } = etat.pilotage;
   const fete = useArrivee(etape === 'gagnante');
+  const pointsGagnes = useCompteur(passage?.points ?? 0, { actif: fete, delaiMs: 500 });
   const grille = useRef<HTMLUListElement>(null);
   useTenirEnLargeur(
     grille,
@@ -1464,7 +1671,7 @@ function Photo({ etat, manche }: Props & { manche: MancheSalle }) {
                 {equipe && <Pastille equipe={equipe} grande={gagnante} />}
                 {gagnante && (
                   <p className="tu-stage__xl" data-testid="verdict-photo">
-                    {t('gagnante')} · {t('points', { points: passage.points ?? 0 })}
+                    {t('gagnante')} · {t('points', { points: pointsGagnes })}
                   </p>
                 )}
               </li>
@@ -1513,6 +1720,7 @@ function Duel({ etat, decalageMs, jeu }: Props & { jeu: 'grab' | 'cup' }) {
   const { etape, chrono_depart_ms: depart } = etat.pilotage;
   const duellistes = passage ? duellistesDe(passage.resultat) : null;
   const equipe = (numero: number) => etat.equipes.find((e) => e.numero === numero);
+  const verdictVu = useArrivee(etape === 'gagne');
 
   if (etape === 'tirage' || !duellistes) {
     return (
@@ -1534,6 +1742,27 @@ function Duel({ etat, decalageMs, jeu }: Props & { jeu: 'grab' | 'cup' }) {
   }
 
   const gagnant = passage?.resultat['gagnant'];
+  // Le verdict commun (2026-11-19) : la scène à la couleur de l'équipe du vainqueur.
+  if (etape === 'gagne' && (gagnant === 0 || gagnant === 1)) {
+    const vainqueur = duellistes[gagnant];
+    const autre = duellistes[gagnant === 0 ? 1 : 0];
+    const sonEquipe = equipe(vainqueur.equipe) ?? null;
+    return (
+      <Verdict
+        scene="duel"
+        etape="gagne"
+        ton={sonEquipe ? 'equipe' : 'vert'}
+        equipe={sonEquipe}
+        titre={t('duelGagne', { prenom: vainqueur.prenom })}
+        detail={<p className="tu-verdict__detail">{t('duelContre', { prenom: autre.prenom })}</p>}
+        points={passage?.points ?? 0}
+        fete={2}
+        enDirect={verdictVu}
+        testIdPoints="verdict-duel"
+      />
+    );
+  }
+
   const face = (i: 0 | 1) => {
     const d = duellistes[i];
     const e = equipe(d.equipe);
@@ -1569,11 +1798,6 @@ function Duel({ etat, decalageMs, jeu }: Props & { jeu: 'grab' | 'cup' }) {
           decalageMs={decalageMs}
           className="tu-stage__giant"
         />
-      )}
-      {etape === 'gagne' && (
-        <p className="tu-stage__xl" data-testid="verdict-duel">
-          {t('points', { points: passage?.points ?? 0 })}
-        </p>
       )}
     </div>
   );

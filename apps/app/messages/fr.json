@@ -1115,7 +1115,14 @@
       "faisons": "Faisons connaissance avec {prenom}",
       "ans": "{age} ans",
       "equipe": "Et toute l'équipe"
-    }
+    },
+    "palierVerdict": "Palier {n} · ×{mult}",
+    "pointsAutres": "{points, plural, =0 {0 point} one {+# point} other {+# points}} pour chaque autre équipe",
+    "duelGagne": "{prenom} gagne !",
+    "duelContre": "contre {prenom}",
+    "verrouillees": "Réponses verrouillées !",
+    "etLaBonneReponse": "Et la bonne réponse est…",
+    "bonneReponse": "Bonne réponse !"
   },
   "admin": {
     "nav": {

@@ -6,6 +6,7 @@ import { Button, cx } from '@teamup/ui/react';
 import { totalMise, type Repartition } from '@teamup/game';
 import type { EtatJoueur, QuizJetons as Quiz, RefusMise } from '@/lib/partie';
 import { ChronoQuestion, LETTRES, QuestionSeule } from './quizCommun';
+import { useApresSuspense } from './useApresSuspense';
 
 /** Une mise en cours part au serveur ce délai après le dernier appui (l'écran la montre). */
 const ENVOI_MS = 400;
@@ -92,6 +93,9 @@ export function QuizJetons({
     }
   };
 
+  // Le verdict attend la fin du suspense de l'écran commun (2026-11-19).
+  const revelee = useApresSuspense(quiz.etape === 'reponse' && quiz.bonne !== null);
+
   const mettreEnFile = (repartition: Repartition, valider: boolean) => {
     const passage = quizRef.current.passage_id;
     file.current = file.current.then(() => envoyer(passage, repartition, valider));
@@ -163,8 +167,6 @@ export function QuizJetons({
       </div>
     );
   }
-
-  const revelee = quiz.etape === 'reponse' && quiz.bonne !== null;
 
   if (quiz.etape === 'question' && !ouverte) {
     return <QuestionSeule quiz={quiz} />;

@@ -1143,7 +1143,59 @@
   min-width: 3ch;
   font-family: var(--tu-font-numeric);
   font-size: inherit;
+  font-variant-numeric: tabular-nums;
   text-align: end;
+}
+
+/* Le classement qui monte (2026-11-19, audit « jeu télé ») : le temps de lire le journal des
+   scores, rien ; puis les barres poussent depuis les totaux d'avant le dernier jeu
+   (`--tu-rank-avant`), et chaque ligne glisse de son rang d'avant à sa place
+   (`--tu-rank-decalage`, en lignes). L'équipe qui prend la tête brille. */
+.tu-stage-rank[data-classement='attente'] .tu-stage-rank__ligne {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-rank[data-classement='anime'] .tu-stage-rank__remplie {
+    animation: tu-rank-pousse var(--tu-dur-classement) var(--tu-ease)
+      var(--tu-dur-classement-depart) both;
+  }
+
+  .tu-stage-rank[data-classement='anime'] .tu-stage-rank__ligne {
+    animation: tu-rank-place var(--tu-dur-classement-place) var(--tu-ease)
+      calc(var(--tu-dur-classement-depart) + var(--tu-dur-classement)) both;
+  }
+
+  .tu-stage-rank[data-classement='anime'] .tu-stage-rank__ligne--leader .tu-stage-rank__nom {
+    animation: tu-rank-leader var(--tu-dur-verdict) var(--tu-ease-clac)
+      calc(
+        var(--tu-dur-classement-depart) + var(--tu-dur-classement) + var(--tu-dur-classement-place)
+      )
+      both;
+  }
+}
+
+@keyframes tu-rank-pousse {
+  from {
+    inline-size: var(--tu-rank-avant, 0%);
+  }
+}
+
+@keyframes tu-rank-place {
+  from {
+    transform: translateY(calc(var(--tu-rank-decalage, 0) * (100% + var(--tu-space-4))));
+  }
+}
+
+@keyframes tu-rank-leader {
+  50% {
+    color: var(--tu-or);
+    transform: scale(1.08);
+  }
+}
+
+.tu-stage-rank__ligne--leader .tu-stage-rank__nom {
+  transform-origin: left center;
 }
 
 /* Podium : deuxième, premier, troisième. */
@@ -1512,18 +1564,61 @@
   color: var(--tu-text-muted);
 }
 
+/* La bonne réponse en vert, avec son bandeau (2026-11-19, audit « jeu télé » : le marine ne
+   disait pas « juste »). */
 .tu-stage-quiz__zone--bonne {
-  border-color: var(--tu-primary);
-  background: var(--tu-primary);
-  color: var(--tu-on-primary);
+  border-color: var(--tu-success);
+  background: var(--tu-success);
+  color: var(--tu-text-invert);
 }
 
 .tu-stage-quiz__zone--bonne .tu-stage-multi__autre {
-  color: var(--tu-on-primary);
+  color: var(--tu-text-invert);
 }
 
 .tu-stage-quiz__zone--fausse {
   opacity: 0.35;
+}
+
+.tu-stage-quiz__bravo {
+  flex: none;
+  align-self: center;
+  margin-inline-start: auto;
+  padding: var(--tu-space-2) var(--tu-space-6);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-text-invert);
+  color: var(--tu-success);
+  font-family: var(--tu-font-display);
+  font-size: calc(var(--tu-size-2xl) * var(--tu-quiz-echelle, 1));
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tu-stage-quiz__verrou {
+  color: var(--tu-danger);
+  font-weight: 700;
+}
+
+/* Le suspense : les mauvaises cases s'éteignent une à une (`--tu-extinction`, leur rang). */
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-quiz[data-suspense] .tu-stage-quiz__zone--fausse {
+    animation: tu-case-eteinte var(--tu-dur-suspense-case) var(--tu-ease)
+      calc(var(--tu-dur-suspense-pas) * (var(--tu-extinction, 0) + 1)) both;
+  }
+
+  .tu-stage-quiz__bravo {
+    animation: tu-verdict-entree var(--tu-dur-verdict) var(--tu-ease-clac) both;
+  }
+}
+
+@keyframes tu-case-eteinte {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.35;
+  }
 }
 
 /* Quiz en mode jetons : la réponse part du milieu de sa case et monte en haut (l'espace

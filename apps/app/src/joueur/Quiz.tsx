@@ -6,6 +6,7 @@ import { cx } from '@teamup/ui/react';
 import type { EtatJoueur, QuizJoueur, QuizTelephone, RefusQuiz } from '@/lib/partie';
 import { ChronoQuestion, LETTRES, QuestionSeule } from './quizCommun';
 import { QuizJetons } from './QuizJetons';
+import { useApresSuspense } from './useApresSuspense';
 
 interface Proprietes<Q> {
   code: string;
@@ -40,6 +41,8 @@ function QuizEnModeTelephone({
   const [envoi, setEnvoi] = useState<{ passage: string | null; choix: number } | null>(null);
   const [refus, setRefus] = useState<{ passage: string | null; refus: RefusQuiz } | null>(null);
 
+  // Le verdict attend la fin du suspense de l'écran commun (2026-11-19).
+  const revelee = useApresSuspense(quiz.etape === 'reponse' && quiz.bonne !== null);
   // On ne répond qu'une fois le chrono lancé, A, B, C, D à l'écran (2026-10-18).
   const ouverte = quiz.etape === 'question' && quiz.chrono_depart_ms !== null;
   const envoiEnCours = envoi?.passage === quiz.passage_id ? envoi.choix : null;
@@ -113,7 +116,6 @@ function QuizEnModeTelephone({
   }
 
   const choisie = quiz.ma_reponse ?? envoiEnCours;
-  const revelee = quiz.etape === 'reponse' && quiz.bonne !== null;
 
   if (quiz.etape === 'question' && !ouverte) {
     return <QuestionSeule quiz={quiz} />;

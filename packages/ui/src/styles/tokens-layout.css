@@ -135,6 +135,17 @@
   --tu-dur-clac: 700ms;
   --tu-ease-clac: cubic-bezier(0.3, 1.4, 0.5, 1);
   --tu-dur-carte-arret: 900ms;
+  /* Plateau (2026-11-19, audit « jeu télé ») : l'entrée du titre d'un verdict et le départ de ses
+     points (`DELAI_POINTS_MS`, src/ecran/Verdict.tsx) ; le suspense du quiz, une case éteinte
+     après l'autre (`SUSPENSE_MS`, égal à `--tu-dur-interlude`) ; le classement qui monte, puis
+     les équipes qui changent de place (`src/lib/classement.ts`). */
+  --tu-dur-verdict: 700ms;
+  --tu-dur-verdict-points: 500ms;
+  --tu-dur-suspense-case: 400ms;
+  --tu-dur-suspense-pas: 400ms;
+  --tu-dur-classement-depart: 300ms;
+  --tu-dur-classement: 1300ms;
+  --tu-dur-classement-place: 600ms;
 
   /* Ouverture de l'écran commun (2026-10-17). */
   /* Les quatre ronds de l'ouverture : un cycle (égal à CYCLE_OUVERTURE_MS, src/lib/ouverture.ts,

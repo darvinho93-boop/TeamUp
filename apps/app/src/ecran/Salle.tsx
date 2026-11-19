@@ -13,6 +13,7 @@ import { IconeInstagram } from '@/marque/IconeInstagram';
 import { INSTAGRAM } from '@/marque/instagram';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Ronds } from '@/marque/Ronds';
+import { SalleContexte } from './SalleContexte';
 import { Bulles } from './Bulles';
 import { FondDeScene } from './FondDeScene';
 import { Finale } from './Finale';
@@ -125,84 +126,88 @@ export function Salle({
   return (
     <NextIntlClientProvider locale={langue} messages={MESSAGES[langue]}>
       <SonsContexte value={sons.jouer}>
-        <div
-          className={cx(
-            'tu-stage',
-            apercu && 'tu-stage--apercu',
-            projete && 'tu-stage--projete',
-            logoPartenaire && 'tu-stage--partenaire',
-            fonds.size > 0 && 'tu-stage--fond',
-          )}
-          lang={langue}
-          aria-hidden={apercu || undefined}
-          data-fin-de-boucle={finDeBoucle || undefined}
-          data-d-emblee={premiere || undefined}
-        >
-          {fonds.size > 0 && <FondDeScene url={urlFond} />}
-          {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
-          <Scene
-            key={`${sceneAffichee}:${mancheId ?? ''}`}
-            etat={
-              finDeBoucle ? { ...etat, pilotage: { ...etat.pilotage, scene: sceneAffichee } } : etat
-            }
-            decalageMs={decalageMs}
-            qrSvg={qrSvg}
-            adresse={adresse}
-          />
-          {/* Le logo du partenaire en haut à gauche, dans la boîte de la marque Team Up! ; le compte
-              Instagram descend alors en bas à gauche (2026-11-11). */}
-          {logoPartenaire && (
-            // Fichier du bucket public, déjà à la bonne taille : rien à optimiser côté Next.
-            <img
-              className="tu-logo-partenaire tu-stage__partenaire"
-              src={logoPartenaire}
-              alt={MESSAGES[langue].ecran.partenaire}
-              data-testid="logo-partenaire"
-            />
-          )}
-          {/* Le compte Instagram en haut à gauche, sur toutes les scènes ; le logo animé en haut à
-              droite, sauf là où il est déjà en grand (2026-10-22). */}
-          {!PAGES_INSTAGRAM.has(sceneAffichee) && (
-            <span className="tu-stage__insta" data-testid="insta-coin">
-              <IconeInstagram />
-              {INSTAGRAM.pseudo}
-            </span>
-          )}
-          {!LOGO_EN_GRAND.has(sceneAffichee) && (
-            <span className="tu-marque tu-stage__picto">
-              <Ronds mode="coin" />
-              <Wordmark className="tu-stage__nom" />
-            </span>
-          )}
-          {interlude && (
-            <div key={interlude} className="tu-interlude" data-testid="interlude">
-              <Pictogramme taille="lg" anime />
-            </div>
-          )}
-          {enFinale && <Finale key={passage} depuisMs={depuisMs} />}
-          {/* Les messages des joueurs et de la régie, par-dessus toutes les scènes (2026-11-15) ;
-              dans l'aperçu aussi : l'animateur voit ce que voit la salle. */}
-          {etat.messages && (
-            <Bulles
-              messages={etat.messages}
-              decalageMs={decalageMs}
-              // Pendant le quiz, ses cases remplissent la scène : un bandeau en bas, une bulle à
-              // la fois (2026-11-15, vu à 8 équipes).
-              bandeau={
-                scene === 'jeu' && etat.programme.find((m) => m.id === mancheId)?.jeu === 'qcm2'
+        <SalleContexte value={{ apercu, premiere }}>
+          <div
+            className={cx(
+              'tu-stage',
+              apercu && 'tu-stage--apercu',
+              projete && 'tu-stage--projete',
+              logoPartenaire && 'tu-stage--partenaire',
+              fonds.size > 0 && 'tu-stage--fond',
+            )}
+            lang={langue}
+            aria-hidden={apercu || undefined}
+            data-fin-de-boucle={finDeBoucle || undefined}
+            data-d-emblee={premiere || undefined}
+          >
+            {fonds.size > 0 && <FondDeScene url={urlFond} />}
+            {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
+            <Scene
+              key={`${sceneAffichee}:${mancheId ?? ''}`}
+              etat={
+                finDeBoucle
+                  ? { ...etat, pilotage: { ...etat.pilotage, scene: sceneAffichee } }
+                  : etat
               }
+              decalageMs={decalageMs}
+              qrSvg={qrSvg}
+              adresse={adresse}
             />
-          )}
-          {sons.aActiver && (
-            <button
-              type="button"
-              className="tu-btn tu-btn--ghost tu-stage__son"
-              onClick={() => void sons.activer()}
-            >
-              {MESSAGES[langue].ecran.activerSon}
-            </button>
-          )}
-        </div>
+            {/* Le logo du partenaire en haut à gauche, dans la boîte de la marque Team Up! ; le compte
+              Instagram descend alors en bas à gauche (2026-11-11). */}
+            {logoPartenaire && (
+              // Fichier du bucket public, déjà à la bonne taille : rien à optimiser côté Next.
+              <img
+                className="tu-logo-partenaire tu-stage__partenaire"
+                src={logoPartenaire}
+                alt={MESSAGES[langue].ecran.partenaire}
+                data-testid="logo-partenaire"
+              />
+            )}
+            {/* Le compte Instagram en haut à gauche, sur toutes les scènes ; le logo animé en haut à
+              droite, sauf là où il est déjà en grand (2026-10-22). */}
+            {!PAGES_INSTAGRAM.has(sceneAffichee) && (
+              <span className="tu-stage__insta" data-testid="insta-coin">
+                <IconeInstagram />
+                {INSTAGRAM.pseudo}
+              </span>
+            )}
+            {!LOGO_EN_GRAND.has(sceneAffichee) && (
+              <span className="tu-marque tu-stage__picto">
+                <Ronds mode="coin" />
+                <Wordmark className="tu-stage__nom" />
+              </span>
+            )}
+            {interlude && (
+              <div key={interlude} className="tu-interlude" data-testid="interlude">
+                <Pictogramme taille="lg" anime />
+              </div>
+            )}
+            {enFinale && <Finale key={passage} depuisMs={depuisMs} />}
+            {/* Les messages des joueurs et de la régie, par-dessus toutes les scènes (2026-11-15) ;
+              dans l'aperçu aussi : l'animateur voit ce que voit la salle. */}
+            {etat.messages && (
+              <Bulles
+                messages={etat.messages}
+                decalageMs={decalageMs}
+                // Pendant le quiz, ses cases remplissent la scène : un bandeau en bas, une bulle à
+                // la fois (2026-11-15, vu à 8 équipes).
+                bandeau={
+                  scene === 'jeu' && etat.programme.find((m) => m.id === mancheId)?.jeu === 'qcm2'
+                }
+              />
+            )}
+            {sons.aActiver && (
+              <button
+                type="button"
+                className="tu-btn tu-btn--ghost tu-stage__son"
+                onClick={() => void sons.activer()}
+              >
+                {MESSAGES[langue].ecran.activerSon}
+              </button>
+            )}
+          </div>
+        </SalleContexte>
       </SonsContexte>
     </NextIntlClientProvider>
   );

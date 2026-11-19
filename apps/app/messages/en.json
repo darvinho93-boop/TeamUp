@@ -1115,7 +1115,14 @@
       "faisons": "Let's get to know {prenom}",
       "ans": "{age} years old",
       "equipe": "And the whole team"
-    }
+    },
+    "palierVerdict": "Stage {n} · ×{mult}",
+    "pointsAutres": "{points, plural, =0 {0 points} one {+# point} other {+# points}} for every other team",
+    "duelGagne": "{prenom} wins!",
+    "duelContre": "against {prenom}",
+    "verrouillees": "Answers locked!",
+    "etLaBonneReponse": "And the right answer is…",
+    "bonneReponse": "Right answer!"
   },
   "admin": {
     "nav": {
