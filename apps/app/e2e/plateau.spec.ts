@@ -10,10 +10,21 @@ import {
 
 /**
  * Plateau (2026-11-19, audit « jeu télé ») : le verdict commun en plein écran et ses points qui
- * défilent, le suspense du quiz (l'écran et le téléphone attendent le roulement), le classement
- * qui monte depuis les totaux d'avant le dernier jeu, le duel gagné à la couleur de l'équipe.
- * Les étapes s'écrivent comme la régie les écrit (`enregistrer_etape`), puis le signal sans données.
+ * défilent, le suspense du quiz (l'écran et le téléphone attendent le roulement, puis le
+ * téléphone montre son bandeau de couleur), le classement qui monte depuis les totaux d'avant le
+ * dernier jeu, le duel gagné à la couleur de l'équipe ; l'habillage (ronds pendant les attentes
+ * seulement) et la boîte à sons de la régie. Les étapes s'écrivent comme la régie les écrit
+ * (`enregistrer_etape`), puis le signal sans données.
  */
+
+/** Les sons joués par l'écran, une fois le son activé. */
+const journal = (ecran: Page) =>
+  ecran.evaluate(
+    () =>
+      (
+        window as unknown as { __tuLecteur?: { journal: { son: string }[] } }
+      ).__tuLecteur?.journal.map((j) => j.son) ?? [],
+  );
 
 let evenement: { id: string; code: string };
 const contenus: string[] = [];
@@ -150,6 +161,10 @@ test('verdicts, suspense du quiz, classement qui monte', async ({ browser, baseU
   ).newPage();
   await ecran.goto(`/ecran/${evenement.code}`);
   await expect(ecran.locator('[data-en-direct="true"]')).toBeVisible({ timeout: 15_000 });
+  await ecran.getByRole('button', { name: 'Activer le son' }).click();
+  // L'habillage : le halo partout, les ronds pendant les attentes (le programme).
+  await expect(ecran.locator('.tu-stage--habillage')).toHaveCount(1);
+  await expect(ecran.locator('.tu-habillage__ronds')).toHaveAttribute('data-visible', 'true');
 
   // ========== Points communs trouvés : plein écran vert, le palier, les points qui défilent.
   const pcp = { scene: 'jeu', manche_id: pc.id, passage_id: pc.passages[0] };
@@ -161,6 +176,8 @@ test('verdicts, suspense du quiz, classement qui monte', async ({ browser, baseU
     },
   );
   await expect(ecran.locator('[data-scene="list2"][data-etape="lance"]')).toBeVisible();
+  // Pendant le jeu, plus de ronds en fond.
+  await expect(ecran.locator('.tu-habillage__ronds')).toHaveAttribute('data-visible', 'false');
   await service
     .from('passages')
     .update({ statut: 'termine', points: 120, resultat: { ecoule_ms: 30_000 } })
@@ -218,6 +235,9 @@ test('verdicts, suspense du quiz, classement qui monte', async ({ browser, baseU
   // Le téléphone de Zoé ne dévoile son verdict qu'après le suspense de l'écran.
   await expect(zoe.getByTestId('statut-quiz')).toHaveText(/Hors jeu/, { timeout: 8000 });
   expect(Date.now() - revele).toBeGreaterThanOrEqual(1500);
+  // Le verdict en bandeau plein, rouge.
+  await expect(zoe.getByTestId('statut-quiz')).toHaveClass(/tu-quiz__statut--verdict/);
+  await expect(zoe.getByTestId('statut-quiz')).toHaveClass(/tu-quiz__statut--out/);
 
   // ========== Classement : les Comètes (équipe 2) passent devant au dernier jeu.
   await service.from('scores').insert([
@@ -278,4 +298,13 @@ test('verdicts, suspense du quiz, classement qui monte', async ({ browser, baseU
   await expect(gagne).toHaveAttribute('data-ton', 'equipe');
   await expect(ecran.getByTestId('verdict')).toHaveText('Zoé gagne !');
   await expect(ecran.getByTestId('verdict-duel')).toHaveText('+50 points', { timeout: 5000 });
+
+  // ========== La boîte à sons de la régie, puis l'habillage retiré.
+  await regie.goto(`/regie/${evenement.code}/pilotage`);
+  const boite = regie.getByTestId('boite-a-sons');
+  await boite.getByTestId('bruitage-applaudissements').click();
+  await expect.poll(() => journal(ecran), { timeout: 10_000 }).toContain('applaudissements');
+  await boite.getByTestId('habillage').click();
+  await expect(ecran.locator('.tu-stage--habillage')).toHaveCount(0, { timeout: 10_000 });
+  await expect(boite.getByTestId('habillage')).toHaveText('Habillage du plateau : retiré');
 });

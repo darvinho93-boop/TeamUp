@@ -1780,3 +1780,36 @@ Aucune migration.
   classement ; `reussite` à la fin du quiz (points qui défilent). Générés par
   `scripts/sons-elevenlabs.mjs --seulement top,glisse,buzzer`.
 - Tests : `tests/plateau.test.ts`, `tests/sons.test.ts`, `e2e/plateau.spec.ts`.
+
+## Conventions posées le 2026-11-19 (plateau, suite : boîte à sons, tailles, habillage)
+
+Suite de l'audit « jeu télé ». Tranché le 2026-11-19 : boîte à sons (applaudissements, roulements,
+bonne réponse / raté, buzzer) ; habillage « halo projecteur » et « ronds du logo en fond » ;
+téléphone en couleur seulement (l'écran d'attente ne bouge pas).
+
+- **Boîte à sons** : migration `20261121090000`, `pilotage.bruitage` (`{ son, a_ms }`, heure de
+  la base) écrit par `jouer_bruitage` (security invoker, liste fermée de six sons : `BRUITAGES`,
+  `src/lib/sons.ts`), sans toucher à `maj_le`. Le canal `salle:<id>` reste sans données : un
+  invité ne peut pas faire jouer de son. L'écran le joue quand l'heure change sous ses yeux
+  (`Instant.bruitageMs`, jamais au chargement). Régie : `src/regie/BoiteASons.tsx`, sous le
+  réglage du son, puis le signal `mises` (`signaler(SIGNAL_MISES)` : les téléphones ne relisent
+  pas). Son `applaudissements` généré chez ElevenLabs.
+- **Tailles plateau** : `--tu-stage-plateau` (9 rem) et `--tu-stage-plateau-xl` (12 rem),
+  au-delà du 6 rem de la charte : mot du Mime et point commun (`.tu-stage-lecture`,
+  `--tu-lecture-echelle`), sujet de la Surenchère, chrono du quiz, titre et points du verdict
+  (`--tu-verdict-echelle`, réduit par `useAjusterTexte`). Les chronos de jeu restaient à 10 rem
+  (`--tu-stage-chrono`). Mode croix : la consigne de placement en marine et en gras.
+- **Habillage** (`src/ecran/Habillage.tsx`, `habillage.css`) : halo de projecteur
+  (`--tu-stage-halo-*`) derrière toute scène, sauf sous une photo de fond ; ronds du logo pâles
+  (jamais le corail) pendant les attentes seulement (`fondDeRonds`, `src/lib/habillage.ts`).
+  `pilotage.habillage` (actif par défaut), `regler_habillage`, interrupteur dans la boîte à sons.
+  Écart assumé à « un seul fond » : le beige reste, éclairé.
+- **Téléphone** : verdict du quiz en bandeau plein vert ou rouge (`tu-quiz__statut--verdict`)
+  avec vibration (`useVibration`), après le suspense ; au Blind test, « À vous ! » à la couleur
+  de l'équipe, le titre trouvé en vert.
+- **Petits défauts** : `typographie` (`src/lib/typographie.ts`) rend insécable l'espace avant
+  `? ! : ;` d'un contenu en français (dans `Multilingue`) ; au podium, les messages en bandeau ;
+  `dispositionDesMembres` ne laisse jamais une colonne d'un seul prénom ; le nom d'un jeu entre
+  en rebond après l'interlude (présentation vue en direct seulement).
+- Tests : `tests/bruitages-base.test.ts`, `tests/typographie.test.ts` (et `fondDeRonds`),
+  `tests/membres.test.ts`, `tests/sons.test.ts`, `e2e/plateau.spec.ts`.
