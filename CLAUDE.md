@@ -1742,3 +1742,41 @@ seul** ; affichées **sur une touche de la régie**.
 - `playwright.config.ts` n'exclut aucun fichier : ne jamais lancer toute la suite e2e en local avec
   les scripts non suivis (`recette-en-ligne`, `recette-soiree`, `soiree-100`, `_captures-*`) dans
   `e2e/` ; lancer les fichiers voulus un par un.
+
+## Conventions posées le 2026-11-19 (plateau : verdicts, suspense, classement)
+
+Audit « jeu télé » du 19/11 (artifact privé de l'utilisateur) : l'écran faisait jeu télé sur les
+grands moments, pas pendant le jeu. Tranché le 2026-11-19 : la priorité 1 (un même grand
+verdict, du suspense avant les révélations, des points qui montent) et trois sons nouveaux.
+Aucune migration.
+
+- **Verdict commun** (`src/ecran/Verdict.tsx`, `verdict.css`) : la scène entière en vert
+  (trouvé, pari tenu), en rouge (raté) ou à la couleur de l'équipe (duel gagné), l'équipe, le
+  verdict en 5xl, un détail, puis les points qui défilent (`useCompteur`, `src/lib/compteur.ts`).
+  Points communs, Surenchère à la voix, Mime, duels. Blind test et Photo gardent leur mise en
+  page, leurs points défilent ; Portrait mystère inchangé. Fête, entrée du titre et défilement
+  seulement si l'écran a vu l'état arriver (`useArrivee`) : rechargé, tout est posé d'emblée.
+  Les `data-testid` (`verdict`, `mot`, `sujet`, `verdict-duel`, `verdict-photo`) sont gardés.
+- **Suspense du quiz** (`src/lib/suspense.ts`) : chrono à zéro, « Réponses verrouillées ! » ; à
+  « Révéler », vu en direct, « Et la bonne réponse est… », les mauvaises cases s'éteignent une à
+  une (ordre tiré de l'identifiant de la question, `rangsDExtinction`), puis à `SUSPENSE_MS`
+  (= `INTERLUDE_MS`, 1,6 s, le roulement `presentation`) la bonne passe en vert (`--tu-success`,
+  plus le marine) avec « Bonne réponse ! », son `revelation`. La scène joue ces sons
+  (`qcm2.reponse` a quitté `VERDICTS`). Le `data-testid` « bonne-reponse » est posé dès l'arrivée
+  de l'état (les mesures de latence n'attendent pas le suspense) ; la couleur se lit sur
+  `data-revelee`. Les téléphones attendent autant (`useApresSuspense`) : ils ne devancent jamais
+  l'écran. Ni au rechargement, ni dans l'aperçu, ni sans mouvement.
+- `SalleContexte` (`src/ecran/SalleContexte.ts`), fourni par `Salle.tsx` : `apercu` et `premiere`
+  (la scène trouvée au chargement).
+- **Classement qui monte** (`src/lib/classement.ts`) : vue en direct, la scène lit le journal des
+  scores (session de l'animateur) ; les barres poussent depuis les totaux d'avant le dernier jeu
+  (celui de la ligne la plus récente ; une correction hors jeu reste dans « avant » ; sans jeu,
+  tout part de 0), les chiffres défilent, puis les lignes glissent à leur place
+  (`CHANGEMENT_DE_PLACE_MS` = 1,6 s, son `revelation` si l'ordre change) et le nouveau leader
+  brille. Le chrono de la salle n'est pas touché (un jeu quitté pour les scores garde le sien).
+- **Sons** : `top` au départ de chaque chrono de jeu (sauf Blind test et Portrait), `glisse` à la
+  question du quiz puis à chaque réponse affichée (`Instant.indices`), `buzzer` au buzz du Blind
+  test ; duels : `roulement` au tirage, `revelation` au face-à-face ; `presentation` à l'arrivée du
+  classement ; `reussite` à la fin du quiz (points qui défilent). Générés par
+  `scripts/sons-elevenlabs.mjs --seulement top,glisse,buzzer`.
+- Tests : `tests/plateau.test.ts`, `tests/sons.test.ts`, `e2e/plateau.spec.ts`.

@@ -254,7 +254,8 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
       ecran.getByTestId('bonne-reponse'),
     );
     if (q === 1) {
-      await expect(telephone.getByTestId('statut-quiz')).toHaveText(/Hors jeu/, { timeout: 2000 });
+      // Le téléphone attend la fin du suspense de l'écran (2026-11-19) : 1,6 s de plus.
+      await expect(telephone.getByTestId('statut-quiz')).toHaveText(/Hors jeu/, { timeout: 5000 });
     }
     await regie
       .getByRole('button', { name: q < 4 ? 'Question suivante' : 'Fin des questions' })

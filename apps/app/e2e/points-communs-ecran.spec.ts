@@ -9,8 +9,9 @@ import {
 
 /**
  * Points communs d'une soirée en trois langues, trois indices donnés (2026-10-23) : chrono,
- * paliers, indices et verdict tiennent dans la scène en 1 920 × 1 080, le texte se réduisant au
- * besoin. Empilés, trois indices en trois langues sortaient de l'écran.
+ * paliers et indices tiennent dans la scène en 1 920 × 1 080, le texte se réduisant au besoin.
+ * Empilés, trois indices en trois langues sortaient de l'écran. Depuis le 2026-11-19, le verdict
+ * prend toute la scène (verdict commun) : il doit y tenir aussi.
  */
 
 const CONTENU = {
@@ -170,12 +171,16 @@ test('trois indices en trois langues tiennent dans la scène', async ({ browser 
   );
   await verifier('lance');
 
-  // Trouvé : le verdict s'ajoute sous les indices.
+  // Trouvé : le verdict commun prend la scène, sans les indices, et y tient.
   await service
     .from('passages')
     .update({ statut: 'termine', points: 120, resultat: { ecoule_ms: 100_000 } })
     .eq('id', passage);
   await etape({ etape: 'trouve', indices: 3, chrono: 'arreter' });
-  await verifier('trouve');
+  await ecran.goto(`/ecran/${evenement.code}`);
+  const verdict = ecran.locator('[data-scene="list2"][data-etape="trouve"]');
+  await expect(verdict).toHaveAttribute('data-ton', 'vert', { timeout: 15_000 });
+  await expect(verdict).toContainText('+120 points');
+  await expect.poll(() => debords(ecran), { message: 'débords (trouve)' }).toEqual([]);
   await expect(ecran.getByTestId('verdict')).toBeInViewport({ ratio: 1 });
 });
