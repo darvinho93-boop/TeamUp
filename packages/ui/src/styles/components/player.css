@@ -533,6 +533,40 @@
   font-size: var(--tu-size-2xl);
 }
 
+/* Plateau (2026-11-19, audit « jeu télé ») : le verdict en grand bandeau plein, vert ou rouge
+   (après le suspense de l'écran commun), et l'équipe qui a la main au Blind test, à sa
+   couleur. Sur ces fonds, le texte en blanc (ou dans la couleur de texte de l'équipe). */
+.tu-quiz__statut--verdict,
+.tu-quiz__statut--equipe {
+  display: grid;
+  place-items: center;
+  padding: var(--tu-space-5) var(--tu-space-4);
+  border-radius: var(--tu-radius-lg);
+  font-size: var(--tu-size-2xl);
+}
+
+.tu-quiz__statut--verdict.tu-quiz__statut--in {
+  background: var(--tu-success);
+  color: var(--tu-text-invert);
+}
+
+.tu-quiz__statut--verdict.tu-quiz__statut--out {
+  background: var(--tu-danger);
+  color: var(--tu-text-invert);
+}
+
+.tu-quiz__statut--equipe {
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-quiz__statut--verdict,
+  .tu-quiz__statut--equipe {
+    animation: tu-verdict-entree var(--tu-dur-verdict) var(--tu-ease-clac) both;
+  }
+}
+
 /* Le buzzer du capitaine : un disque qui occupe l'écran, corail (« à toi »), grisé quand il
    n'a plus la main. */
 .tu-buzzer {

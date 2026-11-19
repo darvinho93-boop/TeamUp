@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { cx } from '@teamup/ui/react';
+import { cx, teamModifier } from '@teamup/ui/react';
 import type { BlindJoueur, EtatJoueur, RefusBuzz } from '@/lib/partie';
+import { useVibration, VIBRATION_JUSTE } from './useApresSuspense';
 
 /**
  * Blind test au téléphone (2026-11-15) : pendant l'écoute, le capitaine d'une équipe qui a encore
@@ -48,6 +49,10 @@ export function BlindTest({
     relire();
   }
 
+  // Le titre trouvé par son équipe : bandeau vert et vibration (2026-11-19).
+  const trouve = b.etape === 'revele' && b.equipe !== null && b.trouve_par === b.equipe;
+  useVibration(trouve, VIBRATION_JUSTE);
+
   if (b.equipe === null) return <p className="tu-quiz__statut">{t('sansEquipe')}</p>;
 
   const aLaMain = b.etape === 'buzz' && b.buzz === b.equipe;
@@ -89,7 +94,13 @@ export function BlindTest({
         </button>
       )}
       <p
-        className={cx('tu-quiz__statut', aLaMain && 'tu-quiz__statut--fort')}
+        className={cx(
+          'tu-quiz__statut',
+          aLaMain && 'tu-quiz__statut--fort',
+          // L'équipe qui a la main, à sa couleur ; le titre trouvé, en vert (2026-11-19).
+          aLaMain && cx('tu-quiz__statut--equipe', teamModifier(b.equipe)),
+          trouve && 'tu-quiz__statut--verdict tu-quiz__statut--in',
+        )}
         role="status"
         data-testid="statut-blind"
       >

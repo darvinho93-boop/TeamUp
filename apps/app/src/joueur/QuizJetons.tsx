@@ -6,7 +6,12 @@ import { Button, cx } from '@teamup/ui/react';
 import { totalMise, type Repartition } from '@teamup/game';
 import type { EtatJoueur, QuizJetons as Quiz, RefusMise } from '@/lib/partie';
 import { ChronoQuestion, LETTRES, QuestionSeule } from './quizCommun';
-import { useApresSuspense } from './useApresSuspense';
+import {
+  useApresSuspense,
+  useVibration,
+  VIBRATION_JUSTE,
+  VIBRATION_RATE,
+} from './useApresSuspense';
 
 /** Une mise en cours part au serveur ce délai après le dernier appui (l'écran la montre). */
 const ENVOI_MS = 400;
@@ -95,6 +100,7 @@ export function QuizJetons({
 
   // Le verdict attend la fin du suspense de l'écran commun (2026-11-19).
   const revelee = useApresSuspense(quiz.etape === 'reponse' && quiz.bonne !== null);
+  useVibration(revelee, quiz.jetons > 0 ? VIBRATION_JUSTE : VIBRATION_RATE);
 
   const mettreEnFile = (repartition: Repartition, valider: boolean) => {
     const passage = quizRef.current.passage_id;
@@ -269,6 +275,8 @@ export function QuizJetons({
       <p
         className={cx(
           'tu-quiz__statut',
+          // Le verdict en grand bandeau plein, vert ou rouge (2026-11-19).
+          revelee && 'tu-quiz__statut--verdict',
           revelee && (quiz.jetons > 0 ? 'tu-quiz__statut--in' : 'tu-quiz__statut--out'),
           !revelee && quiz.fige && 'tu-quiz__statut--out',
         )}

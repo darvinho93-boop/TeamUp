@@ -6,7 +6,12 @@ import { cx } from '@teamup/ui/react';
 import type { EtatJoueur, QuizJoueur, QuizTelephone, RefusQuiz } from '@/lib/partie';
 import { ChronoQuestion, LETTRES, QuestionSeule } from './quizCommun';
 import { QuizJetons } from './QuizJetons';
-import { useApresSuspense } from './useApresSuspense';
+import {
+  useApresSuspense,
+  useVibration,
+  VIBRATION_JUSTE,
+  VIBRATION_RATE,
+} from './useApresSuspense';
 
 interface Proprietes<Q> {
   code: string;
@@ -43,6 +48,7 @@ function QuizEnModeTelephone({
 
   // Le verdict attend la fin du suspense de l'écran commun (2026-11-19).
   const revelee = useApresSuspense(quiz.etape === 'reponse' && quiz.bonne !== null);
+  useVibration(revelee, quiz.elimine ? VIBRATION_RATE : VIBRATION_JUSTE);
   // On ne répond qu'une fois le chrono lancé, A, B, C, D à l'écran (2026-10-18).
   const ouverte = quiz.etape === 'question' && quiz.chrono_depart_ms !== null;
   const envoiEnCours = envoi?.passage === quiz.passage_id ? envoi.choix : null;
@@ -169,7 +175,16 @@ function QuizEnModeTelephone({
         })}
       </ol>
 
-      <p className="tu-quiz__statut" role="status" data-testid="statut-quiz">
+      <p
+        className={cx(
+          'tu-quiz__statut',
+          // Le verdict en grand bandeau plein, vert ou rouge (2026-11-19).
+          revelee && 'tu-quiz__statut--verdict',
+          revelee && (quiz.elimine ? 'tu-quiz__statut--out' : 'tu-quiz__statut--in'),
+        )}
+        role="status"
+        data-testid="statut-quiz"
+      >
         {revelee
           ? quiz.elimine
             ? t('elimine')

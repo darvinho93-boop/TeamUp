@@ -22,3 +22,19 @@ export function useApresSuspense(revelee: boolean): boolean {
   }, [attente]);
   return revelee && !attente;
 }
+
+/**
+ * Un verdict sous les doigts (2026-11-19) : le téléphone vibre quand `actif` passe à vrai (deux
+ * brèves pour « juste », une longue sinon). Sans geste préalable, le navigateur l'ignore : rien
+ * au rechargement.
+ */
+export function useVibration(actif: boolean, motif: number | number[]): void {
+  useEffect(() => {
+    if (actif && typeof navigator.vibrate === 'function') navigator.vibrate(motif);
+    // Seulement quand `actif` change : le motif est un tableau neuf à chaque rendu.
+  }, [actif]);
+}
+
+/** Les motifs de vibration d'un verdict. */
+export const VIBRATION_JUSTE = [80, 60, 80];
+export const VIBRATION_RATE = 400;
