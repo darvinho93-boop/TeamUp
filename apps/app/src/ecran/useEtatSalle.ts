@@ -175,10 +175,14 @@ export function useEtatSalle(code: string, initial: EtatSalle, regie: boolean) {
     return () => clearTimeout(minuterie);
   }, [relectureMots, relire]);
 
-  /** Prévient les autres fenêtres de la salle qu'il faut relire (après une touche de la régie). */
-  const signaler = useCallback(() => {
+  /**
+   * Prévient les autres fenêtres de la salle qu'il faut relire (après une touche de la régie).
+   * `SIGNAL_MISES` ne réveille que l'écran et la régie : la boîte à sons ne fait pas relire les
+   * téléphones.
+   */
+  const signaler = useCallback((evenement: typeof SIGNAL | typeof SIGNAL_MISES = SIGNAL) => {
     void pretRef.current?.then((canal) =>
-      canal?.send({ type: 'broadcast', event: SIGNAL, payload: {} }),
+      canal?.send({ type: 'broadcast', event: evenement, payload: {} }),
     );
   }, []);
 

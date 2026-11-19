@@ -744,6 +744,19 @@
         "trouvee": "Trouvé au tour {tour} (+{points})",
         "voteDe": "Vote de {equipe}",
         "pasDeVote": "Pas encore de vote"
+      },
+      "bruitages": {
+        "titre": "Boîte à sons",
+        "sonCoupe": "Le son de l'écran commun est coupé : rien ne s'entendra.",
+        "applaudissements": "Applaudissements",
+        "roulement": "Roulement (5 s)",
+        "presentation": "Suspense (court)",
+        "reussite": "Bonne réponse",
+        "echec": "Raté",
+        "buzzer": "Buzzer",
+        "habillageActif": "Habillage du plateau : affiché",
+        "habillageRetire": "Habillage du plateau : retiré",
+        "erreur": "Ça n'a pas marché : réessayez."
       }
     },
     "salle": {

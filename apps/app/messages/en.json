@@ -744,6 +744,19 @@
         "trouvee": "Found in round {tour} (+{points})",
         "voteDe": "{equipe}’s vote",
         "pasDeVote": "No vote yet"
+      },
+      "bruitages": {
+        "titre": "Sound board",
+        "sonCoupe": "The shared screen is muted: nothing will be heard.",
+        "applaudissements": "Applause",
+        "roulement": "Drum roll (5 s)",
+        "presentation": "Suspense (short)",
+        "reussite": "Right answer",
+        "echec": "Wrong",
+        "buzzer": "Buzzer",
+        "habillageActif": "Stage dressing: shown",
+        "habillageRetire": "Stage dressing: hidden",
+        "erreur": "That didn't work: try again."
       }
     },
     "salle": {

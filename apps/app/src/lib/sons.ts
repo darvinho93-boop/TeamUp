@@ -28,6 +28,7 @@ export const SONS = [
   'top',
   'glisse',
   'buzzer',
+  'applaudissements',
 ] as const;
 export type Son = (typeof SONS)[number];
 
@@ -54,7 +55,21 @@ export const NIVEAUX: Record<Son, number> = {
   top: 0.8,
   glisse: 0.45,
   buzzer: 0.9,
+  applaudissements: 0.9,
 };
+
+/** Les sons de la boîte à sons de la régie (2026-11-19), dans l'ordre de ses touches. */
+export const BRUITAGES = [
+  'applaudissements',
+  'roulement',
+  'presentation',
+  'reussite',
+  'echec',
+  'buzzer',
+] as const satisfies readonly Son[];
+export type Bruitage = (typeof BRUITAGES)[number];
+const estBruitage = (son: string | null): son is Bruitage =>
+  (BRUITAGES as readonly string[]).includes(son ?? '');
 
 /**
  * Le coup du son de la passe finale (la piste du reel Team Up!, `scripts/son-finale.mjs`), en ms
@@ -130,6 +145,9 @@ export interface Instant {
   chronoDepartMs: number | null;
   /** Les réponses du quiz déjà affichées, les indices donnés (`pilotage.indices`). */
   indices: number;
+  /** Le dernier son de la boîte à sons, et l'heure (de la base) où la régie l'a demandé. */
+  bruitageSon: string | null;
+  bruitageMs: number | null;
 }
 
 export function instantDe(etat: EtatSalle): Instant {
@@ -143,6 +161,8 @@ export function instantDe(etat: EtatSalle): Instant {
     joueurs: etat.joueurs,
     chronoDepartMs: etat.pilotage.chrono_depart_ms,
     indices: etat.pilotage.indices,
+    bruitageSon: etat.bruitage?.son ?? null,
+    bruitageMs: etat.bruitage?.a_ms ?? null,
   };
 }
 
@@ -177,6 +197,14 @@ const SANS_TOP: ReadonlySet<GameCode> = new Set(['blind', 'portrait']);
  */
 export function sonsPour(avant: Instant, apres: Instant): Son[] {
   const sons: Son[] = [];
+  // La boîte à sons de la régie (2026-11-19) : un nouveau son demandé, vu par cet écran.
+  if (
+    apres.bruitageMs !== null &&
+    apres.bruitageMs !== avant.bruitageMs &&
+    estBruitage(apres.bruitageSon)
+  ) {
+    sons.push(apres.bruitageSon);
+  }
   // Un seul son, même si dix invités sont arrivés entre deux lectures.
   if (apres.scene === 'accueil' && apres.joueurs > avant.joueurs) sons.push('arrivee');
   if (apres.scene === 'podium' && avant.scene !== 'podium') sons.push('fanfare');

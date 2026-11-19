@@ -76,7 +76,18 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
   const { actif, volume } = reglage;
   useEffect(() => lecteur?.regler({ actif, volume }), [lecteur, actif, volume]);
 
-  const { scene, etape, mancheId, passageId, jeu, joueurs, chronoDepartMs, indices } = instant;
+  const {
+    scene,
+    etape,
+    mancheId,
+    passageId,
+    jeu,
+    joueurs,
+    chronoDepartMs,
+    indices,
+    bruitageSon,
+    bruitageMs,
+  } = instant;
   useEffect(() => {
     const apres: Instant = {
       scene,
@@ -87,6 +98,8 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
       joueurs,
       chronoDepartMs,
       indices,
+      bruitageSon,
+      bruitageMs,
     };
     const avant = precedent.current;
     precedent.current = apres;
@@ -97,7 +110,19 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
       for (const son of sonsPour(avant, apres))
         for (const pas of deroule(son, sansMouvement)) lecteur.jouer(pas.son, pas.apresMs);
     }
-  }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs, chronoDepartMs, indices]);
+  }, [
+    lecteur,
+    scene,
+    etape,
+    mancheId,
+    passageId,
+    jeu,
+    joueurs,
+    chronoDepartMs,
+    indices,
+    bruitageSon,
+    bruitageMs,
+  ]);
 
   // La musique de fond du moment. Celle d'une explication s'arrête avec elle : l'étape reste
   // « explication » tant que la régie n'a rien touché, mais le script, lui, a une fin.
@@ -113,6 +138,8 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
       joueurs,
       chronoDepartMs: depart,
       indices,
+      bruitageSon: null,
+      bruitageMs: null,
     });
     if (fond !== 'explication' || depart === null || duree === null) {
       lecteur.fond(fond);

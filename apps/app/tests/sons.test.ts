@@ -33,6 +33,8 @@ const instant = (extra: Partial<Instant> = {}): Instant => ({
   joueurs: 0,
   chronoDepartMs: null,
   indices: 0,
+  bruitageSon: null,
+  bruitageMs: null,
   ...extra,
 });
 const enJeu = (jeu: Instant['jeu'], etape: string, passageId = 'p1') =>
@@ -176,6 +178,21 @@ describe('le son d’un changement d’état', () => {
     // « Lancer le chrono » : le top, pas de glissé.
     expect(sonsPour(question(4), question(4, 1000))).toEqual(['top']);
     expect(sonsPour(question(4, 1000), question(4, 1000))).toEqual([]);
+  });
+
+  it('joue le son demandé par la boîte à sons de la régie, une fois, jamais au chargement', () => {
+    const jeu = enJeu('list2', 'lance');
+    const applaudir = { ...jeu, bruitageSon: 'applaudissements', bruitageMs: 1000 };
+    expect(sonsPour(jeu, applaudir)).toEqual(['applaudissements']);
+    // Relu tel quel : rien.
+    expect(sonsPour(applaudir, applaudir)).toEqual([]);
+    // Le même son redemandé : une nouvelle heure, il rejoue.
+    expect(sonsPour(applaudir, { ...applaudir, bruitageMs: 5000 })).toEqual(['applaudissements']);
+    expect(
+      sonsPour(applaudir, { ...applaudir, bruitageSon: 'presentation', bruitageMs: 6000 }),
+    ).toEqual(['presentation']);
+    // Un son hors de la boîte n'est jamais joué.
+    expect(sonsPour(jeu, { ...jeu, bruitageSon: 'finale', bruitageMs: 7000 })).toEqual([]);
   });
 
   it('roule pendant que le classement monte', () => {

@@ -72,13 +72,14 @@ import {
   type EquipeSalle,
 } from '@/lib/salle';
 import { Chrono, useMaintenant } from '@/ecran/Chrono';
-import { useEtatSalle } from '@/ecran/useEtatSalle';
+import { SIGNAL_MISES, useEtatSalle } from '@/ecran/useEtatSalle';
 import { Apercu } from './Apercu';
 import { BoutonConfirme } from './BoutonConfirme';
 import { PanneauDuel } from './PanneauDuel';
 import { PanneauAvis } from './PanneauAvis';
 import { PanneauConnaissance } from './PanneauConnaissance';
 import { PanneauMessages } from './PanneauMessages';
+import { BoiteASons } from './BoiteASons';
 import { PanneauPortrait } from './PanneauPortrait';
 import { grillePrete, modeDuPortrait } from '@/lib/portrait';
 
@@ -612,6 +613,19 @@ export function Pilotage({
             await relire();
           }}
         />
+        {/* Boîte à sons et habillage (2026-11-19) ; absents sans la migration 20261121090000. */}
+        {etat.habillage !== undefined && (
+          <BoiteASons
+            evenementId={etat.evenement.id}
+            habillage={etat.habillage}
+            sonActif={reglageDe(etat).actif}
+            apresBruitage={() => signaler(SIGNAL_MISES)}
+            apresHabillage={async () => {
+              signaler();
+              await relire();
+            }}
+          />
+        )}
         {/* Messages sur le grand écran (2026-11-15) ; absent sans la migration. */}
         {etat.messages && (
           <PanneauMessages

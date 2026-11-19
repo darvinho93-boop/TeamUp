@@ -26,6 +26,7 @@ const MOMENTS: Record<Son, string> = {
   top: 'Départ d’un chrono de jeu',
   glisse: 'Quiz : la question, puis chaque réponse qui paraît',
   buzzer: 'Blind test : une équipe buzze',
+  applaudissements: 'Boîte à sons de la régie : applaudissements',
 };
 
 const estFond = (son: Son): son is Fond => son === 'ambiance' || son === 'explication';

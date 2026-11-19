@@ -170,6 +170,11 @@ export interface EtatSalle {
   };
   /** Réglage du son de la salle ; absent tant que la base n'a pas la migration du 2026-10-10. */
   son?: { actif: boolean; volume: number };
+  /** Plateau (2026-11-19) : le dernier son demandé par la régie (boîte à sons), à l'heure de la
+   * base. Absent sans la migration 20261121090000. */
+  bruitage?: { son: string; a_ms: number } | null;
+  /** L'habillage du plateau (halo, ronds en fond) ; actif sans la migration. */
+  habillage?: boolean;
   /** Membres des équipes à l'écran ; absent sans la migration du 2026-10-17 (« tous »). */
   membres_mode?: 'tous' | 'carrousel';
   /**

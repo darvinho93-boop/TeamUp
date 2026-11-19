@@ -112,6 +112,13 @@ const DEMANDES = {
     duree: 0.8,
     fidelite: 0.8,
   },
+  // Boîte à sons de la régie (2026-11-19) : les applaudissements que l'animateur lance quand il veut.
+  applaudissements: {
+    texte:
+      'Enthusiastic TV game show studio audience applause with a few cheers and whistles, warm and lively, no music, no voice',
+    duree: 4,
+    fidelite: 0.6,
+  },
   arrivee: {
     texte: 'A soft pleasant single pop chime, a gentle notification, very short, no voice',
     duree: 0.6,
