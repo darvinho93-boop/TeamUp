@@ -751,9 +751,9 @@
         "applaudissements": "Applause",
         "roulement": "Drum roll (5 s)",
         "presentation": "Suspense (short)",
-        "reussite": "Right answer",
-        "echec": "Wrong",
-        "buzzer": "Buzzer",
+        "reussite": "Right-answer sound",
+        "echec": "Wrong-answer sound",
+        "buzzer": "Buzzer sound",
         "habillageActif": "Stage dressing: shown",
         "habillageRetire": "Stage dressing: hidden",
         "erreur": "That didn't work: try again."

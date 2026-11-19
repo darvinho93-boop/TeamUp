@@ -193,6 +193,8 @@ test('verdicts, suspense du quiz, classement qui monte', async ({ browser, baseU
   // Rechargé, le verdict est posé d'emblée : ni fête, ni défilement.
   await ecran.reload();
   await expect(verdict).toContainText('+120 points', { timeout: 15_000 });
+  // Un écran rechargé redemande le geste qui active le son.
+  await ecran.getByRole('button', { name: 'Activer le son' }).click();
   await expect(verdict).not.toHaveAttribute('data-en-direct', 'true');
   await expect(ecran.getByTestId('celebration')).toHaveCount(0);
 

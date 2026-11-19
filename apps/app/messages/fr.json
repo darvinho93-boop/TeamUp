@@ -751,9 +751,9 @@
         "applaudissements": "Applaudissements",
         "roulement": "Roulement (5 s)",
         "presentation": "Suspense (court)",
-        "reussite": "Bonne réponse",
-        "echec": "Raté",
-        "buzzer": "Buzzer",
+        "reussite": "Son « bonne réponse »",
+        "echec": "Son « raté »",
+        "buzzer": "Son « buzzer »",
         "habillageActif": "Habillage du plateau : affiché",
         "habillageRetire": "Habillage du plateau : retiré",
         "erreur": "Ça n'a pas marché : réessayez."
