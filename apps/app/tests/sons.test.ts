@@ -32,6 +32,7 @@ const instant = (extra: Partial<Instant> = {}): Instant => ({
   jeu: null,
   joueurs: 0,
   chronoDepartMs: null,
+  indices: 0,
   ...extra,
 });
 const enJeu = (jeu: Instant['jeu'], etape: string, passageId = 'p1') =>
@@ -106,16 +107,82 @@ describe('le son d’un changement d’état', () => {
     ['list2', 'lance', 'echec', 'echec'],
     ['enchere2', 'chrono', 'tenu', 'reussite'],
     ['enchere2', 'chrono', 'rate', 'echec'],
-    ['qcm2', 'question', 'reponse', 'revelation'],
+    ['qcm2', 'survivants', 'resultat', 'reussite'],
     ['mime2', 'lance', 'trouve', 'reussite'],
     ['mime2', 'lance', 'rate', 'echec'],
     ['photo2', 'theme', 'gagnante', 'reussite'],
     ['grab', 'chrono', 'gagne', 'reussite'],
     ['cup', 'chrono', 'gagne', 'reussite'],
+    ['grab', 'pret', 'tirage', 'roulement'],
+    ['cup', 'tirage', 'face_a_face', 'revelation'],
+    ['blind', 'ecoute', 'buzz', 'buzzer'],
   ] as const)('%s : %s → %s sonne « %s »', (jeu, de, vers, son) => {
     expect(sonsPour(enJeu(jeu, de), enJeu(jeu, vers))).toEqual([son]);
     // Relu tel quel, le verdict ne sonne pas une seconde fois.
     expect(sonsPour(enJeu(jeu, vers), enJeu(jeu, vers))).toEqual([]);
+  });
+
+  it('laisse la bonne réponse du quiz à la scène, qui joue son suspense', () => {
+    expect(sonsPour(enJeu('qcm2', 'question'), enJeu('qcm2', 'reponse'))).toEqual([]);
+  });
+
+  it('sonne le top au départ de chaque chrono de jeu, sauf au Blind test et au Portrait', () => {
+    const lance = (jeu: Instant['jeu'], etape: string, depart: number | null) => ({
+      ...enJeu(jeu, etape),
+      chronoDepartMs: depart,
+    });
+    expect(sonsPour(lance('list2', 'masque', null), lance('list2', 'lance', 1000))).toEqual([
+      'top',
+    ]);
+    expect(sonsPour(lance('mime2', 'secret', null), lance('mime2', 'lance', 1000))).toEqual([
+      'top',
+    ]);
+    expect(sonsPour(lance('enchere2', 'sujet', null), lance('enchere2', 'chrono', 1000))).toEqual([
+      'top',
+    ]);
+    expect(sonsPour(lance('grab', 'face_a_face', null), lance('grab', 'chrono', 1000))).toEqual([
+      'top',
+    ]);
+    // Le chrono gardé (un indice aux Points communs) ne resonne pas.
+    expect(sonsPour(lance('list2', 'lance', 1000), lance('list2', 'lance', 1000))).toEqual([]);
+    expect(sonsPour(lance('blind', 'pret', null), lance('blind', 'ecoute', 1000))).toEqual([]);
+    expect(sonsPour(lance('portrait', 'pret', null), lance('portrait', 'vote', 1000))).toEqual([
+      'indice',
+    ]);
+    // Hors jeu, le chrono de la salle (dévoilement, explication) garde ses propres sons.
+    expect(
+      sonsPour(
+        instant({ scene: 'intro', mancheId: 'm1', jeu: 'list2' }),
+        instant({
+          scene: 'intro',
+          mancheId: 'm1',
+          jeu: 'list2',
+          etape: 'explication',
+          chronoDepartMs: 1000,
+        }),
+      ),
+    ).toEqual([]);
+  });
+
+  it('fait glisser la question du quiz, puis chacune de ses réponses', () => {
+    const question = (indices: number, depart: number | null = null) => ({
+      ...enJeu('qcm2', 'question'),
+      indices,
+      chronoDepartMs: depart,
+    });
+    expect(sonsPour(enJeu('qcm2', 'pret'), question(0))).toEqual(['glisse']);
+    expect(sonsPour(question(0), question(1))).toEqual(['glisse']);
+    expect(sonsPour(question(3), question(4))).toEqual(['glisse']);
+    // « Lancer le chrono » : le top, pas de glissé.
+    expect(sonsPour(question(4), question(4, 1000))).toEqual(['top']);
+    expect(sonsPour(question(4, 1000), question(4, 1000))).toEqual([]);
+  });
+
+  it('roule pendant que le classement monte', () => {
+    expect(sonsPour(instant({ scene: 'programme' }), instant({ scene: 'scores' }))).toEqual([
+      'presentation',
+    ]);
+    expect(sonsPour(instant({ scene: 'scores' }), instant({ scene: 'scores' }))).toEqual([]);
   });
 
   it('laisse les autres touches silencieuses', () => {

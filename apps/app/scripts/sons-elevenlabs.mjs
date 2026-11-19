@@ -87,6 +87,31 @@ const DEMANDES = {
     duree: 7,
     fidelite: 0.5,
   },
+  // Plateau (2026-11-19, audit « jeu télé ») : le départ de chaque chrono, chaque réponse du quiz
+  // qui paraît, le buzz du Blind test.
+  // Prise « b » retenue pour `top` et `glisse` (choix de l'utilisateur, 2026-11-19), « a » pour
+  // `buzzer`.
+  top: {
+    prise: 'b',
+    texte:
+      'TV game show round start signal: one short punchy bright synth stab with a quick upward whoosh, energetic, no voice, no music',
+    duree: 1,
+    fidelite: 0.7,
+  },
+  glisse: {
+    prise: 'b',
+    texte:
+      'A short soft whoosh swipe, like a card sliding onto a TV game show screen, clean and airy, no voice, no music',
+    duree: 0.6,
+    fidelite: 0.7,
+    crete: 0.7,
+  },
+  buzzer: {
+    texte:
+      'Classic TV game show contestant buzzer: one loud short electric buzz, studio sound, no voice, no music',
+    duree: 0.8,
+    fidelite: 0.8,
+  },
   arrivee: {
     texte: 'A soft pleasant single pop chime, a gentle notification, very short, no voice',
     duree: 0.6,
@@ -119,9 +144,11 @@ const option = (nom, defaut) => {
   return i > 0 ? process.argv[i + 1].split(',') : defaut;
 };
 const seulement = option('seulement', Object.keys(DEMANDES));
-// La prise retenue de chaque son est la « a » (choix de l'utilisateur, 2026-10-09). Demander une
-// autre prise (`--prise b`) la génère si elle manque et l'écrit à la place : à écouter avant de commiter.
-const variantes = option('prise', ['a']).slice(0, 1);
+// La prise retenue de chaque son est la « a » (choix de l'utilisateur, 2026-10-09), sauf celles
+// qu'une demande nomme (`prise`). Demander une autre prise (`--prise b`) la génère si elle manque
+// et l'écrit à la place : à écouter avant de commiter.
+const priseDemandee = process.argv.includes('--prise') ? option('prise', ['a'])[0] : null;
+const variantes = [priseDemandee ?? 'a'];
 
 function cle() {
   if (process.env.ELEVENLABS_API_KEY) return process.env.ELEVENLABS_API_KEY;
@@ -230,7 +257,8 @@ for (const variante of variantes) {
   for (const nom of seulement) {
     const demande = DEMANDES[nom];
     if (!demande) throw new Error(`son inconnu : ${nom}`);
-    const brut = path.join(BRUTS, `${nom}-${variante}.pcm`);
+    const prise = priseDemandee ?? demande.prise ?? variante;
+    const brut = path.join(BRUTS, `${nom}-${prise}.pcm`);
     if (!existsSync(brut)) {
       writeFileSync(brut, await generer(nom, demande));
       generes += 1;
@@ -239,7 +267,7 @@ for (const variante of variantes) {
     const { son, coupeAuDebutMs } = recaler(lire(readFileSync(brut)), demande);
     recales.set(`${nom}-${variante}`, son);
     console.log(
-      `${`${nom}-${variante}`.padEnd(22)} ${(son.length / FREQUENCE).toFixed(2).padStart(5)} s  ` +
+      `${`${nom}-${prise}`.padEnd(22)} ${(son.length / FREQUENCE).toFixed(2).padStart(5)} s  ` +
         `silence coupé au début ${String(coupeAuDebutMs).padStart(4)} ms  niveau moyen ${niveauMoyen(son).toFixed(3)}`,
     );
     if (!nom.startsWith('roulement-')) writeFileSync(path.join(SORTIE, `${nom}.wav`), wav(son));

@@ -12,15 +12,20 @@ const MOMENTS: Record<Son, string> = {
   indice: 'Points communs : le chrono s’arrête pour l’indice',
   reussite: 'Trouvé, pari tenu, gagnante d’un thème, duel gagné',
   echec: 'Raté, échec',
-  revelation: 'Quiz : la bonne réponse s’affiche',
-  presentation: 'Présenter un jeu : roulement pendant que le logo est à l’écran',
+  revelation:
+    'Quiz : la bonne réponse, après le roulement ; duel : le face-à-face ; classement : les équipes changent de place',
+  presentation:
+    'Roulement court : le logo entre deux jeux, le suspense du quiz, le classement qui monte',
   jingle: 'Présenter un jeu : le nom du jeu paraît',
-  roulement: 'Tirage de l’ordre de passage (5 s, puis le coup de cymbale)',
+  roulement: 'Tirage de l’ordre, dévoilement des équipes, tirage d’un duel (5 s, puis la cymbale)',
   fanfare: 'Le podium s’affiche',
   arrivee: 'Un invité rejoint la soirée',
   ambiance: 'Accueil : musique de fond, en boucle',
   explication: 'Explication animée d’un jeu : musique de fond, en boucle',
   finale: 'Ouverture → accueil : la piste du reel, son coup quand le logo se forme',
+  top: 'Départ d’un chrono de jeu',
+  glisse: 'Quiz : la question, puis chaque réponse qui paraît',
+  buzzer: 'Blind test : une équipe buzze',
 };
 
 const estFond = (son: Son): son is Fond => son === 'ambiance' || son === 'explication';

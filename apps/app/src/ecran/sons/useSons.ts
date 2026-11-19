@@ -76,9 +76,18 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
   const { actif, volume } = reglage;
   useEffect(() => lecteur?.regler({ actif, volume }), [lecteur, actif, volume]);
 
-  const { scene, etape, mancheId, passageId, jeu, joueurs, chronoDepartMs } = instant;
+  const { scene, etape, mancheId, passageId, jeu, joueurs, chronoDepartMs, indices } = instant;
   useEffect(() => {
-    const apres: Instant = { scene, etape, mancheId, passageId, jeu, joueurs, chronoDepartMs };
+    const apres: Instant = {
+      scene,
+      etape,
+      mancheId,
+      passageId,
+      jeu,
+      joueurs,
+      chronoDepartMs,
+      indices,
+    };
     const avant = precedent.current;
     precedent.current = apres;
     if (!lecteur) return;
@@ -88,14 +97,23 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
       for (const son of sonsPour(avant, apres))
         for (const pas of deroule(son, sansMouvement)) lecteur.jouer(pas.son, pas.apresMs);
     }
-  }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs, chronoDepartMs]);
+  }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs, chronoDepartMs, indices]);
 
   // La musique de fond du moment. Celle d'une explication s'arrête avec elle : l'étape reste
   // « explication » tant que la régie n'a rien touché, mais le script, lui, a une fin.
   const { chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
   useEffect(() => {
     if (!lecteur) return;
-    const fond = fondA({ scene, etape, mancheId, passageId, jeu, joueurs, chronoDepartMs: depart });
+    const fond = fondA({
+      scene,
+      etape,
+      mancheId,
+      passageId,
+      jeu,
+      joueurs,
+      chronoDepartMs: depart,
+      indices,
+    });
     if (fond !== 'explication' || depart === null || duree === null) {
       lecteur.fond(fond);
       return;

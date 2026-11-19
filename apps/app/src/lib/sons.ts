@@ -25,6 +25,9 @@ export const SONS = [
   'ambiance',
   'explication',
   'finale',
+  'top',
+  'glisse',
+  'buzzer',
 ] as const;
 export type Son = (typeof SONS)[number];
 
@@ -48,6 +51,9 @@ export const NIVEAUX: Record<Son, number> = {
   ambiance: 0.3,
   explication: 0.22,
   finale: 0.9,
+  top: 0.8,
+  glisse: 0.45,
+  buzzer: 0.9,
 };
 
 /**
@@ -122,6 +128,8 @@ export interface Instant {
   joueurs: number;
   /** Le départ du chrono de la salle : un dévoilement rejoué en pose un nouveau. */
   chronoDepartMs: number | null;
+  /** Les réponses du quiz déjà affichées, les indices donnés (`pilotage.indices`). */
+  indices: number;
 }
 
 export function instantDe(etat: EtatSalle): Instant {
@@ -134,6 +142,7 @@ export function instantDe(etat: EtatSalle): Instant {
     jeu: mancheCourante(etat)?.jeu ?? null,
     joueurs: etat.joueurs,
     chronoDepartMs: etat.pilotage.chrono_depart_ms,
+    indices: etat.pilotage.indices,
   };
 }
 
@@ -141,17 +150,25 @@ export function instantDe(etat: EtatSalle): Instant {
 const VERDICTS: Partial<Record<GameCode, Record<string, Son>>> = {
   list2: { trouve: 'reussite', echec: 'echec' },
   enchere2: { tenu: 'reussite', rate: 'echec', podium: 'reussite' },
-  qcm2: { reponse: 'revelation' },
+  // La bonne réponse du quiz sonne depuis la scène, après son suspense (2026-11-19) ; la fin du
+  // quiz, quand les points tombent.
+  qcm2: { resultat: 'reussite' },
   mime2: { trouve: 'reussite', rate: 'echec' },
   photo2: { gagnante: 'reussite' },
-  grab: { gagne: 'reussite' },
+  // Duels (2026-11-19) : le roulement pendant que les prénoms défilent, le coup au face-à-face.
+  grab: { tirage: 'roulement', face_a_face: 'revelation', gagne: 'reussite' },
   // Portrait mystère (2026-11-18) : un indice par tour, la cible puis la carte noire révélées ; le
   // verdict d'un tour sonne depuis la scène (réussite ou échec selon ce qu'il dit).
   portrait: { vote: 'indice', revele: 'revelation', noire: 'revelation' },
-  cup: { gagne: 'reussite' },
-  // Blind test (2026-11-15) : le buzz, la mauvaise réponse, la révélation.
-  blind: { buzz: 'indice', pause: 'echec', revele: 'revelation' },
+  cup: { tirage: 'roulement', face_a_face: 'revelation', gagne: 'reussite' },
+  // Blind test (2026-11-15) : le buzz (un vrai buzzer depuis le 2026-11-19), la mauvaise réponse,
+  // la révélation.
+  blind: { buzz: 'buzzer', pause: 'echec', revele: 'revelation' },
 };
+
+/** Les jeux dont le départ du chrono ne sonne pas : l'extrait du Blind test part, l'indice d'un tour
+ * du Portrait mystère sonne déjà. */
+const SANS_TOP: ReadonlySet<GameCode> = new Set(['blind', 'portrait']);
 
 /**
  * Les sons qu'un changement d'état déclenche, dans l'ordre. Un état relu sans changement ne
@@ -187,11 +204,28 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
       sons.push('roulement');
   }
 
+  // Le classement (2026-11-19) : le roulement court pendant que les barres poussent ; la scène
+  // joue la révélation quand les équipes changent de place.
+  if (apres.scene === 'scores' && avant.scene !== 'scores') sons.push('presentation');
+
   if (apres.scene === 'jeu' && apres.jeu && apres.etape) {
     const nouvelleEtape =
       avant.scene !== 'jeu' || avant.etape !== apres.etape || avant.passageId !== apres.passageId;
     const son = VERDICTS[apres.jeu]?.[apres.etape];
     if (nouvelleEtape && son) sons.push(son);
+    // Plateau (2026-11-19) : la question du quiz qui paraît, puis chacune de ses réponses.
+    if (apres.jeu === 'qcm2' && apres.etape === 'question') {
+      const memeQuestion = !nouvelleEtape;
+      if (!memeQuestion || apres.indices > avant.indices) sons.push('glisse');
+    }
+    // Le départ de chaque chrono de jeu : le top.
+    if (
+      apres.chronoDepartMs !== null &&
+      apres.chronoDepartMs !== avant.chronoDepartMs &&
+      !SANS_TOP.has(apres.jeu)
+    ) {
+      sons.push('top');
+    }
   }
   return sons;
 }
