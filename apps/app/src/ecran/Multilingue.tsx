@@ -1,5 +1,6 @@
 import { cx } from '@teamup/ui/react';
 import type { Langue } from '@/lib/partie';
+import { typographie } from '@/lib/typographie';
 
 /**
  * Un contenu dans toutes les langues de la soirée : la première en grand, les autres dessous
@@ -21,11 +22,11 @@ export function Multilingue({
   return (
     <div className={cx('tu-stage-multi', className)} data-testid={testId}>
       <p lang={premier!.langue} className="tu-stage-multi__premier">
-        {premier!.texte}
+        {typographie(premier!.texte, premier!.langue)}
       </p>
       {autres.map(({ langue, texte }) => (
         <p key={langue} lang={langue} className="tu-stage-multi__autre">
-          {texte}
+          {typographie(texte, langue)}
         </p>
       ))}
     </div>

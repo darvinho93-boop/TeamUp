@@ -7,7 +7,29 @@
  */
 
 .tu-verdict {
-  gap: var(--tu-space-6);
+  --tu-verdict-echelle: 1;
+
+  gap: calc(var(--tu-space-6) * var(--tu-verdict-echelle, 1));
+  overflow: hidden;
+  overflow-wrap: break-word;
+}
+
+/* Tout le verdict se réduit ensemble (--tu-verdict-echelle) quand il ne tient pas : un mot en
+   trois langues sous un titre en taille plateau, un prénom long. */
+.tu-verdict .tu-stage-badge--grand {
+  font-size: calc(var(--tu-size-3xl) * var(--tu-verdict-echelle, 1));
+}
+
+.tu-verdict .tu-stage-multi {
+  --tu-multi-taille: calc(var(--tu-size-3xl) * var(--tu-verdict-echelle, 1));
+}
+
+.tu-verdict .tu-stage-multi--geant {
+  --tu-multi-taille: calc(var(--tu-size-4xl) * var(--tu-verdict-echelle, 1));
+}
+
+.tu-verdict .tu-stage__m {
+  font-size: calc(var(--tu-size-2xl) * var(--tu-verdict-echelle, 1));
 }
 
 .tu-stage-verdict--equipe {
@@ -21,7 +43,7 @@
 .tu-verdict__equipe {
   margin: 0;
   font-family: var(--tu-font-display);
-  font-size: var(--tu-size-3xl);
+  font-size: calc(var(--tu-size-3xl) * var(--tu-verdict-echelle, 1));
   font-weight: 700;
   overflow-wrap: anywhere;
 }
@@ -29,7 +51,7 @@
 .tu-verdict__titre {
   margin: 0;
   font-family: var(--tu-font-display);
-  font-size: var(--tu-size-5xl);
+  font-size: calc(var(--tu-stage-plateau-xl) * var(--tu-verdict-echelle, 1));
   font-weight: 700;
   line-height: var(--tu-leading-tight);
   overflow-wrap: anywhere;
@@ -37,14 +59,14 @@
 
 .tu-verdict__detail {
   margin: 0;
-  font-size: var(--tu-size-3xl);
+  font-size: calc(var(--tu-size-3xl) * var(--tu-verdict-echelle, 1));
   font-weight: 600;
 }
 
 .tu-verdict__points {
   margin: 0;
   font-family: var(--tu-font-numeric);
-  font-size: var(--tu-size-5xl);
+  font-size: calc(var(--tu-stage-plateau) * var(--tu-verdict-echelle, 1));
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -72,5 +94,14 @@
   from {
     opacity: 0;
     transform: translateY(var(--tu-space-8));
+  }
+}
+
+/* La présentation d'un jeu vue en direct (2026-11-19) : le nom du jeu entre en rebond quand le
+   logo de l'interlude s'efface, sur le jingle. */
+@media (prefers-reduced-motion: no-preference) {
+  .tu-stage-intro__jeu--entree {
+    animation: tu-verdict-entree var(--tu-dur-verdict) var(--tu-ease-clac) var(--tu-dur-interlude)
+      both;
   }
 }

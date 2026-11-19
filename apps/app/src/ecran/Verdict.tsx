@@ -1,10 +1,11 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
 import type { EquipeSalle } from '@/lib/salle';
 import { Celebration, type Force } from './Celebration';
+import { useAjusterTexte } from './useAjusterTexte';
 import { useCompteur } from './useCompteur';
 
 /** Les points partent quand le titre a fini d'entrer (`--tu-dur-verdict`). */
@@ -52,8 +53,12 @@ export function Verdict({
 }) {
   const t = useTranslations('ecran');
   const n = useCompteur(points ?? 0, { actif: enDirect, delaiMs: DELAI_POINTS_MS });
+  // En taille plateau, tout le verdict se réduit ensemble jusqu'à tenir (2026-11-19).
+  const ref = useRef<HTMLDivElement>(null);
+  useAjusterTexte(ref, `${scene}:${etape}:${titre}`, '--tu-verdict-echelle');
   return (
     <div
+      ref={ref}
       className={cx(
         'tu-stage__body tu-stage-centre tu-stage-verdict tu-verdict',
         `tu-stage-verdict--${ton}`,

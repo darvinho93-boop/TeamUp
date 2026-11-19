@@ -74,6 +74,19 @@
   --tu-stage-width: 120rem;
   --tu-stage-height: 67.5rem;
   --tu-stage-chrono: 10rem; /* chrono d'un jeu (Points communs, Surenchère, Mime, duels) */
+  /* Tailles « plateau » (2026-11-19, audit « jeu télé ») : ce qui se lit de loin, au-delà du
+     6 rem de la charte (mot du Mime, point commun, sujet, chrono du quiz, verdicts). Toujours
+     réduites avec leur bloc quand il le faut (`useAjusterTexte`). */
+  --tu-stage-plateau: 9rem;
+  --tu-stage-plateau-xl: 12rem;
+  /* Habillage du plateau (2026-11-19, habillage.css) : le halo de projecteur (le beige éclairci
+     au centre, un peu plus soutenu sur les bords) et les grands ronds pâles des attentes. */
+  --tu-stage-halo-centre: #fffcf4;
+  --tu-stage-halo-bord: #e9dfc8;
+  --tu-habillage-rond: 30rem;
+  --tu-habillage-ronds-opacite: 0.09;
+  --tu-habillage-derive: 4rem;
+  --tu-dur-habillage: 24000ms;
   /* Blind test (2026-11-15) : l'égaliseur de l'écoute et le rythme de ses barres. */
   --tu-stage-egaliseur: 16rem;
   --tu-stage-egaliseur-barre: 2.5rem;

@@ -77,11 +77,17 @@ export function dispositionDesMembres(
   // La plus grande page réellement montrée : `pagesDe` équilibre les pages.
   const pages = Math.max(1, Math.ceil(plusGrandeEquipe / parPage));
   const page = Math.ceil(plusGrandeEquipe / pages);
-  const colonnes = Math.max(
+  let colonnes = Math.max(
     1,
     Math.min(COLONNES_DE_PRENOMS[grille.colonnes] ?? 2, Math.ceil(page / RANGS_MIN)),
   );
-  const rangs = Math.max(RANGS_MIN, Math.ceil(page / colonnes));
+  let rangs = Math.max(RANGS_MIN, Math.ceil(page / colonnes));
+  // Jamais une colonne d'un seul prénom (audit du 2026-11-19) : six prénoms font une colonne de
+  // six, pas cinq et un ; onze, six et cinq.
+  while (colonnes > 1 && page - (colonnes - 1) * rangs <= 1) {
+    colonnes -= 1;
+    rangs = Math.max(RANGS_MIN, Math.ceil(page / colonnes));
+  }
   return { parPage, rangs, colonnes, ajuste: true };
 }
 

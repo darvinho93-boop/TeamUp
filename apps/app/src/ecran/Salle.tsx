@@ -14,6 +14,8 @@ import { INSTAGRAM } from '@/marque/instagram';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Ronds } from '@/marque/Ronds';
 import { SalleContexte } from './SalleContexte';
+import { Habillage } from './Habillage';
+import { fondDeRonds } from '@/lib/habillage';
 import { Bulles } from './Bulles';
 import { FondDeScene } from './FondDeScene';
 import { Finale } from './Finale';
@@ -55,6 +57,9 @@ export function Salle({
   const fonds = useFondsDeLaSoiree(fondsDuProgramme(etat));
   const fondActuel = fondDeLaScene(etat);
   const urlFond = fondActuel ? (fonds.get(fondActuel) ?? null) : null;
+  // L'habillage du plateau (2026-11-19) : actif sauf si la régie l'a retiré, jamais sous une
+  // photo de fond.
+  const habille = etat.habillage !== false && !urlFond;
 
   // Entre deux jeux, le logo passe en plein écran, par-dessus une scène déjà à jour. Seulement
   // si cet écran a vu le jeu arriver : ni au chargement, ni dans l'aperçu de la régie.
@@ -134,6 +139,7 @@ export function Salle({
               projete && 'tu-stage--projete',
               logoPartenaire && 'tu-stage--partenaire',
               fonds.size > 0 && 'tu-stage--fond',
+              habille && 'tu-stage--habillage',
             )}
             lang={langue}
             aria-hidden={apercu || undefined}
@@ -141,6 +147,7 @@ export function Salle({
             data-d-emblee={premiere || undefined}
           >
             {fonds.size > 0 && <FondDeScene url={urlFond} />}
+            {habille && <Habillage ronds={fondDeRonds(etat)} />}
             {/* La clé remonte la scène quand elle change, ou le jeu : c'est ce qui la fait fondre. */}
             <Scene
               key={`${sceneAffichee}:${mancheId ?? ''}`}
@@ -193,7 +200,10 @@ export function Salle({
                 // Pendant le quiz, ses cases remplissent la scène : un bandeau en bas, une bulle à
                 // la fois (2026-11-15, vu à 8 équipes).
                 bandeau={
-                  scene === 'jeu' && etat.programme.find((m) => m.id === mancheId)?.jeu === 'qcm2'
+                  (scene === 'jeu' &&
+                    etat.programme.find((m) => m.id === mancheId)?.jeu === 'qcm2') ||
+                  // Au podium, une bulle cachait « Bravo et merci » (audit du 2026-11-19).
+                  scene === 'podium'
                 }
               />
             )}

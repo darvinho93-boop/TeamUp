@@ -1,0 +1,100 @@
+/*
+ * Habillage du plateau (2026-11-19, audit « jeu télé »), derrière la scène de l'écran commun :
+ * - un halo de projecteur : le beige s'éclaircit au centre et se teinte un peu sur les bords ;
+ * - pendant les attentes, quatre grands ronds aux couleurs du logo (jamais le corail : ce
+ *   n'est pas une action), très pâles, qui dérivent lentement.
+ * La scène isole ses calques (comme pour la photo de fond) : verdicts, fête, marques et bulles
+ * passent dessus. Réglages : `--tu-stage-halo-*`, `--tu-habillage-*` (tokens-layout.css).
+ */
+
+.tu-stage--habillage {
+  isolation: isolate;
+}
+
+.tu-habillage {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tu-habillage__halo {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 55% at 50% 45%, var(--tu-stage-halo-centre) 0%, transparent 100%),
+    radial-gradient(ellipse 85% 80% at 50% 50%, transparent 55%, var(--tu-stage-halo-bord) 100%);
+}
+
+.tu-habillage__ronds {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--tu-dur-fond) var(--tu-ease);
+}
+
+.tu-habillage__ronds[data-visible='true'] {
+  opacity: var(--tu-habillage-ronds-opacite);
+}
+
+.tu-habillage__rond {
+  position: absolute;
+  width: var(--tu-habillage-rond);
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.tu-habillage__rond--navy {
+  top: -8%;
+  left: -6%;
+  background: var(--tu-navy);
+}
+
+.tu-habillage__rond--sauge {
+  top: -12%;
+  right: 4%;
+  background: var(--tu-sage);
+}
+
+.tu-habillage__rond--sable {
+  bottom: -14%;
+  left: 18%;
+  background: var(--tu-ronds-sable);
+}
+
+.tu-habillage__rond--or {
+  right: -8%;
+  bottom: -10%;
+  background: var(--tu-or);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-habillage__rond {
+    animation: tu-habillage-derive var(--tu-dur-habillage) ease-in-out infinite alternate;
+  }
+
+  .tu-habillage__rond--sauge {
+    animation-delay: calc(var(--tu-dur-habillage) / -3);
+  }
+
+  .tu-habillage__rond--sable {
+    animation-delay: calc(var(--tu-dur-habillage) / -2);
+    animation-direction: alternate-reverse;
+  }
+
+  .tu-habillage__rond--or {
+    animation-delay: calc(var(--tu-dur-habillage) / -1.5);
+  }
+}
+
+@keyframes tu-habillage-derive {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+
+  to {
+    transform: translate(var(--tu-habillage-derive), calc(var(--tu-habillage-derive) / 2))
+      scale(1.12);
+  }
+}

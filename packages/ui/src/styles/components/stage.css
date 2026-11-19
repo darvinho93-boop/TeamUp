@@ -138,6 +138,34 @@
   --tu-multi-taille: var(--tu-size-4xl);
 }
 
+/* Ce que la salle lit de loin (2026-11-19) : le mot du Mime, le point commun, le sujet. */
+.tu-stage-multi--plateau {
+  --tu-multi-taille: var(--tu-stage-plateau);
+}
+
+.tu-stage-multi--plateau .tu-stage-multi__premier {
+  line-height: var(--tu-leading-tight);
+}
+
+/* Le mot du Mime et le point commun montrés à la salle : en taille plateau, réduits ensemble
+   (--tu-lecture-echelle) jusqu'à tenir, en trois langues comme en une. */
+.tu-stage-lecture {
+  --tu-lecture-echelle: 1;
+
+  min-height: 0;
+  overflow: hidden;
+  overflow-wrap: break-word;
+}
+
+.tu-stage-lecture .tu-stage-multi--plateau {
+  --tu-multi-taille: calc(var(--tu-stage-plateau) * var(--tu-lecture-echelle));
+}
+
+.tu-stage-lecture .tu-stage__l,
+.tu-stage-lecture .tu-stage__m {
+  font-size: calc(var(--tu-size-3xl) * var(--tu-lecture-echelle));
+}
+
 .tu-stage-multi--titre .tu-stage-multi__premier {
   color: var(--tu-primary);
 }
@@ -918,6 +946,10 @@
   --tu-multi-taille: calc(var(--tu-size-4xl) * var(--tu-surenchere-echelle));
 }
 
+.tu-stage-surenchere .tu-stage-multi--plateau {
+  --tu-multi-taille: calc(var(--tu-stage-plateau) * var(--tu-surenchere-echelle));
+}
+
 .tu-stage-surenchere .tu-stage__m {
   font-size: calc(var(--tu-size-2xl) * var(--tu-surenchere-echelle));
 }
@@ -1509,9 +1541,17 @@
 /* Le chrono de la question, en grand comme ceux des autres jeux (inventaire en ligne du
    2026-10-27), sans agrandir l'en-tête au-delà de sa hauteur de ligne. */
 .tu-stage-quiz__chrono {
-  font-size: var(--tu-size-5xl);
+  font-size: var(--tu-stage-plateau);
   font-weight: 700;
   line-height: 1;
+}
+
+/* Mode croix : la consigne de placement, en clair (2026-11-19 : en petit gris, la salle la
+   ratait). */
+.tu-stage-quiz__consigne {
+  color: var(--tu-text);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
 }
 
 /* Les deux rangées de cases se partagent la hauteur qui reste. Leur texte se réduit

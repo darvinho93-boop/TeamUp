@@ -78,6 +78,10 @@ import { useCompteur } from './useCompteur';
 import { Verdict } from './Verdict';
 import { SalleContexte } from './SalleContexte';
 import { rangsDExtinction, SUSPENSE_MS } from '@/lib/suspense';
+import { INTERLUDE_MS } from '@/lib/sons';
+
+/** L'entrée du nom d'un jeu, après l'interlude (`--tu-dur-verdict`). */
+const ENTREE_TITRE_MS = 700;
 import {
   CHANGEMENT_DE_PLACE_MS,
   DEPART_POUSSE_MS,
@@ -566,6 +570,18 @@ function Programme({ etat }: { etat: EtatSalle }) {
 function Intro({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   const t = useTranslations();
   const manche = mancheCourante(etat);
+  // Le nom du jeu entre en rebond quand le logo de l'interlude s'efface, sur le jingle
+  // (2026-11-19) : seulement à la présentation vue en direct. Ni au chargement, ni dans l'aperçu,
+  // ni sans mouvement, ni au retour d'une explication (le marqueur tombe après l'entrée).
+  const { apercu, premiere } = useContext(SalleContexte);
+  const monte = useMonte();
+  const reduit = useMouvementReduit();
+  const [entree, setEntree] = useState(() => monte && !apercu && !premiere && !reduit);
+  useEffect(() => {
+    if (!entree) return;
+    const fin = setTimeout(() => setEntree(false), INTERLUDE_MS + ENTREE_TITRE_MS);
+    return () => clearTimeout(fin);
+  }, [entree]);
   if (!manche) return null;
   const script = scriptEnCours(manche.jeu, 'intro', etat.pilotage.etape);
   if (script) {
@@ -603,7 +619,14 @@ function Intro({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
         />
       </section>
       <div className="tu-stage-centre">
-        <h1 className="tu-stage__giant tu-stage-intro__jeu">{t(`jeux.${manche.jeu}`)}</h1>
+        <h1
+          className={cx(
+            'tu-stage__giant tu-stage-intro__jeu',
+            entree && 'tu-stage-intro__jeu--entree',
+          )}
+        >
+          {t(`jeux.${manche.jeu}`)}
+        </h1>
         {manche.options['ordre_tire'] === true && (
           <OrdreTire ordre={ordreDesEquipes(etat, manche)} />
         )}
@@ -675,6 +698,9 @@ function PointsCommuns({ etat, decalageMs }: Props) {
     `${passage?.id}:${etape}:${etat.pilotage.indices}:${langues.join()}:${jeu.arret !== null}`,
     '--tu-pc-echelle',
   );
+  // Le point commun montré à la salle, en taille plateau, réduit jusqu'à tenir (2026-11-19).
+  const lectureRef = useRef<HTMLDivElement>(null);
+  useAjusterTexte(lectureRef, `${passage?.id}:${etape}:${langues.join()}`, '--tu-lecture-echelle');
   if (!passage) return null;
   // Équipe supprimée (panne du 2026-10-31) : plus une scène vide ; la régie peut passer.
   if (!equipe) return <UnInstant />;
@@ -727,11 +753,11 @@ function PointsCommuns({ etat, decalageMs }: Props) {
       )}
 
       {etape === 'consigne' && (
-        <div className="tu-stage-centre tu-stage-reveal">
+        <div ref={lectureRef} className="tu-stage-centre tu-stage-lecture tu-stage-reveal">
           <p className="tu-stage__m tu-stage__muted">{t('pointCommun')}</p>
           <Multilingue
             testId="point-commun"
-            className="tu-stage-multi--geant"
+            className="tu-stage-multi--plateau"
             textes={texteParLangue(passage.secret, 'reponse', langues)}
           />
         </div>
@@ -917,7 +943,7 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
         <p className="tu-stage__m tu-stage__muted">{t('sujet')}</p>
         <Multilingue
           testId="sujet"
-          className="tu-stage-multi--geant"
+          className="tu-stage-multi--plateau"
           textes={texteParLangue(passage.secret, 'sujet', langues)}
         />
         {/* Sous le sujet, au milieu : en bas à gauche, il passait inaperçu. */}
@@ -1419,7 +1445,11 @@ function Quiz({ etat, decalageMs, manche }: Props & { manche: MancheSalle }) {
     <div className="tu-stage__body" data-scene="qcm2" data-etape={etape ?? ''}>
       <div className="tu-stage-quiz__tete">
         <p
-          className={cx('tu-stage__m tu-stage__muted', verrouillees && 'tu-stage-quiz__verrou')}
+          className={cx(
+            'tu-stage__m tu-stage__muted',
+            lance && !jetons && !telephone && !verrouillees && 'tu-stage-quiz__consigne',
+            verrouillees && 'tu-stage-quiz__verrou',
+          )}
           data-testid="quiz-tete"
         >
           {enSuspens ? (
@@ -1523,6 +1553,13 @@ function Mime({ etat, decalageMs }: Props) {
   const equipe = equipeDe(etat, passage?.equipe_id ?? null);
   const { etape, chrono_depart_ms: depart } = etat.pilotage;
   const verdictVu = useArrivee(etape === 'trouve' || etape === 'rate');
+  // Le mot que lit la tête de file, en taille plateau, réduit jusqu'à tenir (2026-11-19).
+  const lectureRef = useRef<HTMLDivElement>(null);
+  useAjusterTexte(
+    lectureRef,
+    `${passage?.id}:${etape}:${etat.evenement.langues.join()}`,
+    '--tu-lecture-echelle',
+  );
   if (!passage) return null;
   // Équipe supprimée (panne du 2026-10-31) : plus une scène vide ; la régie peut passer.
   if (!equipe) return <UnInstant />;
@@ -1565,11 +1602,11 @@ function Mime({ etat, decalageMs }: Props) {
       )}
       {etape === 'secret' && (
         // Le reste de la file est dos tourné (2026-10-18) ; le mot repart au lancement.
-        <div className="tu-stage-centre tu-stage-reveal">
+        <div ref={lectureRef} className="tu-stage-centre tu-stage-lecture tu-stage-reveal">
           <p className="tu-stage__l">{t('mimeJ1')}</p>
           <Multilingue
             testId="mot"
-            className="tu-stage-multi--geant"
+            className="tu-stage-multi--plateau"
             textes={texteParLangue(passage.secret, 'mot', etat.evenement.langues)}
           />
         </div>

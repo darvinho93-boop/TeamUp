@@ -128,6 +128,24 @@ describe('les pages de prénoms à l’écran', () => {
     });
   });
 
+  it('tous les noms : jamais une colonne d’un seul prénom (audit du 2026-11-19)', () => {
+    // Six prénoms : une colonne de six, pas cinq et un.
+    expect(dispositionDesMembres(grilleDesEquipes(4), 6, 'tous')).toMatchObject({
+      rangs: 6,
+      colonnes: 1,
+    });
+    // Onze : six et cinq, pas cinq, cinq et un.
+    expect(dispositionDesMembres(grilleDesEquipes(1), 11, 'tous')).toMatchObject({
+      rangs: 6,
+      colonnes: 2,
+    });
+    // Sept : la dernière colonne garde deux prénoms, rien ne change.
+    expect(dispositionDesMembres(grilleDesEquipes(4), 7, 'tous')).toMatchObject({
+      rangs: 5,
+      colonnes: 2,
+    });
+  });
+
   it('tous les noms : au-delà de la capacité, des pages équilibrées', () => {
     const prenoms = Array.from({ length: 25 }, (_, i) => `J${i}`);
     const { parPage, rangs, colonnes } = dispositionDesMembres(grilleDesEquipes(6), 25, 'tous');
