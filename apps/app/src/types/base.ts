@@ -983,10 +983,12 @@ export type Database = {
       pilotage: {
         Row: {
           avis_ouverts: boolean;
+          bruitage: Json | null;
           chrono_depart: string | null;
           chrono_duree_s: number | null;
           etape: string | null;
           evenement_id: string;
+          habillage: boolean;
           indices: number;
           maj_le: string;
           manche_id: string | null;
@@ -999,10 +1001,12 @@ export type Database = {
         };
         Insert: {
           avis_ouverts?: boolean;
+          bruitage?: Json | null;
           chrono_depart?: string | null;
           chrono_duree_s?: number | null;
           etape?: string | null;
           evenement_id: string;
+          habillage?: boolean;
           indices?: number;
           maj_le?: string;
           manche_id?: string | null;
@@ -1015,10 +1019,12 @@ export type Database = {
         };
         Update: {
           avis_ouverts?: boolean;
+          bruitage?: Json | null;
           chrono_depart?: string | null;
           chrono_duree_s?: number | null;
           etape?: string | null;
           evenement_id?: string;
+          habillage?: boolean;
           indices?: number;
           maj_le?: string;
           manche_id?: string | null;
@@ -1482,6 +1488,10 @@ export type Database = {
           restants: number;
         }[];
       };
+      jouer_bruitage: {
+        Args: { p_evenement: string; p_son: string };
+        Returns: undefined;
+      };
       messages_ecran: {
         Args: { p_evenement: string; p_regie: boolean };
         Returns: Json;
@@ -1585,6 +1595,10 @@ export type Database = {
       };
       regler_avis: {
         Args: { p_evenement: string; p_ouverts: boolean };
+        Returns: undefined;
+      };
+      regler_habillage: {
+        Args: { p_actif: boolean; p_evenement: string };
         Returns: undefined;
       };
       regler_membres: {
