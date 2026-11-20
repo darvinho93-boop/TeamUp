@@ -251,7 +251,8 @@
     "grab": "Grab the object",
     "cup": "Head, shoulders, cup",
     "blind": "Blind test",
-    "portrait": "Mystery portrait"
+    "portrait": "Mystery portrait",
+    "cinemime": "Movie mime"
   },
   "regie": {
     "accueil": "My events",
@@ -468,6 +469,9 @@
         "procheAjoute": "Person added.",
         "procheIncomplet": "The name and all three clues are required, in every language.",
         "procheErreur": "That didn’t work: try again."
+      },
+      "cinemime": {
+        "chronoChamp": "Chain timer (s)"
       }
     },
     "pilotage": {
@@ -757,6 +761,19 @@
         "habillageActif": "Stage dressing: shown",
         "habillageRetire": "Stage dressing: hidden",
         "erreur": "That didn't work: try again."
+      },
+      "motifCinemime": "Movie mime – {equipe}",
+      "cinemime": {
+        "titre": "Movie mime",
+        "film": "The movie (for you only)",
+        "consigne": "The team forms its groups: group 1 faces the screen, the others turn their backs.",
+        "montrer": "Show the scene (no sound)",
+        "revoir": "Show the scene again",
+        "lancer": "Start the mime",
+        "trouve": "Found",
+        "rate": "Missed",
+        "rejouer": "Replay the scene with sound",
+        "sansVideo": "This scene has no video any more: give the verdict, or move on."
       }
     },
     "salle": {
@@ -957,7 +974,8 @@
       "grab": "The music starts: grab the matching object!",
       "cup": "Head, shoulders… cup! Grab it first!",
       "blind": "One song, one buzzer: name it before anyone else!",
-      "portrait": "25 names, three clues: vote for the right person… but avoid the black card!"
+      "portrait": "25 names, three clues: vote for the right person… but avoid the black card!",
+      "cinemime": "A cult movie scene, with no sound, is mimed from group to group: the last group names the movie!"
     },
     "yeuxFermes": "{equipe}: back to the screen, eyes closed!",
     "pointCommun": "What they have in common",
@@ -1084,6 +1102,13 @@
         "vote": "After each clue, every team votes for a card: on the captain’s phone, or out loud.",
         "points": "Found on the 1st clue: +100. On the 2nd: +60. On the 3rd: +30.",
         "noire": "Careful: a black card hides in the grid. The team that picks it is out!"
+      },
+      "cinemime": {
+        "groupes": "The team splits into groups: group 1 faces the screen, the others turn their backs.",
+        "scene": "Group 1 watches a cult scene, with no sound. Who does what? Keep your eyes open!",
+        "chaine": "They mime it to group 2, who mime it to group 3… all the way to the last group!",
+        "film": "The last group names the movie: found, +100!",
+        "son": "Then the scene plays again, with sound, for the whole room!"
       }
     },
     "ordre": {
@@ -1135,7 +1160,16 @@
     "duelContre": "against {prenom}",
     "verrouillees": "Answers locked!",
     "etLaBonneReponse": "And the right answer is…",
-    "bonneReponse": "Right answer!"
+    "bonneReponse": "Right answer!",
+    "cinemime": {
+      "groupes": "{equipe}: form your groups!",
+      "groupe1": "Group 1 faces the screen, the others turn their backs.",
+      "regarde": "Only group 1 watches!",
+      "aVous": "Group 1, your turn to mime!",
+      "sansSon": "No sound",
+      "chaine": "The scene goes from group to group… the last group names the movie!",
+      "leFilm": "The movie"
+    }
   },
   "admin": {
     "nav": {
@@ -1186,7 +1220,8 @@
         "sujet": "Topic",
         "mot": "Word",
         "nom": "Name (on screen)",
-        "indice3": "Clue 3"
+        "indice3": "Clue 3",
+        "film": "Movie title"
       },
       "erreurs": {
         "requis": "Required field.",
@@ -1200,7 +1235,25 @@
       "desactiver": "Deactivate",
       "reactiver": "Reactivate",
       "aideDesactiver": "Content is never deleted: once deactivated, it leaves preparation but stays in the events that use it.",
-      "aideReactiver": "Once reactivated, it will be offered during preparation again."
+      "aideReactiver": "Once reactivated, it will be offered during preparation again.",
+      "extrait": {
+        "titre": "The scene (video)",
+        "aide": "An MP4 (H.264) of 3 to 90 s, 40 MB at most. Recommended: 720p, 30 to 45 s, just the scene. It plays muted during the game, with sound at the verdict.",
+        "fichier": "Video file",
+        "actuelle": "Current video · {duree}",
+        "nouvelle": "New video · {duree}",
+        "remplacer": "Choose another video to replace it.",
+        "longue": "Over 45 s: the room may get restless. Trim the scene if you can.",
+        "envoi": "Uploading the video…",
+        "erreurs": {
+          "vide": "Choose the scene's video.",
+          "taille": "40 MB at most.",
+          "format": "This file is not an MP4.",
+          "illisible": "This browser can't play this video: export it as MP4 (H.264).",
+          "duree": "The scene must last 3 to 90 s.",
+          "envoi": "The video could not be uploaded. Try again."
+        }
+      }
     },
     "musiques": {
       "titre": "Music",

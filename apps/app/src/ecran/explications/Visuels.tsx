@@ -370,6 +370,59 @@ const VISUELS: Record<VisuelExplication, () => ReactNode> = {
     </>
   ),
 
+  // ---- Ciné-mime (2026-11-20) : le groupe 1 face à l'écran, les autres dos tourné (estompés).
+  'groupes-cine': () => (
+    <>
+      <div className="tu-expl-ecran">▶</div>
+      <div className="tu-expl-groupe tu-expl-suite">
+        <Perso equipe={3} />
+        <Perso equipe={3} />
+        <span className="tu-expl-espace" />
+        <Perso equipe={3} className="tu-expl-perso--eteint" />
+        <Perso equipe={3} className="tu-expl-perso--eteint" />
+        <span className="tu-expl-espace" />
+        <Perso equipe={3} className="tu-expl-perso--eteint" />
+        <Perso equipe={3} className="tu-expl-perso--eteint" />
+      </div>
+    </>
+  ),
+  'scene-muette': () => (
+    <>
+      <div className="tu-expl-ecran">
+        <span className="tu-expl-pulse">▶</span>
+      </div>
+      <span className="tu-expl-bulle tu-expl-sans-son">♪</span>
+      <Equipe n={2} equipe={3} />
+    </>
+  ),
+  'chaine-cine': () => (
+    <div className="tu-expl-groupe tu-expl-suite">
+      <Perso equipe={3} className="tu-expl-mime" />
+      <Perso equipe={3} className="tu-expl-mime" />
+      <span className="tu-expl-fleche">→</span>
+      <Perso equipe={3} className="tu-expl-mime" />
+      <Perso equipe={3} className="tu-expl-mime" />
+      <span className="tu-expl-fleche">→</span>
+      <Perso equipe={3} />
+      <Perso equipe={3} />
+    </div>
+  ),
+  'film-cine': () => (
+    <>
+      <Equipe n={2} equipe={3} />
+      <span className="tu-expl-bulle tu-expl-pulse">!</span>
+      <span className="tu-expl-points">+100</span>
+    </>
+  ),
+  'scene-son': () => (
+    <>
+      <div className="tu-expl-ecran">
+        <span className="tu-expl-notes tu-expl-pulse">♪ ♫ ♪</span>
+      </div>
+      <Salle n={6} debout={[0, 1, 2, 3, 4, 5]} />
+    </>
+  ),
+
   // ---- Photo challenge
   capitaine: () => (
     <>

@@ -168,6 +168,16 @@
   opacity: 0.5;
 }
 
+/* Ciné-mime (2026-11-20) : la note barrée de la scène muette, et l'écart entre deux groupes. */
+.tu-expl-sans-son {
+  text-decoration: line-through;
+  text-decoration-thickness: var(--tu-focus-width);
+}
+
+.tu-expl-espace {
+  inline-size: var(--tu-space-6);
+}
+
 /* Grand nombre : points gagnés, multiplicateurs. */
 /* Portrait mystère (2026-11-18) : une grille de 5 × 5 cartes, sans texte ; la cible en sauge,
    la carte noire en marine profond. */

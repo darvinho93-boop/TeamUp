@@ -251,7 +251,8 @@
     "grab": "Attrape l'objet",
     "cup": "Tête, épaule, gobelet",
     "blind": "Blind test",
-    "portrait": "Portrait mystère"
+    "portrait": "Portrait mystère",
+    "cinemime": "Ciné-mime"
   },
   "regie": {
     "accueil": "Mes événements",
@@ -468,6 +469,9 @@
         "procheAjoute": "Proche ajouté.",
         "procheIncomplet": "Le nom et les trois indices sont obligatoires, dans chaque langue.",
         "procheErreur": "Ça n’a pas marché : réessaie."
+      },
+      "cinemime": {
+        "chronoChamp": "Chrono de la chaîne (s)"
       }
     },
     "pilotage": {
@@ -757,6 +761,19 @@
         "habillageActif": "Habillage du plateau : affiché",
         "habillageRetire": "Habillage du plateau : retiré",
         "erreur": "Ça n'a pas marché : réessayez."
+      },
+      "motifCinemime": "Ciné-mime – {equipe}",
+      "cinemime": {
+        "titre": "Ciné-mime",
+        "film": "Le film (pour vous seul)",
+        "consigne": "L'équipe forme ses groupes : le groupe 1 face à l'écran, les autres dos tourné.",
+        "montrer": "Montrer la scène (sans le son)",
+        "revoir": "Revoir la scène",
+        "lancer": "Lancer le mime",
+        "trouve": "Trouvé",
+        "rate": "Raté",
+        "rejouer": "Revoir la scène avec le son",
+        "sansVideo": "Cette scène n'a plus de vidéo : donnez le verdict, ou passez à la suite."
       }
     },
     "salle": {
@@ -957,7 +974,8 @@
       "grab": "La musique part : attrapez l'objet qui va avec !",
       "cup": "Tête, épaule… gobelet ! Attrapez-le en premier !",
       "blind": "Une musique, un buzzer : trouvez le titre avant les autres !",
-      "portrait": "25 noms, trois indices : votez pour la bonne personne… sans tomber sur la carte noire !"
+      "portrait": "25 noms, trois indices : votez pour la bonne personne… sans tomber sur la carte noire !",
+      "cinemime": "Une scène culte, sans le son, passe de groupe en groupe en mime : le dernier groupe trouve le film !"
     },
     "yeuxFermes": "{equipe} : dos à l'écran, yeux fermés !",
     "pointCommun": "Le point commun",
@@ -1084,6 +1102,13 @@
         "vote": "À chaque indice, chaque équipe vote pour une carte : sur le téléphone du capitaine, ou à voix haute.",
         "points": "Trouvé au 1er indice : +100. Au 2e : +60. Au 3e : +30.",
         "noire": "Attention : une carte noire se cache dans la grille. L’équipe qui la choisit est éliminée !"
+      },
+      "cinemime": {
+        "groupes": "L'équipe se partage en groupes : le groupe 1 face à l'écran, les autres dos tourné.",
+        "scene": "Le groupe 1 regarde une scène culte, sans le son. Qui fait quoi ? Ouvrez l'œil !",
+        "chaine": "Il la mime au groupe 2, qui la mime au groupe 3… jusqu'au dernier groupe !",
+        "film": "Le dernier groupe donne le titre du film : trouvé, +100 !",
+        "son": "Puis la scène repasse, avec le son, pour toute la salle !"
       }
     },
     "ordre": {
@@ -1135,7 +1160,16 @@
     "duelContre": "contre {prenom}",
     "verrouillees": "Réponses verrouillées !",
     "etLaBonneReponse": "Et la bonne réponse est…",
-    "bonneReponse": "Bonne réponse !"
+    "bonneReponse": "Bonne réponse !",
+    "cinemime": {
+      "groupes": "{equipe} : formez vos groupes !",
+      "groupe1": "Le groupe 1 face à l'écran, les autres dos tourné.",
+      "regarde": "Seul le groupe 1 regarde !",
+      "aVous": "Groupe 1, à vous de mimer !",
+      "sansSon": "Sans le son",
+      "chaine": "La scène passe de groupe en groupe… le dernier groupe trouve le film !",
+      "leFilm": "Le film"
+    }
   },
   "admin": {
     "nav": {
@@ -1186,7 +1220,8 @@
         "sujet": "Sujet",
         "mot": "Mot",
         "nom": "Nom (à l’écran)",
-        "indice3": "Indice 3"
+        "indice3": "Indice 3",
+        "film": "Titre du film"
       },
       "erreurs": {
         "requis": "Champ obligatoire.",
@@ -1200,7 +1235,25 @@
       "desactiver": "Désactiver",
       "reactiver": "Réactiver",
       "aideDesactiver": "Un contenu ne se supprime pas : désactivé, il quitte la préparation mais reste dans les soirées qui l’utilisent.",
-      "aideReactiver": "Réactivé, il sera de nouveau proposé à la préparation."
+      "aideReactiver": "Réactivé, il sera de nouveau proposé à la préparation.",
+      "extrait": {
+        "titre": "La scène (vidéo)",
+        "aide": "Un MP4 (H.264) de 3 à 90 s, 40 Mo au plus. Conseillé : 720p, 30 à 45 s, la scène seule. Elle passe sans le son pendant le jeu, avec le son au verdict.",
+        "fichier": "Fichier vidéo",
+        "actuelle": "Vidéo actuelle · {duree}",
+        "nouvelle": "Nouvelle vidéo · {duree}",
+        "remplacer": "Choisis une autre vidéo pour la remplacer.",
+        "longue": "Plus de 45 s : la salle risque d'attendre. Coupe la scène si tu peux.",
+        "envoi": "Envoi de la vidéo…",
+        "erreurs": {
+          "vide": "Choisis la vidéo de la scène.",
+          "taille": "40 Mo au plus.",
+          "format": "Ce fichier n'est pas un MP4.",
+          "illisible": "Ce navigateur ne sait pas lire cette vidéo : exporte-la en MP4 (H.264).",
+          "duree": "La scène doit durer de 3 à 90 s.",
+          "envoi": "La vidéo n'a pas pu être envoyée. Réessaie."
+        }
+      }
     },
     "musiques": {
       "titre": "Musiques",
