@@ -52,8 +52,14 @@ async function enregistrer(args: {
     p_jeu: args.jeu ?? 'cinemime',
     p_etiquette: 'tout_public',
     p_langues: {
-      fr: { public: {}, secret: args.jeu === 'mime2' ? { mot: 'chat' } : { film: args.film ?? FILM } },
-      en: { public: {}, secret: args.jeu === 'mime2' ? { mot: 'cat' } : { film: 'The Big Test Movie' } },
+      fr: {
+        public: {},
+        secret: args.jeu === 'mime2' ? { mot: 'chat' } : { film: args.film ?? FILM },
+      },
+      en: {
+        public: {},
+        secret: args.jeu === 'mime2' ? { mot: 'cat' } : { film: 'The Big Test Movie' },
+      },
     },
     ...(args.extrait === undefined ? {} : { p_extrait: args.extrait }),
   });
@@ -90,7 +96,10 @@ avecBase('un contenu du Ciné-mime', () => {
     expect(await ligne(r.data!)).toEqual({ extrait: chemin, extrait_duree_ms: 32_400 });
 
     const autre = await deposer();
-    const remplace = await enregistrer({ id: r.data!, extrait: { chemin: autre, duree_ms: 20_000 } });
+    const remplace = await enregistrer({
+      id: r.data!,
+      extrait: { chemin: autre, duree_ms: 20_000 },
+    });
     expect(remplace.erreur).toBeNull();
     expect(await ligne(r.data!)).toEqual({ extrait: autre, extrait_duree_ms: 20_000 });
   });
@@ -141,7 +150,9 @@ avecBase('le bucket des scènes', () => {
     const { data, error } = await anna.storage.from('extraits').createSignedUrl(chemin, 60);
     expect(error).toBeNull();
     expect(data?.signedUrl).toContain(chemin);
-    const { error: refus } = await clientAnon().storage.from('extraits').createSignedUrl(chemin, 60);
+    const { error: refus } = await clientAnon()
+      .storage.from('extraits')
+      .createSignedUrl(chemin, 60);
     expect(refus).not.toBeNull();
   });
 

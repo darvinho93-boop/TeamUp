@@ -1813,3 +1813,67 @@ téléphone en couleur seulement (l'écran d'attente ne bouge pas).
   en rebond après l'interlude (présentation vue en direct seulement).
 - Tests : `tests/bruitages-base.test.ts`, `tests/typographie.test.ts` (et `fondDeRonds`),
   `tests/membres.test.ts`, `tests/sons.test.ts`, `e2e/plateau.spec.ts`.
+
+## Conventions posées le 2026-11-20 (Ciné-mime)
+
+Tranché le 2026-11-20 : un **huitième jeu**, le **Ciné-mime** (code `cinemime`), **à côté du Mime**
+du mot, qui ne change pas. Une équipe à la fois, partagée **en groupes, en salle** (l'app ne les
+compte pas) : le groupe 1 regarde une **scène de film sur l'écran commun, sans le son** (les autres
+groupes dos tourné), la mime au groupe 2, et ainsi de suite ; le dernier groupe donne le film.
+**Un seul chrono** pour toute la chaîne ; **+100** si le film est trouvé (comme le Mime, choix laissé
+à Claude) ; au verdict, une touche **rejoue la scène avec le son** pour toute la salle.
+
+- **Écart assumé** à « 5 jeux et 2 duels » (comme le Blind test et le Portrait mystère). **Droits** :
+  diffuser des extraits de films en public lors d'une soirée payante demande en principe l'accord
+  des ayants droit ; l'app joue ce que l'admin dépose, à vérifier avant une soirée client. Aucun
+  extrait sur la vitrine.
+- Machine pure (`packages/game/src/pilotage/cinemime.ts`) : `pret` → `extrait` (chrono de la salle
+  sur la durée de la vidéo, `revoir` la relance) → `lance` (chrono de la chaîne, `options.chrono_s`,
+  60 à 300 s, 150 par défaut) → `trouve` | `rate` (passage terminé, points) → `revue` (`rejouer`,
+  autant de fois). `positionCinemime` cale la vidéo sur l'heure de la base : un second écran ou un
+  rechargement retombe à la même image, une scène finie reste sur sa dernière image.
+- Base (migrations `20261122090000`, l'énumération seule, et `20261122100000`) : un contenu
+  « Ciné-mime » a un public `{}` et un secret `{film}` (80 caractères), plus sa vidéo,
+  `contenus.extrait` (`<uuid>.mp4`) et `contenus.extrait_duree_ms` (3 à 90 s, lue par le
+  navigateur au dépôt), présents **si et seulement si** le jeu est `cinemime` (contrainte).
+  `enregistrer_contenu` prend `p_extrait` (sans lui à la modification, la vidéo reste). Bucket
+  **privé** `extraits` (MP4, 40 Mo) : tout animateur lit, l'admin dépose et retire.
+  `secret_visible` ne donne le titre à l'écran qu'au passage terminé. `etat_ecran` donne
+  `passage.extrait` (`{chemin, duree_ms}`) dès le départ : un chemin est un uuid, il ne dit rien du
+  film, et l'écran précharge tout. `jeu_par_equipe(jeu)` remplace la liste `list2`/`mime2` dans
+  `former_equipes` et `equipes_retirer_passages`. Aucun téléphone ne reçoit le film ni la vidéo
+  (testé).
+- Back-office (`src/admin/FormulaireContenu.tsx`, `ChampExtrait.tsx`) : le titre du film par langue
+  et la vidéo. `refusExtrait` (`src/lib/extraits.ts`, pur, testé : boîte `ftyp`, 40 Mo, durée lue
+  par un `<video>`, `illisible` si le navigateur ne sait pas la lire) ; aperçu avant l'envoi ; le
+  fichier part **du navigateur droit vers le stockage** (plafond Vercel de 4,5 Mo), puis le contenu
+  s'enregistre ; le serveur retire le fichier déposé pour rien et celui qu'une vidéo remplace.
+  Conseillé : 720p, 30 à 45 s.
+- Préparation : « Ajouter Ciné-mime » (tours, réserve, chrono de la chaîne), par
+  `ajouterParEquipe` ; réserve, formation, tirage de l'ordre et « Passer ce passage » comme le
+  Mime (`jeuParEquipe`, `src/lib/pilotage.ts`).
+- Régie (`PanneauCinemime`, `Pilotage.tsx`) : le titre du film pour l'animateur seul, à toutes les
+  étapes ; « Montrer la scène (sans le son) », « Revoir la scène », « Lancer le mime »,
+  « Trouvé » / « Raté » confirmés, « Revoir la scène avec le son ». Sans vidéo (contenu retiré), la
+  scène ne se montre pas, le verdict reste possible.
+- Écran : `CineMime` (`Scenes.tsx`), `VideoDeScene.tsx`, `cinemime.css` (`--tu-stage-cine-*`).
+  `useFichiersLocaux` (générique, `useFondsDeLaSoiree` s'appuie dessus) télécharge les scènes à
+  jouer à l'ouverture de l'écran (`extraitsDuProgramme`) et les garde en `blob:` ; l'aperçu de la
+  régie les lit en flux (URL signée), comme une scène pas encore téléchargée. Verdict commun, titre
+  du film en grand ; revue : la vidéo dans un cadre vert ou rouge, le titre dessous.
+- Son de la scène : **muet pendant le jeu**. À la revue, le `<video>` sonne **lui-même** (pas par le
+  lecteur Web Audio) : `muted` tant que `SonsContexte` est nul (aperçu, onglet qui a cédé le son,
+  « Activer le son » pas touché) ou que la régie a coupé le son, `volume` celui de la régie ; si le
+  navigateur refuse le son, la scène passe muette. `top` au départ de la chaîne seulement,
+  `reussite` / `echec` au verdict. La vidéo joue aussi sous `prefers-reduced-motion` : c'est le jeu,
+  pas un décor.
+- Explication `cinemime` (45 s, cinq cartes), pictogramme (un clap) et règle sur la carte Team Up!.
+  Textes fr, en, ta (tamoul à relire).
+- Tests : `packages/game` (machine, durée), `tests/extraits.test.ts`, `tests/pilotage-etapes.test.ts`,
+  `tests/sons.test.ts`, `tests/cinemime-base.test.ts` (contenu, contrainte, bucket, aucune fuite,
+  formation), `e2e/cinemime.spec.ts` (dépôt, scène muette qui avance puis finit, rechargement,
+  chaîne, verdict, revue avec le son, aperçu muet). Vidéo de test : `e2e/fichiers/extrait-test.mp4`
+  (4 s, images `sharp` et `la-440.mp3`, encodée avec le ffmpeg du projet vidéo, commande en tête du
+  spec).
+- À prévoir au lot 15 (réseau local) : recopier les scènes sur la machine, comme musiques et
+  photos de fond.
