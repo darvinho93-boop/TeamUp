@@ -14,6 +14,6 @@ export function fondDeRonds(etat: Pick<EtatSalle, 'pilotage' | 'programme'>): bo
   if (scene !== 'jeu') return false;
   const jeu = etat.programme.find((m) => m.id === manche_id)?.jeu;
   if (jeu === 'list2') return etape === 'pret' || etape === 'masque';
-  if (jeu === 'mime2') return etape === 'pret';
+  if (jeu === 'mime2' || jeu === 'cinemime') return etape === 'pret';
   return false;
 }

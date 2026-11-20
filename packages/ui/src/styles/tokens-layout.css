@@ -48,6 +48,8 @@
   --tu-regie-debut: 7rem;
   /* Le lecteur d'écoute d'une musique au back-office (2026-11-15). */
   --tu-regie-ecoute-max: 32rem;
+  /* L'aperçu d'une scène du Ciné-mime au back-office et à la régie (2026-11-20). */
+  --tu-regie-extrait-max: 32rem;
   /* Le buzzer du capitaine au blind test (2026-11-15), au téléphone. */
   --tu-buzzer: 18rem;
   /* Code de salle : lettres espacées, pour se lire et se dicter sans confusion. */
@@ -87,6 +89,10 @@
   --tu-habillage-ronds-opacite: 0.09;
   --tu-habillage-derive: 4rem;
   --tu-dur-habillage: 24000ms;
+  /* Ciné-mime (2026-11-20) : la hauteur de la scène vidéo (sous la consigne ou le titre du
+     film), et l'épaisseur du cadre de couleur du verdict, à la revue. */
+  --tu-stage-cine-video: 46rem;
+  --tu-stage-cine-cadre: 0.75rem;
   /* Blind test (2026-11-15) : l'égaliseur de l'écoute et le rythme de ses barres. */
   --tu-stage-egaliseur: 16rem;
   --tu-stage-egaliseur-barre: 2.5rem;

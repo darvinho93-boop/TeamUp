@@ -148,6 +148,19 @@ describe('le son d’un changement d’état', () => {
     // Le chrono gardé (un indice aux Points communs) ne resonne pas.
     expect(sonsPour(lance('list2', 'lance', 1000), lance('list2', 'lance', 1000))).toEqual([]);
     expect(sonsPour(lance('blind', 'pret', null), lance('blind', 'ecoute', 1000))).toEqual([]);
+    // Ciné-mime (2026-11-20) : le top au départ de la chaîne, pas sur la scène (muette ou rejouée).
+    expect(sonsPour(lance('cinemime', 'pret', null), lance('cinemime', 'extrait', 1000))).toEqual(
+      [],
+    );
+    expect(sonsPour(lance('cinemime', 'extrait', 1000), lance('cinemime', 'lance', 9000))).toEqual([
+      'top',
+    ]);
+    expect(sonsPour(lance('cinemime', 'lance', 9000), lance('cinemime', 'trouve', null))).toEqual([
+      'reussite',
+    ]);
+    expect(sonsPour(lance('cinemime', 'trouve', null), lance('cinemime', 'revue', 20_000))).toEqual(
+      [],
+    );
     expect(sonsPour(lance('portrait', 'pret', null), lance('portrait', 'vote', 1000))).toEqual([
       'indice',
     ]);

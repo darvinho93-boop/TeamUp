@@ -1,0 +1,61 @@
+/* Ciné-mime (2026-11-20) : la scène de film à l'écran commun. Pendant le jeu, la vidéo muette
+   sous la consigne du groupe 1 ; à la revue, le titre du film au-dessus et la vidéo dans un
+   cadre vert ou rouge. Une vidéo en 16:9, contenue sans déformer. */
+
+.tu-stage-cine {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-6);
+  min-height: 0;
+  text-align: center;
+}
+
+.tu-stage-cine__cadre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-inline-size: 100%;
+  border-radius: var(--tu-radius-lg);
+  background: var(--tu-navy-900);
+  overflow: hidden;
+}
+
+.tu-stage-cine__video {
+  display: block;
+  block-size: var(--tu-stage-cine-video);
+  max-inline-size: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+.tu-stage-cine__cadre--vert {
+  border: var(--tu-stage-cine-cadre) solid var(--tu-success);
+}
+
+.tu-stage-cine__cadre--rouge {
+  border: var(--tu-stage-cine-cadre) solid var(--tu-danger);
+}
+
+/* « Sans le son », à la suite de la consigne : discret, il rappelle pourquoi rien ne s'entend. */
+.tu-stage-cine__muet {
+  margin-inline-start: var(--tu-space-4);
+  padding: var(--tu-space-1) var(--tu-space-4);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-surface-muted);
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-xl);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.tu-stage-cine__bandeau {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-6);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+}

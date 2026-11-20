@@ -174,6 +174,8 @@ const VERDICTS: Partial<Record<GameCode, Record<string, Son>>> = {
   // quiz, quand les points tombent.
   qcm2: { resultat: 'reussite' },
   mime2: { trouve: 'reussite', rate: 'echec' },
+  // Ciné-mime (2026-11-20) : la scène rejouée à la revue porte son propre son.
+  cinemime: { trouve: 'reussite', rate: 'echec' },
   photo2: { gagnante: 'reussite' },
   // Duels (2026-11-19) : le roulement pendant que les prénoms défilent, le coup au face-à-face.
   grab: { tirage: 'roulement', face_a_face: 'revelation', gagne: 'reussite' },
@@ -246,11 +248,13 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
       const memeQuestion = !nouvelleEtape;
       if (!memeQuestion || apres.indices > avant.indices) sons.push('glisse');
     }
-    // Le départ de chaque chrono de jeu : le top.
+    // Le départ de chaque chrono de jeu : le top. Au Ciné-mime, celui de la chaîne seulement :
+    // le chrono de la scène (muette, puis rejouée avec son son) ne sonne pas.
     if (
       apres.chronoDepartMs !== null &&
       apres.chronoDepartMs !== avant.chronoDepartMs &&
-      !SANS_TOP.has(apres.jeu)
+      !SANS_TOP.has(apres.jeu) &&
+      !(apres.jeu === 'cinemime' && apres.etape !== 'lance')
     ) {
       sons.push('top');
     }

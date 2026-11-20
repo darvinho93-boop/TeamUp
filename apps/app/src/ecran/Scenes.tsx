@@ -29,6 +29,7 @@ import {
   indicesMsDe,
 } from '@/lib/salle';
 import {
+  chronoCinemime,
   chronoSurenchere,
   duellistesDe,
   ETAPE_FORMATION,
@@ -78,7 +79,9 @@ import { useCompteur } from './useCompteur';
 import { Verdict } from './Verdict';
 import { SalleContexte } from './SalleContexte';
 import { rangsDExtinction, SUSPENSE_MS } from '@/lib/suspense';
-import { INTERLUDE_MS } from '@/lib/sons';
+import { INTERLUDE_MS, reglageDe } from '@/lib/sons';
+import { extraitDe } from '@/lib/extraits';
+import { VideoDeScene } from './VideoDeScene';
 
 /** L'entrée du nom d'un jeu, après l'interlude (`--tu-dur-verdict`). */
 const ENTREE_TITRE_MS = 700;
@@ -641,6 +644,7 @@ function Jeu(props: Props) {
   if (manche?.jeu === 'enchere2') return <Surenchere {...props} manche={manche} />;
   if (manche?.jeu === 'qcm2') return <Quiz {...props} manche={manche} />;
   if (manche?.jeu === 'mime2') return <Mime {...props} />;
+  if (manche?.jeu === 'cinemime') return <CineMime {...props} />;
   if (manche?.jeu === 'photo2') return <Photo {...props} manche={manche} />;
   if (manche?.jeu === 'grab' || manche?.jeu === 'cup') return <Duel {...props} jeu={manche.jeu} />;
   if (manche?.jeu === 'blind') return <BlindTest {...props} manche={manche} />;
@@ -1620,6 +1624,125 @@ function Mime({ etat, decalageMs }: Props) {
             className="tu-stage__giant"
           />
           <p className="tu-stage__l">{t('mimeChaine')}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Ciné-mime (2026-11-20). `pret` : l'équipe forme ses groupes. `extrait` : la scène passe, muette,
+ * pour le groupe 1 seul (les autres sont dos tourné). `lance` : un chrono pour toute la chaîne.
+ * `trouve` / `rate` : le verdict commun et le titre du film. `revue` : la scène rejoue, avec le
+ * son, pour toute la salle.
+ */
+function CineMime({ etat, decalageMs }: Props) {
+  const t = useTranslations('ecran');
+  const tc = useTranslations('ecran.cinemime');
+  const passage = passageCourant(etat);
+  const equipe = equipeDe(etat, passage?.equipe_id ?? null);
+  const manche = mancheCourante(etat);
+  const { etape, chrono_depart_ms: depart } = etat.pilotage;
+  const verdictVu = useArrivee(etape === 'trouve' || etape === 'rate');
+  const [finie, setFinie] = useState(false);
+  if (!passage || !manche) return null;
+  if (!equipe) return <UnInstant />;
+  const extrait = extraitDe(passage.extrait);
+  const films = texteParLangue(passage.secret, 'film', etat.evenement.langues);
+
+  if (etape === 'trouve' || etape === 'rate') {
+    const trouve = etape === 'trouve';
+    return (
+      <Verdict
+        scene="cinemime"
+        etape={etape}
+        ton={trouve ? 'vert' : 'rouge'}
+        equipe={equipe}
+        titre={trouve ? t('trouve') : t('rate')}
+        detail={
+          <div className="tu-stage-centre">
+            <p className="tu-stage__m">{tc('leFilm')}</p>
+            <Multilingue testId="film" className="tu-stage-multi--geant" textes={films} />
+          </div>
+        }
+        points={trouve ? (passage.points ?? 0) : null}
+        fete={trouve ? 2 : null}
+        enDirect={verdictVu}
+      />
+    );
+  }
+
+  const video = (son: boolean) =>
+    extrait ? (
+      <VideoDeScene
+        key={`${passage.id}:${depart}`}
+        extrait={extrait}
+        departMs={depart}
+        decalageMs={decalageMs}
+        son={son}
+        reglage={reglageDe(etat)}
+        className="tu-stage-cine__video"
+        surFin={setFinie}
+      />
+    ) : (
+      <UnInstant />
+    );
+
+  if (etape === 'revue') {
+    // Le titre du film en haut, au milieu (les coins portent les marques), la scène dessous.
+    const trouve = passage.resultat['trouve'] === true;
+    return (
+      <div
+        className="tu-stage__body tu-stage-cine tu-stage-cine--revue"
+        data-scene="cinemime"
+        data-etape="revue"
+        data-ton={trouve ? 'vert' : 'rouge'}
+      >
+        <div className="tu-stage-cine__bandeau">
+          <Pastille equipe={equipe} grande />
+          <Multilingue testId="film" textes={films} />
+        </div>
+        <div
+          className={cx(
+            'tu-stage-cine__cadre',
+            `tu-stage-cine__cadre--${trouve ? 'vert' : 'rouge'}`,
+          )}
+        >
+          {video(true)}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="tu-stage__body" data-scene="cinemime" data-etape={etape ?? ''}>
+      <p className="tu-stage__head-line">
+        <Pastille equipe={equipe} grande />
+      </p>
+      {etape === 'pret' && (
+        <div className="tu-stage-centre">
+          <p className="tu-stage__xl">{tc('groupes', { equipe: equipe.nom })}</p>
+          <p className="tu-stage__l">{tc('groupe1')}</p>
+        </div>
+      )}
+      {etape === 'extrait' && (
+        <div className="tu-stage-cine tu-stage-reveal">
+          <p className="tu-stage__l">
+            {finie ? tc('aVous') : tc('regarde')}
+            <span className="tu-stage-cine__muet">{tc('sansSon')}</span>
+          </p>
+          <div className="tu-stage-cine__cadre">{video(false)}</div>
+        </div>
+      )}
+      {etape === 'lance' && (
+        <div className="tu-stage-jeu">
+          <Chrono
+            departMs={depart}
+            dureeS={chronoCinemime(manche)}
+            decalageMs={decalageMs}
+            className="tu-stage__giant"
+          />
+          <p className="tu-stage__l">{tc('chaine')}</p>
         </div>
       )}
     </div>
