@@ -2,6 +2,10 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Button, cx } from '@teamup/ui/react';
 import {
+  CHRONO_CINEMIME_DEFAUT_S,
+  CHRONO_CINEMIME_MAX_S,
+  CHRONO_CINEMIME_MIN_S,
+  chronoCinemimeS,
   CHRONO_SURENCHERE_DEFAUT_S,
   CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
   DUELS_DEFAUT,
@@ -27,7 +31,7 @@ import { etiquettesDe, libelleContenu, proposable } from '@/lib/contenus';
 import { MAX_GROUPES } from '@/lib/groupes';
 import { estCheminFond } from '@/lib/fonds';
 import { musiquesDe } from '@/lib/musiques';
-import { extraitBlind, titresBlind } from '@/lib/pilotage';
+import { extraitBlind, jeuParEquipe, titresBlind } from '@/lib/pilotage';
 import { urlLogo } from '@/lib/logo';
 import { elementDuProgramme } from '@/lib/programme';
 import { evenementDeLaRegie } from '@/serveur/regie';
@@ -41,6 +45,7 @@ import {
   ajouterDuels,
   ajusterReserve,
   ajouterMime,
+  ajouterCinemime,
   ajouterPhoto,
   ajouterPointsCommuns,
   ajouterPortrait,
@@ -104,7 +109,7 @@ export default async function Preparation({
       .select(
         'id, jeu, etiquette, actif, evenement_id, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
       )
-      .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2', 'portrait'])
+      .in('jeu', ['list2', 'enchere2', 'qcm2', 'mime2', 'photo2', 'portrait', 'cinemime'])
       .or(`evenement_id.is.null,evenement_id.eq.${evenement.id}`)
       .order('cree_le'),
     supabase.from('photos').select('theme_id').eq('evenement_id', evenement.id),
@@ -207,7 +212,7 @@ export default async function Preparation({
         options: m.options,
         // Lot 14 : avant la formation, une manche par équipe n'a pas encore ses passages.
         passages:
-          m.passages.length > 0 || !(m.jeu === 'list2' || m.jeu === 'mime2')
+          m.passages.length > 0 || !jeuParEquipe(m.jeu)
             ? m.passages.length
             : evenement.equipes_prevues * Number(m.options['passages_par_equipe'] ?? 1),
       }),
@@ -375,9 +380,10 @@ export default async function Preparation({
                 'mime2',
                 'photo2',
                 'portrait',
+                'cinemime',
               ].includes(m.jeu);
-              // Un passage par équipe (Points communs, Mime), ou un par thème, par question.
-              const parEquipe = m.jeu === 'list2' || m.jeu === 'mime2';
+              // Un passage par équipe (Points communs, Mime, Ciné-mime), ou un par thème, par question.
+              const parEquipe = jeuParEquipe(m.jeu);
               return (
                 <li key={m.id} className="tu-regie-item tu-regie-item--manche">
                   <div className="tu-regie-item__main tu-regie-item__grow">
@@ -390,6 +396,8 @@ export default async function Preparation({
                         ` · ${t('blind.extrait', { secondes: extraitBlind(m) })}`}
                       {m.jeu === 'portrait' &&
                         ` · ${t('portrait.meta', { cibles: m.passages.length, secondes: chronoTourPortrait(m) })}`}
+                      {m.jeu === 'cinemime' &&
+                        ` · ${t('chrono', { secondes: chronoCinemimeS(m.options['chrono_s']) })}`}
                       {m.jeu === 'enchere2' &&
                         ` · ${t('chrono', { secondes: Number(m.options['chrono_s'] ?? CHRONO_SURENCHERE_DEFAUT_S) })} · ${t('chronoTelephones', { secondes: Number(m.options['chrono_telephones_s'] ?? CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S) })}`}
                     </span>
@@ -862,6 +870,44 @@ export default async function Preparation({
               />
             </label>
             <Button type="submit">{t('ajouter', { jeu: tJeux('mime2') })}</Button>
+          </form>
+          {/* Ciné-mime (2026-11-20) : une scène de film par équipe, un chrono pour la chaîne. */}
+          <form action={ajouterCinemime.bind(null, code)} className="tu-regie-item">
+            <label className="tu-field">
+              <span className="tu-field__label">{t('tours')}</span>
+              <input
+                className="tu-field__control"
+                name="tours"
+                type="number"
+                min={1}
+                max={3}
+                defaultValue={1}
+              />
+            </label>
+            <label className="tu-field">
+              <span className="tu-field__label">{t('reserve.taille')}</span>
+              <input
+                className="tu-field__control"
+                name="reserve"
+                type="number"
+                min={1}
+                max={24}
+                defaultValue={evenement.equipes_prevues}
+              />
+            </label>
+            <label className="tu-field">
+              <span className="tu-field__label">{t('cinemime.chronoChamp')}</span>
+              <input
+                className="tu-field__control"
+                name="chrono"
+                type="number"
+                min={CHRONO_CINEMIME_MIN_S}
+                max={CHRONO_CINEMIME_MAX_S}
+                step={15}
+                defaultValue={CHRONO_CINEMIME_DEFAUT_S}
+              />
+            </label>
+            <Button type="submit">{t('ajouter', { jeu: tJeux('cinemime') })}</Button>
           </form>
           {!programme.some((m) => m.jeu === 'photo2' && m.statut !== 'annulee') && (
             <form action={ajouterPhoto.bind(null, code)} className="tu-regie-item">

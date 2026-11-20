@@ -15,6 +15,7 @@ export function elementDuProgramme({ jeu, options, passages }: MancheAChiffrer):
   switch (jeu) {
     case 'list2':
     case 'mime2':
+    case 'cinemime':
       return { jeu, passages };
     case 'qcm2':
       return { jeu, questions: nombre(options['questions'], 4) };

@@ -21,6 +21,7 @@ import {
   CIBLES_PORTRAIT_DEFAUT,
   CIBLES_PORTRAIT_MAX,
   CIBLES_PORTRAIT_MIN,
+  chronoCinemimeS,
   tirerContenus,
   tirerOrdre,
   type GameCode,
@@ -130,7 +131,7 @@ async function contenusLibres(
     .from('manches')
     .select('options')
     .eq('evenement_id', evenement.id)
-    .in('jeu', ['list2', 'mime2']);
+    .in('jeu', ['list2', 'mime2', 'cinemime']);
   const pris = new Set([
     ...(utilises ?? []).map((p) => p.contenu_id),
     ...(reserves ?? []).flatMap((m) => reserveDe(m.options)),
@@ -177,11 +178,16 @@ function reserveDe(options: unknown): string[] {
 const aleaServeur = () => randomInt(0, 2 ** 32) / 2 ** 32;
 
 /**
- * Jeux séquentiels (Points communs, Mime) : une réserve de contenus (lot 14). La formation des
- * équipes, à la Salle, y tire un contenu par équipe et par tour. Si la soirée a déjà ses
- * équipes, le tirage se fait tout de suite.
+ * Jeux séquentiels (Points communs, Mime, Ciné-mime) : une réserve de contenus (lot 14). La
+ * formation des équipes, à la Salle, y tire un contenu par équipe et par tour. Si la soirée a déjà
+ * ses équipes, le tirage se fait tout de suite.
  */
-async function ajouterParEquipe(code: string, donnees: FormData, jeu: 'list2' | 'mime2') {
+async function ajouterParEquipe(
+  code: string,
+  donnees: FormData,
+  jeu: 'list2' | 'mime2' | 'cinemime',
+  reglages: Record<string, number> = {},
+) {
   const { supabase, evenement, rafraichir } = await contexte(code);
   const tours = Tours.catch(1).parse(donnees.get('tours'));
   const taille = TailleReserve.catch(evenement.equipes_prevues * tours).parse(
@@ -190,6 +196,7 @@ async function ajouterParEquipe(code: string, donnees: FormData, jeu: 'list2' | 
   const libres = await contenusLibres(supabase, evenement, jeu);
   const reserve = libres.slice(0, taille);
   const mancheId = await nouvelleManche(supabase, evenement, jeu, {
+    ...reglages,
     passages_par_equipe: tours,
     reserve,
   });
@@ -307,6 +314,17 @@ export async function ajouterPointsCommuns(code: string, donnees: FormData) {
 /** Mime : un passage par équipe et par tour, chacun avec un mot de la banque. */
 export async function ajouterMime(code: string, donnees: FormData) {
   await ajouterParEquipe(code, donnees, 'mime2');
+}
+
+/**
+ * Ciné-mime (2026-11-20) : un passage par équipe et par tour, chacun avec une scène de la banque,
+ * et le chrono de la chaîne (`options.chrono_s`).
+ */
+export async function ajouterCinemime(code: string, donnees: FormData) {
+  const brut = Number(donnees.get('chrono'));
+  await ajouterParEquipe(code, donnees, 'cinemime', {
+    chrono_s: chronoCinemimeS(Number.isFinite(brut) && brut > 0 ? brut : undefined),
+  });
 }
 
 const Questions = z.coerce

@@ -11,6 +11,7 @@
 
 import {
   appliquerBlind,
+  appliquerCinemime,
   appliquerDuel,
   appliquerMime,
   appliquerPhoto,
@@ -25,6 +26,7 @@ import {
   appliquerQuiz,
   appliquerSurenchere,
   CHRONO_QUESTION_S,
+  chronoCinemimeS,
   CHRONO_SURENCHERE_DEFAUT_S,
   CHRONO_SURENCHERE_TELEPHONES_DEFAUT_S,
   dureeExplicationS,
@@ -37,6 +39,7 @@ import {
   scriptExplication,
   EXTRAIT_BLIND_DEFAUT_S,
   type ActionBlind,
+  type ActionCinemime,
   type ActionDuel,
   type ActionMime,
   type ActionPhoto,
@@ -47,6 +50,7 @@ import {
   type Chrono,
   type Duelliste,
   type EtapeBlind,
+  type EtapeCinemime,
   type EtapeDuel,
   type EtapeMime,
   type EtapePhoto,
@@ -62,6 +66,7 @@ import {
 } from '@teamup/game';
 import { CONNAISSANCE_DUREE_S } from './cartes';
 import { DUREE_DEVOILEMENT_MS } from './devoilement';
+import { extraitDe } from './extraits';
 import { capitainesManquants, jetonsDeDepartDe } from './jetons';
 import {
   chronoTourPortrait,
@@ -98,6 +103,8 @@ export type Commande =
   | { type: 'quiz'; action: Exclude<ActionQuiz['type'], 'valider'> }
   | { type: 'survivants'; survivants: ScoresParEquipe }
   | { type: 'mime'; action: ActionMime }
+  /** Ciné-mime (2026-11-20) : la scène muette, la chaîne, le verdict, la scène avec le son. */
+  | { type: 'cinemime'; action: ActionCinemime }
   /** Blind test (2026-11-15) ; `buzz` est le secours de la régie, le capitaine buzze en base. */
   | { type: 'blind'; action: ActionBlind }
   /** Portrait mystère (2026-11-18) ; les votes, eux, s'écrivent par leurs fonctions. */
@@ -158,6 +165,7 @@ export interface Motifs {
   /** Quiz en mode jetons : les jetons restants, comptés comme des survivants. */
   quizJetons: (jetons: number) => string;
   mime: (equipe: string) => string;
+  cinemime: (equipe: string) => string;
   photo: (equipe: string) => string;
   duel: (prenom: string, equipe: string) => string;
   /** Blind test : le numéro du titre trouvé. */
@@ -214,7 +222,12 @@ export const ETAPE_FORMATION = 'formation';
 
 /** Les jeux qui se jouent une équipe à la fois : leur ordre de passage se tire. */
 export const jeuParEquipe = (jeu: string | undefined): boolean =>
-  jeu === 'list2' || jeu === 'mime2';
+  jeu === 'list2' || jeu === 'mime2' || jeu === 'cinemime';
+
+/** Le chrono de la chaîne d'un Ciné-mime, réglé à la préparation. */
+export function chronoCinemime(manche: Pick<MancheSalle, 'options'>): number {
+  return chronoCinemimeS(manche.options['chrono_s']);
+}
 
 const estDuel = (jeu: string | undefined): jeu is BetaDuel => jeu === 'grab' || jeu === 'cup';
 
@@ -491,7 +504,7 @@ export function calculerEtape(
         };
         if (manche.jeu === 'enchere2') {
           ecriture.pilotage = { ...base, passage_id: null, etape: 'themes' };
-        } else if (manche.jeu === 'list2' || manche.jeu === 'mime2') {
+        } else if (jeuParEquipe(manche.jeu)) {
           const premier = passageSuivant(manche);
           if (!premier) return null;
           ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'pret' };
@@ -656,6 +669,8 @@ export function calculerEtape(
         const fini =
           (manche?.jeu === 'list2' && (p.etape === 'trouve' || p.etape === 'echec')) ||
           (manche?.jeu === 'mime2' && (p.etape === 'trouve' || p.etape === 'rate')) ||
+          (manche?.jeu === 'cinemime' &&
+            (p.etape === 'trouve' || p.etape === 'rate' || p.etape === 'revue')) ||
           (manche?.jeu === 'photo2' && (p.etape === 'gagnante' || p.etape === 'aucune')) ||
           (estDuel(manche?.jeu) && p.etape === 'gagne') ||
           (manche?.jeu === 'blind' && p.etape === 'revele') ||
@@ -793,6 +808,41 @@ export function calculerEtape(
               equipe_id: equipe.id,
               points: suite.points,
               motif: motifs.mime(equipe.nom),
+              manche_id: manche.id,
+            });
+          }
+        }
+        return ecriture;
+      }
+
+      case 'cinemime': {
+        if (manche?.jeu !== 'cinemime' || !passage) return null;
+        // Sans sa vidéo (contenu retiré), la scène ne se montre pas : le verdict reste possible.
+        const extrait = extraitDe(passage.extrait);
+        if (!extrait && commande.action !== 'trouve' && commande.action !== 'rate') return null;
+        const suite = appliquerCinemime(
+          {
+            etape: p.etape as EtapeCinemime,
+            extraitMs: extrait?.dureeMs ?? 0,
+            chronoS: chronoCinemime(manche),
+            ecouleMs,
+          },
+          commande.action,
+        );
+        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        if (suite.points !== undefined && suite.resultat) {
+          ecriture.passage = {
+            id: passage.id,
+            statut: 'termine',
+            resultat: suite.resultat,
+            points: suite.points,
+          };
+          const equipe = etat.equipes.find((e) => e.id === passage.equipe_id);
+          if (equipe && suite.points > 0) {
+            ecriture.scores.push({
+              equipe_id: equipe.id,
+              points: suite.points,
+              motif: motifs.cinemime(equipe.nom),
               manche_id: manche.id,
             });
           }

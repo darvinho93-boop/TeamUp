@@ -6,11 +6,13 @@ import { useTranslations } from 'next-intl';
 import { Button, cx, teamModifier } from '@teamup/ui/react';
 import {
   actionsBlind,
+  actionsCinemime,
   actionsMime,
   actionsPointsCommuns,
   actionsQuiz,
   actionsSurenchere,
   CHRONO_MIME_S,
+  chronoExtraitS,
   CHRONO_POINTS_COMMUNS_S,
   CHRONO_QUESTION_S,
   passageSuivant,
@@ -18,6 +20,7 @@ import {
   resultatBlindDe,
   type ActionPointsCommuns,
   type EtapeBlind,
+  type EtapeCinemime,
   type EtapeMime,
   type EtapePhoto,
   type EtapePointsCommuns,
@@ -30,6 +33,7 @@ import {
 } from '@teamup/game';
 import {
   calculerEtape,
+  chronoCinemime,
   chronoSurenchere,
   extraitBlind,
   titresBlind,
@@ -51,6 +55,7 @@ import {
   resteAPoser,
   revelationPrete,
 } from '@/lib/jetons';
+import { extraitDe } from '@/lib/extraits';
 import { membresTries } from '@/lib/membres';
 import { classementDuTheme, equipesEnJeu } from '@/lib/mots';
 import { reglageDe } from '@/lib/sons';
@@ -92,6 +97,7 @@ const PILOTABLES: readonly GameCode[] = [
   'photo2',
   'blind',
   'portrait',
+  'cinemime',
   'grab',
   'cup',
 ];
@@ -172,6 +178,7 @@ export function Pilotage({
         quiz: (survivants) => t('motifQuiz', { survivants }),
         quizJetons: (jetons) => t('motifQuizJetons', { jetons }),
         mime: (equipe) => t('motifMime', { equipe }),
+        cinemime: (equipe) => t('motifCinemime', { equipe }),
         photo: (equipe) => t('motifPhoto', { equipe }),
         duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
         blind: (n) => t('motifBlind', { n }),
@@ -538,6 +545,9 @@ export function Pilotage({
         )}
         {scene === 'jeu' && manche?.jeu === 'mime2' && (
           <PanneauMime etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
+        )}
+        {scene === 'jeu' && manche?.jeu === 'cinemime' && (
+          <PanneauCinemime etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
         {scene === 'jeu' && manche?.jeu === 'blind' && (
           <PanneauBlind etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
@@ -1889,6 +1899,144 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
         >
           {tm('rate')}
         </BoutonConfirme>
+        {fini && suivant && (
+          <Button
+            variant="accent"
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'suivant' })}
+          >
+            {t('suivant', { equipe: equipeSuivante?.nom ?? t('sansEquipe.titre') })}
+          </Button>
+        )}
+        {fini && (
+          <Button
+            variant={suivant ? 'ghost' : 'accent'}
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'terminer' })}
+          >
+            {t('terminer')}
+          </Button>
+        )}
+      </div>
+      <MembresEquipe equipe={equipe} />
+    </section>
+  );
+}
+
+/**
+ * Ciné-mime (2026-11-20) : la scène passe muette à l'écran pour le groupe 1, la chaîne de mimes
+ * court sous un seul chrono, la régie tranche, puis la scène rejoue avec le son. Le titre du film
+ * est pour l'animateur seul, à toutes les étapes.
+ */
+function PanneauCinemime({ etat, manche, decalageMs, agir }: PanneauProps) {
+  const t = useTranslations('regie.pilotage');
+  const tc = useTranslations('regie.pilotage.cinemime');
+  const passage = passageCourant(etat);
+  const equipe = equipeDe(etat, passage?.equipe_id ?? null);
+  const etape = etat.pilotage.etape as EtapeCinemime;
+  if (!passage) return null;
+  if (!equipe) return <PassageSansEquipe agir={agir} />;
+
+  const extrait = extraitDe(passage.extrait);
+  const permises = actionsCinemime(etape);
+  const films = texteParLangue(passage.secret, 'film', etat.evenement.langues);
+  const fini = etape === 'trouve' || etape === 'rate' || etape === 'revue';
+  // Le chrono court pendant la scène muette, puis pendant la chaîne ; ensuite, le temps de la
+  // chaîne reste affiché (la revue ne le relance pas à la régie).
+  const enCours = etape === 'extrait' || etape === 'lance';
+  const suivant = passageSuivant(manche);
+  const equipeSuivante = equipeDe(
+    etat,
+    manche.passages.find((x) => x.id === suivant?.id)?.equipe_id ?? null,
+  );
+  const sansVideo = !extrait && !fini;
+
+  return (
+    <section className="tu-regie__section" aria-label={tc('titre')}>
+      <p className={cx('tu-team tu-team--badge tu-team--lg', teamModifier(equipe.numero))}>
+        {equipe.nom}
+      </p>
+
+      <div className="tu-regie-secret" data-testid="regie-film">
+        <p className="tu-regie__muted">{tc('film')}</p>
+        {films.map(({ langue, texte }) => (
+          <p key={langue} lang={langue} className="tu-regie-item__title">
+            {texte}
+          </p>
+        ))}
+      </div>
+      {etape === 'pret' && <p className="tu-regie__muted">{tc('consigne')}</p>}
+      {sansVideo && (
+        <p className="tu-regie__alert" role="alert">
+          {tc('sansVideo')}
+        </p>
+      )}
+
+      <Chrono
+        departMs={etat.pilotage.chrono_depart_ms}
+        dureeS={
+          etape === 'extrait' && extrait ? chronoExtraitS(extrait.dureeMs) : chronoCinemime(manche)
+        }
+        decalageMs={decalageMs}
+        className="tu-regie-timer"
+        {...(enCours
+          ? {}
+          : {
+              arret:
+                typeof passage.resultat['ecoule_ms'] === 'number'
+                  ? passage.resultat['ecoule_ms']
+                  : 0,
+            })}
+      />
+
+      <div className="tu-regie-keys">
+        {etape === 'pret' && (
+          <Button
+            className="tu-regie-keys__wide"
+            disabled={!extrait}
+            onClick={() => agir({ type: 'cinemime', action: 'montrer' })}
+          >
+            {tc('montrer')}
+          </Button>
+        )}
+        {etape === 'extrait' && (
+          <>
+            <Button variant="ghost" onClick={() => agir({ type: 'cinemime', action: 'revoir' })}>
+              {tc('revoir')}
+            </Button>
+            <Button onClick={() => agir({ type: 'cinemime', action: 'lancer' })}>
+              {tc('lancer')}
+            </Button>
+          </>
+        )}
+        {!fini && (
+          <>
+            <BoutonConfirme
+              disabled={!permises.includes('trouve')}
+              confirmation={t('confirmer', { action: tc('trouve') })}
+              onConfirm={() => agir({ type: 'cinemime', action: 'trouve' })}
+            >
+              {tc('trouve')}
+            </BoutonConfirme>
+            <BoutonConfirme
+              variant="ghost"
+              disabled={!permises.includes('rate')}
+              confirmation={t('confirmer', { action: tc('rate') })}
+              onConfirm={() => agir({ type: 'cinemime', action: 'rate' })}
+            >
+              {tc('rate')}
+            </BoutonConfirme>
+          </>
+        )}
+        {fini && extrait && (
+          <Button
+            className="tu-regie-keys__wide"
+            variant={etape === 'revue' ? 'ghost' : 'primary'}
+            onClick={() => agir({ type: 'cinemime', action: 'rejouer' })}
+          >
+            {tc('rejouer')}
+          </Button>
+        )}
         {fini && suivant && (
           <Button
             variant="accent"

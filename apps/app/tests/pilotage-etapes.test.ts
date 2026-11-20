@@ -17,6 +17,7 @@ const motifs = {
   quizJetons: (n: number) => `Jetons ${n}`,
   podiumMots: (rang: number, mots: number) => `Podium ${rang} ${mots}`,
   mime: (equipe: string) => `Mime ${equipe}`,
+  cinemime: (equipe: string) => `Ciné ${equipe}`,
   photo: (equipe: string) => `Photo ${equipe}`,
   duel: (prenom: string, equipe: string) => `Duel ${prenom} ${equipe}`,
   blind: (n: number) => `Blind ${n}`,
@@ -682,6 +683,94 @@ describe('une touche de la régie', () => {
     expect(etape(e, { type: 'suivant' })).toMatchObject({
       pilotage: { passage_id: 'm2', etape: 'pret' },
       passage: { id: 'm2', statut: 'en_cours' },
+    });
+  });
+
+  describe('Ciné-mime', () => {
+    const UUID = '0b8f6a52-3c1e-4f7a-9d2b-5e6f7a8b9c0d';
+    const cine = (
+      extraitDuPassage: PassageSalle['extrait'] = { chemin: `${UUID}.mp4`, duree_ms: 32_400 },
+    ) =>
+      ({
+        id: 'ci',
+        jeu: 'cinemime',
+        ordre: 6,
+        statut: 'en_cours',
+        options: { chrono_s: 120 },
+        passages: [
+          passage('c1', 1, { equipe_id: 'e1', statut: 'en_cours', extrait: extraitDuPassage }),
+          passage('c2', 2, {
+            equipe_id: 'e2',
+            extrait: { chemin: `${UUID}.mp4`, duree_ms: 10_000 },
+          }),
+        ],
+      }) satisfies MancheSalle;
+    const en = (etapeCine: string, manche = cine()) =>
+      etat({ scene: 'jeu', manche_id: 'ci', passage_id: 'c1', etape: etapeCine }, [manche]);
+
+    it('commence au premier passage, comme le Mime', () => {
+      const intro = etat({ scene: 'intro', manche_id: 'ci' }, [{ ...cine(), statut: 'a_venir' }]);
+      expect(etape(intro, { type: 'commencer' })).toMatchObject({
+        pilotage: { passage_id: 'c1', etape: 'pret' },
+        passage: { id: 'c1', statut: 'en_cours' },
+      });
+    });
+
+    it('montre la scène pour sa durée, puis lance la chaîne au chrono de la préparation', () => {
+      expect(etape(en('pret'), { type: 'cinemime', action: 'montrer' })?.pilotage).toMatchObject({
+        etape: 'extrait',
+        chrono: 'demarrer',
+        chrono_duree_s: 33,
+      });
+      expect(etape(en('extrait'), { type: 'cinemime', action: 'lancer' })?.pilotage).toMatchObject({
+        etape: 'lance',
+        chrono: 'demarrer',
+        chrono_duree_s: 120,
+      });
+      expect(etape(en('pret'), { type: 'cinemime', action: 'lancer' })).toBeNull();
+    });
+
+    it('trouvé vaut +100 à l’équipe du passage ; la scène rejoue ensuite, sans rien écrire', () => {
+      const trouve = etape(en('lance'), { type: 'cinemime', action: 'trouve' }, 61_000);
+      expect(trouve?.passage).toMatchObject({
+        id: 'c1',
+        statut: 'termine',
+        points: 100,
+        resultat: { trouve: true, ecoule_ms: 61_000 },
+      });
+      expect(trouve?.scores).toEqual([
+        { equipe_id: 'e1', points: 100, motif: 'Ciné Navy', manche_id: 'ci' },
+      ]);
+      expect(etape(en('lance'), { type: 'cinemime', action: 'rate' })?.scores).toEqual([]);
+      const revue = etape(en('trouve'), { type: 'cinemime', action: 'rejouer' });
+      expect(revue?.pilotage).toMatchObject({
+        etape: 'revue',
+        chrono: 'demarrer',
+        chrono_duree_s: 33,
+      });
+      expect(revue?.passage).toBeNull();
+      expect(revue?.scores).toEqual([]);
+    });
+
+    it('passe à l’équipe suivante après le verdict ou la revue', () => {
+      for (const fin of ['rate', 'revue']) {
+        const e = en(fin);
+        e.programme[0]!.passages[0]!.statut = 'termine';
+        expect(etape(e, { type: 'suivant' })).toMatchObject({
+          pilotage: { passage_id: 'c2', etape: 'pret' },
+        });
+      }
+    });
+
+    it('sans vidéo, la scène ne se montre pas, mais le verdict reste possible', () => {
+      const sans = cine(null);
+      expect(etape(en('pret', sans), { type: 'cinemime', action: 'montrer' })).toBeNull();
+      expect(etape(en('lance', sans), { type: 'cinemime', action: 'rate' })?.passage).toMatchObject(
+        {
+          statut: 'termine',
+          points: 0,
+        },
+      );
     });
   });
 

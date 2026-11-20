@@ -46,6 +46,8 @@ export interface PassageSalle {
    * pour la régie, `true` (« a voté ») pour l'écran.
    */
   votes?: Record<string, number | true> | null;
+  /** Ciné-mime : la vidéo de la scène (bucket privé « extraits »), lue par `extraitDe`. */
+  extrait?: { chemin: string; duree_ms: number } | null;
 }
 
 /** La grille d'un Portrait mystère (2026-11-18). */

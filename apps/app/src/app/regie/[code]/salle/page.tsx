@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { jeuParEquipe } from '@/lib/pilotage';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { FormationEquipes } from '@/regie/FormationEquipes';
 import { FormulaireInvite } from '@/regie/FormulaireInvite';
@@ -67,7 +68,7 @@ export default async function Salle({ params }: PageProps<'/regie/[code]/salle'>
   // Lot 14 : la formation des équipes. Une manche par équipe tire ses contenus dans sa réserve ;
   // préparée avant le lot 14, ses contenus actuels en tiennent lieu (comme en base).
   const manchesParEquipe = (manches ?? [])
-    .filter((m) => m.jeu === 'list2' || m.jeu === 'mime2')
+    .filter((m) => jeuParEquipe(m.jeu))
     .map((m) => {
       const options = (m.options ?? {}) as Record<string, unknown>;
       const reserve = Array.isArray(options['reserve'])

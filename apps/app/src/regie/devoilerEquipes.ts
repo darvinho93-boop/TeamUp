@@ -12,6 +12,7 @@ const SANS_MOTIF: Motifs = {
   quiz: () => '',
   quizJetons: () => '',
   mime: () => '',
+  cinemime: () => '',
   photo: () => '',
   duel: () => '',
   blind: () => '',
