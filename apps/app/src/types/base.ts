@@ -139,6 +139,8 @@ export type Database = {
           cree_par: string | null;
           etiquette: Database['public']['Enums']['etiquette'];
           evenement_id: string | null;
+          extrait: string | null;
+          extrait_duree_ms: number | null;
           id: string;
           jeu: Database['public']['Enums']['jeu'];
         };
@@ -148,6 +150,8 @@ export type Database = {
           cree_par?: string | null;
           etiquette?: Database['public']['Enums']['etiquette'];
           evenement_id?: string | null;
+          extrait?: string | null;
+          extrait_duree_ms?: number | null;
           id?: string;
           jeu: Database['public']['Enums']['jeu'];
         };
@@ -157,6 +161,8 @@ export type Database = {
           cree_par?: string | null;
           etiquette?: Database['public']['Enums']['etiquette'];
           evenement_id?: string | null;
+          extrait?: string | null;
+          extrait_duree_ms?: number | null;
           id?: string;
           jeu?: Database['public']['Enums']['jeu'];
         };
@@ -1422,6 +1428,7 @@ export type Database = {
       enregistrer_contenu: {
         Args: {
           p_etiquette: Database['public']['Enums']['etiquette'];
+          p_extrait?: Json;
           p_id: string;
           p_jeu: Database['public']['Enums']['jeu'];
           p_langues: Json;
@@ -1487,6 +1494,10 @@ export type Database = {
           numero: number;
           restants: number;
         }[];
+      };
+      jeu_par_equipe: {
+        Args: { p_jeu: Database['public']['Enums']['jeu'] };
+        Returns: boolean;
       };
       jouer_bruitage: {
         Args: { p_evenement: string; p_son: string };
@@ -1689,7 +1700,16 @@ export type Database = {
     Enums: {
       etiquette: 'b2c' | 'b2b' | 'tout_public';
       jeu:
-        'list2' | 'qcm2' | 'enchere2' | 'mime2' | 'photo2' | 'grab' | 'cup' | 'blind' | 'portrait';
+        | 'list2'
+        | 'qcm2'
+        | 'enchere2'
+        | 'mime2'
+        | 'photo2'
+        | 'grab'
+        | 'cup'
+        | 'blind'
+        | 'portrait'
+        | 'cinemime';
       langue: 'fr' | 'en' | 'ta';
       role_animateur: 'animateur' | 'admin';
       scene:
@@ -1830,7 +1850,18 @@ export const Constants = {
   public: {
     Enums: {
       etiquette: ['b2c', 'b2b', 'tout_public'],
-      jeu: ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'grab', 'cup', 'blind', 'portrait'],
+      jeu: [
+        'list2',
+        'qcm2',
+        'enchere2',
+        'mime2',
+        'photo2',
+        'grab',
+        'cup',
+        'blind',
+        'portrait',
+        'cinemime',
+      ],
       langue: ['fr', 'en', 'ta'],
       role_animateur: ['animateur', 'admin'],
       scene: [
