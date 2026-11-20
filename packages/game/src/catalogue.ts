@@ -1,6 +1,7 @@
 /**
  * Catalogue des jeux : les cinq jeux socles de la spec v3, le Blind test (ajouté le 2026-11-15 :
- * l'objectif est d'enrichir la bibliothèque de jeux) et deux duels en bêta. Un jeu ne s'ajoute
+ * l'objectif est d'enrichir la bibliothèque de jeux), le Portrait mystère (2026-11-18), le
+ * Ciné-mime (2026-11-20) et deux duels en bêta. Un jeu ne s'ajoute
  * qu'avec sa ligne dans `public.jeux`, sa machine de pilotage et son explication.
  *
  * Les fiches reprennent la table `public.jeux` (migration `programme_et_scores`) :
@@ -15,6 +16,7 @@ export const SOCLE_GAMES = [
   'photo2',
   'blind',
   'portrait',
+  'cinemime',
 ] as const;
 export const BETA_DUELS = ['grab', 'cup'] as const;
 
@@ -44,6 +46,8 @@ export const FICHES: Readonly<Record<GameCode, FicheJeu>> = {
   blind: { nom: 'Blind test', sequentiel: false, chronoPassageS: 60, beta: false },
   // Une cible : trois tours d'indice et de vote (20 s chacun par défaut), puis la révélation.
   portrait: { nom: 'Portrait mystère', sequentiel: false, chronoPassageS: 90, beta: false },
+  // Un passage par équipe : la scène (45 s au plus conseillées), puis la chaîne (2 min 30).
+  cinemime: { nom: 'Ciné-mime', sequentiel: true, chronoPassageS: 195, beta: false },
   grab: { nom: "Attrape l'objet", sequentiel: false, chronoPassageS: 30, beta: true },
   cup: { nom: 'Tête, épaule, gobelet', sequentiel: false, chronoPassageS: 45, beta: true },
 };

@@ -78,6 +78,11 @@ describe('créneau de 40 minutes (spec, 15/08)', () => {
   it('accepte moins de passages que d’équipes', () => {
     expect(dureeElement({ jeu: 'mime2', passages: 2 })).toBe(300);
   });
+
+  it('compte le Ciné-mime comme un jeu séquentiel : la scène puis la chaîne', () => {
+    expect(dureeElement({ jeu: 'cinemime', passages: 4 })).toBe(780);
+    expect(dureeProgramme([{ jeu: 'cinemime', passages: 4 }]).sequentielS).toBe(780);
+  });
 });
 
 describe('duels en bêta', () => {

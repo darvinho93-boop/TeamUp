@@ -14,7 +14,7 @@ export const PART_TRANSITIONS = 0.15;
 
 export type ElementProgramme =
   /** `passages` vaut le nombre d'équipes, sauf à ne faire jouer qu'une partie d'entre elles. */
-  | { jeu: 'list2' | 'mime2'; passages: number }
+  | { jeu: 'list2' | 'mime2' | 'cinemime'; passages: number }
   | { jeu: 'qcm2'; questions: number }
   | { jeu: 'enchere2'; themes: number }
   /** La prise de vue dure toute la soirée ; seule la diffusion finale prend du créneau. */
@@ -40,6 +40,7 @@ function unites(element: ElementProgramme): number {
   switch (element.jeu) {
     case 'list2':
     case 'mime2':
+    case 'cinemime':
       return element.passages;
     case 'qcm2':
       return element.questions;

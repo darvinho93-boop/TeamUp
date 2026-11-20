@@ -4,6 +4,7 @@ export * from './surenchere';
 export * from './programme';
 export * from './quiz';
 export * from './mime';
+export * from './cinemime';
 export * from './photo';
 export * from './duel';
 export * from './blind';

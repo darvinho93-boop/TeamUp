@@ -66,7 +66,12 @@ export type VisuelExplication =
   | 'indices-portrait'
   | 'vote-portrait'
   | 'points-portrait'
-  | 'carte-noire';
+  | 'carte-noire'
+  | 'groupes-cine'
+  | 'scene-muette'
+  | 'chaine-cine'
+  | 'film-cine'
+  | 'scene-son';
 
 export interface CarteExplication {
   /** Clé de la phrase, sous `ecran.explications.<script>`. */
@@ -143,6 +148,14 @@ export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplic
     carte('vote', 9, 'vote-portrait'),
     carte('points', 9, 'points-portrait'),
     carte('noire', 9, 'carte-noire'),
+  ],
+  // Ciné-mime (2026-11-20) : une scène muette, mimée de groupe en groupe ; le dernier trouve le film.
+  cinemime: [
+    carte('groupes', 9, 'groupes-cine'),
+    carte('scene', 9, 'scene-muette'),
+    carte('chaine', 9, 'chaine-cine'),
+    carte('film', 9, 'film-cine'),
+    carte('son', 9, 'scene-son'),
   ],
   cup: [
     carte('duellistes-gobelet', 9),

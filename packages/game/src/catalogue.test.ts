@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { BETA_DUELS, FICHES, isGameCode, SOCLE_GAMES } from './catalogue';
 
 describe('catalogue de jeux', () => {
-  it('contient les cinq jeux socles de la spec v3, puis le Blind test (2026-11-15)', () => {
+  it('contient les cinq jeux socles de la spec v3, puis le Blind test, le Portrait mystère et le Ciné-mime', () => {
     expect(SOCLE_GAMES).toEqual([
       'list2',
       'qcm2',
@@ -11,6 +11,7 @@ describe('catalogue de jeux', () => {
       'photo2',
       'blind',
       'portrait',
+      'cinemime',
     ]);
   });
 
@@ -21,6 +22,7 @@ describe('catalogue de jeux', () => {
   it('rejette un code de jeu absent de la spec', () => {
     expect(isGameCode('list2')).toBe(true);
     expect(isGameCode('blind')).toBe(true);
+    expect(isGameCode('cinemime')).toBe(true);
     expect(isGameCode('karaoke')).toBe(false);
   });
 
@@ -39,6 +41,7 @@ describe('catalogue de jeux', () => {
       ['photo2', false, 300, false],
       ['blind', false, 60, false],
       ['portrait', false, 90, false],
+      ['cinemime', true, 195, false],
       ['grab', false, 30, true],
       ['cup', false, 45, true],
     ]);
