@@ -8,6 +8,7 @@ import {
   libelleContenu,
   type Etiquette,
 } from '@/lib/contenus';
+import { dureeLisible } from '@/lib/extraits';
 import { LANGUES } from '@/lib/partie';
 import { exigerAdmin } from '@/serveur/supabase-animateur';
 
@@ -30,7 +31,7 @@ export default async function Contenus({ searchParams }: PageProps<'/admin/conte
   let requete = supabase
     .from('contenus')
     .select(
-      'id, jeu, etiquette, actif, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
+      'id, jeu, etiquette, actif, extrait_duree_ms, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
     )
     .eq('jeu', jeu)
     // La banque seulement : les proches d'une soirée (Portrait mystère) restent à sa préparation.
@@ -101,6 +102,7 @@ export default async function Contenus({ searchParams }: PageProps<'/admin/conte
                   </span>
                   <span className="tu-regie-item__meta">
                     {tEtiquettes(c.etiquette)}
+                    {c.extrait_duree_ms !== null && ` · ${dureeLisible(c.extrait_duree_ms)}`}
                     {!c.actif && ` · ${t('inactif')}`}
                   </span>
                   <ul className="tu-admin-pastilles" aria-label={t('langues')}>

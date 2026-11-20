@@ -75,6 +75,21 @@
   color: var(--tu-text);
 }
 
+/* Ciné-mime : l'aperçu de la vidéo d'une scène, en 16:9, avant de l'envoyer. */
+.tu-admin-extrait {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+}
+
+.tu-admin-extrait__video {
+  inline-size: 100%;
+  max-inline-size: var(--tu-regie-extrait-max);
+  aspect-ratio: 16 / 9;
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-navy-900);
+}
+
 /* Historique : le tableau de régie (.tu-table), une ligne par cellule ; il défile seul sur un
    écran étroit, jamais la page. */
 .tu-admin-table-wrap {

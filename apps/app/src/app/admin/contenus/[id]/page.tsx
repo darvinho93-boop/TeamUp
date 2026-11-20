@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { Button } from '@teamup/ui/react';
 import { estJeuContenu, valeursDuFormulaire } from '@/lib/contenus';
+import { extraitDe } from '@/lib/extraits';
 import { exigerAdmin } from '@/serveur/supabase-animateur';
 import { FormulaireContenu } from '@/admin/FormulaireContenu';
 import { basculerContenu } from '../actions';
@@ -19,7 +20,7 @@ export default async function ModifierContenu({ params }: PageProps<'/admin/cont
   const { data: contenu } = await supabase
     .from('contenus')
     .select(
-      'id, jeu, etiquette, actif, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
+      'id, jeu, etiquette, actif, extrait, extrait_duree_ms, contenus_traductions(langue, valeur), contenus_secrets(langue, valeur)',
     )
     .eq('id', id)
     .maybeSingle();
@@ -38,7 +39,12 @@ export default async function ModifierContenu({ params }: PageProps<'/admin/cont
       </Link>
       <h1 className="tu-regie__title">{t('titreModifier', { jeu: tJeux(jeu) })}</h1>
       {!contenu.actif && <p className="tu-regie__alert">{t('inactif')}</p>}
-      <FormulaireContenu jeu={jeu} id={contenu.id} valeurs={valeurs} />
+      <FormulaireContenu
+        jeu={jeu}
+        id={contenu.id}
+        valeurs={valeurs}
+        extrait={extraitDe({ chemin: contenu.extrait, duree_ms: contenu.extrait_duree_ms })}
+      />
       <form action={basculerContenu.bind(null, contenu.id, !contenu.actif)}>
         <div className="tu-regie__section">
           <p className="tu-regie__muted">

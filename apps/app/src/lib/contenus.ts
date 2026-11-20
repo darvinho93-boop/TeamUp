@@ -10,7 +10,15 @@
 import { z } from 'zod';
 import { LANGUES, type Langue } from './partie';
 
-export const JEUX_CONTENUS = ['list2', 'qcm2', 'enchere2', 'mime2', 'photo2', 'portrait'] as const;
+export const JEUX_CONTENUS = [
+  'list2',
+  'qcm2',
+  'enchere2',
+  'mime2',
+  'photo2',
+  'portrait',
+  'cinemime',
+] as const;
 export type JeuContenu = (typeof JEUX_CONTENUS)[number];
 
 export const ETIQUETTES = ['b2c', 'b2b', 'tout_public'] as const;
@@ -29,6 +37,8 @@ export const CHAMPS = {
   photo2: ['theme'],
   // Portrait mystère (2026-11-18) : le nom à l'écran, trois indices secrets, du plus dur au plus facile.
   portrait: ['nom', 'indice1', 'indice2', 'indice3'],
+  // Ciné-mime (2026-11-20) : le titre du film ; la vidéo de la scène est à part (`src/lib/extraits.ts`).
+  cinemime: ['film'],
 } as const satisfies Record<JeuContenu, readonly string[]>;
 
 export type Champ = (typeof CHAMPS)[JeuContenu][number];
@@ -38,8 +48,12 @@ export const nomChamp = (langue: Langue, champ: string) => `${langue}.${champ}`;
 
 export const TEXTE_MAX = 300;
 
-/** La longueur permise d'un champ : 300 caractères, sauf le Portrait mystère (nom 60, indice 200). */
+/**
+ * La longueur permise d'un champ : 300 caractères, sauf le Portrait mystère (nom 60, indice 200)
+ * et le titre d'un film (80).
+ */
 export function longueurMax(jeu: JeuContenu, champ: string): number {
+  if (jeu === 'cinemime') return 80;
   if (jeu !== 'portrait') return TEXTE_MAX;
   return champ === 'nom' ? 60 : 200;
 }
@@ -89,6 +103,8 @@ function versBloc(jeu: JeuContenu, v: Record<string, string>, bonne: number): Bl
         public: { nom: v['nom'] },
         secret: { indices: [v['indice1'], v['indice2'], v['indice3']] },
       };
+    case 'cinemime':
+      return { public: {}, secret: { film: v['film'] } };
   }
 }
 
@@ -140,7 +156,7 @@ const liste = (v: unknown, i: number) => (Array.isArray(v) ? chaine(v[i]) : '');
 
 /**
  * Ce qu'on reconnaît d'un contenu dans une liste : la réponse, le thème et son sujet, la
- * question, le mot. Dans la langue demandée, sinon en français.
+ * question, le mot, le film. Dans la langue demandée, sinon en français.
  */
 export function libelleContenu(
   jeu: string,
@@ -160,6 +176,7 @@ export function libelleContenu(
   if (jeu === 'mime2') return texte(s, 'mot');
   if (jeu === 'photo2') return texte(p, 'theme');
   if (jeu === 'portrait') return texte(p, 'nom');
+  if (jeu === 'cinemime') return texte(s, 'film');
   return '—';
 }
 
@@ -189,6 +206,7 @@ export function valeursDuFormulaire(
       mot: chaine(s['mot']),
       nom: chaine(p['nom']),
       indice3: liste(s['indices'], 2),
+      film: chaine(s['film']),
     };
     for (const c of CHAMPS[jeu]) valeurs[nomChamp(langue, c)] = champs[c] ?? '';
     if (jeu === 'qcm2' && typeof s['bonne'] === 'number') valeurs['bonne'] = String(s['bonne']);
