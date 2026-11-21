@@ -1916,8 +1916,8 @@ viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste
 - **Un seul arbre, même à 100 joueurs** (redemandé le 2026-11-21, un tableau de matchs a été refusé),
   et **seuls les prénoms du tour en cours sont écrits** : ils sont répartis à intervalles réguliers,
   sur deux colonnes **en quinconce** au-delà de 16 par moitié (le trait d'une colonne passe entre
-  deux prénoms de l'autre). Environ 23 px aux 64es à 100 joueurs, 18 px à 150, en dessous du
-  plancher de 2 rem : **écart assumé** au cahier des charges § 5.2 ; 26 px ou plus dès les 16es.
+  deux prénoms de l'autre). Environ 23 px au premier tour à 100 joueurs, 18 px à 150, en dessous du
+  plancher de 2 rem : **écart assumé** au cahier des charges § 5.2 ; 26 px ou plus dès le tour des 32.
 - **Les tours passés ne sont plus que le chemin** : un point par joueur au départ, resserré dans la
   rangée du prénom qu'il a nourri ; le trait d'un joueur en lice à la couleur de son équipe, celui
   d'un joueur sorti estompé. Les prénoms d'un tour restent jusqu'à ce que la régie lance le suivant
@@ -1928,9 +1928,9 @@ viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste
   et finale restent une à une.
   Demi-finales et finale : l'arbre à l'appel, puis face-à-face et `Verdict`, enfin le podium.
   La séquence à annoncer reste sur la régie. Contrôle sans base : `/kit-ui/tournoi?joueurs=100&tour=3&etape=appel`.
-- Noms des tours (`nomDuTour`) d'après le **nombre de matchs**, comme au foot : 64 matchs, 64es.
-  À 80-100 joueurs (tableau de 128 places) on part donc des **64es** ; les 128es n'existent qu'au-delà
-  de 128 joueurs.
+- Noms des tours (`nomDuTour`, revu le 2026-11-21) d'après le **nombre de places** : « tour des 128 »,
+  « tour des 64 », « tour des 32 », « tour des 16 », puis quarts, demi-finales et finale. À 80-100
+  joueurs (tableau de 128 places) on part du **tour des 128** ; les exemptés entrent au tour des 64.
 - Téléphone (`src/joueur/Tournoi.tsx`, `vueDuTournoi`) : en lecture seule, poste, adversaire,
   exempté, qualifié, « Hors jeu ! », avec une vibration à l'appel. La vidéo du gobelet sur la carte
   montre le tournoi (`scriptExplication(jeu, 'tournoi')`).
