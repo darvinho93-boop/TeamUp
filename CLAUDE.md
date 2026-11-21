@@ -1913,9 +1913,15 @@ viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste
   Up!, le principe seulement, aucun visuel du jeu. Les deux moitiés convergent vers la coupe, au
   centre, et les traits prennent la couleur de l'équipe qui avance (`ArbreTournoi.tsx`, géométrie
   pure dans `src/lib/arbre.ts`). Au-delà de 16 matchs par tour, et pour les tours déjà joués, un
-  joueur est une **pastille** ; le tour à jouer a la colonne la plus large. L'arbre paraît au
-  tirage, entre deux séquences et à l'appel dès que le tour a 16 matchs au plus (postes sur les
-  branches) ; pour les 32es, 64es et 128es, l'appel montre les branches en grand (32 au plus).
+  joueur est une **pastille** ; le tour à jouer a la colonne la plus large. Un tour de 16 matchs
+  au plus se joue dans l'arbre (postes sur les branches).
+- **Affichage complet d'un grand tour** (32es, 64es, 128es ; demandé le 2026-11-21) : du tirage à
+  son dernier match, l'écran montre **tous ses matchs** (`TableauDuTour`, 8 × 8 au plus) et ses
+  exemptés sur une ligne dessous (`affichesDuTour`). Les matchs lancés sont encadrés avec leur
+  poste, ceux déjà joués gardent leur résultat ; l'arbre revient quand le tour est fini.
+- **« Jouer les X prochains matchs »** : avant chaque séquence, la régie choisit X, de 1 à 64 (ou
+  « Tous »), dans l'ordre du tableau (`GOBELETS_MIN/MAX`, migration `20261123110000`). Demi-finales
+  et finale restent une à une.
   Demi-finales et finale : l'arbre à l'appel, puis face-à-face et `Verdict`, enfin le podium.
   La séquence à annoncer reste sur la régie. Contrôle sans base : `/kit-ui/tournoi?joueurs=100&tour=3&etape=appel`.
 - Noms des tours (`nomDuTour`) d'après le **nombre de matchs**, comme au foot : 64 matchs, 64es.
