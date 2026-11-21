@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { aleaDepuis, tirerTableau, type Duelliste } from '@teamup/game';
-import { dispositionArbre } from '../src/lib/arbre';
+import { dispositionArbre, signaturePrenoms } from '../src/lib/arbre';
 import type { MatchSalle } from '../src/lib/tournoi';
 
 const salle = (n: number): Duelliste[] =>
@@ -204,6 +204,15 @@ describe('disposition de l’arbre', () => {
     finale.sequence = 7;
     finale.poste = 1;
     expect(dispositionArbre(fin, 7).postes).toEqual([]);
+  });
+
+  it('un prénom qui passe gagnant, donc en gras, fait réajuster les tailles', () => {
+    const matchs = tableau(16);
+    const avant = signaturePrenoms(dispositionArbre(matchs, null, 1).places);
+    const juges = matchs.map((m) =>
+      m.tour === 1 && m.rang === 0 ? { ...m, gagnant: 0 as const } : m,
+    );
+    expect(signaturePrenoms(dispositionArbre(juges, null, 1).places)).not.toBe(avant);
   });
 
   it('donne le champion une fois la finale jouée', () => {

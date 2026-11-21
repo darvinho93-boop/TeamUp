@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { cx, teamModifier } from '@teamup/ui/react';
-import { dispositionArbre } from '@/lib/arbre';
+import { dispositionArbre, signaturePrenoms } from '@/lib/arbre';
 import type { MatchSalle } from '@/lib/tournoi';
 import { Recompense } from './Recompense';
 import { useTenirEnLargeur } from './useTenirEnLargeur';
@@ -29,11 +29,7 @@ export function ArbreTournoi({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const arbre = useMemo(() => dispositionArbre(matchs, sequence, tour), [matchs, sequence, tour]);
-  const signature = arbre.places
-    .filter((p) => !p.pastille)
-    .map((p) => `${p.cle}:${p.joueur?.prenom ?? ''}`)
-    .join();
-  useTenirEnLargeur(ref, signature, '.tu-arbre__prenom', 0.4);
+  useTenirEnLargeur(ref, signaturePrenoms(arbre.places), '.tu-arbre__prenom', 0.4);
 
   // Les traits ne s'allument en fondu qu'une fois l'arbre posé : rien ne rejoue au chargement.
   const [vivant, setVivant] = useState(false);

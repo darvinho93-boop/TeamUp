@@ -91,6 +91,16 @@ const etatDe = (m: MatchSalle, cote: 0 | 1): EtatPlace => {
 };
 
 /**
+ * Ce qui change la largeur des prénoms écrits : leur texte et leur état, car un gagnant passe en
+ * gras. Quand cette clé change, l'écran réajuste leur taille.
+ */
+export const signaturePrenoms = (places: readonly PlaceArbre[]): string =>
+  places
+    .filter((p) => !p.pastille)
+    .map((p) => `${p.cle}:${p.joueur?.prenom ?? ''}:${p.etat}`)
+    .join();
+
+/**
  * `tourEnCours` est celui de la séquence lancée : ses prénoms restent écrits jusqu'à ce que la régie
  * lance le tour suivant. Sans séquence, c'est le premier tour qui a encore un match à jouer.
  */
