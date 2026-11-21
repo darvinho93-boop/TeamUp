@@ -1912,13 +1912,15 @@ viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste
   (« un format comme dans Budokai Tenkaichi ») : un **vrai arbre de tournoi** aux couleurs de Team
   Up!, le principe seulement, aucun visuel du jeu. Les deux moitiés convergent vers la coupe, au
   centre, et les traits prennent la couleur de l'équipe qui avance (`ArbreTournoi.tsx`, géométrie
-  pure dans `src/lib/arbre.ts`). Au-delà de 16 matchs par tour, et pour les tours déjà joués, un
-  joueur est une **pastille** ; le tour à jouer a la colonne la plus large. Un tour de 16 matchs
-  au plus se joue dans l'arbre (postes sur les branches).
-- **Affichage complet d'un grand tour** (32es, 64es, 128es ; demandé le 2026-11-21) : du tirage à
-  son dernier match, l'écran montre **tous ses matchs** (`TableauDuTour`, 8 × 8 au plus) et ses
-  exemptés sur une ligne dessous (`affichesDuTour`). Les matchs lancés sont encadrés avec leur
-  poste, ceux déjà joués gardent leur résultat ; l'arbre revient quand le tour est fini.
+  pure dans `src/lib/arbre.ts`).
+- **Un seul arbre, même à 100 joueurs** (redemandé le 2026-11-21, un tableau de matchs a été refusé) :
+  du tirage à la finale, **tous les prénoms** sont sur les bords de la scène, une rangée par
+  joueur, sur deux colonnes **en quinconce** au-delà de 16 par moitié (le trait de la colonne du
+  bord passe entre deux prénoms de l'autre). Environ 23 px à 100 joueurs, 18 px à 150, en dessous
+  du plancher de 2 rem : **écart assumé** au cahier des charges § 5.2. Un joueur sorti reste barré
+  sur sa place de départ ; un exempté ne s'allume qu'à son premier vrai match. Le tour à jouer a
+  sa colonne de prénoms dès 16 matchs ; les autres tours sont des **pastilles**. Les postes sont
+  sur les croisements, le titre et la consigne au centre, autour de la coupe.
 - **« Jouer les X prochains matchs »** : avant chaque séquence, la régie choisit X, de 1 à 64 (ou
   « Tous »), dans l'ordre du tableau (`GOBELETS_MIN/MAX`, migration `20261123110000`). Demi-finales
   et finale restent une à une.
@@ -1933,5 +1935,5 @@ viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste
 - `useTenirEnLargeur` mesure au sous-pixel : `scrollWidth` arrondit, et un prénom qui dépassait
   d'une fraction de pixel restait coupé par les points de suspension.
 - Tests : `packages/game` (2 à 150 joueurs, 2 à 8 équipes), `tests/tournoi.test.ts`,
-  `tests/tournoi-base.test.ts`, `e2e/tournoi.spec.ts` (du tirage au podium ; 100 joueurs et
-  32 postes en 1 920 × 1 080 ; `CAPTURES=<dossier>`).
+  `tests/arbre.test.ts`, `tests/tournoi-base.test.ts`, `e2e/tournoi.spec.ts` (du tirage au podium ;
+  100 prénoms et 32 postes en 1 920 × 1 080, sans chevauchement ; `CAPTURES=<dossier>`).
