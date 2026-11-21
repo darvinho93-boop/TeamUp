@@ -150,11 +150,11 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   // --- La première séquence : quatre postes, à l'écran et au téléphone de qui joue.
   await regie.getByRole('button', { name: 'Jouer les 4 premiers matchs' }).click();
   await expect(scene('appel')).toBeVisible({ timeout: 10_000 });
-  // Seize joueurs : les huitièmes tiennent dans l'arbre, chaque match appelé porte son poste.
+  // Seize joueurs : le tour des 16 tient dans l'arbre, chaque match appelé porte son poste.
   await expect(ecran.getByTestId('tournoi-arbre')).toBeVisible();
-  await expect(ecran.getByTestId('tournoi-tour')).toHaveText('Huitièmes de finale');
+  await expect(ecran.getByTestId('tournoi-tour')).toHaveText('Tour des 16');
   await expect(ecran.locator('[data-testid^="poste-"]')).toHaveCount(4);
-  await expect(ana.getByTestId('tournoi-nom-tour')).toHaveText('Huitièmes de finale', {
+  await expect(ana.getByTestId('tournoi-nom-tour')).toHaveText('Tour des 16', {
     timeout: 10_000,
   });
   await capturer(ecran, 'ecran-appel');
@@ -264,7 +264,7 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   await expect(ecran.locator('[data-testid^="poste-"][data-juge="true"]')).toHaveCount(4);
 
   // --- La suite, trois matchs à la fois au choix de la régie, puis demi-finales et finale une à
-  // une : 4, 3, 1 pour les huitièmes, 3, 1 pour les quarts.
+  // une : 4, 3, 1 pour le tour des 16, 3, 1 pour les quarts.
   await regie.getByTestId('tournoi-gobelets').fill('3');
   await expect(regie.getByRole('button', { name: 'Jouer les 3 prochains matchs' })).toBeVisible();
   await expect(regie.getByTestId('tournoi-restants')).toContainText('4 matchs restent');
@@ -325,7 +325,7 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   await expect(ecran.locator('[data-scene="programme"]')).toBeVisible({ timeout: 10_000 });
 });
 
-test('100 joueurs : les 36 matchs des 64es et les exemptés tiennent, chaque prénom entier', async ({
+test('100 joueurs : le tour des 128 et ses exemptés tiennent, chaque prénom entier', async ({
   browser,
 }) => {
   test.setTimeout(120_000);
@@ -451,7 +451,7 @@ test('100 joueurs : les 36 matchs des 64es et les exemptés tiennent, chaque pr�
   await expect(ecran.getByTestId('tournoi-exemptes')).toContainText('28 exemptés');
   await ecran.evaluate(() => document.fonts.ready);
 
-  await expect(ecran.getByTestId('tournoi-tour')).toHaveText('64es de finale');
+  await expect(ecran.getByTestId('tournoi-tour')).toHaveText('Tour des 128');
   await capturer(ecran, 'ecran-32-postes');
 
   const mesure = await ecran.evaluate(() => {

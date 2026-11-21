@@ -720,11 +720,11 @@
           "finale": "Finale",
           "demi": "Demi-finales",
           "quart": "Quarts de finale",
-          "huitieme": "Huitièmes de finale",
-          "seizieme": "Seizièmes de finale",
-          "t32": "32es de finale",
-          "t64": "64es de finale",
-          "t128": "128es de finale"
+          "t16": "Tour des 16",
+          "t32": "Tour des 32",
+          "t64": "Tour des 64",
+          "t128": "Tour des 128",
+          "t256": "Tour des 256"
         },
         "matchsAJouer": "Matchs à jouer maintenant",
         "restants": "{tour} : {n, plural, one {# match reste} other {# matchs restent}} à jouer",
@@ -1240,11 +1240,11 @@
         "finale": "Finale",
         "demi": "Demi-finales",
         "quart": "Quarts de finale",
-        "huitieme": "Huitièmes de finale",
-        "seizieme": "Seizièmes de finale",
-        "t32": "32es de finale",
-        "t64": "64es de finale",
-        "t128": "128es de finale"
+        "t16": "Tour des 16",
+        "t32": "Tour des 32",
+        "t64": "Tour des 64",
+        "t128": "Tour des 128",
+        "t256": "Tour des 256"
       },
       "exemptes": "{n, plural, one {# exempté} other {# exemptés}}",
       "matchsJoues": "{joues, plural, one {# match joué} other {# matchs joués}} sur {total}",

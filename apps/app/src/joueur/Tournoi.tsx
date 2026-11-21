@@ -15,7 +15,7 @@ export function Tournoi({ tournoi }: { tournoi: TournoiJoueur }) {
   const vue = vueDuTournoi(tournoi);
   // Un petit signal quand son match est appelé : le téléphone est souvent dans la poche.
   useVibration(vue.cas === 'appele', VIBRATION_JUSTE);
-  // Son tour : « 64es de finale », « Quarts de finale »…
+  // Son tour : « Tour des 64 », « Quarts de finale »…
   const nomTour =
     tournoi.match && tournoi.tours ? tTours(nomDuTour(tournoi.match.tour, tournoi.tours)) : null;
   const surtitre = nomTour && (

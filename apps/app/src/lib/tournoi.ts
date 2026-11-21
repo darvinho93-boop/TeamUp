@@ -52,22 +52,13 @@ export function matchDepuisLigne(l: LigneMatch): MatchSalle {
   };
 }
 
-const NOMS_DES_TOURS = [
-  'finale',
-  'demi',
-  'quart',
-  'huitieme',
-  'seizieme',
-  't32',
-  't64',
-  't128',
-] as const;
+const NOMS_DES_TOURS = ['finale', 'demi', 'quart', 't16', 't32', 't64', 't128', 't256'] as const;
 export type CleDuTour = (typeof NOMS_DES_TOURS)[number];
 
 /**
- * Le nom d'un tour d'après son nombre de matchs, comme au tennis ou au foot : 16 matchs, les
- * seizièmes ; 64 matchs, les 64es. À 100 joueurs, le tableau de 128 places part donc des 64es, et
- * les 128es n'existent qu'au-delà de 128 joueurs.
+ * Le nom d'un tour d'après son nombre de places : le « tour des 16 » compte 16 joueurs, 8 matchs.
+ * À 100 joueurs, le tableau de 128 places part du tour des 128 ; les exemptés entrent directement
+ * au tour des 64.
  */
 export function nomDuTour(tour: number, tours: number): CleDuTour {
   return NOMS_DES_TOURS[Math.min(NOMS_DES_TOURS.length - 1, Math.max(0, tours - tour))]!;

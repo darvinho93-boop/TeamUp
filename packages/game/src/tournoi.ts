@@ -12,7 +12,7 @@ import { tirerOrdre } from './ordre';
 import type { Duelliste } from './pilotage/duel';
 import type { ScoresParEquipe } from './scores';
 
-/** Matchs lancés en même temps, au choix de la régie : de un seul à tout un tour de 64es. */
+/** Matchs lancés en même temps, au choix de la régie : de un seul à tout un tour des 128. */
 export const GOBELETS_MIN = 1;
 export const GOBELETS_MAX = 64;
 export const GOBELETS_DEFAUT = 16;

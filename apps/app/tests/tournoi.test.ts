@@ -142,13 +142,13 @@ describe('lire le tableau', () => {
     [8, 8, 'finale'],
     [7, 8, 'demi'],
     [6, 8, 'quart'],
-    [5, 8, 'huitieme'],
-    [4, 8, 'seizieme'],
-    [3, 8, 't32'],
-    [2, 8, 't64'],
-    [1, 8, 't128'],
-    [1, 7, 't64'],
-    [1, 4, 'huitieme'],
+    [5, 8, 't16'],
+    [4, 8, 't32'],
+    [3, 8, 't64'],
+    [2, 8, 't128'],
+    [1, 8, 't256'],
+    [1, 7, 't128'],
+    [1, 4, 't16'],
   ])('tour %i sur %i : %s', (tour, tours, attendu) => {
     expect(nomDuTour(tour, tours)).toBe(attendu);
   });
