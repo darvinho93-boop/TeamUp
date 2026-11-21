@@ -491,7 +491,9 @@ avecBase('tournoi du gobelet', () => {
     });
     expect(data!.tournoi.matchs.map((m) => m.poste)).toEqual([1, 2, 3, 4]);
     expect(data!.tournoi.matchs[0]!.gagnant).toBe(0);
-    expect(data!.tournoi.tableau.map((m) => m.tour)).toEqual([2, 2, 2, 2, 3, 3, 4]);
+    expect(data!.tournoi.tableau.map((m) => m.tour)).toEqual([
+      1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4,
+    ]);
   });
 
   it('se joue jusqu’à la finale, sans jamais dépasser les gobelets', async () => {

@@ -139,15 +139,18 @@ describe('lire le tableau', () => {
   });
 
   it.each([
-    [7, 7, { cle: 'finale' }],
-    [6, 7, { cle: 'demi' }],
-    [5, 7, { cle: 'quart' }],
-    [4, 7, { cle: 'huitieme' }],
-    [3, 7, { cle: 'seizieme' }],
-    [2, 7, { cle: 'places', places: 64 }],
-    [1, 7, { cle: 'premier' }],
-  ])('tour %i sur %i', (tour, tours, attendu) => {
-    expect(nomDuTour(tour, tours)).toEqual(attendu);
+    [8, 8, 'finale'],
+    [7, 8, 'demi'],
+    [6, 8, 'quart'],
+    [5, 8, 'huitieme'],
+    [4, 8, 'seizieme'],
+    [3, 8, 't32'],
+    [2, 8, 't64'],
+    [1, 8, 't128'],
+    [1, 7, 't64'],
+    [1, 4, 'huitieme'],
+  ])('tour %i sur %i : %s', (tour, tours, attendu) => {
+    expect(nomDuTour(tour, tours)).toBe(attendu);
   });
 
   it('retrouve un match par prénom, sans accents ni casse', () => {

@@ -725,8 +725,9 @@
           "quart": "Quarts de finale",
           "huitieme": "Huitièmes de finale",
           "seizieme": "Seizièmes de finale",
-          "places": "Tour de {places}",
-          "premier": "Premier tour"
+          "t32": "32es de finale",
+          "t64": "64es de finale",
+          "t128": "128es de finale"
         }
       },
       "explication": {
@@ -1240,8 +1241,9 @@
         "quart": "Quarts de finale",
         "huitieme": "Huitièmes de finale",
         "seizieme": "Seizièmes de finale",
-        "places": "Tour de {places}",
-        "premier": "Premier tour"
+        "t32": "32es de finale",
+        "t64": "64es de finale",
+        "t128": "128es de finale"
       }
     },
     "verrouillees": "Réponses verrouillées !",

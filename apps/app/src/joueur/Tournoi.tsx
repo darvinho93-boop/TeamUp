@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
-import { vueDuTournoi, type TournoiJoueur } from '@/lib/tournoi';
+import { nomDuTour, vueDuTournoi, type TournoiJoueur } from '@/lib/tournoi';
 import { useVibration, VIBRATION_JUSTE } from './useApresSuspense';
 
 /**
@@ -11,13 +11,23 @@ import { useVibration, VIBRATION_JUSTE } from './useApresSuspense';
  */
 export function Tournoi({ tournoi }: { tournoi: TournoiJoueur }) {
   const t = useTranslations('tournoi');
+  const tTours = useTranslations('ecran.tournoi.tours');
   const vue = vueDuTournoi(tournoi);
   // Un petit signal quand son match est appelé : le téléphone est souvent dans la poche.
   useVibration(vue.cas === 'appele', VIBRATION_JUSTE);
+  // Son tour : « 64es de finale », « Quarts de finale »…
+  const nomTour =
+    tournoi.match && tournoi.tours ? tTours(nomDuTour(tournoi.match.tour, tournoi.tours)) : null;
+  const surtitre = nomTour && (
+    <p className="tu-tournoi__tour" data-testid="tournoi-nom-tour">
+      {nomTour}
+    </p>
+  );
 
   if (vue.cas === 'appele') {
     return (
       <div className="tu-quiz tu-tournoi" data-testid="tournoi-joueur" data-cas="appele">
+        {surtitre}
         <p className="tu-tournoi__poste" data-testid="tournoi-poste">
           {t('poste', { poste: vue.poste })}
         </p>
@@ -40,6 +50,7 @@ export function Tournoi({ tournoi }: { tournoi: TournoiJoueur }) {
   if (vue.cas === 'attente') {
     return (
       <div className="tu-quiz tu-tournoi" data-testid="tournoi-joueur" data-cas="attente">
+        {surtitre}
         {vue.passe && (
           <p className="tu-quiz__statut tu-quiz__statut--in" role="status">
             {vue.passe === 'exempte' ? t('exempte') : t('qualifie')}

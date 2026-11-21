@@ -52,23 +52,25 @@ export function matchDepuisLigne(l: LigneMatch): MatchSalle {
   };
 }
 
-export type NomDuTour =
-  | { cle: 'finale' | 'demi' | 'quart' | 'huitieme' | 'seizieme' | 'premier' }
-  | { cle: 'places'; places: number };
+const NOMS_DES_TOURS = [
+  'finale',
+  'demi',
+  'quart',
+  'huitieme',
+  'seizieme',
+  't32',
+  't64',
+  't128',
+] as const;
+export type CleDuTour = (typeof NOMS_DES_TOURS)[number];
 
 /**
- * « Quarts de finale », ou « Tour de 64 » au-delà des seizièmes. Le tout premier tour d'un grand
- * tableau est le « Premier tour » : à 100 joueurs, « Tour de 128 » ne voudrait rien dire.
+ * Le nom d'un tour d'après son nombre de matchs, comme au tennis ou au foot : 16 matchs, les
+ * seizièmes ; 64 matchs, les 64es. À 100 joueurs, le tableau de 128 places part donc des 64es, et
+ * les 128es n'existent qu'au-delà de 128 joueurs.
  */
-export function nomDuTour(tour: number, tours: number): NomDuTour {
-  const restants = tours - tour;
-  if (restants === 0) return { cle: 'finale' };
-  if (restants === 1) return { cle: 'demi' };
-  if (restants === 2) return { cle: 'quart' };
-  if (restants === 3) return { cle: 'huitieme' };
-  if (restants === 4) return { cle: 'seizieme' };
-  if (tour === 1) return { cle: 'premier' };
-  return { cle: 'places', places: 2 ** (restants + 1) };
+export function nomDuTour(tour: number, tours: number): CleDuTour {
+  return NOMS_DES_TOURS[Math.min(NOMS_DES_TOURS.length - 1, Math.max(0, tours - tour))]!;
 }
 
 /**

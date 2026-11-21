@@ -98,8 +98,7 @@ export function PanneauTournoi({
 
   const libelleTour = () => {
     if (!tournoi?.tour || !tournoi.tours) return '';
-    const nom = nomDuTour(tournoi.tour, tournoi.tours);
-    return nom.cle === 'places' ? t('tours.places', { places: nom.places }) : t(`tours.${nom.cle}`);
+    return t(`tours.${nomDuTour(tournoi.tour, tournoi.tours)}`);
   };
 
   const executer = async (action: () => Promise<boolean>) => {

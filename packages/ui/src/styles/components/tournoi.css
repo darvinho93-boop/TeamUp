@@ -52,55 +52,75 @@
   margin: 0;
   padding: 0;
   font-size: min(
-    var(--tu-size-4xl),
+    var(--tu-size-3xl),
     calc(var(--tu-stage-postes-h) / var(--tu-postes-rangees) * var(--tu-stage-poste-ratio))
   );
   list-style: none;
 }
 
+/* Une branche du tableau : deux prénoms, un crochet, le poste au bout. */
 .tu-stage-poste {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--tu-space-3);
   min-height: 0;
-  overflow: hidden;
-  padding: var(--tu-space-1) var(--tu-space-3);
-  border: var(--tu-border-width) solid var(--tu-border);
-  border-radius: var(--tu-radius-md);
-  background: var(--tu-surface);
 }
 
 .tu-stage-postes[data-aere='true'] .tu-stage-poste {
-  grid-template-columns: auto minmax(0, max-content);
+  grid-template-columns: minmax(0, max-content) auto;
   justify-content: center;
-  gap: var(--tu-space-6);
-}
-
-.tu-stage-poste[data-juge='true'] {
-  background: var(--tu-surface-muted);
-}
-
-.tu-stage-poste__numero {
-  min-width: 2ch;
-  color: var(--tu-text-muted);
-  font-family: var(--tu-font-display);
-  font-size: 1.25em;
-  font-weight: 700;
-  text-align: center;
 }
 
 .tu-stage-poste__noms {
+  position: relative;
   display: grid;
+  grid-auto-rows: 1.35em;
   gap: var(--tu-space-1);
   min-width: 0;
+  padding-inline-end: var(--tu-arbre-crochet);
+}
+
+/* Le crochet qui réunit les deux prénoms. */
+.tu-stage-poste__noms::after {
+  position: absolute;
+  inset-block: 25%;
+  inset-inline-end: 0;
+  width: var(--tu-arbre-crochet);
+  border: var(--tu-arbre-trait-fort) solid var(--tu-navy-200);
+  border-inline-start: 0;
+  content: '';
+}
+
+.tu-stage-poste[data-juge='true'] .tu-stage-poste__noms::after {
+  border-color: var(--tu-navy-700);
+}
+
+.tu-stage-poste__numero {
+  display: grid;
+  place-items: center;
+  width: 2.1em;
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-navy-700);
+  color: var(--tu-text-invert);
+  font-family: var(--tu-font-display);
+  font-size: 0.68em;
+  font-weight: 700;
+}
+
+.tu-stage-poste[data-juge='true'] .tu-stage-poste__numero {
+  background: var(--tu-navy-200);
+  color: var(--tu-navy-700);
 }
 
 .tu-stage-poste__prenom {
   display: block;
+  align-content: center;
   overflow: hidden;
-  padding-inline-start: var(--tu-space-2);
+  padding-inline: var(--tu-space-2);
   border-inline-start: var(--tu-stage-cadre) solid var(--tu-team-color, var(--tu-border));
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-surface);
   font-family: var(--tu-font-display);
   font-weight: 600;
   line-height: var(--tu-leading-tight);
@@ -109,42 +129,182 @@
 }
 
 .tu-stage-poste__prenom[data-etat='gagne'] {
-  color: var(--tu-success);
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
   font-weight: 700;
 }
 
 .tu-stage-poste__prenom[data-etat='perdu'] {
+  background: transparent;
   color: var(--tu-text-muted);
   text-decoration: line-through;
 }
 
-.tu-stage-tableau {
-  display: grid;
+/* L'arbre : deux moitiés qui montent vers la finale, au centre. Les tailles suivent la hauteur
+   de la scène et le nombre de rangées de chaque colonne. */
+.tu-arbre {
+  position: relative;
   flex: 1;
-  grid-template-columns: repeat(var(--tu-tableau-colonnes), minmax(0, 1fr));
-  gap: var(--tu-space-8);
   min-height: 0;
-  font-size: var(--tu-size-2xl);
+  container-type: size;
 }
 
-.tu-stage-tableau__tour {
+.tu-arbre__traits {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+}
+
+.tu-arbre__trait {
+  stroke: var(--tu-navy-200);
+  stroke-width: var(--tu-arbre-trait);
+  vector-effect: non-scaling-stroke;
+}
+
+.tu-arbre__trait[data-actif='true'] {
+  stroke: var(--tu-navy-500);
+  stroke-width: var(--tu-arbre-trait-fort);
+}
+
+.tu-arbre__trait[data-allume='true'] {
+  stroke: var(--tu-team-color);
+  stroke-width: var(--tu-arbre-trait-fort);
+}
+
+.tu-arbre[data-vivant='true'] .tu-arbre__trait {
+  transition: stroke var(--tu-dur-reveal) var(--tu-ease);
+}
+
+.tu-arbre__place {
+  position: absolute;
+  top: calc(var(--tu-arbre-y) * 100%);
+  left: calc(var(--tu-arbre-x) * 100%);
+  display: flex;
+  align-items: center;
+  width: calc(var(--tu-arbre-l) * 100%);
+  height: min(var(--tu-arbre-place), calc(100cqh / var(--tu-arbre-rangs) * 0.84));
+  padding-inline: var(--tu-space-2);
+  border-inline-start: var(--tu-stage-cadre) solid var(--tu-team-color, var(--tu-navy-200));
+  border-radius: var(--tu-radius-sm);
+  background: var(--tu-surface);
+  font-family: var(--tu-font-display);
+  font-size: min(var(--tu-size-2xl), calc(100cqh / var(--tu-arbre-rangs) * 0.52));
+  font-weight: 600;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.tu-arbre__place[data-cote='d'] {
+  justify-content: flex-end;
+  border-inline-start: 0;
+  border-inline-end: var(--tu-stage-cadre) solid var(--tu-team-color, var(--tu-navy-200));
+}
+
+/* Une place à gagner : un cadre discret, sans la couleur d'une équipe. */
+.tu-arbre__place[data-etat='vide'],
+.tu-arbre__place[data-cote='d'][data-etat='vide'] {
+  border: var(--tu-arbre-trait) solid var(--tu-navy-200);
+  background: var(--tu-navy-50);
+}
+
+.tu-arbre__place[data-actif='true'] {
+  box-shadow: 0 0 0 var(--tu-arbre-trait) var(--tu-navy-500);
+}
+
+.tu-arbre__place[data-etat='gagne'] {
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+  font-weight: 700;
+}
+
+.tu-arbre__place[data-etat='perdu'] {
+  background: transparent;
+  color: var(--tu-text-muted);
+  text-decoration: line-through;
+}
+
+.tu-arbre__prenom {
+  display: block;
+  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Un joueur d'un tour trop dense pour son prénom, ou déjà joué : un point à sa couleur, au
+   croisement du trait qui y arrive et de celui qui en repart. */
+.tu-arbre__place[data-pastille='true'],
+.tu-arbre__place[data-pastille='true'][data-cote='d'] {
+  width: auto;
+  height: min(var(--tu-arbre-pastille), calc(100cqh / var(--tu-arbre-rangs) * 0.72));
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-team-color, var(--tu-navy-200));
+  transform: translate(-50%, -50%);
+}
+
+.tu-arbre__place[data-pastille='true'][data-etat='vide'] {
+  border: var(--tu-arbre-trait) solid var(--tu-navy-200);
+  background: var(--tu-surface);
+}
+
+.tu-arbre__place[data-pastille='true'][data-etat='perdu'] {
+  background: var(--tu-team-color);
+  opacity: var(--tu-regie-estompe);
+}
+
+.tu-arbre__poste {
+  position: absolute;
+  top: calc(var(--tu-arbre-y) * 100%);
+  left: calc(var(--tu-arbre-x) * 100%);
+  display: grid;
+  place-items: center;
+  width: var(--tu-arbre-poste);
+  aspect-ratio: 1;
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-navy-700);
+  color: var(--tu-text-invert);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-base);
+  font-weight: 700;
+  transform: translate(-50%, -50%);
+}
+
+.tu-arbre__poste[data-juge='true'] {
+  background: var(--tu-navy-200);
+  color: var(--tu-navy-700);
+}
+
+.tu-arbre__centre {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  gap: var(--tu-space-3);
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  align-items: center;
+  gap: var(--tu-space-2);
+  max-width: var(--tu-arbre-centre);
+  transform: translate(-50%, -50%);
 }
 
-.tu-stage-tableau__match {
-  display: grid;
-  gap: var(--tu-space-1);
-  padding: var(--tu-space-2) var(--tu-space-3);
-  border: var(--tu-border-width) solid var(--tu-border);
-  border-radius: var(--tu-radius-md);
-  background: var(--tu-surface);
+.tu-arbre__coupe {
+  width: var(--tu-arbre-coupe);
+  height: var(--tu-arbre-coupe);
+}
+
+.tu-arbre__champion {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--tu-size-xl);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Explication animée : la salle qui se réduit de tour en tour, puis trois postes. */
@@ -182,6 +342,14 @@
 .tu-tournoi {
   align-items: center;
   text-align: center;
+}
+
+.tu-tournoi__tour {
+  margin: 0;
+  color: var(--tu-text-muted);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-lg);
+  font-weight: 600;
 }
 
 .tu-tournoi__poste {

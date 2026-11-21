@@ -725,8 +725,9 @@
           "quart": "Quarter-finals",
           "huitieme": "Round of 16",
           "seizieme": "Round of 32",
-          "places": "Round of {places}",
-          "premier": "First round"
+          "t32": "Round of 64",
+          "t64": "Round of 128",
+          "t128": "Round of 256"
         }
       },
       "explication": {
@@ -1240,8 +1241,9 @@
         "quart": "Quarter-finals",
         "huitieme": "Round of 16",
         "seizieme": "Round of 32",
-        "places": "Round of {places}",
-        "premier": "First round"
+        "t32": "Round of 64",
+        "t64": "Round of 128",
+        "t128": "Round of 256"
       }
     },
     "verrouillees": "Answers locked!",

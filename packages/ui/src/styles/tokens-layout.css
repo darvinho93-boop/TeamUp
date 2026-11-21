@@ -98,6 +98,15 @@
      (deux lignes par poste, jusqu'à huit rangées). */
   --tu-stage-postes-h: 46rem;
   --tu-stage-poste-ratio: 0.34;
+  /* L'arbre du tournoi : ses traits, un joueur en pastille, le poste d'un match, la coupe. */
+  --tu-arbre-trait: 0.125rem;
+  --tu-arbre-trait-fort: 0.25rem;
+  --tu-arbre-crochet: 1rem;
+  --tu-arbre-pastille: 1.25rem;
+  --tu-arbre-place: 3.5rem;
+  --tu-arbre-poste: 2.25rem;
+  --tu-arbre-coupe: 7rem;
+  --tu-arbre-centre: 13rem;
   --tu-stage-cine-video: 46rem;
   --tu-stage-cine-cadre: 0.75rem;
   /* Blind test (2026-11-15) : l'égaliseur de l'écoute et le rythme de ses barres. */

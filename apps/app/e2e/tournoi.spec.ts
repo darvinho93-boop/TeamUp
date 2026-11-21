@@ -150,7 +150,13 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   // --- La première séquence : quatre postes, à l'écran et au téléphone de qui joue.
   await regie.getByRole('button', { name: 'Appeler la première séquence' }).click();
   await expect(scene('appel')).toBeVisible({ timeout: 10_000 });
-  await expect(ecran.getByTestId('tournoi-postes').locator('li')).toHaveCount(4);
+  // Seize joueurs : les huitièmes tiennent dans l'arbre, chaque match appelé porte son poste.
+  await expect(ecran.getByTestId('tournoi-arbre')).toBeVisible();
+  await expect(ecran.getByTestId('tournoi-tour')).toHaveText('Huitièmes de finale');
+  await expect(ecran.locator('[data-testid^="poste-"]')).toHaveCount(4);
+  await expect(ana.getByTestId('tournoi-nom-tour')).toHaveText('Huitièmes de finale', {
+    timeout: 10_000,
+  });
   await capturer(ecran, 'ecran-appel');
   const lireMatchs = async () => {
     const { data } = await service
@@ -255,7 +261,7 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   });
   await ecran.reload();
   await expect(scene('resultats')).toBeVisible({ timeout: 15_000 });
-  await expect(ecran.locator('.tu-stage-poste[data-juge="true"]')).toHaveCount(4);
+  await expect(ecran.locator('[data-testid^="poste-"][data-juge="true"]')).toHaveCount(4);
 
   // --- Le reste du tableau : quatre, quatre, puis demi-finales et finale une à une.
   const tailles = [4];
@@ -278,9 +284,12 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
     await expect(regie.getByTestId('tournoi-compteur')).toBeVisible();
     if (tailles.length === 4) await capturer(ecran, 'ecran-demi');
     await noterLesRestants();
-    // Les quarts jugés : la fin du tableau remplace la grille des postes.
+    // Les quarts jugés : les qualifiés ont rejoint les demi-finales, dans l'arbre.
     if (tailles.length === 3) {
-      await expect(ecran.getByTestId('tournoi-tableau')).toBeVisible({ timeout: 10_000 });
+      await expect(ecran.locator('[data-testid^="poste-"][data-juge="false"]')).toHaveCount(0, {
+        timeout: 10_000,
+      });
+      await expect(ecran.getByTestId('tournoi-arbre')).toBeVisible();
       await capturer(ecran, 'ecran-tableau');
     }
   }
@@ -434,6 +443,7 @@ test('100 joueurs : 32 postes tiennent en 1 920 × 1 080, chaque prénom entier'
   });
   await ecran.evaluate(() => document.fonts.ready);
 
+  await expect(ecran.getByTestId('tournoi-tour')).toHaveText('64es de finale');
   await capturer(ecran, 'ecran-32-postes');
 
   const mesure = await ecran.evaluate(() => {
@@ -467,4 +477,32 @@ test('100 joueurs : 32 postes tiennent en 1 920 × 1 080, chaque prénom entier'
     description: `${mesure.taille.toFixed(1)} px`,
   });
   expect(mesure).toMatchObject({ postes: 32, hors: 0, debordent: 0, prenoms: 64, coupes: 0 });
+});
+
+test('l’arbre tient dans le cadre, de 16 à 150 joueurs, à chaque tour', async ({ browser }) => {
+  const page = await (
+    await browser.newContext({ viewport: { width: 1920, height: 1080 }, isMobile: false })
+  ).newPage();
+  for (const [joueurs, tour, etape] of [
+    [16, 1, 'tirage'],
+    [16, 2, 'juge'],
+    [100, 1, 'tirage'],
+    [100, 3, 'appel'],
+    [100, 5, 'juge'],
+    [150, 1, 'tirage'],
+    [150, 4, 'appel'],
+  ] as const) {
+    await page.goto(`/kit-ui/tournoi?joueurs=${joueurs}&tour=${tour}&etape=${etape}`);
+    await expect(page.getByTestId('tournoi-arbre')).toBeVisible();
+    const hors = await page.evaluate(
+      () =>
+        [...document.querySelectorAll('.tu-arbre__place, .tu-arbre__poste')].filter((p) => {
+          const r = p.getBoundingClientRect();
+          return (
+            r.left < -1 || r.top < -1 || r.right > innerWidth + 1 || r.bottom > innerHeight + 1
+          );
+        }).length,
+    );
+    expect(hors, `${joueurs} joueurs, tour ${tour}`).toBe(0);
+  }
 });

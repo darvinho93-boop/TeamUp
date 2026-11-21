@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, type CSSProperties } from 'react';
+import { useRef, type CSSProperties, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
 import {
@@ -13,8 +13,10 @@ import {
   type Duelliste,
   type EtapeTournoi,
 } from '@teamup/game';
+import { MATCHS_MAX_AVEC_NOMS } from '@/lib/arbre';
 import type { EtatSalle } from '@/lib/salle';
 import { grilleDesPostes, nomDuTour, type MatchSalle } from '@/lib/tournoi';
+import { ArbreTournoi } from './ArbreTournoi';
 import { Celebration, useArrivee } from './Celebration';
 import { Chrono } from './Chrono';
 import { Recompense } from './Recompense';
@@ -37,7 +39,10 @@ function Nom({ joueur, etat }: { joueur: Duelliste | null; etat: EtatJoueur }) {
   );
 }
 
-/** Qui va à quel poste : jusqu'à 32 matchs dans le cadre, les noms barrés à mesure. */
+/**
+ * Les grands tours (32es, 64es, 128es), trop denses pour l'arbre en toutes lettres : chaque match
+ * est une branche du tableau, deux prénoms reliés à leur poste. Jusqu'à 32 dans le cadre.
+ */
 function Postes({ matchs }: { matchs: MatchSalle[] }) {
   const ref = useRef<HTMLOListElement>(null);
   const { colonnes, rangees } = grilleDesPostes(matchs.length);
@@ -46,7 +51,6 @@ function Postes({ matchs }: { matchs: MatchSalle[] }) {
     <ol
       ref={ref}
       className="tu-stage-postes"
-      // Peu de postes : les prénoms au milieu de leur carte, plutôt que collés à gauche.
       data-aere={rangees <= 2}
       style={{ '--tu-postes-colonnes': colonnes, '--tu-postes-rangees': rangees } as CSSProperties}
       data-testid="tournoi-postes"
@@ -58,54 +62,22 @@ function Postes({ matchs }: { matchs: MatchSalle[] }) {
           data-juge={m.gagnant !== null}
           data-testid={`poste-${m.poste}`}
         >
-          <span className="tu-stage-poste__numero">{m.poste}</span>
           <span className="tu-stage-poste__noms">
             <Nom joueur={m.a} etat={etatDuCote(m, 0)} />
             <Nom joueur={m.b} etat={etatDuCote(m, 1)} />
           </span>
+          <span className="tu-stage-poste__numero">{m.poste}</span>
         </li>
       ))}
     </ol>
   );
 }
 
-/** La fin du tableau : quarts, demi-finales, finale, chacun sa colonne. */
-function TableauFinal({ matchs }: { matchs: MatchSalle[] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const toursVus = [...new Set(matchs.map((m) => m.tour))].sort((a, b) => a - b);
-  useTenirEnLargeur(
-    ref,
-    matchs.map((m) => `${m.a?.prenom}/${m.b?.prenom}/${m.gagnant}`).join(),
-    '.tu-stage-poste__prenom',
-  );
-  return (
-    <div
-      ref={ref}
-      className="tu-stage-tableau"
-      style={{ '--tu-tableau-colonnes': toursVus.length } as CSSProperties}
-      data-testid="tournoi-tableau"
-    >
-      {toursVus.map((tour) => (
-        <ol key={tour} className="tu-stage-tableau__tour">
-          {matchs
-            .filter((m) => m.tour === tour)
-            .sort((x, y) => x.rang - y.rang)
-            .map((m) => (
-              <li key={m.id} className="tu-stage-tableau__match">
-                <Nom joueur={m.a} etat={etatDuCote(m, 0)} />
-                <Nom joueur={m.b} etat={etatDuCote(m, 1)} />
-              </li>
-            ))}
-        </ol>
-      ))}
-    </div>
-  );
-}
-
 /**
- * Le tournoi du gobelet à l'écran commun (2026-11-21). Jusqu'aux quarts, la grille des postes de
- * la séquence ; demi-finales et finale en face-à-face, avec le verdict commun ; puis le podium des
- * joueurs. La séquence à annoncer reste sur la régie.
+ * Le tournoi du gobelet à l'écran commun (2026-11-21). L'arbre du tableau au tirage et entre deux
+ * séquences ; les matchs appelés dessus dès que leur tour tient en toutes lettres, sinon leurs
+ * branches en grand ; demi-finales et finale en face-à-face, avec le verdict commun ; puis le
+ * podium des joueurs. La séquence à annoncer reste sur la régie.
  */
 export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   const t = useTranslations('ecran.tournoi');
@@ -128,11 +100,7 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
     '.tu-team--badge',
   );
 
-  const libelleTour = () => {
-    if (!tour || !tours) return '';
-    const nom = nomDuTour(tour, tours);
-    return nom.cle === 'places' ? t('tours.places', { places: nom.places }) : t(`tours.${nom.cle}`);
-  };
+  const libelleTour = (n: number) => (n && tours ? t(`tours.${nomDuTour(n, tours)}`) : '');
   const equipe = (numero: number) => etat.equipes.find((e) => e.numero === numero) ?? null;
 
   if (etape === 'vainqueur' && classement) {
@@ -170,19 +138,44 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
     );
   }
 
-  if (!tournoi?.sequence || etape === 'tirage' || !etape) {
-    const joueurs = tournoi?.joueurs ?? etat.equipes.reduce((n, e) => n + e.joueurs, 0);
+  const joueurs = tournoi?.joueurs ?? etat.equipes.reduce((n, e) => n + e.joueurs, 0);
+
+  // Avant le tirage : le nom du jeu et la salle qui attend son tableau.
+  if (!tournoi?.tours || !etape) {
     return (
       <div
         className="tu-stage__body tu-stage-centre tu-stage-reveal"
         data-scene="tournoi"
         data-etape="tirage"
       >
-        <p className="tu-stage__l tu-stage__muted">{tournoi?.tours ? t('tire') : t('prepare')}</p>
+        <p className="tu-stage__l tu-stage__muted">{t('prepare')}</p>
         <h1 className="tu-stage__giant tu-stage-intro__jeu">{tJeux('cup')}</h1>
         <p className="tu-stage__l" data-testid="tournoi-compte">
           {t('joueurs', { joueurs })}
         </p>
+      </div>
+    );
+  }
+
+  const tete = (titre: string, info: ReactNode) => (
+    <header className="tu-stage-tournoi__tete">
+      <h1 className="tu-stage-tournoi__titre" data-testid="tournoi-tour">
+        {titre}
+      </h1>
+      <p className="tu-stage-tournoi__info">{info}</p>
+    </header>
+  );
+  const enCours = `${t('sequence', { numero: tournoi.sequence ?? 1 })}${
+    tournoi.en_lice !== null ? ` · ${t('enLice', { n: tournoi.en_lice })}` : ''
+  }`;
+  const arbre = <ArbreTournoi matchs={tournoi.tableau} sequence={tournoi.sequence} />;
+
+  // Le tableau tiré : tout l'arbre, avant la première séquence.
+  if (etape === 'tirage' || !tournoi.sequence) {
+    return (
+      <div className="tu-stage__body tu-stage-tournoi" data-scene="tournoi" data-etape="tirage">
+        {tete(t('tire'), <span data-testid="tournoi-compte">{t('joueurs', { joueurs })}</span>)}
+        {arbre}
       </div>
     );
   }
@@ -214,6 +207,18 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
         />
       );
     }
+    // L'appel d'une demi-finale ou de la finale : le match, à sa place dans l'arbre.
+    if (etape === 'appel') {
+      return (
+        <div className="tu-stage__body tu-stage-tournoi" data-scene="tournoi" data-etape="appel">
+          {tete(
+            libelleTour(tour),
+            `${duel.a?.prenom ?? '?'} ${tEcran('contre')} ${duel.b?.prenom ?? '?'}`,
+          )}
+          {arbre}
+        </div>
+      );
+    }
     const face = (j: Duelliste | null) => {
       const sonEquipe = j ? equipe(j.equipe) : null;
       return (
@@ -239,7 +244,7 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
         data-etape={etape}
       >
         <p className="tu-stage__l tu-stage__muted" data-testid="tournoi-tour">
-          {libelleTour()}
+          {libelleTour(tour)}
         </p>
         <div className="tu-stage-duel" data-testid="duel">
           {face(duel.a)}
@@ -258,19 +263,6 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
     );
   }
 
-  const faits = matchs.filter((m) => m.gagnant !== null).length;
-  const tete = (
-    <header className="tu-stage-tournoi__tete">
-      <h1 className="tu-stage-tournoi__titre" data-testid="tournoi-tour">
-        {libelleTour()}
-      </h1>
-      <p className="tu-stage-tournoi__info">
-        {t('sequence', { numero: tournoi.sequence })}
-        {tournoi.en_lice !== null && ` · ${t('enLice', { n: tournoi.en_lice })}`}
-      </p>
-    </header>
-  );
-
   if (etape === 'jeu') {
     return (
       <div
@@ -278,7 +270,7 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
         data-scene="tournoi"
         data-etape="jeu"
       >
-        {tete}
+        {tete(libelleTour(tour), enCours)}
         <Chrono
           departMs={etat.pilotage.chrono_depart_ms}
           dureeS={chronoDuelS('cup')}
@@ -290,23 +282,20 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
     );
   }
 
-  const quartJuge =
-    etape === 'resultats' && faits === matchs.length && tours >= 3 && tour === tours - 2;
+  const faits = matchs.filter((m) => m.gagnant !== null).length;
+  const tousJuges = faits === matchs.length;
+  const dansLArbre = tousJuges || 2 ** (tours - tour) <= MATCHS_MAX_AVEC_NOMS;
   return (
     <div className="tu-stage__body tu-stage-tournoi" data-scene="tournoi" data-etape={etape}>
-      {tete}
-      {quartJuge ? (
-        <TableauFinal matchs={tournoi.tableau} />
-      ) : (
-        <>
-          <p className="tu-stage-tournoi__consigne">
-            {etape === 'appel'
-              ? t('rejoindre')
-              : `${t('perdants')} ${t('resultats', { faits, total: matchs.length })}`}
-          </p>
-          <Postes matchs={matchs} />
-        </>
+      {tete(libelleTour(tour), enCours)}
+      {!(etape === 'resultats' && tousJuges) && (
+        <p className="tu-stage-tournoi__consigne">
+          {etape === 'appel'
+            ? t('rejoindre')
+            : `${t('perdants')} ${t('resultats', { faits, total: matchs.length })}`}
+        </p>
       )}
+      {dansLArbre ? arbre : <Postes matchs={matchs} />}
     </div>
   );
 }
