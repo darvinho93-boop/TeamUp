@@ -1903,14 +1903,24 @@ viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste
   transaction ; `null` annule ; ne touche pas à `maj_le`). **Aucun téléphone n'écrit.**
 - `etat_joueur.tournoi` (`tournoi_du_joueur`) : **son seul match**, par index ; mesuré à 100
   joueurs, aucun surcoût (environ 5 ms par relecture, avec ou sans tournoi).
-  `etat_ecran.tournoi` : la séquence en cours et la fin du tableau (quarts à finale) ; la régie
-  relit le tableau entier dans `matchs_tournoi` quand elle appelle une séquence ou conclut.
+  `etat_ecran.tournoi` : la séquence en cours et **tout le tableau** (migration `20261123100000`) ;
+  la régie relit `matchs_tournoi` quand elle appelle une séquence ou conclut.
 - Régie (`src/regie/PanneauTournoi.tsx`) : le perdant se retrouve par son prénom, **une touche sans
   confirmation**, « Annuler » jusqu'à la séquence suivante ; un absent se traite pareil (forfait).
   Un résultat envoie le signal `mises` (écran et régie) ; appeler une séquence, `relire`.
-- Écran (`src/ecran/Tournoi.tsx`, `tournoi.css`) : grille de 32 postes au plus (quatre colonnes),
-  noms barrés en direct, tableau des quarts à la finale, face-à-face et `Verdict` pour les deux
-  derniers tours, podium des joueurs. La séquence à annoncer reste sur la régie.
+- Écran (`src/ecran/Tournoi.tsx`, `tournoi.css`), revu le 2026-11-21 à la demande de l'utilisateur
+  (« un format comme dans Budokai Tenkaichi ») : un **vrai arbre de tournoi** aux couleurs de Team
+  Up!, le principe seulement, aucun visuel du jeu. Les deux moitiés convergent vers la coupe, au
+  centre, et les traits prennent la couleur de l'équipe qui avance (`ArbreTournoi.tsx`, géométrie
+  pure dans `src/lib/arbre.ts`). Au-delà de 16 matchs par tour, et pour les tours déjà joués, un
+  joueur est une **pastille** ; le tour à jouer a la colonne la plus large. L'arbre paraît au
+  tirage, entre deux séquences et à l'appel dès que le tour a 16 matchs au plus (postes sur les
+  branches) ; pour les 32es, 64es et 128es, l'appel montre les branches en grand (32 au plus).
+  Demi-finales et finale : l'arbre à l'appel, puis face-à-face et `Verdict`, enfin le podium.
+  La séquence à annoncer reste sur la régie. Contrôle sans base : `/kit-ui/tournoi?joueurs=100&tour=3&etape=appel`.
+- Noms des tours (`nomDuTour`) d'après le **nombre de matchs**, comme au foot : 64 matchs, 64es.
+  À 80-100 joueurs (tableau de 128 places) on part donc des **64es** ; les 128es n'existent qu'au-delà
+  de 128 joueurs.
 - Téléphone (`src/joueur/Tournoi.tsx`, `vueDuTournoi`) : en lecture seule, poste, adversaire,
   exempté, qualifié, « Hors jeu ! », avec une vibration à l'appel. La vidéo du gobelet sur la carte
   montre le tournoi (`scriptExplication(jeu, 'tournoi')`).
