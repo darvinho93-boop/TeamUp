@@ -1913,14 +1913,16 @@ viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste
   Up!, le principe seulement, aucun visuel du jeu. Les deux moitiés convergent vers la coupe, au
   centre, et les traits prennent la couleur de l'équipe qui avance (`ArbreTournoi.tsx`, géométrie
   pure dans `src/lib/arbre.ts`).
-- **Un seul arbre, même à 100 joueurs** (redemandé le 2026-11-21, un tableau de matchs a été refusé) :
-  du tirage à la finale, **tous les prénoms** sont sur les bords de la scène, une rangée par
-  joueur, sur deux colonnes **en quinconce** au-delà de 16 par moitié (le trait de la colonne du
-  bord passe entre deux prénoms de l'autre). Environ 23 px à 100 joueurs, 18 px à 150, en dessous
-  du plancher de 2 rem : **écart assumé** au cahier des charges § 5.2. Un joueur sorti reste barré
-  sur sa place de départ ; un exempté ne s'allume qu'à son premier vrai match. Le tour à jouer a
-  sa colonne de prénoms dès 16 matchs ; les autres tours sont des **pastilles**. Les postes sont
-  sur les croisements, le titre et la consigne au centre, autour de la coupe.
+- **Un seul arbre, même à 100 joueurs** (redemandé le 2026-11-21, un tableau de matchs a été refusé),
+  et **seuls les prénoms du tour en cours sont écrits** : ils sont répartis à intervalles réguliers,
+  sur deux colonnes **en quinconce** au-delà de 16 par moitié (le trait d'une colonne passe entre
+  deux prénoms de l'autre). Environ 23 px aux 64es à 100 joueurs, 18 px à 150, en dessous du
+  plancher de 2 rem : **écart assumé** au cahier des charges § 5.2 ; 26 px ou plus dès les 16es.
+- **Les tours passés ne sont plus que le chemin** : un point par joueur au départ, resserré dans la
+  rangée du prénom qu'il a nourri ; le trait d'un joueur en lice à la couleur de son équipe, celui
+  d'un joueur sorti estompé. Les prénoms d'un tour restent jusqu'à ce que la régie lance le suivant
+  (`tournoi.tour`, troisième argument de `dispositionArbre`), puis l'arbre se recompose en fondu.
+  Les postes sont sur les croisements, le titre et la consigne au centre, autour de la coupe.
 - **« Jouer les X prochains matchs »** : avant chaque séquence, la régie choisit X, de 1 à 64 (ou
   « Tous »), dans l'ordre du tableau (`GOBELETS_MIN/MAX`, migration `20261123110000`). Demi-finales
   et finale restent une à une.
