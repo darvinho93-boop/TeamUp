@@ -42,6 +42,36 @@
   text-align: center;
 }
 
+/* Un grand tour en entier : ses matchs, puis la ligne des exemptés. */
+.tu-stage-tour {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+  min-height: 0;
+}
+
+.tu-stage-exemptes {
+  margin: 0;
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-lg);
+  line-height: var(--tu-leading-tight);
+  text-align: center;
+}
+
+.tu-stage-exemptes strong {
+  color: var(--tu-text);
+}
+
+.tu-stage-exemptes[data-taille='m'] {
+  font-size: var(--tu-size-base);
+}
+
+.tu-stage-exemptes[data-taille='s'] {
+  font-size: var(--tu-size-sm);
+}
+
+/* La police suit la hauteur réelle d'une rangée : la ligne des exemptés en prend sa part. */
 .tu-stage-postes {
   display: grid;
   flex: 1;
@@ -51,19 +81,33 @@
   min-height: 0;
   margin: 0;
   padding: 0;
-  font-size: min(
-    var(--tu-size-3xl),
-    calc(var(--tu-stage-postes-h) / var(--tu-postes-rangees) * var(--tu-stage-poste-ratio))
-  );
   list-style: none;
+  container-type: size;
 }
 
-/* Une branche du tableau : deux prénoms, un crochet, le poste au bout. */
+/* Une branche du tableau : deux prénoms, un crochet, le poste au bout. Lancé, le match est
+   encadré ; pas encore lancé, sa place du poste reste vide. */
 .tu-stage-poste {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   min-height: 0;
+  padding: var(--tu-arbre-trait) var(--tu-space-1);
+  border: var(--tu-arbre-trait) solid transparent;
+  border-radius: var(--tu-radius-md);
+  font-size: min(
+    var(--tu-size-3xl),
+    calc(100cqh / var(--tu-postes-rangees) * var(--tu-stage-poste-ratio))
+  );
+}
+
+.tu-stage-poste[data-appele='true'] {
+  border-color: var(--tu-navy-500);
+  background: var(--tu-navy-50);
+}
+
+.tu-stage-poste[data-appele='false'] .tu-stage-poste__numero {
+  visibility: hidden;
 }
 
 .tu-stage-postes[data-aere='true'] .tu-stage-poste {
@@ -305,6 +349,14 @@
   font-size: var(--tu-size-xl);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Régie : combien de matchs lancer maintenant. */
+.tu-regie-tournoi__choix {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--tu-space-2) var(--tu-space-3);
 }
 
 /* Explication animée : la salle qui se réduit de tour en tour, puis trois postes. */

@@ -3,7 +3,7 @@
  * tour, et dire à un joueur où il en est. Les règles vivent dans `packages/game` (`tournoi.ts`).
  */
 
-import type { Duelliste, MatchTournoi } from '@teamup/game';
+import { estExempte, type Duelliste, type MatchTournoi } from '@teamup/game';
 import { correspond } from './membres';
 import type { MancheSalle, TournoiSalle } from './salle';
 
@@ -84,11 +84,25 @@ export function etapeDeReprise(
   return tournoi.matchs.some((m) => m.gagnant !== null) ? 'resultats' : 'appel';
 }
 
-/** La grille des postes à l'écran : quatre colonnes au plus, huit rangées pour 32 matchs. */
+/**
+ * La grille des matchs d'un tour à l'écran : quatre colonnes tant que ça tient, puis huit rangées
+ * au plus (36 matchs : 5 × 8 ; un tour complet de 64es : 8 × 8).
+ */
 export function grilleDesPostes(matchs: number): { colonnes: number; rangees: number } {
   const n = Math.max(1, matchs);
-  const colonnes = Math.min(4, Math.ceil(Math.sqrt(n)));
+  const colonnes = Math.max(Math.min(4, Math.ceil(Math.sqrt(n))), Math.ceil(n / 8));
   return { colonnes, rangees: Math.ceil(n / colonnes) };
+}
+
+/** Les vrais matchs d'un tour, dans l'ordre où ils se jouent, et ses exemptés à part. */
+export function affichesDuTour<T extends MatchTournoi>(
+  matchs: readonly T[],
+): { matchs: T[]; exemptes: Duelliste[] } {
+  const ordre = [...matchs].sort((x, y) => x.rang - y.rang);
+  return {
+    matchs: ordre.filter((m) => !estExempte(m)),
+    exemptes: ordre.filter(estExempte).flatMap((m) => m.a ?? []),
+  };
 }
 
 /** Ce qu'un téléphone reçoit du tournoi : son seul match (`tournoi_du_joueur`). */

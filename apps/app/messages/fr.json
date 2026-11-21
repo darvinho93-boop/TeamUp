@@ -700,12 +700,9 @@
         "titre": "Tournoi",
         "joueurs": "{n} joueurs dans le tableau",
         "tire": "Tableau tiré : {joueurs} joueurs, {exemptes, plural, one {# exempté} other {# exemptés}}.",
-        "gobelets": "Gobelets (matchs en même temps)",
         "estimation": "{sequences, plural, one {# séquence} other {# séquences}}, environ {minutes} min",
         "tirer": "Tirer le tableau",
         "retirer": "Retirer le tableau",
-        "appelerPremiere": "Appeler la première séquence",
-        "appeler": "Séquence suivante",
         "lancer": "Lancer la séquence",
         "finSequence": "Fin de la séquence",
         "voirVainqueur": "Voir le vainqueur",
@@ -728,7 +725,12 @@
           "t32": "32es de finale",
           "t64": "64es de finale",
           "t128": "128es de finale"
-        }
+        },
+        "matchsAJouer": "Matchs à jouer maintenant",
+        "restants": "{tour} : {n, plural, one {# match reste} other {# matchs restent}} à jouer",
+        "tous": "Tous ({n})",
+        "jouerPremiers": "{n, plural, one {Jouer le premier match} other {Jouer les # premiers matchs}}",
+        "jouerProchains": "{n, plural, one {Jouer le prochain match} other {Jouer les # prochains matchs}}"
       },
       "explication": {
         "expliquer": "Expliquer",
@@ -1244,7 +1246,10 @@
         "t32": "32es de finale",
         "t64": "64es de finale",
         "t128": "128es de finale"
-      }
+      },
+      "exemptes": "{n, plural, one {Exempté du premier tour :} other {# exemptés du premier tour :}}",
+      "matchsJoues": "{joues, plural, one {# match joué} other {# matchs joués}} sur {total}",
+      "rejoindreN": "{n, plural, one {Le match numéroté rejoint son poste !} other {Les # matchs numérotés rejoignent leur poste !}}"
     },
     "verrouillees": "Réponses verrouillées !",
     "etLaBonneReponse": "Et la bonne réponse est…",

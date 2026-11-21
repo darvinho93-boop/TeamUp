@@ -700,12 +700,9 @@
         "titre": "Tournament",
         "joueurs": "{n} players in the bracket",
         "tire": "Bracket drawn: {joueurs} players, {exemptes, plural, one {# bye} other {# byes}}.",
-        "gobelets": "Cups (matches at once)",
         "estimation": "{sequences, plural, one {# sequence} other {# sequences}}, about {minutes} min",
         "tirer": "Draw the bracket",
         "retirer": "Redraw the bracket",
-        "appelerPremiere": "Call the first sequence",
-        "appeler": "Next sequence",
         "lancer": "Start the sequence",
         "finSequence": "End of the sequence",
         "voirVainqueur": "Show the winner",
@@ -728,7 +725,12 @@
           "t32": "Round of 64",
           "t64": "Round of 128",
           "t128": "Round of 256"
-        }
+        },
+        "matchsAJouer": "Matches to play now",
+        "restants": "{tour}: {n, plural, one {# match} other {# matches}} left to play",
+        "tous": "All ({n})",
+        "jouerPremiers": "{n, plural, one {Play the first match} other {Play the first # matches}}",
+        "jouerProchains": "{n, plural, one {Play the next match} other {Play the next # matches}}"
       },
       "explication": {
         "expliquer": "Explain",
@@ -1244,7 +1246,10 @@
         "t32": "Round of 64",
         "t64": "Round of 128",
         "t128": "Round of 256"
-      }
+      },
+      "exemptes": "{n, plural, one {Bye in the first round:} other {# byes in the first round:}}",
+      "matchsJoues": "{joues} of {total} matches played",
+      "rejoindreN": "{n, plural, one {The numbered match goes to its station!} other {The # numbered matches go to their stations!}}"
     },
     "verrouillees": "Answers locked!",
     "etLaBonneReponse": "And the right answer is…",

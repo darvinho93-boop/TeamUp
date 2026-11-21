@@ -94,10 +94,9 @@
   --tu-dur-habillage: 24000ms;
   /* Ciné-mime (2026-11-20) : la hauteur de la scène vidéo (sous la consigne ou le titre du
      film), et l'épaisseur du cadre de couleur du verdict, à la revue. */
-  /* Tournoi du gobelet : la hauteur de la grille des postes, d'où vient la taille des prénoms
-     (deux lignes par poste, jusqu'à huit rangées). */
-  --tu-stage-postes-h: 46rem;
-  --tu-stage-poste-ratio: 0.34;
+  /* Tournoi du gobelet : la taille des prénoms, en part de la hauteur d'une rangée de matchs
+     (deux lignes par match, jusqu'à huit rangées). */
+  --tu-stage-poste-ratio: 0.3;
   /* L'arbre du tournoi : ses traits, un joueur en pastille, le poste d'un match, la coupe. */
   --tu-arbre-trait: 0.125rem;
   --tu-arbre-trait-fort: 0.25rem;

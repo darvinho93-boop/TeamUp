@@ -283,8 +283,8 @@ avecBase('tournoi du gobelet', () => {
     ).not.toBeNull();
     // Un nombre de places qui n'est pas une puissance de 2.
     expect((await essai(tour.slice(0, 7))).erreur).not.toBeNull();
-    expect((await essai(tour, 1)).erreur).not.toBeNull();
-    expect((await essai(tour, 33)).erreur).not.toBeNull();
+    expect((await essai(tour, 0)).erreur).not.toBeNull();
+    expect((await essai(tour, 65)).erreur).not.toBeNull();
     expect(await lire()).toHaveLength(0);
   });
 

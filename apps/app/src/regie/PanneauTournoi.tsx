@@ -198,19 +198,40 @@ export function PanneauTournoi({
   };
 
   const estimation = assezDeJoueurs ? sequencesDuTournoi(participants, gobelets) : null;
-  const reglageGobelets = (
-    <label className="tu-field tu-regie-tournoi__gobelets">
-      <span className="tu-field__label">{t('gobelets')}</span>
-      <input
-        className="tu-field__control"
-        type="number"
-        min={GOBELETS_MIN}
-        max={GOBELETS_MAX}
-        value={gobelets}
-        onChange={(e) => setGobelets(bornerGobelets(Number(e.target.value)))}
-        data-testid="tournoi-gobelets"
-      />
-    </label>
+  // Ce que la touche va lancer, d'après le tableau : « Jouer les X prochains matchs ».
+  const suite = tournoi ? prochaineSequence(tournoi.tableau, gobelets) : null;
+  const aLancer = suite?.matchs.length ?? gobelets;
+  const restants = suite
+    ? tournoi!.tableau.filter((m) => m.tour === suite.tour && m.gagnant === null).length
+    : 0;
+  const nomSuite =
+    suite && tournoi?.tours ? t(`tours.${nomDuTour(suite.tour, tournoi.tours)}`) : '';
+  // Demi-finales et finale se jouent une à une, sur scène : rien à choisir.
+  const reglageGobelets = !suite?.surScene && (
+    <div className="tu-regie-tournoi__choix">
+      <label className="tu-field tu-regie-tournoi__gobelets">
+        <span className="tu-field__label">{t('matchsAJouer')}</span>
+        <input
+          className="tu-field__control"
+          type="number"
+          min={GOBELETS_MIN}
+          max={GOBELETS_MAX}
+          value={gobelets}
+          onChange={(e) => setGobelets(bornerGobelets(Number(e.target.value)))}
+          data-testid="tournoi-gobelets"
+        />
+      </label>
+      {suite && (
+        <>
+          <Button variant="ghost" onClick={() => setGobelets(bornerGobelets(restants))}>
+            {t('tous', { n: restants })}
+          </Button>
+          <p className="tu-regie__muted" data-testid="tournoi-restants">
+            {t('restants', { tour: nomSuite, n: restants })}
+          </p>
+        </>
+      )}
+    </div>
   );
   const resultatsOuverts = etape === 'jeu' || etape === 'resultats';
   const visibles = matchsDuPrenom(matchs, recherche);
@@ -260,7 +281,7 @@ export function PanneauTournoi({
                 disabled={occupe}
                 onClick={() => void appeler()}
               >
-                {t('appelerPremiere')}
+                {t('jouerPremiers', { n: aLancer })}
               </Button>
             )}
           </div>
@@ -316,7 +337,7 @@ export function PanneauTournoi({
             disabled={occupe || Object.keys(saisis).length > 0}
             onClick={() => void appeler()}
           >
-            {t('appeler')}
+            {t('jouerProchains', { n: aLancer })}
           </Button>
         )}
         {etape === 'resultats' && juge && !tournoi?.reste && (

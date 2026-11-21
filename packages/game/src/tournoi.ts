@@ -12,9 +12,9 @@ import { tirerOrdre } from './ordre';
 import type { Duelliste } from './pilotage/duel';
 import type { ScoresParEquipe } from './scores';
 
-/** Matchs joués en même temps : autant que de gobelets posés dans la salle. */
-export const GOBELETS_MIN = 2;
-export const GOBELETS_MAX = 32;
+/** Matchs lancés en même temps, au choix de la régie : de un seul à tout un tour de 64es. */
+export const GOBELETS_MIN = 1;
+export const GOBELETS_MAX = 64;
 export const GOBELETS_DEFAUT = 16;
 
 export const POINTS_VAINQUEUR_TOURNOI = 100;

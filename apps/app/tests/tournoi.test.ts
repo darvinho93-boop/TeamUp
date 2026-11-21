@@ -4,6 +4,7 @@ import { calculerEtape, type Commande, type Motifs } from '../src/lib/pilotage';
 import { elementDuProgramme } from '../src/lib/programme';
 import type { EtatSalle, MancheSalle, TournoiSalle } from '../src/lib/salle';
 import {
+  affichesDuTour,
   estTournoi,
   etapeDeReprise,
   grilleDesPostes,
@@ -172,8 +173,19 @@ describe('grille des postes', () => {
     [12, 4, 3],
     [16, 4, 4],
     [32, 4, 8],
+    [36, 5, 8],
+    [64, 8, 8],
   ])('%i postes : %i colonnes, %i rangées', (n, colonnes, rangees) => {
     expect(grilleDesPostes(n)).toEqual({ colonnes, rangees });
+  });
+});
+
+describe('les affiches d’un tour', () => {
+  it('garde l’ordre du tableau, les exemptés à part', () => {
+    const seul = (rang: number): MatchSalle => ({ ...match(rang + 1, 0), rang, b: null });
+    const { matchs, exemptes } = affichesDuTour([match(3, null), seul(5), match(1, null), seul(1)]);
+    expect(matchs.map((m) => m.rang)).toEqual([0, 2]);
+    expect(exemptes.map((j) => j.prenom)).toEqual(['Élodie2', 'Élodie6']);
   });
 });
 

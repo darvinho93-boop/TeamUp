@@ -148,7 +148,7 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   });
 
   // --- La première séquence : quatre postes, à l'écran et au téléphone de qui joue.
-  await regie.getByRole('button', { name: 'Appeler la première séquence' }).click();
+  await regie.getByRole('button', { name: 'Jouer les 4 premiers matchs' }).click();
   await expect(scene('appel')).toBeVisible({ timeout: 10_000 });
   // Seize joueurs : les huitièmes tiennent dans l'arbre, chaque match appelé porte son poste.
   await expect(ecran.getByTestId('tournoi-arbre')).toBeVisible();
@@ -231,7 +231,7 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   await capturer(ecran, 'ecran-resultats');
 
   // Tant qu'un résultat manque, pas de séquence suivante.
-  await expect(regie.getByRole('button', { name: 'Séquence suivante' })).toHaveCount(0);
+  await expect(regie.getByRole('button', { name: /^Jouer l/ })).toHaveCount(0);
 
   // --- Un perdant retrouvé par son prénom : le champ se vide pour le suivant.
   const prenomCherche = (await lireMatchs()).find((m) => m.poste === 3)!.prenom_b!;
@@ -263,10 +263,15 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   await expect(scene('resultats')).toBeVisible({ timeout: 15_000 });
   await expect(ecran.locator('[data-testid^="poste-"][data-juge="true"]')).toHaveCount(4);
 
-  // --- Le reste du tableau : quatre, quatre, puis demi-finales et finale une à une.
+  // --- La suite, trois matchs à la fois au choix de la régie, puis demi-finales et finale une à
+  // une : 4, 3, 1 pour les huitièmes, 3, 1 pour les quarts.
+  await regie.getByTestId('tournoi-gobelets').fill('3');
+  await expect(regie.getByRole('button', { name: 'Jouer les 3 prochains matchs' })).toBeVisible();
+  await expect(regie.getByTestId('tournoi-restants')).toContainText('4 matchs restent');
+  await capturer(regie, 'regie-choix');
   const tailles = [4];
   for (;;) {
-    const suivante = regie.getByRole('button', { name: 'Séquence suivante' });
+    const suivante = regie.getByRole('button', { name: /^Jouer l/ });
     const vainqueur = regie.getByRole('button', { name: 'Voir le vainqueur' });
     await expect(suivante.or(vainqueur)).toBeEnabled({ timeout: 10_000 });
     if (await vainqueur.isVisible()) break;
@@ -282,10 +287,10 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
     await regie.getByRole('button', { name: 'Fin de la séquence' }).click();
     await expect(scene('resultats')).toBeVisible({ timeout: 10_000 });
     await expect(regie.getByTestId('tournoi-compteur')).toBeVisible();
-    if (tailles.length === 4) await capturer(ecran, 'ecran-demi');
+    if (tailles.length === 6) await capturer(ecran, 'ecran-demi');
     await noterLesRestants();
     // Les quarts jugés : les qualifiés ont rejoint les demi-finales, dans l'arbre.
-    if (tailles.length === 3) {
+    if (tailles.length === 5) {
       await expect(ecran.locator('[data-testid^="poste-"][data-juge="false"]')).toHaveCount(0, {
         timeout: 10_000,
       });
@@ -293,7 +298,7 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
       await capturer(ecran, 'ecran-tableau');
     }
   }
-  expect(tailles).toEqual([4, 4, 4, 1, 1, 1]);
+  expect(tailles).toEqual([4, 3, 1, 3, 1, 1, 1, 1]);
   await expect(ecran.getByTestId('verdict')).toContainText('gagne le tournoi', { timeout: 10_000 });
   await capturer(ecran, 'ecran-verdict');
 
@@ -320,7 +325,7 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   await expect(ecran.locator('[data-scene="programme"]')).toBeVisible({ timeout: 10_000 });
 });
 
-test('100 joueurs : 32 postes tiennent en 1 920 × 1 080, chaque prénom entier', async ({
+test('100 joueurs : les 36 matchs des 64es et les exemptés tiennent, chaque prénom entier', async ({
   browser,
 }) => {
   test.setTimeout(120_000);
@@ -438,9 +443,12 @@ test('100 joueurs : 32 postes tiennent en 1 920 × 1 080, chaque prénom entier'
 
   const regie = await connecter(browser, 'anna@teamup.test');
   const ecran = await ouvrirEcran(browser, regie, ev.code);
-  await expect(ecran.getByTestId('tournoi-postes').locator('li')).toHaveCount(32, {
+  // Tout le tour à l'écran : les 32 matchs lancés portent leur poste, les 4 autres attendent.
+  await expect(ecran.getByTestId('tournoi-postes').locator('li')).toHaveCount(36, {
     timeout: 10_000,
   });
+  await expect(ecran.locator('[data-testid^="poste-"]')).toHaveCount(32);
+  await expect(ecran.getByTestId('tournoi-exemptes')).toContainText('28 exemptés');
   await ecran.evaluate(() => document.fonts.ready);
 
   await expect(ecran.getByTestId('tournoi-tour')).toHaveText('64es de finale');
@@ -453,7 +461,9 @@ test('100 joueurs : 32 postes tiennent en 1 920 × 1 080, chaque prénom entier'
     const prenoms = [...document.querySelectorAll<HTMLElement>('.tu-stage-poste__prenom')];
     return {
       postes: postes.length,
-      hors: postes.filter((p) => dehors(p.getBoundingClientRect())).length,
+      hors: [...postes, document.querySelector('[data-testid="tournoi-exemptes"]')!].filter((p) =>
+        dehors(p.getBoundingClientRect()),
+      ).length,
       debordent: postes.filter((p) => p.scrollHeight > p.clientHeight + 1).length,
       prenoms: prenoms.length,
       // Au sous-pixel : scrollWidth arrondit, et un prénom coupé d'une fraction passait.
@@ -476,27 +486,37 @@ test('100 joueurs : 32 postes tiennent en 1 920 × 1 080, chaque prénom entier'
     type: 'plus petit prénom à l’écran',
     description: `${mesure.taille.toFixed(1)} px`,
   });
-  expect(mesure).toMatchObject({ postes: 32, hors: 0, debordent: 0, prenoms: 64, coupes: 0 });
+  expect(mesure).toMatchObject({ postes: 36, hors: 0, debordent: 0, prenoms: 72, coupes: 0 });
 });
 
-test('l’arbre tient dans le cadre, de 16 à 150 joueurs, à chaque tour', async ({ browser }) => {
+test('l’arbre et les grands tours tiennent dans le cadre, de 16 à 150 joueurs', async ({
+  browser,
+}) => {
   const page = await (
     await browser.newContext({ viewport: { width: 1920, height: 1080 }, isMobile: false })
   ).newPage();
-  for (const [joueurs, tour, etape] of [
-    [16, 1, 'tirage'],
-    [16, 2, 'juge'],
-    [100, 1, 'tirage'],
-    [100, 3, 'appel'],
-    [100, 5, 'juge'],
-    [150, 1, 'tirage'],
-    [150, 4, 'appel'],
+  // Au-delà de 16 matchs, le tour s'affiche en entier ; l'arbre prend le relais ensuite.
+  for (const [joueurs, tour, etape, vue] of [
+    [16, 1, 'tirage', 'tournoi-arbre'],
+    [16, 2, 'juge', 'tournoi-arbre'],
+    [80, 1, 'appel', 'tournoi-postes'],
+    [100, 1, 'tirage', 'tournoi-postes'],
+    [100, 2, 'appel', 'tournoi-postes'],
+    [100, 3, 'appel', 'tournoi-arbre'],
+    [100, 5, 'juge', 'tournoi-arbre'],
+    [128, 1, 'appel', 'tournoi-postes'],
+    [150, 1, 'tirage', 'tournoi-postes'],
+    [150, 4, 'appel', 'tournoi-arbre'],
   ] as const) {
     await page.goto(`/kit-ui/tournoi?joueurs=${joueurs}&tour=${tour}&etape=${etape}`);
-    await expect(page.getByTestId('tournoi-arbre')).toBeVisible();
+    await expect(page.getByTestId(vue)).toBeVisible();
     const hors = await page.evaluate(
       () =>
-        [...document.querySelectorAll('.tu-arbre__place, .tu-arbre__poste')].filter((p) => {
+        [
+          ...document.querySelectorAll(
+            '.tu-arbre__place, .tu-arbre__poste, .tu-stage-poste, .tu-stage-exemptes',
+          ),
+        ].filter((p) => {
           const r = p.getBoundingClientRect();
           return (
             r.left < -1 || r.top < -1 || r.right > innerWidth + 1 || r.bottom > innerHeight + 1
