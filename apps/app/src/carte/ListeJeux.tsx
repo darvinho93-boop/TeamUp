@@ -144,7 +144,7 @@ export function ListeJeux({
           texte: t(`ecran.regles.${jeu}`),
           action: {
             libelle: t('carte.voirVideo'),
-            detail: t('carte.duree', { s: dureeExplicationS(scriptExplication(jeu)) }),
+            detail: t('carte.duree', { s: dureeExplicationS(scriptExplication(jeu, 'tournoi')) }),
             surClic: () => setVideo(jeu),
           },
         }))}

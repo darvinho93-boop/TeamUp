@@ -1,0 +1,205 @@
+/* Tournoi du gobelet (2026-11-21), à l'écran commun : les postes de la séquence, la fin du
+   tableau. Grille partagée entre les rangées, prénoms réduits un à un s'ils sont trop longs. */
+
+.tu-stage-tournoi {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--tu-space-3);
+  min-height: 0;
+}
+
+/* Centré entre les deux marques des coins. */
+.tu-stage-tournoi__tete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-1);
+  padding-inline: var(--tu-stage-marque);
+  text-align: center;
+}
+
+.tu-stage-tournoi__titre {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-3xl);
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+}
+
+.tu-stage-tournoi__info {
+  margin: 0;
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-xl);
+}
+
+.tu-stage-tournoi__consigne {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-2xl);
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+  text-align: center;
+}
+
+.tu-stage-postes {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(var(--tu-postes-colonnes), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--tu-postes-rangees), minmax(0, 1fr));
+  gap: var(--tu-space-2) var(--tu-space-3);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  font-size: min(
+    var(--tu-size-4xl),
+    calc(var(--tu-stage-postes-h) / var(--tu-postes-rangees) * var(--tu-stage-poste-ratio))
+  );
+  list-style: none;
+}
+
+.tu-stage-poste {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--tu-space-3);
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--tu-space-1) var(--tu-space-3);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
+.tu-stage-postes[data-aere='true'] .tu-stage-poste {
+  grid-template-columns: auto minmax(0, max-content);
+  justify-content: center;
+  gap: var(--tu-space-6);
+}
+
+.tu-stage-poste[data-juge='true'] {
+  background: var(--tu-surface-muted);
+}
+
+.tu-stage-poste__numero {
+  min-width: 2ch;
+  color: var(--tu-text-muted);
+  font-family: var(--tu-font-display);
+  font-size: 1.25em;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tu-stage-poste__noms {
+  display: grid;
+  gap: var(--tu-space-1);
+  min-width: 0;
+}
+
+.tu-stage-poste__prenom {
+  display: block;
+  overflow: hidden;
+  padding-inline-start: var(--tu-space-2);
+  border-inline-start: var(--tu-stage-cadre) solid var(--tu-team-color, var(--tu-border));
+  font-family: var(--tu-font-display);
+  font-weight: 600;
+  line-height: var(--tu-leading-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tu-stage-poste__prenom[data-etat='gagne'] {
+  color: var(--tu-success);
+  font-weight: 700;
+}
+
+.tu-stage-poste__prenom[data-etat='perdu'] {
+  color: var(--tu-text-muted);
+  text-decoration: line-through;
+}
+
+.tu-stage-tableau {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(var(--tu-tableau-colonnes), minmax(0, 1fr));
+  gap: var(--tu-space-8);
+  min-height: 0;
+  font-size: var(--tu-size-2xl);
+}
+
+.tu-stage-tableau__tour {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: var(--tu-space-3);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-stage-tableau__match {
+  display: grid;
+  gap: var(--tu-space-1);
+  padding: var(--tu-space-2) var(--tu-space-3);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
+/* Explication animée : la salle qui se réduit de tour en tour, puis trois postes. */
+.tu-expl-tableau,
+.tu-expl-postes {
+  --tu-expl-perso: var(--tu-expl-perso-mini);
+}
+
+.tu-expl-tableau {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-3);
+}
+
+.tu-expl-tableau__tour {
+  display: flex;
+  gap: var(--tu-space-4);
+}
+
+.tu-expl-postes {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--tu-space-12);
+}
+
+.tu-expl-poste {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-3);
+}
+
+/* Au téléphone : son poste en très grand, son adversaire à la couleur de son équipe. */
+.tu-tournoi {
+  align-items: center;
+  text-align: center;
+}
+
+.tu-tournoi__poste {
+  margin: 0;
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-5xl);
+  font-weight: 700;
+  line-height: var(--tu-leading-tight);
+}
+
+.tu-tournoi__adversaire {
+  margin: 0;
+  padding: var(--tu-space-2) var(--tu-space-4);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}

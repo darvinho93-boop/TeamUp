@@ -21,6 +21,7 @@ import { Portrait } from './Portrait';
 import { Quiz } from './Quiz';
 import { BlindTest } from './BlindTest';
 import { SurenchereMots } from './SurenchereMots';
+import { Tournoi } from './Tournoi';
 import { useEtatJoueur } from './useEtatJoueur';
 import { useFilePhotos } from './useFilePhotos';
 
@@ -193,6 +194,17 @@ export function EcranJoueur({
       <Cadre bandeau={bandeau} outil={outil}>
         <div className="tu-player__body">
           <Portrait code={code} portrait={portrait} remplacer={remplacer} relire={relire} />
+        </div>
+      </Cadre>
+    );
+  }
+
+  // Tournoi du gobelet (2026-11-21) : le poste et l'adversaire, en lecture seule.
+  if (etat.tournoi) {
+    return (
+      <Cadre bandeau={bandeau} outil={outil}>
+        <div className="tu-player__body">
+          <Tournoi tournoi={etat.tournoi} />
         </div>
       </Cadre>
     );

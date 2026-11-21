@@ -576,6 +576,40 @@ const VISUELS: Record<VisuelExplication, () => ReactNode> = {
       <span className="tu-expl-points">+50</span>
     </>
   ),
+
+  // ---- Tournoi du gobelet (2026-11-21)
+  'tableau-tournoi': () => (
+    <div className="tu-expl-tableau">
+      {[8, 4, 2, 1].map((n) => (
+        <div key={n} className="tu-expl-tableau__tour">
+          {Array.from({ length: n }, (_, i) => (
+            <Perso key={i} equipe={EQUIPES[i % EQUIPES.length]} />
+          ))}
+        </div>
+      ))}
+    </div>
+  ),
+  'postes-tournoi': () => (
+    <div className="tu-expl-postes">
+      {[1, 2, 3].map((n) => (
+        <div key={n} className="tu-expl-poste">
+          <span className="tu-expl-points tu-expl-points--petits">{n}</span>
+          <div className="tu-expl-groupe">
+            <Perso equipe={EQUIPES[n - 1]} />
+            <span className="tu-expl-gobelet" />
+            <Perso equipe={EQUIPES[n]} />
+          </div>
+        </div>
+      ))}
+    </div>
+  ),
+  'perdant-regie': () => (
+    <>
+      <Perso equipe={3} className="tu-expl-perso--grand tu-expl-perso--eteint" />
+      <span className="tu-expl-fleche">→</span>
+      <Perso className="tu-expl-perso--grand" />
+    </>
+  ),
 };
 
 /** Les trois paliers à l'échelle de leur durée, chacun de sa couleur ; avec `durees`, leur durée au format du chrono. */

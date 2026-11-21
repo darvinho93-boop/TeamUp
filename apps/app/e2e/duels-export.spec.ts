@@ -46,11 +46,13 @@ test('un duel donne +50 au vainqueur ; l’export porte les scores et les photos
   await regie.getByRole('button', { name: 'Se connecter' }).click();
   await regie.waitForURL(`**/regie/${code}/preparation`);
 
-  // --- Préparation : un duel (section bêta) et une manche photo pour l'export.
-  await regie
-    .locator('form', { has: regie.getByRole('button', { name: 'Ajouter Tête, épaule, gobelet' }) })
-    .getByLabel('Duels')
-    .fill('1');
+  // --- Préparation : un duel (section bêta) et une manche photo pour l'export. Le gobelet se joue
+  // en tournoi par défaut (2026-11-21) : ici, le format des duels simples.
+  const formulaireDuel = regie.locator('form', {
+    has: regie.getByRole('button', { name: 'Ajouter Tête, épaule, gobelet' }),
+  });
+  await formulaireDuel.locator('select[name="format"]').selectOption('duels');
+  await formulaireDuel.getByLabel('Duels (format simple)').fill('1');
   await regie.getByRole('button', { name: 'Ajouter Tête, épaule, gobelet' }).click();
   await expect(regie.getByText('1. Tête, épaule, gobelet')).toBeVisible({ timeout: 30_000 });
   await regie.getByRole('button', { name: 'Ajouter Photo challenge' }).click();

@@ -6,6 +6,7 @@
 import type { GameCode } from '@teamup/game';
 import type { AvisDuJoueur } from './avis';
 import type { CarteDuJoueur } from './cartes';
+import type { TournoiJoueur } from './tournoi';
 
 export const LANGUES = ['fr', 'en', 'ta'] as const;
 export type Langue = (typeof LANGUES)[number];
@@ -225,6 +226,8 @@ export interface EtatJoueur {
   blind?: BlindJoueur | null;
   /** Portrait mystère ; absent sans la migration du 2026-11-19. */
   portrait?: PortraitJoueur | null;
+  /** Tournoi du gobelet : son seul match ; absent sans la migration du 2026-11-23. */
+  tournoi?: TournoiJoueur | null;
   /** `null` tant que la soirée n'a pas de manche photo. */
   photos: PhotosJoueur | null;
   /** L'avis déjà donné par ce joueur ; absent sans la migration du 2026-11-18. */

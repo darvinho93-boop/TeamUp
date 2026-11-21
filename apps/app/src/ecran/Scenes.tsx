@@ -68,6 +68,8 @@ import { BlindTest } from './BlindTest';
 import { Portrait } from './Portrait';
 import { Explication } from './Explication';
 import { SurenchereTelephones } from './SurenchereTelephones';
+import { Tournoi } from './Tournoi';
+import { estTournoi } from '@/lib/tournoi';
 import { useAjusterQuiz } from './useAjusterQuiz';
 import { useAjusterTexte } from './useAjusterTexte';
 import { useTenirEnLargeur } from './useTenirEnLargeur';
@@ -646,6 +648,7 @@ function Jeu(props: Props) {
   if (manche?.jeu === 'mime2') return <Mime {...props} />;
   if (manche?.jeu === 'cinemime') return <CineMime {...props} />;
   if (manche?.jeu === 'photo2') return <Photo {...props} manche={manche} />;
+  if (estTournoi(manche)) return <Tournoi etat={props.etat} decalageMs={props.decalageMs} />;
   if (manche?.jeu === 'grab' || manche?.jeu === 'cup') return <Duel {...props} jeu={manche.jeu} />;
   if (manche?.jeu === 'blind') return <BlindTest {...props} manche={manche} />;
   if (manche?.jeu === 'portrait') return <Portrait {...props} manche={manche} />;

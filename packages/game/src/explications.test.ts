@@ -22,8 +22,16 @@ describe('scripts des explications', () => {
         'qcm2-telephone',
         'qcm2-jetons',
         'enchere2-telephones',
+        'cup-tournoi',
       ]),
     );
+  });
+
+  it('le gobelet s’explique en tournoi seulement si on le demande', () => {
+    expect(scriptExplication('cup')).toBe('cup');
+    expect(scriptExplication('cup', 'tournoi')).toBe('cup-tournoi');
+    expect(scriptExplication('grab', 'tournoi')).toBe('grab');
+    expect(scriptExplication('qcm2', 'tournoi')).toBe('qcm2');
   });
 
   it.each(SCRIPTS)('%s dure entre 30 et 50 s', (script) => {

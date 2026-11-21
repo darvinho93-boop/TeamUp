@@ -837,7 +837,15 @@ function PanneauExplication({ etat, manche, decalageMs, agir }: PanneauProps) {
       </div>
     ) : (
       <div className="tu-cluster">
-        <Button variant="ghost" onClick={() => agir({ type: 'expliquer' })}>
+        <Button
+          variant="ghost"
+          onClick={() =>
+            // Le gobelet en tournoi a son propre script (2026-11-21).
+            agir(
+              estTournoi(manche) ? { type: 'expliquer', mode: 'tournoi' } : { type: 'expliquer' },
+            )
+          }
+        >
           {t('expliquer')}
         </Button>
       </div>

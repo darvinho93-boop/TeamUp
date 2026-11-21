@@ -218,6 +218,22 @@
     "revele": "Les yeux sur le grand écran !",
     "sansEquipe": "Vous n’avez pas d’équipe pour ce jeu : suivez-le sur le grand écran."
   },
+  "tournoi": {
+    "prepare": "Le tableau se prépare : les yeux sur le grand écran !",
+    "spectateur": "Le tableau est déjà tiré : suivez le tournoi sur le grand écran !",
+    "poste": "Poste {poste}",
+    "contre": "contre {prenom}",
+    "rejoindre": "Rejoignez votre poste !",
+    "jeu": "Écoutez bien l'animateur !",
+    "perdu": "Vous avez perdu ? Allez le dire à la régie.",
+    "attente": "Votre prochain match arrive.",
+    "adversaire": "Votre adversaire : {prenom}",
+    "adversaireInconnu": "Votre adversaire n'est pas encore connu.",
+    "exempte": "Vous passez directement au tour suivant !",
+    "qualifie": "Vous passez au tour suivant !",
+    "elimine": "Hors jeu ! Merci d'avoir joué : encouragez les autres.",
+    "champion": "Vous gagnez le tournoi !"
+  },
   "photos": {
     "ouvrir": "Photos : {envoyees} sur {total}",
     "titre": "Photo challenge",
@@ -683,9 +699,9 @@
       "tournoi": {
         "titre": "Tournoi",
         "joueurs": "{n} joueurs dans le tableau",
-        "tire": "Tableau tiré : {joueurs} joueurs, {exemptes} exemptés.",
+        "tire": "Tableau tiré : {joueurs} joueurs, {exemptes, plural, one {# exempté} other {# exemptés}}.",
         "gobelets": "Gobelets (matchs en même temps)",
-        "estimation": "{sequences} séquences, environ {minutes} min",
+        "estimation": "{sequences, plural, one {# séquence} other {# séquences}}, environ {minutes} min",
         "tirer": "Tirer le tableau",
         "retirer": "Retirer le tableau",
         "appelerPremiere": "Appeler la première séquence",
@@ -695,7 +711,7 @@
         "voirVainqueur": "Voir le vainqueur",
         "sequence": "Séquence {numero}",
         "consigne": "Touchez le prénom de la personne qui a perdu.",
-        "compteur": "{faits} résultats sur {total}.",
+        "compteur": "{faits, plural, one {# résultat} other {# résultats}} sur {total}.",
         "recherche": "Retrouver un prénom",
         "aucun": "Aucun prénom ne correspond.",
         "aPerdu": "{prenom} a perdu",
@@ -709,7 +725,8 @@
           "quart": "Quarts de finale",
           "huitieme": "Huitièmes de finale",
           "seizieme": "Seizièmes de finale",
-          "places": "Tour de {places}"
+          "places": "Tour de {places}",
+          "premier": "Premier tour"
         }
       },
       "explication": {
@@ -1128,6 +1145,13 @@
         "gobelet": "Au mot « gobelet », attrapez-le en premier !",
         "points": "Gare aux pièges ! Duel gagné : +50."
       },
+      "cup-tournoi": {
+        "tableau": "Toute la salle entre dans le tableau : à chaque tour, la moitié se qualifie.",
+        "poste": "Votre téléphone vous dit votre poste et votre adversaire.",
+        "gobelet": "Touchez ce que dit l'animateur… au mot « gobelet », attrapez-le en premier !",
+        "perdant": "Vous avez perdu ? Allez le dire à la régie, puis encouragez les autres.",
+        "podium": "À la fin : +100 au vainqueur, +60 au finaliste, +30 aux demi-finalistes."
+      },
       "blind": {
         "ecoute": "Une musique démarre sur le grand écran : ouvrez grand les oreilles !",
         "buzzer": "Quelqu’un la reconnaît ? Le capitaine buzze sur son téléphone, le plus vite possible.",
@@ -1197,6 +1221,29 @@
     "pointsAutres": "{points, plural, =0 {0 point} one {+# point} other {+# points}} pour chaque autre équipe",
     "duelGagne": "{prenom} gagne !",
     "duelContre": "contre {prenom}",
+    "tournoi": {
+      "prepare": "Le tableau se prépare…",
+      "tire": "Tableau tiré !",
+      "joueurs": "{joueurs} joueurs, un seul vainqueur",
+      "sequence": "Séquence {numero}",
+      "enLice": "{n} en lice",
+      "rejoindre": "Rejoignez votre poste !",
+      "ecoutez": "Écoutez bien… au mot « gobelet », attrapez-le !",
+      "perdants": "Vous avez perdu ? Venez le dire à la régie.",
+      "resultats": "{faits, plural, one {# résultat} other {# résultats}} sur {total}",
+      "qualifie": "{prenom} se qualifie !",
+      "gagneTournoi": "{prenom} gagne le tournoi !",
+      "vainqueur": "Vainqueur du tournoi",
+      "tours": {
+        "finale": "Finale",
+        "demi": "Demi-finales",
+        "quart": "Quarts de finale",
+        "huitieme": "Huitièmes de finale",
+        "seizieme": "Seizièmes de finale",
+        "places": "Tour de {places}",
+        "premier": "Premier tour"
+      }
+    },
     "verrouillees": "Réponses verrouillées !",
     "etLaBonneReponse": "Et la bonne réponse est…",
     "bonneReponse": "Bonne réponse !",

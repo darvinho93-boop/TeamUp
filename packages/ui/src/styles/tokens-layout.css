@@ -94,6 +94,10 @@
   --tu-dur-habillage: 24000ms;
   /* Ciné-mime (2026-11-20) : la hauteur de la scène vidéo (sous la consigne ou le titre du
      film), et l'épaisseur du cadre de couleur du verdict, à la revue. */
+  /* Tournoi du gobelet : la hauteur de la grille des postes, d'où vient la taille des prénoms
+     (deux lignes par poste, jusqu'à huit rangées). */
+  --tu-stage-postes-h: 46rem;
+  --tu-stage-poste-ratio: 0.34;
   --tu-stage-cine-video: 46rem;
   --tu-stage-cine-cadre: 0.75rem;
   /* Blind test (2026-11-15) : l'égaliseur de l'écoute et le rythme de ses barres. */
@@ -205,6 +209,7 @@
 
   --tu-expl-visuel-h: 28rem;
   --tu-expl-perso: 6rem;
+  --tu-expl-perso-mini: 2.25rem; /* le tableau du tournoi : quinze silhouettes dans le décor */
   --tu-expl-ecran-w: 26rem;
   --tu-expl-quadrant: 16rem;
   --tu-expl-phrase-max: 80rem;

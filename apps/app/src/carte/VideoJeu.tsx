@@ -49,7 +49,8 @@ export function VideoJeu({ jeu, fermer }: { jeu: GameCode | null; fermer: () => 
 function Lecteur({ jeu, fermer }: { jeu: GameCode; fermer: () => void }) {
   const t = useTranslations();
   const messages = useMessages();
-  const script = scriptExplication(jeu);
+  // Le gobelet se joue en tournoi par défaut (2026-11-21) : c'est ce que la vidéo montre.
+  const script = scriptExplication(jeu, 'tournoi');
   const cartes = SCRIPTS_EXPLICATION[script];
   const dureeMs = dureeExplicationS(script) * 1000;
   const [ecoule, setEcoule] = useState(0);

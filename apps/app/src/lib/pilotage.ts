@@ -207,6 +207,7 @@ const ETAPES_EXPLICATION_MODE: Record<ModeExpliqueAPart, string> = {
   telephone: 'explication-telephone',
   jetons: 'explication-jetons',
   telephones: 'explication-telephones',
+  tournoi: 'explication-tournoi',
 };
 
 /** Le mode qu'une étape d'explication présente (`croix` pour le script de base de chaque jeu). */

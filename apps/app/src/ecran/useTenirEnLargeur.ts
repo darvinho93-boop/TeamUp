@@ -3,6 +3,27 @@
 import { useLayoutEffect, type RefObject } from 'react';
 
 /**
+ * La largeur du texte et la place qu'il a, au sous-pixel et hors mise à l'échelle de la scène.
+ * `scrollWidth` arrondit : un texte qui dépassait d'une fraction de pixel passait pour tenir, et
+ * les points de suspension le coupaient quand même (vu au tournoi, 32 postes, le 2026-11-21).
+ */
+function mesurer(e: HTMLElement): { texte: number; place: number } {
+  const boite = e.getBoundingClientRect();
+  const echelle = boite.width / e.offsetWidth || 1;
+  const plage = document.createRange();
+  plage.selectNodeContents(e);
+  const s = getComputedStyle(e);
+  const bords = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'] as const;
+  return {
+    texte: plage.getBoundingClientRect().width / echelle,
+    place: boite.width / echelle - bords.reduce((n, c) => n + (parseFloat(s[c]) || 0), 0),
+  };
+}
+
+/** En deçà, un élément ajusté à son texte : les deux largeurs ne diffèrent que par l'arrondi. */
+const TOLERANCE_PX = 0.05;
+
+/**
  * Un nom d'équipe (« Les Super Champions 2026 ») ou un prénom (« Balasubramaniam ») tient sur sa
  * ligne : chaque élément de `selecteur` qui dépasse de sa boîte voit sa police réduite d'autant,
  * lui seul, jusqu'à `min` de sa taille ; en deçà, les points de suspension de la feuille de style
@@ -24,9 +45,12 @@ export function useTenirEnLargeur(
       const elements = [...bloc.querySelectorAll<HTMLElement>(selecteur)];
       for (const e of elements) e.style.fontSize = '';
       for (const e of elements) {
-        if (e.scrollWidth <= e.clientWidth + 1 || !e.clientWidth) continue;
+        if (!e.clientWidth) continue;
+        const { texte, place } = mesurer(e);
+        if (e.scrollWidth <= e.clientWidth + 1 && texte <= place + TOLERANCE_PX) continue;
         const taille = parseFloat(getComputedStyle(e).fontSize);
-        const ratio = Math.max(min, (e.clientWidth / e.scrollWidth) * 0.98);
+        const manque = Math.min(place / texte, e.clientWidth / e.scrollWidth);
+        const ratio = Math.max(min, manque * 0.98);
         e.style.fontSize = `${taille * ratio}px`;
       }
     };

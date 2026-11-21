@@ -218,6 +218,22 @@
     "revele": "Eyes on the big screen!",
     "sansEquipe": "You don’t have a team for this game: follow it on the big screen."
   },
+  "tournoi": {
+    "prepare": "The bracket is being drawn: eyes on the big screen!",
+    "spectateur": "The bracket is already drawn: follow the tournament on the big screen!",
+    "poste": "Station {poste}",
+    "contre": "against {prenom}",
+    "rejoindre": "Go to your station!",
+    "jeu": "Listen carefully to the host!",
+    "perdu": "Lost? Go and tell the host.",
+    "attente": "Your next match is coming up.",
+    "adversaire": "Your opponent: {prenom}",
+    "adversaireInconnu": "Your opponent is not known yet.",
+    "exempte": "You go straight through to the next round!",
+    "qualifie": "You go through to the next round!",
+    "elimine": "You're out! Thanks for playing: cheer on the others.",
+    "champion": "You win the tournament!"
+  },
   "photos": {
     "ouvrir": "Photos: {envoyees} of {total}",
     "titre": "Photo challenge",
@@ -683,9 +699,9 @@
       "tournoi": {
         "titre": "Tournament",
         "joueurs": "{n} players in the bracket",
-        "tire": "Bracket drawn: {joueurs} players, {exemptes} byes.",
+        "tire": "Bracket drawn: {joueurs} players, {exemptes, plural, one {# bye} other {# byes}}.",
         "gobelets": "Cups (matches at once)",
-        "estimation": "{sequences} sequences, about {minutes} min",
+        "estimation": "{sequences, plural, one {# sequence} other {# sequences}}, about {minutes} min",
         "tirer": "Draw the bracket",
         "retirer": "Redraw the bracket",
         "appelerPremiere": "Call the first sequence",
@@ -695,7 +711,7 @@
         "voirVainqueur": "Show the winner",
         "sequence": "Sequence {numero}",
         "consigne": "Tap the name of the person who lost.",
-        "compteur": "{faits} results out of {total}.",
+        "compteur": "{faits, plural, one {# result} other {# results}} out of {total}.",
         "recherche": "Find a name",
         "aucun": "No matching name.",
         "aPerdu": "{prenom} lost",
@@ -709,7 +725,8 @@
           "quart": "Quarter-finals",
           "huitieme": "Round of 16",
           "seizieme": "Round of 32",
-          "places": "Round of {places}"
+          "places": "Round of {places}",
+          "premier": "First round"
         }
       },
       "explication": {
@@ -1128,6 +1145,13 @@
         "gobelet": "When you hear “cup”, be the first to grab it!",
         "points": "Watch out for traps! Duel won: +50."
       },
+      "cup-tournoi": {
+        "tableau": "The whole room joins the bracket: each round, half go through.",
+        "poste": "Your phone tells you your station and your opponent.",
+        "gobelet": "Touch what the host says… when you hear “cup”, grab it first!",
+        "perdant": "Lost? Go and tell the host, then cheer on the others.",
+        "podium": "At the end: +100 for the winner, +60 for the finalist, +30 for the semi-finalists."
+      },
       "blind": {
         "ecoute": "A song starts on the big screen: listen closely!",
         "buzzer": "Someone recognises it? The captain buzzes on their phone, as fast as possible.",
@@ -1197,6 +1221,29 @@
     "pointsAutres": "{points, plural, =0 {0 points} one {+# point} other {+# points}} for every other team",
     "duelGagne": "{prenom} wins!",
     "duelContre": "against {prenom}",
+    "tournoi": {
+      "prepare": "The bracket is being drawn…",
+      "tire": "Bracket drawn!",
+      "joueurs": "{joueurs} players, one winner",
+      "sequence": "Sequence {numero}",
+      "enLice": "{n} still in",
+      "rejoindre": "Go to your station!",
+      "ecoutez": "Listen carefully… when you hear “cup”, grab it!",
+      "perdants": "Lost? Come and tell the host.",
+      "resultats": "{faits, plural, one {# result} other {# results}} out of {total}",
+      "qualifie": "{prenom} goes through!",
+      "gagneTournoi": "{prenom} wins the tournament!",
+      "vainqueur": "Tournament winner",
+      "tours": {
+        "finale": "Final",
+        "demi": "Semi-finals",
+        "quart": "Quarter-finals",
+        "huitieme": "Round of 16",
+        "seizieme": "Round of 32",
+        "places": "Round of {places}",
+        "premier": "First round"
+      }
+    },
     "verrouillees": "Answers locked!",
     "etLaBonneReponse": "And the right answer is…",
     "bonneReponse": "Right answer!",

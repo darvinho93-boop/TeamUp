@@ -182,7 +182,14 @@ const VERDICTS: Partial<Record<GameCode, Record<string, Son>>> = {
   // Portrait mystère (2026-11-18) : un indice par tour, la cible puis la carte noire révélées ; le
   // verdict d'un tour sonne depuis la scène (réussite ou échec selon ce qu'il dit).
   portrait: { vote: 'indice', revele: 'revelation', noire: 'revelation' },
-  cup: { tirage: 'roulement', face_a_face: 'revelation', gagne: 'reussite' },
+  // Le tournoi (2026-11-21) : le coup à l'appel d'une séquence, la fête au vainqueur.
+  cup: {
+    tirage: 'roulement',
+    face_a_face: 'revelation',
+    gagne: 'reussite',
+    appel: 'revelation',
+    vainqueur: 'reussite',
+  },
   // Blind test (2026-11-15) : le buzz (un vrai buzzer depuis le 2026-11-19), la mauvaise réponse,
   // la révélation.
   blind: { buzz: 'buzzer', pause: 'echec', revele: 'revelation' },

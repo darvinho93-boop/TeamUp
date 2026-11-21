@@ -53,10 +53,13 @@ export function matchDepuisLigne(l: LigneMatch): MatchSalle {
 }
 
 export type NomDuTour =
-  | { cle: 'finale' | 'demi' | 'quart' | 'huitieme' | 'seizieme' }
+  | { cle: 'finale' | 'demi' | 'quart' | 'huitieme' | 'seizieme' | 'premier' }
   | { cle: 'places'; places: number };
 
-/** « Quarts de finale », ou « Tour de 64 » au-delà des seizièmes. */
+/**
+ * « Quarts de finale », ou « Tour de 64 » au-delà des seizièmes. Le tout premier tour d'un grand
+ * tableau est le « Premier tour » : à 100 joueurs, « Tour de 128 » ne voudrait rien dire.
+ */
 export function nomDuTour(tour: number, tours: number): NomDuTour {
   const restants = tours - tour;
   if (restants === 0) return { cle: 'finale' };
@@ -64,6 +67,7 @@ export function nomDuTour(tour: number, tours: number): NomDuTour {
   if (restants === 2) return { cle: 'quart' };
   if (restants === 3) return { cle: 'huitieme' };
   if (restants === 4) return { cle: 'seizieme' };
+  if (tour === 1) return { cle: 'premier' };
   return { cle: 'places', places: 2 ** (restants + 1) };
 }
 
@@ -76,6 +80,54 @@ export function etapeDeReprise(
 ): 'tirage' | 'appel' | 'resultats' {
   if (!tournoi?.sequence) return 'tirage';
   return tournoi.matchs.some((m) => m.gagnant !== null) ? 'resultats' : 'appel';
+}
+
+/** La grille des postes à l'écran : quatre colonnes au plus, huit rangées pour 32 matchs. */
+export function grilleDesPostes(matchs: number): { colonnes: number; rangees: number } {
+  const n = Math.max(1, matchs);
+  const colonnes = Math.min(4, Math.ceil(Math.sqrt(n)));
+  return { colonnes, rangees: Math.ceil(n / colonnes) };
+}
+
+/** Ce qu'un téléphone reçoit du tournoi : son seul match (`tournoi_du_joueur`). */
+export interface TournoiJoueur {
+  etape: string | null;
+  tire: boolean;
+  tours: number | null;
+  sequence: number | null;
+  exempte: boolean;
+  match: {
+    tour: number;
+    sequence: number | null;
+    poste: number | null;
+    adversaire: Duelliste | null;
+    /** `null` tant que ce match n'est pas jugé. */
+    gagne: boolean | null;
+  } | null;
+}
+
+export type VueTournoi =
+  | { cas: 'prepare' | 'spectateur' | 'elimine' | 'champion' }
+  | { cas: 'appele'; poste: number; adversaire: Duelliste | null; etape: string | null }
+  | { cas: 'attente'; passe: 'exempte' | 'qualifie' | null; adversaire: Duelliste | null };
+
+/** Où en est ce joueur : ce que son téléphone doit lui dire. */
+export function vueDuTournoi(t: TournoiJoueur): VueTournoi {
+  if (!t.tire) return { cas: 'prepare' };
+  const m = t.match;
+  if (!m) return { cas: 'spectateur' };
+  if (m.gagne === false) return { cas: 'elimine' };
+  if (m.gagne === true) return { cas: 'champion' };
+  if (
+    m.sequence !== null &&
+    m.sequence === t.sequence &&
+    m.poste !== null &&
+    (t.etape === 'appel' || t.etape === 'jeu' || t.etape === 'resultats')
+  ) {
+    return { cas: 'appele', poste: m.poste, adversaire: m.adversaire, etape: t.etape };
+  }
+  const passe = m.tour === 1 ? null : t.exempte && m.tour === 2 ? 'exempte' : 'qualifie';
+  return { cas: 'attente', passe, adversaire: m.adversaire };
 }
 
 /** Les matchs où figure ce prénom, pour retrouver vite un perdant venu à la régie. */

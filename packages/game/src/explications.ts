@@ -12,10 +12,11 @@ import type { ModeSurenchere } from './surenchere';
  * Le Quiz et la Surenchère s'expliquent selon leur mode, choisi seulement au lancement : trois
  * scripts pour l'un, deux pour l'autre.
  */
-export type ScriptExplication = GameCode | 'qcm2-telephone' | 'qcm2-jetons' | 'enchere2-telephones';
+export type ScriptExplication =
+  GameCode | 'qcm2-telephone' | 'qcm2-jetons' | 'enchere2-telephones' | 'cup-tournoi';
 
-/** Le mode qu'une explication présente : celui du Quiz ou de la Surenchère. */
-export type ModeExplication = ModeQuiz | ModeSurenchere;
+/** Le mode qu'une explication présente : Quiz, Surenchère, ou gobelet en tournoi (2026-11-21). */
+export type ModeExplication = ModeQuiz | ModeSurenchere | 'tournoi';
 
 /** Ce que l'écran dessine pour une carte. */
 export type VisuelExplication =
@@ -71,7 +72,10 @@ export type VisuelExplication =
   | 'scene-muette'
   | 'chaine-cine'
   | 'film-cine'
-  | 'scene-son';
+  | 'scene-son'
+  | 'tableau-tournoi'
+  | 'postes-tournoi'
+  | 'perdant-regie';
 
 export interface CarteExplication {
   /** Clé de la phrase, sous `ecran.explications.<script>`. */
@@ -163,6 +167,14 @@ export const SCRIPTS_EXPLICATION: Record<ScriptExplication, readonly CarteExplic
     carte('gobelet', 9),
     carte('points', 9, 'points-duel'),
   ],
+  // Tournoi du gobelet (2026-11-21) : toute la salle au tableau, plusieurs matchs à la fois.
+  'cup-tournoi': [
+    carte('tableau', 9, 'tableau-tournoi'),
+    carte('poste', 9, 'postes-tournoi'),
+    carte('gobelet', 9),
+    carte('perdant', 9, 'perdant-regie'),
+    carte('podium', 9, 'podium-mots'),
+  ],
 };
 
 /** Le script d'un jeu ; pour le Quiz et la Surenchère, celui de leur mode. */
@@ -171,6 +183,7 @@ export function scriptExplication(
   mode: ModeExplication = 'croix',
 ): ScriptExplication {
   if (jeu === 'enchere2') return mode === 'telephones' ? 'enchere2-telephones' : jeu;
+  if (jeu === 'cup') return mode === 'tournoi' ? 'cup-tournoi' : jeu;
   if (jeu !== 'qcm2') return jeu;
   if (mode === 'telephone') return 'qcm2-telephone';
   if (mode === 'jetons') return 'qcm2-jetons';

@@ -6,10 +6,13 @@ import type { EtatSalle, MancheSalle, TournoiSalle } from '../src/lib/salle';
 import {
   estTournoi,
   etapeDeReprise,
+  grilleDesPostes,
   matchDepuisLigne,
   matchsDuPrenom,
   nomDuTour,
+  vueDuTournoi,
   type MatchSalle,
+  type TournoiJoueur,
 } from '../src/lib/tournoi';
 
 const motifs = {
@@ -142,7 +145,7 @@ describe('lire le tableau', () => {
     [4, 7, { cle: 'huitieme' }],
     [3, 7, { cle: 'seizieme' }],
     [2, 7, { cle: 'places', places: 64 }],
-    [1, 7, { cle: 'places', places: 128 }],
+    [1, 7, { cle: 'premier' }],
   ])('tour %i sur %i', (tour, tours, attendu) => {
     expect(nomDuTour(tour, tours)).toEqual(attendu);
   });
@@ -153,6 +156,79 @@ describe('lire le tableau', () => {
     expect(matchsDuPrenom(matchs, 'ZOE1')).toEqual([matchs[0]]);
     expect(matchsDuPrenom(matchs, '  ')).toEqual(matchs);
     expect(matchsDuPrenom(matchs, 'personne')).toEqual([]);
+  });
+});
+
+describe('grille des postes', () => {
+  it.each([
+    [1, 1, 1],
+    [2, 2, 1],
+    [4, 2, 2],
+    [5, 3, 2],
+    [9, 3, 3],
+    [12, 4, 3],
+    [16, 4, 4],
+    [32, 4, 8],
+  ])('%i postes : %i colonnes, %i rangées', (n, colonnes, rangees) => {
+    expect(grilleDesPostes(n)).toEqual({ colonnes, rangees });
+  });
+});
+
+describe('ce que dit le téléphone', () => {
+  const zoe = { joueur_id: 'z', prenom: 'Zoé', equipe: 2 };
+  const base: TournoiJoueur = {
+    etape: 'appel',
+    tire: true,
+    tours: 4,
+    sequence: 2,
+    exempte: false,
+    match: { tour: 1, sequence: 2, poste: 7, adversaire: zoe, gagne: null },
+  };
+
+  it('avant le tirage, et pour qui est arrivé après', () => {
+    expect(vueDuTournoi({ ...base, tire: false, match: null }).cas).toBe('prepare');
+    expect(vueDuTournoi({ ...base, match: null }).cas).toBe('spectateur');
+  });
+
+  it.each(['appel', 'jeu', 'resultats'])('à l’étape %s, son poste et son adversaire', (etape) => {
+    expect(vueDuTournoi({ ...base, etape })).toEqual({
+      cas: 'appele',
+      poste: 7,
+      adversaire: zoe,
+      etape,
+    });
+  });
+
+  it('un match d’une autre séquence attend', () => {
+    expect(
+      vueDuTournoi({ ...base, match: { ...base.match!, sequence: null, poste: null } }),
+    ).toEqual({ cas: 'attente', passe: null, adversaire: zoe });
+  });
+
+  it('distingue un exempté d’un joueur qualifié', () => {
+    const suivant = { tour: 2, sequence: null, poste: null, adversaire: null, gagne: null };
+    expect(vueDuTournoi({ ...base, exempte: true, match: suivant })).toEqual({
+      cas: 'attente',
+      passe: 'exempte',
+      adversaire: null,
+    });
+    expect(vueDuTournoi({ ...base, match: suivant })).toEqual({
+      cas: 'attente',
+      passe: 'qualifie',
+      adversaire: null,
+    });
+    // Un exempté qui a gagné son deuxième tour est un qualifié comme un autre.
+    expect(vueDuTournoi({ ...base, exempte: true, match: { ...suivant, tour: 3 } })).toMatchObject({
+      passe: 'qualifie',
+    });
+  });
+
+  it('hors jeu après une défaite, champion après la finale', () => {
+    expect(vueDuTournoi({ ...base, match: { ...base.match!, gagne: false } }).cas).toBe('elimine');
+    expect(
+      vueDuTournoi({ ...base, etape: 'vainqueur', match: { ...base.match!, tour: 4, gagne: true } })
+        .cas,
+    ).toBe('champion');
   });
 });
 
