@@ -12,6 +12,7 @@ export * from './surenchere';
 export * from './mime';
 export * from './photo';
 export * from './duels';
+export * from './tournoi';
 export * from './programme';
 export * from './explications';
 export * from './ordre';

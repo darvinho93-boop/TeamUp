@@ -9,6 +9,7 @@
 
 import { FICHES, type GameCode } from './catalogue';
 import { verifierEntierPositif } from './scores';
+import { dureeTournoiS } from './tournoi';
 
 export const PART_TRANSITIONS = 0.15;
 
@@ -20,6 +21,8 @@ export type ElementProgramme =
   /** La prise de vue dure toute la soirée ; seule la diffusion finale prend du créneau. */
   | { jeu: 'photo2' }
   | { jeu: 'grab' | 'cup'; duels: number }
+  /** Le tournoi du gobelet (2026-11-21) : sa durée vient du tableau et des gobelets. */
+  | { jeu: 'cup'; joueurs: number; gobelets: number }
   | { jeu: 'blind'; titres: number }
   | { jeu: 'portrait'; cibles: number };
 
@@ -36,7 +39,7 @@ export interface DureeProgramme {
   depassement?: { creneauMin: number; ecartMin: number };
 }
 
-function unites(element: ElementProgramme): number {
+function unites(element: Exclude<ElementProgramme, { gobelets: number }>): number {
   switch (element.jeu) {
     case 'list2':
     case 'mime2':
@@ -59,6 +62,7 @@ function unites(element: ElementProgramme): number {
 }
 
 export function dureeElement(element: ElementProgramme): number {
+  if ('gobelets' in element) return dureeTournoiS(element.joueurs, element.gobelets);
   const n = unites(element);
   verifierEntierPositif(n, `Le nombre d'unités de ${element.jeu}`);
   return n * FICHES[element.jeu].chronoPassageS;
