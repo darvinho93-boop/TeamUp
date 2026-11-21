@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { cx, teamModifier } from '@teamup/ui/react';
 import { dispositionArbre } from '@/lib/arbre';
 import type { MatchSalle } from '@/lib/tournoi';
@@ -8,15 +8,20 @@ import { Recompense } from './Recompense';
 import { useTenirEnLargeur } from './useTenirEnLargeur';
 
 /**
- * L'arbre du tournoi : les deux moitiés du tableau montent vers la finale, au centre. Un trait
- * prend la couleur de l'équipe du joueur qui y passe. Les matchs appelés portent leur poste.
+ * L'arbre du tournoi, tous les joueurs nommés sur les bords : les deux moitiés du tableau montent
+ * vers la coupe, au centre, sous le nom du tour. Un trait prend la couleur de l'équipe du joueur
+ * qui y passe, un joueur sorti s'éteint, les matchs lancés portent leur poste.
  */
 export function ArbreTournoi({
   matchs,
   sequence,
+  entete,
+  pied,
 }: {
   matchs: MatchSalle[];
   sequence: number | null;
+  entete: ReactNode;
+  pied?: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const arbre = useMemo(() => dispositionArbre(matchs, sequence), [matchs, sequence]);
@@ -79,7 +84,13 @@ export function ArbreTournoi({
         <span
           key={p.cle}
           className="tu-arbre__poste"
-          style={{ '--tu-arbre-x': p.x, '--tu-arbre-y': p.y } as CSSProperties}
+          style={
+            {
+              '--tu-arbre-x': p.x,
+              '--tu-arbre-y': p.y,
+              '--tu-arbre-rangs': p.rangs,
+            } as CSSProperties
+          }
           data-juge={p.juge}
           data-testid={`poste-${p.poste}`}
         >
@@ -88,18 +99,22 @@ export function ArbreTournoi({
       ))}
 
       <div className="tu-arbre__centre">
-        <Recompense place={1} className="tu-arbre__coupe" />
-        {arbre.champion && (
-          <span
-            className={cx(
-              'tu-team tu-team--badge tu-arbre__champion',
-              teamModifier(arbre.champion.equipe),
-            )}
-            data-testid="tournoi-champion"
-          >
-            {arbre.champion.prenom}
-          </span>
-        )}
+        <div className="tu-arbre__entete">{entete}</div>
+        <div className="tu-arbre__trophee">
+          <Recompense place={1} className="tu-arbre__coupe" />
+          {arbre.champion && (
+            <span
+              className={cx(
+                'tu-team tu-team--badge tu-arbre__champion',
+                teamModifier(arbre.champion.equipe),
+              )}
+              data-testid="tournoi-champion"
+            >
+              {arbre.champion.prenom}
+            </span>
+          )}
+        </div>
+        <div className="tu-arbre__pied">{pied}</div>
       </div>
     </div>
   );

@@ -1230,7 +1230,6 @@
       "joueurs": "{joueurs} players, one winner",
       "sequence": "Sequence {numero}",
       "enLice": "{n} still in",
-      "rejoindre": "Go to your station!",
       "ecoutez": "Listen carefully… when you hear “cup”, grab it!",
       "perdants": "Lost? Come and tell the host.",
       "resultats": "{faits, plural, one {# result} other {# results}} out of {total}",
@@ -1247,7 +1246,7 @@
         "t64": "Round of 128",
         "t128": "Round of 256"
       },
-      "exemptes": "{n, plural, one {Bye in the first round:} other {# byes in the first round:}}",
+      "exemptes": "{n, plural, one {# bye} other {# byes}}",
       "matchsJoues": "{joues} of {total} matches played",
       "rejoindreN": "{n, plural, one {The numbered match goes to its station!} other {The # numbered matches go to their stations!}}"
     },

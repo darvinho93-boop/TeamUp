@@ -13,9 +13,8 @@ import {
   type Duelliste,
   type EtapeTournoi,
 } from '@teamup/game';
-import { MATCHS_MAX_AVEC_NOMS } from '@/lib/arbre';
 import type { EtatSalle } from '@/lib/salle';
-import { affichesDuTour, grilleDesPostes, nomDuTour, type MatchSalle } from '@/lib/tournoi';
+import { affichesDuTour, nomDuTour } from '@/lib/tournoi';
 import { ArbreTournoi } from './ArbreTournoi';
 import { Celebration, useArrivee } from './Celebration';
 import { Chrono } from './Chrono';
@@ -23,85 +22,11 @@ import { Recompense } from './Recompense';
 import { useTenirEnLargeur } from './useTenirEnLargeur';
 import { Verdict } from './Verdict';
 
-type EtatJoueur = 'attente' | 'gagne' | 'perdu';
-
-const etatDuCote = (m: MatchSalle, cote: 0 | 1): EtatJoueur =>
-  m.gagnant === null ? 'attente' : m.gagnant === cote ? 'gagne' : 'perdu';
-
-function Nom({ joueur, etat }: { joueur: Duelliste | null; etat: EtatJoueur }) {
-  return (
-    <span
-      className={cx('tu-stage-poste__prenom', joueur && teamModifier(joueur.equipe))}
-      data-etat={etat}
-    >
-      {joueur?.prenom ?? '?'}
-    </span>
-  );
-}
-
 /**
- * Un grand tour (32es, 64es, 128es) en entier, trop dense pour l'arbre en toutes lettres : chaque
- * match est une branche, deux prénoms reliés à un crochet. Ceux que la régie a lancés sont
- * encadrés et portent leur poste, ceux déjà joués leur résultat ; les exemptés sont dessous.
- */
-function TableauDuTour({ matchs, sequence }: { matchs: MatchSalle[]; sequence: number | null }) {
-  const t = useTranslations('ecran.tournoi');
-  const ref = useRef<HTMLDivElement>(null);
-  const { matchs: affiches, exemptes } = affichesDuTour(matchs);
-  const { colonnes, rangees } = grilleDesPostes(affiches.length);
-  useTenirEnLargeur(
-    ref,
-    affiches.map((m) => `${m.id}:${m.a?.prenom}:${m.b?.prenom}`).join(),
-    '.tu-stage-poste__prenom',
-  );
-  return (
-    <div ref={ref} className="tu-stage-tour">
-      <ol
-        className="tu-stage-postes"
-        data-aere={rangees <= 2}
-        style={
-          { '--tu-postes-colonnes': colonnes, '--tu-postes-rangees': rangees } as CSSProperties
-        }
-        data-testid="tournoi-postes"
-      >
-        {affiches.map((m) => {
-          const appele = sequence !== null && m.sequence === sequence;
-          return (
-            <li
-              key={m.id}
-              className="tu-stage-poste"
-              data-appele={appele}
-              data-juge={m.gagnant !== null}
-              data-testid={appele ? `poste-${m.poste}` : undefined}
-            >
-              <span className="tu-stage-poste__noms">
-                <Nom joueur={m.a} etat={etatDuCote(m, 0)} />
-                <Nom joueur={m.b} etat={etatDuCote(m, 1)} />
-              </span>
-              <span className="tu-stage-poste__numero">{appele ? m.poste : ''}</span>
-            </li>
-          );
-        })}
-      </ol>
-      {exemptes.length > 0 && (
-        <p
-          className="tu-stage-exemptes"
-          data-taille={exemptes.length <= 40 ? 'l' : exemptes.length <= 64 ? 'm' : 's'}
-          data-testid="tournoi-exemptes"
-        >
-          <strong>{t('exemptes', { n: exemptes.length })}</strong>{' '}
-          {exemptes.map((j) => j.prenom).join(' · ')}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/**
- * Le tournoi du gobelet à l'écran commun (2026-11-21). L'arbre du tableau au tirage et entre deux
- * séquences ; les matchs appelés dessus dès que leur tour tient en toutes lettres, sinon leurs
- * branches en grand ; demi-finales et finale en face-à-face, avec le verdict commun ; puis le
- * podium des joueurs. La séquence à annoncer reste sur la régie.
+ * Le tournoi du gobelet à l'écran commun (2026-11-21). Un seul arbre, tous les joueurs nommés, du
+ * tirage à la finale, les matchs lancés portant leur poste ; le chrono d'une séquence en plein
+ * écran ; demi-finales et finale en face-à-face, avec le verdict commun ; puis le podium des
+ * joueurs. La séquence à annoncer reste sur la régie.
  */
 export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: number }) {
   const t = useTranslations('ecran.tournoi');
@@ -190,31 +115,53 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
     </header>
   );
   const duTour = (n: number) => tournoi.tableau.filter((m) => m.tour === n);
-  // Un tour de plus de 16 matchs ne tient pas en toutes lettres dans l'arbre : il a son tableau.
-  const grandTour = (n: number) => 2 ** (tours - n) > MATCHS_MAX_AVEC_NOMS;
   const reels = affichesDuTour(duTour(tour)).matchs;
-  const enCours = [
-    t('sequence', { numero: tournoi.sequence ?? 1 }),
-    t('matchsJoues', {
-      joues: reels.filter((m) => m.gagnant !== null).length,
-      total: reels.length,
-    }),
-    ...(tournoi.en_lice !== null ? [t('enLice', { n: tournoi.en_lice })] : []),
-  ].join(' · ');
-  const arbre = <ArbreTournoi matchs={tournoi.tableau} sequence={tournoi.sequence} />;
+  const nbExemptes = affichesDuTour(duTour(1)).exemptes.length;
+  const ligneExemptes = nbExemptes > 0 && (
+    <span data-testid="tournoi-exemptes">{t('exemptes', { n: nbExemptes })}</span>
+  );
+  const enCours = (
+    <>
+      <span>{t('sequence', { numero: tournoi.sequence ?? 1 })}</span>
+      <span>
+        {t('matchsJoues', {
+          joues: reels.filter((m) => m.gagnant !== null).length,
+          total: reels.length,
+        })}
+      </span>
+      {tournoi.en_lice !== null && <span>{t('enLice', { n: tournoi.en_lice })}</span>}
+      {tour === 1 && ligneExemptes}
+    </>
+  );
+  // Le titre au-dessus de la coupe, la consigne dessous : l'arbre garde toute la hauteur.
+  const enArbre = (scene: string, titre: string, info: ReactNode, consigne?: string | null) => (
+    <div className="tu-stage__body tu-stage-tournoi" data-scene="tournoi" data-etape={scene}>
+      <ArbreTournoi
+        matchs={tournoi.tableau}
+        sequence={tournoi.sequence}
+        entete={
+          <>
+            <h1 className="tu-stage-tournoi__titre" data-testid="tournoi-tour">
+              {titre}
+            </h1>
+            <p className="tu-stage-tournoi__info">{info}</p>
+          </>
+        }
+        pied={consigne ? <p className="tu-stage-tournoi__consigne">{consigne}</p> : null}
+      />
+    </div>
+  );
 
-  // Le tableau tiré : tous les matchs du premier tour, ou l'arbre s'il les montre déjà.
   if (etape === 'tirage' || !tournoi.sequence) {
-    return (
-      <div className="tu-stage__body tu-stage-tournoi" data-scene="tournoi" data-etape="tirage">
-        {tete(
-          t('tire'),
-          <span data-testid="tournoi-compte">
-            {libelleTour(1)} · {t('joueurs', { joueurs })}
-          </span>,
-        )}
-        {grandTour(1) ? <TableauDuTour matchs={duTour(1)} sequence={null} /> : arbre}
-      </div>
+    return enArbre(
+      'tirage',
+      t('tire'),
+      <>
+        <span data-testid="tournoi-compte">
+          {libelleTour(1)} · {t('joueurs', { joueurs })}
+        </span>
+        {ligneExemptes}
+      </>,
     );
   }
 
@@ -247,14 +194,10 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
     }
     // L'appel d'une demi-finale ou de la finale : le match, à sa place dans l'arbre.
     if (etape === 'appel') {
-      return (
-        <div className="tu-stage__body tu-stage-tournoi" data-scene="tournoi" data-etape="appel">
-          {tete(
-            libelleTour(tour),
-            `${duel.a?.prenom ?? '?'} ${tEcran('contre')} ${duel.b?.prenom ?? '?'}`,
-          )}
-          {arbre}
-        </div>
+      return enArbre(
+        'appel',
+        libelleTour(tour),
+        `${duel.a?.prenom ?? '?'} ${tEcran('contre')} ${duel.b?.prenom ?? '?'}`,
       );
     }
     const face = (j: Duelliste | null) => {
@@ -322,22 +265,11 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
 
   const faits = matchs.filter((m) => m.gagnant !== null).length;
   const tousJuges = faits === matchs.length;
-  const tourFini = duTour(tour).every((m) => m.gagnant !== null);
-  // Un grand tour reste affiché en entier jusqu'à son dernier match ; l'arbre revient ensuite.
-  const enTableau = grandTour(tour) && !tourFini;
-  return (
-    <div className="tu-stage__body tu-stage-tournoi" data-scene="tournoi" data-etape={etape}>
-      {tete(libelleTour(tour), enCours)}
-      {!(etape === 'resultats' && tousJuges) && (
-        <p className="tu-stage-tournoi__consigne">
-          {etape === 'appel'
-            ? enTableau
-              ? t('rejoindreN', { n: matchs.length })
-              : t('rejoindre')
-            : `${t('perdants')} ${t('resultats', { faits, total: matchs.length })}`}
-        </p>
-      )}
-      {enTableau ? <TableauDuTour matchs={duTour(tour)} sequence={tournoi.sequence} /> : arbre}
-    </div>
-  );
+  const consigne =
+    etape === 'resultats' && tousJuges
+      ? null
+      : etape === 'appel'
+        ? t('rejoindreN', { n: matchs.length })
+        : `${t('perdants')} ${t('resultats', { faits, total: matchs.length })}`;
+  return enArbre(etape, libelleTour(tour), enCours, consigne);
 }

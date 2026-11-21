@@ -443,8 +443,8 @@ test('100 joueurs : les 36 matchs des 64es et les exemptés tiennent, chaque pr�
 
   const regie = await connecter(browser, 'anna@teamup.test');
   const ecran = await ouvrirEcran(browser, regie, ev.code);
-  // Tout le tour à l'écran : les 32 matchs lancés portent leur poste, les 4 autres attendent.
-  await expect(ecran.getByTestId('tournoi-postes').locator('li')).toHaveCount(36, {
+  // Tout l'arbre à l'écran : les 100 prénoms, les 32 matchs lancés portant leur poste.
+  await expect(ecran.locator('.tu-arbre__place[data-tour="1"]')).toHaveCount(100, {
     timeout: 10_000,
   });
   await expect(ecran.locator('[data-testid^="poste-"]')).toHaveCount(32);
@@ -457,14 +457,21 @@ test('100 joueurs : les 36 matchs des 64es et les exemptés tiennent, chaque pr�
   const mesure = await ecran.evaluate(() => {
     const dehors = (r: DOMRect) =>
       r.left < -1 || r.top < -1 || r.right > innerWidth + 1 || r.bottom > innerHeight + 1;
-    const postes = [...document.querySelectorAll<HTMLElement>('.tu-stage-poste')];
-    const prenoms = [...document.querySelectorAll<HTMLElement>('.tu-stage-poste__prenom')];
+    const places = [...document.querySelectorAll<HTMLElement>('.tu-arbre__place[data-tour="1"]')];
+    const prenoms = [...document.querySelectorAll<HTMLElement>('.tu-arbre__prenom')];
+    const cadres = places.map((p) => p.getBoundingClientRect());
     return {
-      postes: postes.length,
-      hors: [...postes, document.querySelector('[data-testid="tournoi-exemptes"]')!].filter((p) =>
-        dehors(p.getBoundingClientRect()),
+      places: places.length,
+      hors: [
+        ...places,
+        ...document.querySelectorAll<HTMLElement>('.tu-arbre__poste, .tu-arbre__centre'),
+      ].filter((p) => dehors(p.getBoundingClientRect())).length,
+      chevauchent: cadres.filter((r, i) =>
+        cadres.some(
+          (o, j) =>
+            j > i && r.left < o.right && o.left < r.right && r.top < o.bottom && o.top < r.bottom,
+        ),
       ).length,
-      debordent: postes.filter((p) => p.scrollHeight > p.clientHeight + 1).length,
       prenoms: prenoms.length,
       // Au sous-pixel : scrollWidth arrondit, et un prénom coupé d'une fraction passait.
       coupes: prenoms.filter((p) => {
@@ -486,37 +493,31 @@ test('100 joueurs : les 36 matchs des 64es et les exemptés tiennent, chaque pr�
     type: 'plus petit prénom à l’écran',
     description: `${mesure.taille.toFixed(1)} px`,
   });
-  expect(mesure).toMatchObject({ postes: 36, hors: 0, debordent: 0, prenoms: 72, coupes: 0 });
+  expect(mesure).toMatchObject({ places: 100, hors: 0, chevauchent: 0, prenoms: 100, coupes: 0 });
 });
 
-test('l’arbre et les grands tours tiennent dans le cadre, de 16 à 150 joueurs', async ({
-  browser,
-}) => {
+test('l’arbre tient dans le cadre à chaque tour, de 16 à 150 joueurs', async ({ browser }) => {
   const page = await (
     await browser.newContext({ viewport: { width: 1920, height: 1080 }, isMobile: false })
   ).newPage();
-  // Au-delà de 16 matchs, le tour s'affiche en entier ; l'arbre prend le relais ensuite.
-  for (const [joueurs, tour, etape, vue] of [
-    [16, 1, 'tirage', 'tournoi-arbre'],
-    [16, 2, 'juge', 'tournoi-arbre'],
-    [80, 1, 'appel', 'tournoi-postes'],
-    [100, 1, 'tirage', 'tournoi-postes'],
-    [100, 2, 'appel', 'tournoi-postes'],
-    [100, 3, 'appel', 'tournoi-arbre'],
-    [100, 5, 'juge', 'tournoi-arbre'],
-    [128, 1, 'appel', 'tournoi-postes'],
-    [150, 1, 'tirage', 'tournoi-postes'],
-    [150, 4, 'appel', 'tournoi-arbre'],
+  for (const [joueurs, tour, etape] of [
+    [16, 1, 'tirage'],
+    [16, 2, 'juge'],
+    [80, 1, 'appel'],
+    [100, 1, 'tirage'],
+    [100, 2, 'appel'],
+    [100, 3, 'appel'],
+    [100, 5, 'juge'],
+    [128, 1, 'appel'],
+    [150, 1, 'tirage'],
+    [150, 4, 'appel'],
   ] as const) {
     await page.goto(`/kit-ui/tournoi?joueurs=${joueurs}&tour=${tour}&etape=${etape}`);
-    await expect(page.getByTestId(vue)).toBeVisible();
+    await expect(page.getByTestId('tournoi-arbre')).toBeVisible();
+    await expect(page.locator('.tu-arbre__place[data-tour="1"]')).toHaveCount(joueurs);
     const hors = await page.evaluate(
       () =>
-        [
-          ...document.querySelectorAll(
-            '.tu-arbre__place, .tu-arbre__poste, .tu-stage-poste, .tu-stage-exemptes',
-          ),
-        ].filter((p) => {
+        [...document.querySelectorAll('.tu-arbre__place, .tu-arbre__poste')].filter((p) => {
           const r = p.getBoundingClientRect();
           return (
             r.left < -1 || r.top < -1 || r.right > innerWidth + 1 || r.bottom > innerHeight + 1

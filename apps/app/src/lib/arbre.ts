@@ -1,23 +1,27 @@
 /**
  * L'arbre du tournoi à l'écran commun (2026-11-21), calculé sans DOM : les deux moitiés du tableau
- * convergent vers la finale, au centre. Les positions sont des fractions de la scène.
+ * convergent vers la coupe, au centre. Les positions sont des fractions de la scène.
  *
- * Un grand tableau ne tient pas en toutes lettres : au-delà de 16 matchs dans un tour, et pour les
- * tours déjà joués, chaque joueur est une pastille à la couleur de son équipe. La place gagnée va
- * aux tours à venir, qui gardent les prénoms.
+ * Tous les joueurs sont nommés sur le bord de la scène, même à 150 : un prénom par rangée, sur deux
+ * colonnes en quinconce au-delà de seize par moitié, ce qui donne à chacun la hauteur de deux
+ * rangées. Le trait de la colonne du bord passe entre deux prénoms de la colonne intérieure.
+ * Le tour à jouer a ses prénoms sur sa colonne dès qu'il compte seize matchs ou moins.
  */
 
 import { surScene, type Duelliste } from '@teamup/game';
 import type { MatchSalle } from './tournoi';
 
-/** Le plus grand tour écrit en toutes lettres : seize prénoms par moitié de scène. */
+/** Le plus grand tour à avoir sa colonne de prénoms ; seize par moitié, au-delà, en quinconce. */
 export const MATCHS_MAX_AVEC_NOMS = 16;
 
-const POIDS_PASTILLE = 0.32;
-const POIDS_CENTRE = 1.4;
-/** Le tour à jouer a la colonne la plus large : c'est là que se lisent les prénoms. */
-const POIDS_TOUR_A_JOUER = 1.4;
-/** Dans une colonne, la part de la place ; le reste est au trait qui la relie au tour suivant. */
+/** La part de la scène laissée au titre et à la coupe. */
+const LARGEUR_CENTRE = 0.15;
+/** Où les traits de la finale s'arrêtent, juste avant la coupe. */
+const BORD_COUPE = 0.46;
+const PRENOM_QUINCONCE = 0.092;
+const PRENOM_SEUL = 0.17;
+const POIDS_COLONNE_NOMMEE = 5.5;
+/** Dans une colonne nommée, la part de la place ; le reste est au trait vers le tour suivant. */
 const PART_PLACE = 0.82;
 /** Une place ne grandit pas au-delà d'une rangée sur huit, même seule dans sa colonne. */
 const RANGS_MIN = 8;
@@ -58,6 +62,7 @@ export interface PosteArbre {
   poste: number;
   x: number;
   y: number;
+  rangs: number;
   juge: boolean;
 }
 
@@ -71,12 +76,20 @@ export interface DispositionArbre {
 }
 
 const arrondi = (n: number) => Math.round(n * 10) / 10;
+const cleJoueur = (j: Duelliste) => j.joueur_id || j.prenom;
 
 const etatDe = (m: MatchSalle, cote: 0 | 1): EtatPlace => {
   if (!(cote === 0 ? m.a : m.b)) return 'vide';
   if (m.gagnant === null) return 'attente';
   return m.gagnant === cote ? 'gagne' : 'perdu';
 };
+
+function ecartMin(valeurs: number[]) {
+  const triees = [...valeurs].sort((x, y) => x - y);
+  let ecart = 1;
+  for (let i = 1; i < triees.length; i++) ecart = Math.min(ecart, triees[i]! - triees[i - 1]!);
+  return ecart;
+}
 
 export function dispositionArbre(
   matchs: readonly MatchSalle[],
@@ -85,22 +98,88 @@ export function dispositionArbre(
   const tours = Math.max(1, ...matchs.map((m) => m.tour));
   const aJouer = matchs.filter((m) => m.gagnant === null);
   const tourVisible = aJouer.length > 0 ? Math.min(...aJouer.map((m) => m.tour)) : tours;
+  const tries = [...matchs].sort((x, y) => x.tour - y.tour || x.rang - y.rang);
+  const parCle = new Map(tries.map((m) => [`${m.tour}-${m.rang}`, m]));
   const matchsDuTour = (t: number) => 2 ** (tours - t);
-  const enPastilles = (t: number) => t < tourVisible || matchsDuTour(t) > MATCHS_MAX_AVEC_NOMS;
+  const moitieDe = (m: MatchSalle, cote: 0 | 1): Cote =>
+    m.tour === tours ? (cote === 0 ? 'g' : 'd') : m.rang < matchsDuTour(m.tour) / 2 ? 'g' : 'd';
+  const estAppele = (m: MatchSalle | undefined) =>
+    sequence !== null && m?.sequence === sequence && m.gagnant === null;
+
+  // Le parcours de chaque joueur : sa place de départ s'éteint quand il sort, à n'importe quel tour.
+  const vainqueurs = new Set<string>();
+  const elimines = new Set<string>();
+  const enJeu = new Set<string>();
+  for (const m of tries) {
+    if (estAppele(m)) for (const j of [m.a, m.b]) if (j) enJeu.add(cleJoueur(j));
+    if (!m.a || !m.b || m.gagnant === null) continue;
+    vainqueurs.add(cleJoueur(m.gagnant === 0 ? m.a : m.b));
+    elimines.add(cleJoueur(m.gagnant === 0 ? m.b : m.a));
+  }
+
+  // Une rangée par joueur du premier tour : un exempté en prend une, un match deux.
+  const rangees: Record<Cote, string[]> = { g: [], d: [] };
+  for (const m of tries) {
+    if (m.tour !== 1) continue;
+    rangees[moitieDe(m, 0)].push(`${m.rang}-0`);
+    if (m.b) rangees[moitieDe(m, 1)].push(`${m.rang}-1`);
+  }
+  const quinconce = Math.max(rangees.g.length, rangees.d.length) > MATCHS_MAX_AVEC_NOMS;
+  const feuilles = new Map<string, { y: number; interieur: boolean }>();
+  for (const liste of [rangees.g, rangees.d]) {
+    liste.forEach((cle, i) =>
+      feuilles.set(cle, { y: (i + 1) / (liste.length + 1), interieur: quinconce && i % 2 === 1 }),
+    );
+  }
+
+  // Un match est à mi-hauteur de ses deux joueurs ; les deux demi-finales arrivent sur la coupe.
+  const yMatch = new Map<string, number>();
+  const yPlace = (m: MatchSalle, cote: 0 | 1) =>
+    (m.tour === 1
+      ? feuilles.get(`${m.rang}-${cote}`)?.y
+      : yMatch.get(`${m.tour - 1}-${2 * m.rang + cote}`)) ?? 0.5;
+  for (const m of tries) {
+    if (m.tour === tours) continue;
+    const milieu =
+      m.tour === tours - 1
+        ? 0.5
+        : m.tour === 1 && !m.b
+          ? yPlace(m, 0)
+          : (yPlace(m, 0) + yPlace(m, 1)) / 2;
+    yMatch.set(`${m.tour}-${m.rang}`, milieu);
+  }
+
+  // La hauteur d'une place : ce que laissent ses deux plus proches voisines.
+  const rangsDu = new Map<number, number>();
+  for (let t = 1; t <= tours; t++) {
+    const duTour = tries.filter((m) => m.tour === t);
+    const ys = (moitie: Cote) =>
+      duTour.flatMap((m) =>
+        ([0, 1] as const)
+          .filter((c) => moitieDe(m, c) === moitie && (t > 1 || c === 0 || m.b))
+          .map((c) => yPlace(m, c)),
+      );
+    const ecart = Math.min(ecartMin(ys('g')), ecartMin(ys('d')));
+    rangsDu.set(t, Math.max(RANGS_MIN, 1 / (t === 1 && quinconce ? 2 * ecart : ecart)));
+  }
 
   // Les colonnes, du bord de la scène vers le centre ; l'autre moitié en est le miroir.
-  const poidsDu = (t: number) =>
-    enPastilles(t) ? POIDS_PASTILLE : t === tourVisible ? POIDS_TOUR_A_JOUER : 1;
+  const nommee = (t: number) =>
+    t > 1 && t === tourVisible && matchsDuTour(t) <= MATCHS_MAX_AVEC_NOMS;
+  const poidsDu = (t: number) => (nommee(t) ? POIDS_COLONNE_NOMMEE : 1);
+  const zonePrenoms = quinconce ? 2 * PRENOM_QUINCONCE : PRENOM_SEUL;
+  const zoneArbre = (1 - LARGEUR_CENTRE) / 2 - zonePrenoms;
   let somme = 0;
   for (let t = 1; t <= tours; t++) somme += poidsDu(t);
-  const total = 2 * somme + POIDS_CENTRE;
   const colonnes = new Map<number, { debut: number; largeur: number }>();
   let cumul = 0;
   for (let t = 1; t <= tours; t++) {
-    colonnes.set(t, { debut: cumul / total, largeur: poidsDu(t) / total });
+    colonnes.set(t, {
+      debut: zonePrenoms + (cumul / somme) * zoneArbre,
+      largeur: (poidsDu(t) / somme) * zoneArbre,
+    });
     cumul += poidsDu(t);
   }
-  const bordCentre = cumul / total;
   const X = (cote: Cote, f: number) => arrondi((cote === 'g' ? f : 1 - f) * VUE);
   const Y = (y: number) => arrondi(y * VUE);
 
@@ -108,89 +187,112 @@ export function dispositionArbre(
   const lignes: LigneArbre[] = [];
   const postes: PosteArbre[] = [];
 
-  for (const m of matchs) {
+  /** Pose le joueur à sa place et rend le bord d'où part son trait. */
+  const poser = (m: MatchSalle, cote: 0 | 1): number => {
+    const joueur = cote === 0 ? m.a : m.b;
+    const moitie = moitieDe(m, cote);
     const { debut, largeur } = colonnes.get(m.tour)!;
-    const finale = m.tour === tours;
-    const n = matchsDuTour(m.tour);
-    const actif = sequence !== null && m.sequence === sequence && m.gagnant === null;
-    const gagnantDe = m.gagnant === 0 ? m.a : m.gagnant === 1 ? m.b : null;
-    // Une pastille est centrée sur le début de sa colonne : le trait du tour d'avant y arrive, le
-    // sien en repart, et la branche reste d'un seul tenant.
-    const pastille = enPastilles(m.tour);
-    const bordPlace = pastille ? debut : debut + largeur * PART_PLACE;
-    const place = (cote: 0 | 1, moitie: Cote, y: number) => {
-      const largeurPlace = pastille ? 0 : largeur * PART_PLACE;
-      places.push({
-        cle: `${m.tour}-${m.rang}-${cote}`,
-        joueur: cote === 0 ? m.a : m.b,
-        etat: etatDe(m, cote),
-        cote: moitie,
-        tour: m.tour,
-        x: moitie === 'g' ? debut : 1 - debut - largeurPlace,
-        largeur: largeurPlace,
-        y,
-        rangs: Math.max(RANGS_MIN, n),
-        pastille,
-        actif,
-      });
+    const commun = {
+      cle: `${m.tour}-${m.rang}-${cote}`,
+      joueur,
+      cote: moitie,
+      tour: m.tour,
+      y: yPlace(m, cote),
+      rangs: rangsDu.get(m.tour)!,
+      actif: joueur ? enJeu.has(cleJoueur(joueur)) : false,
     };
+    if (m.tour === 1) {
+      const interieur = feuilles.get(`${m.rang}-${cote}`)?.interieur ?? false;
+      const large = quinconce ? PRENOM_QUINCONCE : PRENOM_SEUL;
+      const bord = interieur ? PRENOM_QUINCONCE : 0;
+      const cle = joueur ? cleJoueur(joueur) : '';
+      places.push({
+        ...commun,
+        etat: elimines.has(cle) ? 'perdu' : vainqueurs.has(cle) ? 'gagne' : 'attente',
+        x: moitie === 'g' ? bord : 1 - bord - large,
+        largeur: large,
+        pastille: false,
+      });
+      return bord + large;
+    }
+    if (nommee(m.tour)) {
+      const large = largeur * PART_PLACE;
+      places.push({
+        ...commun,
+        etat: etatDe(m, cote),
+        x: moitie === 'g' ? debut : 1 - debut - large,
+        largeur: large,
+        pastille: false,
+      });
+      return debut + large;
+    }
+    // Un tour sans colonne de prénoms : un point à la couleur de qui y est arrivé, sinon le trait.
+    if (joueur) {
+      places.push({
+        ...commun,
+        etat: etatDe(m, cote),
+        x: moitie === 'g' ? debut : 1 - debut,
+        largeur: 0,
+        pastille: true,
+      });
+    }
+    return debut;
+  };
 
-    if (finale) {
-      place(0, 'g', 0.5);
-      place(1, 'd', 0.5);
-      for (const [cote, moitie] of [
-        [0, 'g'],
-        [1, 'd'],
-      ] as const) {
-        const joueur = cote === 0 ? m.a : m.b;
+  for (const m of tries) {
+    const { debut, largeur } = colonnes.get(m.tour)!;
+    const actif = estAppele(m);
+    const equipeDe = (cote: 0 | 1) =>
+      m.gagnant === cote ? ((cote === 0 ? m.a : m.b)?.equipe ?? null) : null;
+
+    if (m.tour === tours) {
+      for (const cote of [0, 1] as const) {
+        const moitie = moitieDe(m, cote);
+        const bord = poser(m, cote);
         lignes.push({
           cle: `${m.tour}-${m.rang}-${cote}`,
-          d: `M${X(moitie, bordPlace)},${Y(0.5)}H${X(moitie, bordCentre)}`,
-          equipe: m.gagnant === cote ? (joueur?.equipe ?? null) : null,
+          d: `M${X(moitie, bord)},${Y(0.5)}H${X(moitie, BORD_COUPE)}`,
+          equipe: equipeDe(cote),
           active: actif,
         });
       }
       continue;
     }
 
-    const moitie: Cote = m.rang < n / 2 ? 'g' : 'd';
-    const s = moitie === 'g' ? m.rang : m.rang - n / 2;
-    const ya = (2 * s + 0.5) / n;
-    const yb = (2 * s + 1.5) / n;
-    const milieu = (2 * s + 1) / n;
-    const axe = pastille
-      ? debut + largeur / 2
-      : debut + largeur * (PART_PLACE + (1 - PART_PLACE) / 2);
+    const moitie = moitieDe(m, 0);
+    const milieu = yMatch.get(`${m.tour}-${m.rang}`)!;
+    const axe = debut + largeur * (nommee(m.tour) ? PART_PLACE + (1 - PART_PLACE) / 2 : 0.5);
     const exempte = m.tour === 1 && !m.b;
+    // Un exempté n'a rien gagné encore : son trait s'allume avec son premier vrai match.
+    const suivant = parCle.get(`${m.tour + 1}-${m.rang >> 1}`);
+    const equipeExempte = suivant?.gagnant === m.rang % 2 ? (m.a?.equipe ?? null) : null;
+    const brancheActive = actif || (exempte && estAppele(suivant));
 
-    place(0, moitie, ya);
-    lignes.push({
-      cle: `${m.tour}-${m.rang}-a`,
-      d: `M${X(moitie, bordPlace)},${Y(ya)}H${X(moitie, axe)}V${Y(milieu)}`,
-      equipe: m.gagnant === 0 ? (m.a?.equipe ?? null) : null,
-      active: actif,
-    });
-    if (!exempte) {
-      place(1, moitie, yb);
+    const relier = (cote: 0 | 1, suffixe: 'a' | 'b') => {
+      const bord = poser(m, cote);
       lignes.push({
-        cle: `${m.tour}-${m.rang}-b`,
-        d: `M${X(moitie, bordPlace)},${Y(yb)}H${X(moitie, axe)}V${Y(milieu)}`,
-        equipe: m.gagnant === 1 ? (m.b?.equipe ?? null) : null,
-        active: actif,
+        cle: `${m.tour}-${m.rang}-${suffixe}`,
+        d: `M${X(moitie, bord)},${Y(yPlace(m, cote))}H${X(moitie, axe)}V${Y(milieu)}`,
+        equipe: exempte ? equipeExempte : equipeDe(cote),
+        active: brancheActive,
       });
-    }
+    };
+    relier(0, 'a');
+    if (!exempte) relier(1, 'b');
+
+    const gagnant = m.gagnant === 0 ? m.a : m.gagnant === 1 ? m.b : null;
     lignes.push({
       cle: `${m.tour}-${m.rang}-t`,
       d: `M${X(moitie, axe)},${Y(milieu)}H${X(moitie, debut + largeur)}`,
-      equipe: gagnantDe?.equipe ?? null,
-      active: actif,
+      equipe: exempte ? equipeExempte : (gagnant?.equipe ?? null),
+      active: brancheActive,
     });
-    // Le poste sur le trait du match ; demi-finales et finale se jouent sur scène, sans poste.
+
+    // Le poste au croisement du match ; demi-finales et finale se jouent sur scène, sans poste.
     if (
       sequence !== null &&
       m.sequence === sequence &&
       m.poste !== null &&
-      !pastille &&
       !surScene(m.tour, tours)
     ) {
       postes.push({
@@ -198,6 +300,13 @@ export function dispositionArbre(
         poste: m.poste,
         x: X(moitie, axe) / VUE,
         y: milieu,
+        // Au premier tour, deux vrais matchs sont toujours à deux rangées l'un de l'autre.
+        rangs:
+          m.tour > 1
+            ? rangsDu.get(m.tour + 1)!
+            : quinconce
+              ? rangsDu.get(1)!
+              : Math.max(RANGS_MIN, rangsDu.get(1)! / 2),
         juge: m.gagnant !== null,
       });
     }

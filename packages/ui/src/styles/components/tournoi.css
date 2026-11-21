@@ -1,5 +1,5 @@
-/* Tournoi du gobelet (2026-11-21), à l'écran commun : les postes de la séquence, la fin du
-   tableau. Grille partagée entre les rangées, prénoms réduits un à un s'ils sont trop longs. */
+/* Tournoi du gobelet (2026-11-21), à l'écran commun : un seul arbre, tous les joueurs nommés,
+   prénoms réduits un à un s'ils sont trop longs. */
 
 .tu-stage-tournoi {
   display: flex;
@@ -33,6 +33,10 @@
   font-size: var(--tu-size-xl);
 }
 
+.tu-stage-tournoi__info > span + span::before {
+  content: ' · ';
+}
+
 .tu-stage-tournoi__consigne {
   margin: 0;
   font-family: var(--tu-font-display);
@@ -42,155 +46,19 @@
   text-align: center;
 }
 
-/* Un grand tour en entier : ses matchs, puis la ligne des exemptés. */
-.tu-stage-tour {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: var(--tu-space-2);
-  min-height: 0;
-}
-
-.tu-stage-exemptes {
-  margin: 0;
-  color: var(--tu-text-muted);
-  font-size: var(--tu-size-lg);
-  line-height: var(--tu-leading-tight);
-  text-align: center;
-}
-
-.tu-stage-exemptes strong {
-  color: var(--tu-text);
-}
-
-.tu-stage-exemptes[data-taille='m'] {
-  font-size: var(--tu-size-base);
-}
-
-.tu-stage-exemptes[data-taille='s'] {
-  font-size: var(--tu-size-sm);
-}
-
-/* La police suit la hauteur réelle d'une rangée : la ligne des exemptés en prend sa part. */
-.tu-stage-postes {
-  display: grid;
-  flex: 1;
-  grid-template-columns: repeat(var(--tu-postes-colonnes), minmax(0, 1fr));
-  grid-template-rows: repeat(var(--tu-postes-rangees), minmax(0, 1fr));
-  gap: var(--tu-space-2) var(--tu-space-3);
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  container-type: size;
-}
-
-/* Une branche du tableau : deux prénoms, un crochet, le poste au bout. Lancé, le match est
-   encadré ; pas encore lancé, sa place du poste reste vide. */
-.tu-stage-poste {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  min-height: 0;
-  padding: var(--tu-arbre-trait) var(--tu-space-1);
-  border: var(--tu-arbre-trait) solid transparent;
-  border-radius: var(--tu-radius-md);
-  font-size: min(
-    var(--tu-size-3xl),
-    calc(100cqh / var(--tu-postes-rangees) * var(--tu-stage-poste-ratio))
-  );
-}
-
-.tu-stage-poste[data-appele='true'] {
-  border-color: var(--tu-navy-500);
-  background: var(--tu-navy-50);
-}
-
-.tu-stage-poste[data-appele='false'] .tu-stage-poste__numero {
-  visibility: hidden;
-}
-
-.tu-stage-postes[data-aere='true'] .tu-stage-poste {
-  grid-template-columns: minmax(0, max-content) auto;
-  justify-content: center;
-}
-
-.tu-stage-poste__noms {
-  position: relative;
-  display: grid;
-  grid-auto-rows: 1.35em;
-  gap: var(--tu-space-1);
-  min-width: 0;
-  padding-inline-end: var(--tu-arbre-crochet);
-}
-
-/* Le crochet qui réunit les deux prénoms. */
-.tu-stage-poste__noms::after {
-  position: absolute;
-  inset-block: 25%;
-  inset-inline-end: 0;
-  width: var(--tu-arbre-crochet);
-  border: var(--tu-arbre-trait-fort) solid var(--tu-navy-200);
-  border-inline-start: 0;
-  content: '';
-}
-
-.tu-stage-poste[data-juge='true'] .tu-stage-poste__noms::after {
-  border-color: var(--tu-navy-700);
-}
-
-.tu-stage-poste__numero {
-  display: grid;
-  place-items: center;
-  width: 2.1em;
-  aspect-ratio: 1;
-  border-radius: var(--tu-radius-pill);
-  background: var(--tu-navy-700);
-  color: var(--tu-text-invert);
-  font-family: var(--tu-font-display);
-  font-size: 0.68em;
-  font-weight: 700;
-}
-
-.tu-stage-poste[data-juge='true'] .tu-stage-poste__numero {
-  background: var(--tu-navy-200);
-  color: var(--tu-navy-700);
-}
-
-.tu-stage-poste__prenom {
-  display: block;
-  align-content: center;
-  overflow: hidden;
-  padding-inline: var(--tu-space-2);
-  border-inline-start: var(--tu-stage-cadre) solid var(--tu-team-color, var(--tu-border));
-  border-radius: var(--tu-radius-sm);
-  background: var(--tu-surface);
-  font-family: var(--tu-font-display);
-  font-weight: 600;
-  line-height: var(--tu-leading-tight);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tu-stage-poste__prenom[data-etat='gagne'] {
-  background: var(--tu-team-color);
-  color: var(--tu-team-on);
-  font-weight: 700;
-}
-
-.tu-stage-poste__prenom[data-etat='perdu'] {
-  background: transparent;
-  color: var(--tu-text-muted);
-  text-decoration: line-through;
-}
-
-/* L'arbre : deux moitiés qui montent vers la finale, au centre. Les tailles suivent la hauteur
-   de la scène et le nombre de rangées de chaque colonne. */
+/* L'arbre : deux moitiés qui montent vers la coupe, au centre. Il prend toute la scène sous les
+   marques des coins ; les tailles suivent sa hauteur et le nombre de rangées de chaque colonne. */
 .tu-arbre {
   position: relative;
   flex: 1;
   min-height: 0;
+  margin: var(--tu-stage-bandeau) calc(-1 * var(--tu-space-8)) calc(-1 * var(--tu-space-6));
   container-type: size;
+}
+
+/* Avec un partenaire, la scène commence déjà sous le bandeau. */
+.tu-stage--partenaire .tu-arbre {
+  margin-top: 0;
 }
 
 .tu-arbre__traits {
@@ -230,12 +98,12 @@
   align-items: center;
   width: calc(var(--tu-arbre-l) * 100%);
   height: min(var(--tu-arbre-place), calc(100cqh / var(--tu-arbre-rangs) * 0.84));
-  padding-inline: var(--tu-space-2);
+  padding-inline: min(var(--tu-space-2), calc(100cqh / var(--tu-arbre-rangs) * 0.2));
   border-inline-start: var(--tu-stage-cadre) solid var(--tu-team-color, var(--tu-navy-200));
   border-radius: var(--tu-radius-sm);
   background: var(--tu-surface);
   font-family: var(--tu-font-display);
-  font-size: min(var(--tu-size-2xl), calc(100cqh / var(--tu-arbre-rangs) * 0.52));
+  font-size: min(var(--tu-size-2xl), calc(100cqh / var(--tu-arbre-rangs) * 0.62));
   font-weight: 600;
   line-height: 1;
   transform: translateY(-50%);
@@ -305,18 +173,20 @@
 }
 
 .tu-arbre__poste {
+  --tu-arbre-poste-reel: min(var(--tu-arbre-poste), calc(100cqh / var(--tu-arbre-rangs) * 0.9));
+
   position: absolute;
   top: calc(var(--tu-arbre-y) * 100%);
   left: calc(var(--tu-arbre-x) * 100%);
   display: grid;
   place-items: center;
-  width: var(--tu-arbre-poste);
+  width: var(--tu-arbre-poste-reel);
   aspect-ratio: 1;
   border-radius: var(--tu-radius-pill);
   background: var(--tu-navy-700);
   color: var(--tu-text-invert);
   font-family: var(--tu-font-display);
-  font-size: var(--tu-size-base);
+  font-size: calc(var(--tu-arbre-poste-reel) * 0.5);
   font-weight: 700;
   transform: translate(-50%, -50%);
 }
@@ -326,16 +196,52 @@
   color: var(--tu-navy-700);
 }
 
+/* Le centre : le tour en haut, la coupe sur l'axe des deux finalistes, la consigne dessous. */
 .tu-arbre__centre {
   position: absolute;
-  top: 50%;
+  inset-block: 0;
   left: 50%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+  justify-items: center;
+  gap: var(--tu-space-3);
+  width: var(--tu-arbre-centre);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.tu-arbre__entete {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-2);
+}
+
+.tu-arbre__entete .tu-stage-tournoi__titre {
+  font-size: var(--tu-size-2xl);
+}
+
+.tu-arbre__entete .tu-stage-tournoi__info {
+  font-size: var(--tu-size-lg);
+}
+
+.tu-arbre__entete .tu-stage-tournoi__info > span {
+  display: block;
+}
+
+.tu-arbre__entete .tu-stage-tournoi__info > span + span::before {
+  content: none;
+}
+
+.tu-arbre__pied .tu-stage-tournoi__consigne {
+  font-size: var(--tu-size-xl);
+}
+
+.tu-arbre__trophee {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--tu-space-2);
-  max-width: var(--tu-arbre-centre);
-  transform: translate(-50%, -50%);
+  max-width: 100%;
 }
 
 .tu-arbre__coupe {

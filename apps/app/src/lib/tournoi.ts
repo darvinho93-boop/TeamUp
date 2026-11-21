@@ -84,16 +84,6 @@ export function etapeDeReprise(
   return tournoi.matchs.some((m) => m.gagnant !== null) ? 'resultats' : 'appel';
 }
 
-/**
- * La grille des matchs d'un tour à l'écran : quatre colonnes tant que ça tient, puis huit rangées
- * au plus (36 matchs : 5 × 8 ; un tour complet de 64es : 8 × 8).
- */
-export function grilleDesPostes(matchs: number): { colonnes: number; rangees: number } {
-  const n = Math.max(1, matchs);
-  const colonnes = Math.max(Math.min(4, Math.ceil(Math.sqrt(n))), Math.ceil(n / 8));
-  return { colonnes, rangees: Math.ceil(n / colonnes) };
-}
-
 /** Les vrais matchs d'un tour, dans l'ordre où ils se jouent, et ses exemptés à part. */
 export function affichesDuTour<T extends MatchTournoi>(
   matchs: readonly T[],

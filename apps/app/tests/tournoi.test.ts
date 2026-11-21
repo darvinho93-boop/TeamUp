@@ -7,7 +7,6 @@ import {
   affichesDuTour,
   estTournoi,
   etapeDeReprise,
-  grilleDesPostes,
   matchDepuisLigne,
   matchsDuPrenom,
   nomDuTour,
@@ -160,23 +159,6 @@ describe('lire le tableau', () => {
     expect(matchsDuPrenom(matchs, 'ZOE1')).toEqual([matchs[0]]);
     expect(matchsDuPrenom(matchs, '  ')).toEqual(matchs);
     expect(matchsDuPrenom(matchs, 'personne')).toEqual([]);
-  });
-});
-
-describe('grille des postes', () => {
-  it.each([
-    [1, 1, 1],
-    [2, 2, 1],
-    [4, 2, 2],
-    [5, 3, 2],
-    [9, 3, 3],
-    [12, 4, 3],
-    [16, 4, 4],
-    [32, 4, 8],
-    [36, 5, 8],
-    [64, 8, 8],
-  ])('%i postes : %i colonnes, %i rangées', (n, colonnes, rangees) => {
-    expect(grilleDesPostes(n)).toEqual({ colonnes, rangees });
   });
 });
 
