@@ -1877,3 +1877,45 @@ groupes dos tourné), la mime au groupe 2, et ainsi de suite ; le dernier groupe
   spec).
 - À prévoir au lot 15 (réseau local) : recopier les scènes sur la machine, comme musiques et
   photos de fond.
+
+## Conventions posées le 2026-11-21 (tournoi de Tête, épaule, gobelet)
+
+Tranché le 2026-11-21, pour la soirée du 5 décembre (80 à 100 personnes) : Tête, épaule, gobelet se
+joue par défaut en **tournoi à élimination directe**, **tous les joueurs d'office** ; jusqu'aux
+quarts, **autant de matchs en même temps que de gobelets** (réglable avant chaque séquence, selon
+les gobelets et la place) ; demi-finales et finale sur scène, une à la fois ; **les perdants
+viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste, demi-finalistes).
+
+- **Écarts assumés à la spec v3** : un duel en tournoi au lieu de duels isolés (+50) ; des
+  coéquipiers peuvent se croiser en fin de tableau. Le format « Duels simples » reste à la
+  préparation, inchangé, comme Attrape l'objet (`manches.options.format`, absent = duels).
+- Logique pure (`packages/game/src/tournoi.ts`) : `tirerTableau` (puissance de 2 de places, chaque
+  moitié partage chaque équipe à une unité près, donc jamais de coéquipiers au premier tour tant
+  qu'aucune équipe ne dépasse la moitié des places ; exemptés équilibrés entre équipes),
+  `prochaineSequence` (un tour finit avant le suivant), `pointsTournoi`, `sequencesDuTournoi`.
+  Machine : `pilotage/tournoi.ts`, `tirage` → `appel` → `jeu` → `resultats` → `appel`… → `vainqueur`.
+  Un seul passage pour tout le tableau. Budget : 105 s par séquence, soit 2 min avec les 15 % de
+  transitions (à confirmer par une répétition).
+- Base (migration `20261123090000`) : `matchs_tournoi` (clé `id`, tout l'arbre posé au tirage,
+  prénom et équipe recopiés : un joueur retiré reste lisible), lue par l'animateur, écrite
+  **uniquement** par `poser_tableau` (reçoit le premier tour, construit le reste), `ouvrir_sequence`
+  (postes + `enregistrer_etape`, d'un bloc) et `resultat_match` (le gagnant monte dans la même
+  transaction ; `null` annule ; ne touche pas à `maj_le`). **Aucun téléphone n'écrit.**
+- `etat_joueur.tournoi` (`tournoi_du_joueur`) : **son seul match**, par index ; mesuré à 100
+  joueurs, aucun surcoût (environ 5 ms par relecture, avec ou sans tournoi).
+  `etat_ecran.tournoi` : la séquence en cours et la fin du tableau (quarts à finale) ; la régie
+  relit le tableau entier dans `matchs_tournoi` quand elle appelle une séquence ou conclut.
+- Régie (`src/regie/PanneauTournoi.tsx`) : le perdant se retrouve par son prénom, **une touche sans
+  confirmation**, « Annuler » jusqu'à la séquence suivante ; un absent se traite pareil (forfait).
+  Un résultat envoie le signal `mises` (écran et régie) ; appeler une séquence, `relire`.
+- Écran (`src/ecran/Tournoi.tsx`, `tournoi.css`) : grille de 32 postes au plus (quatre colonnes),
+  noms barrés en direct, tableau des quarts à la finale, face-à-face et `Verdict` pour les deux
+  derniers tours, podium des joueurs. La séquence à annoncer reste sur la régie.
+- Téléphone (`src/joueur/Tournoi.tsx`, `vueDuTournoi`) : en lecture seule, poste, adversaire,
+  exempté, qualifié, « Hors jeu ! », avec une vibration à l'appel. La vidéo du gobelet sur la carte
+  montre le tournoi (`scriptExplication(jeu, 'tournoi')`).
+- `useTenirEnLargeur` mesure au sous-pixel : `scrollWidth` arrondit, et un prénom qui dépassait
+  d'une fraction de pixel restait coupé par les points de suspension.
+- Tests : `packages/game` (2 à 150 joueurs, 2 à 8 équipes), `tests/tournoi.test.ts`,
+  `tests/tournoi-base.test.ts`, `e2e/tournoi.spec.ts` (du tirage au podium ; 100 joueurs et
+  32 postes en 1 920 × 1 080 ; `CAPTURES=<dossier>`).
