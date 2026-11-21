@@ -61,6 +61,17 @@
   margin-top: 0;
 }
 
+.tu-arbre__plan {
+  position: absolute;
+  inset: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tu-arbre__plan {
+    animation: tu-fondu var(--tu-dur-reveal) var(--tu-ease) both;
+  }
+}
+
 .tu-arbre__traits {
   position: absolute;
   inset: 0;
@@ -84,6 +95,11 @@
 .tu-arbre__trait[data-allume='true'] {
   stroke: var(--tu-team-color);
   stroke-width: var(--tu-arbre-trait-fort);
+}
+
+/* Le chemin d'un joueur sorti s'efface : seul celui des joueurs en lice se lit. */
+.tu-arbre__trait[data-passe='true']:not([data-allume='true']) {
+  stroke-opacity: var(--tu-regie-estompe);
 }
 
 .tu-arbre[data-vivant='true'] .tu-arbre__trait {

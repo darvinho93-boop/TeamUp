@@ -270,22 +270,22 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
   await expect(regie.getByTestId('tournoi-restants')).toContainText('4 matchs restent');
   await capturer(regie, 'regie-choix');
   const tailles = [4];
+  // Ce parcours ne mesure aucune latence, et l'accès à Docker s'arrête parfois 10 s sur le poste.
+  const patience = { timeout: 20_000 };
   for (;;) {
     const suivante = regie.getByRole('button', { name: /^Jouer l/ });
     const vainqueur = regie.getByRole('button', { name: 'Voir le vainqueur' });
-    await expect(suivante.or(vainqueur)).toBeEnabled({ timeout: 10_000 });
+    await expect(suivante.or(vainqueur)).toBeEnabled(patience);
     if (await vainqueur.isVisible()) break;
     await suivante.click();
-    await expect(regie.getByRole('button', { name: 'Lancer la séquence' })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(scene('appel')).toBeVisible({ timeout: 10_000 });
+    await expect(regie.getByRole('button', { name: 'Lancer la séquence' })).toBeVisible(patience);
+    await expect(scene('appel')).toBeVisible(patience);
     const numero = Math.max(...(await lireMatchs()).map((m) => m.sequence ?? 0));
     tailles.push((await lireMatchs()).filter((m) => m.sequence === numero).length);
     await regie.getByRole('button', { name: 'Lancer la séquence' }).click();
-    await expect(scene('jeu')).toBeVisible({ timeout: 10_000 });
+    await expect(scene('jeu')).toBeVisible(patience);
     await regie.getByRole('button', { name: 'Fin de la séquence' }).click();
-    await expect(scene('resultats')).toBeVisible({ timeout: 10_000 });
+    await expect(scene('resultats')).toBeVisible(patience);
     await expect(regie.getByTestId('tournoi-compteur')).toBeVisible();
     if (tailles.length === 6) await capturer(ecran, 'ecran-demi');
     await noterLesRestants();

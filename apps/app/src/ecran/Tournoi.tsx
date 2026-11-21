@@ -139,6 +139,7 @@ export function Tournoi({ etat, decalageMs }: { etat: EtatSalle; decalageMs: num
       <ArbreTournoi
         matchs={tournoi.tableau}
         sequence={tournoi.sequence}
+        tour={tournoi.sequence ? tournoi.tour : null}
         entete={
           <>
             <h1 className="tu-stage-tournoi__titre" data-testid="tournoi-tour">

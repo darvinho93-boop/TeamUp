@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { aleaDepuis, tirerTableau, type Duelliste } from '@teamup/game';
-import { dispositionArbre, MATCHS_MAX_AVEC_NOMS } from '../src/lib/arbre';
+import { dispositionArbre } from '../src/lib/arbre';
 import type { MatchSalle } from '../src/lib/tournoi';
 
 const salle = (n: number): Duelliste[] =>
@@ -56,18 +56,13 @@ describe('disposition de l’arbre', () => {
     expect(new Set(premiers.map((p) => p.joueur?.joueur_id)).size).toBe(100);
   });
 
-  it('un match est à mi-hauteur de ses deux joueurs, sur la place du tour suivant', () => {
-    // Une place sans joueur n'est qu'un trait : le tableau est joué jusqu'à la finale.
-    const { places } = dispositionArbre(jouerJusquA(tableau(16), 4), null);
-    const y = (tour: number, rang: number, cote: number) =>
-      places.find((p) => p.cle === `${tour}-${rang}-${cote}`)!.y;
+  it('le trait d’un match part à mi-hauteur de ses deux joueurs', () => {
+    const { places, lignes } = dispositionArbre(tableau(16), null);
+    const y = (rang: number, cote: number) => places.find((p) => p.cle === `1-${rang}-${cote}`)!.y;
     for (let rang = 0; rang < 8; rang++) {
-      const milieu = (y(1, rang, 0) + y(1, rang, 1)) / 2;
-      expect(y(2, rang >> 1, rang % 2)).toBeCloseTo(milieu);
-    }
-    for (let rang = 0; rang < 2; rang++) {
-      const milieu = (y(3, rang, 0) + y(3, rang, 1)) / 2;
-      expect(y(4, 0, rang)).toBeCloseTo(milieu);
+      const trait = lignes.find((l) => l.cle === `1-${rang}-t`)!;
+      const depart = Number(/,([\d.]+)H/.exec(trait.d)![1]) / 1000;
+      expect(depart).toBeCloseTo((y(rang, 0) + y(rang, 1)) / 2, 2);
     }
   });
 
@@ -106,17 +101,56 @@ describe('disposition de l’arbre', () => {
     }
   });
 
-  it('donne sa colonne de prénoms au tour à jouer, dès seize matchs', () => {
+  it('un tour passé, seuls les prénoms du tour à jouer restent écrits', () => {
     const avant = dispositionArbre(tableau(100), null);
     expect(avant.tourVisible).toBe(1);
-    expect(avant.places.some((p) => p.tour === 3)).toBe(false);
+    expect(avant.places.filter((p) => !p.pastille)).toHaveLength(100);
 
     const apres = dispositionArbre(jouerJusquA(tableau(100), 3), null);
     expect(apres.tourVisible).toBe(3);
-    expect(apres.places.find((p) => p.tour === 2)!.pastille).toBe(true);
-    const duTour = apres.places.filter((p) => p.tour === 3);
-    expect(duTour).toHaveLength(MATCHS_MAX_AVEC_NOMS * 2);
-    expect(duTour.every((p) => !p.pastille && p.largeur > 0)).toBe(true);
+    const ecrits = apres.places.filter((p) => !p.pastille);
+    expect(ecrits).toHaveLength(32);
+    expect(ecrits.every((p) => p.tour === 3 && p.largeur > 0)).toBe(true);
+    // Du tour passé, il ne reste qu'un point par joueur au départ de son chemin.
+    expect(apres.places.filter((p) => p.tour === 1 && p.pastille)).toHaveLength(100);
+    expect(apres.places.some((p) => p.tour === 2)).toBe(false);
+  });
+
+  it('les prénoms du tour à jouer sont à intervalles réguliers', () => {
+    const { places } = dispositionArbre(jouerJusquA(tableau(100), 3), null);
+    const moitie = places.filter((p) => p.tour === 3 && p.cote === 'g').sort((x, y) => x.y - y.y);
+    const ecart = moitie[1]!.y - moitie[0]!.y;
+    moitie.forEach((p, i) => {
+      if (i > 0) expect(p.y - moitie[i - 1]!.y).toBeCloseTo(ecart, 6);
+    });
+  });
+
+  it('garde les prénoms du tour tant que la régie n’a pas lancé le suivant', () => {
+    const { places, tourVisible } = dispositionArbre(jouerJusquA(tableau(100), 3), 1, 2);
+    expect(tourVisible).toBe(2);
+    const ecrits = places.filter((p) => !p.pastille);
+    expect(ecrits).toHaveLength(64);
+    expect(ecrits.every((p) => p.tour === 2)).toBe(true);
+    expect(ecrits.filter((p) => p.etat === 'perdu')).toHaveLength(32);
+  });
+
+  it('le chemin ne garde la couleur que des joueurs encore en lice', () => {
+    const matchs = jouerJusquA(tableau(100), 3);
+    const { lignes } = dispositionArbre(matchs, null);
+    const enLice = new Set(
+      matchs.filter((m) => m.tour === 3).flatMap((m) => [m.a!.joueur_id, m.b!.joueur_id]),
+    );
+    for (const m of matchs.filter((x) => x.tour === 1)) {
+      for (const [joueur, fin] of [
+        [m.a, 'a'],
+        [m.b, 'b'],
+      ] as const) {
+        if (!joueur) continue;
+        const trait = lignes.find((l) => l.cle === `1-${m.rang}-${fin}`)!;
+        expect(trait.passe).toBe(true);
+        expect(trait.equipe !== null).toBe(enLice.has(joueur.joueur_id));
+      }
+    }
   });
 
   it('un joueur sorti à un tour avancé s’éteint sur sa place de départ', () => {
@@ -127,18 +161,15 @@ describe('disposition de l’arbre', () => {
     expect(depart.etat).toBe('perdu');
   });
 
-  it('un exempté reste éteint tant qu’il n’a pas gagné de vrai match', () => {
+  it('le chemin d’un exempté ne s’allume qu’une fois le premier tour passé', () => {
     const matchs = tableau(100);
     const exempte = matchs.find((m) => m.tour === 1 && !m.b)!;
     const avant = dispositionArbre(matchs, null);
     expect(avant.places.find((p) => p.cle === `1-${exempte.rang}-0`)!.etat).toBe('attente');
     expect(avant.lignes.find((l) => l.cle === `1-${exempte.rang}-a`)!.equipe).toBeNull();
 
-    const suivant = matchs.find((m) => m.tour === 2 && m.rang === exempte.rang >> 1)!;
-    suivant.gagnant = (exempte.rang % 2) as 0 | 1;
-    suivant.a ??= { joueur_id: 'x', prenom: 'X', equipe: 1 };
-    suivant.b ??= { joueur_id: 'y', prenom: 'Y', equipe: 2 };
-    const apres = dispositionArbre(matchs, null);
+    const apres = dispositionArbre(jouerJusquA(matchs, 2), null);
+    expect(apres.tourVisible).toBe(2);
     expect(apres.lignes.find((l) => l.cle === `1-${exempte.rang}-a`)!.equipe).toBe(
       exempte.a!.equipe,
     );
