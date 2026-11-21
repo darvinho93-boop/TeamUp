@@ -179,4 +179,5 @@ export const TABLES = [
   'avis_joueurs',
   'grilles_portrait',
   'votes_portrait',
+  'matchs_tournoi',
 ] as const;

@@ -628,6 +628,86 @@ export type Database = {
           },
         ];
       };
+      matchs_tournoi: {
+        Row: {
+          equipe_a: number | null;
+          equipe_b: number | null;
+          evenement_id: string;
+          gagnant: number | null;
+          id: string;
+          joueur_a: string | null;
+          joueur_b: string | null;
+          manche_id: string;
+          poste: number | null;
+          prenom_a: string | null;
+          prenom_b: string | null;
+          rang: number;
+          sequence: number | null;
+          tour: number;
+        };
+        Insert: {
+          equipe_a?: number | null;
+          equipe_b?: number | null;
+          evenement_id: string;
+          gagnant?: number | null;
+          id?: string;
+          joueur_a?: string | null;
+          joueur_b?: string | null;
+          manche_id: string;
+          poste?: number | null;
+          prenom_a?: string | null;
+          prenom_b?: string | null;
+          rang: number;
+          sequence?: number | null;
+          tour: number;
+        };
+        Update: {
+          equipe_a?: number | null;
+          equipe_b?: number | null;
+          evenement_id?: string;
+          gagnant?: number | null;
+          id?: string;
+          joueur_a?: string | null;
+          joueur_b?: string | null;
+          manche_id?: string;
+          poste?: number | null;
+          prenom_a?: string | null;
+          prenom_b?: string | null;
+          rang?: number;
+          sequence?: number | null;
+          tour?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'matchs_tournoi_evenement_id_fkey';
+            columns: ['evenement_id'];
+            isOneToOne: false;
+            referencedRelation: 'evenements';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'matchs_tournoi_joueur_a_fkey';
+            columns: ['joueur_a'];
+            isOneToOne: false;
+            referencedRelation: 'joueurs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'matchs_tournoi_joueur_b_fkey';
+            columns: ['joueur_b'];
+            isOneToOne: false;
+            referencedRelation: 'joueurs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'matchs_tournoi_manche_id_fkey';
+            columns: ['manche_id'];
+            isOneToOne: false;
+            referencedRelation: 'manches';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       messages_salle: {
         Row: {
           cree_le: string;
@@ -1410,6 +1490,10 @@ export type Database = {
         };
         Returns: Json;
       };
+      duelliste_json: {
+        Args: { p_equipe: number; p_joueur: string; p_prenom: string };
+        Returns: Json;
+      };
       ecarter_carte: { Args: { p_joueur: string }; Returns: undefined };
       echanger_manches: {
         Args: { p_a: string; p_b: string };
@@ -1503,6 +1587,14 @@ export type Database = {
         Args: { p_evenement: string; p_son: string };
         Returns: undefined;
       };
+      lignes_tableau: {
+        Args: { p_premier_tour: Json };
+        Returns: {
+          a: string;
+          b: string;
+          rang: number;
+        }[];
+      };
       messages_ecran: {
         Args: { p_evenement: string; p_regie: boolean };
         Returns: Json;
@@ -1538,6 +1630,17 @@ export type Database = {
         Args: { p_manche: string; p_passages: string[] };
         Returns: undefined;
       };
+      ouvrir_sequence: {
+        Args: {
+          p_gobelets: number;
+          p_manche: string;
+          p_matchs: string[];
+          p_numero: number;
+          p_pilotage: Json;
+          p_version: string;
+        };
+        Returns: string;
+      };
       photos_du_joueur: {
         Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
         Returns: Json;
@@ -1560,6 +1663,10 @@ export type Database = {
       };
       portrait_eliminees: { Args: { p_manche: string }; Returns: number[] };
       portrait_retournees: { Args: { p_manche: string }; Returns: number[] };
+      poser_tableau: {
+        Args: { p_gobelets: number; p_manche: string; p_premier_tour: Json };
+        Returns: number;
+      };
       pouls_joueur: { Args: { p_jeton_hash: string }; Returns: Json };
       prenom_disponible: {
         Args: { p_code: string; p_prenom: string };
@@ -1644,6 +1751,10 @@ export type Database = {
         Args: { p_choix: number; p_jeton_hash: string };
         Returns: Json;
       };
+      resultat_match: {
+        Args: { p_gagnant: number; p_match: string };
+        Returns: undefined;
+      };
       retirer_message: {
         Args: { p_message: string; p_retire?: boolean };
         Returns: undefined;
@@ -1673,6 +1784,17 @@ export type Database = {
       tirer_capitaines: { Args: { p_evenement: string }; Returns: number };
       tirer_carte: {
         Args: { p_equipe: string; p_evenement: string; p_manche: string };
+        Returns: Json;
+      };
+      tournoi_du_joueur: {
+        Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
+        Returns: Json;
+      };
+      tournoi_ecran: {
+        Args: {
+          p_evenement: string;
+          p_pilotage: Database['public']['Tables']['pilotage']['Row'];
+        };
         Returns: Json;
       };
       verifier_vote_portrait: {
