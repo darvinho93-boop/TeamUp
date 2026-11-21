@@ -345,7 +345,13 @@
         "titre": "Bêta : duels 1 contre 1",
         "aide": "Hors programme par défaut (spec v3) : à garder en réserve, pour changer de registre après un jeu long.",
         "creneauCourt": "Créneau de {minutes} min : la spec ne recommande les duels qu’à partir de 60 min.",
-        "duels": "Duels"
+        "duels": "Duels",
+        "format": "Format",
+        "tournoi": "Tournoi (tous les joueurs)",
+        "duelsSimples": "Duels simples",
+        "gobelets": "Gobelets (tournoi)",
+        "duelsSiSimples": "Duels (format simple)",
+        "metaTournoi": "Tournoi · {gobelets} gobelets"
       },
       "groupes": {
         "titre": "Groupes à mélanger",
@@ -650,6 +656,7 @@
         "suivant": "Thème suivant"
       },
       "motifDuel": "Duel gagné par {prenom} – {equipe}",
+      "motifTournoi": "Tournoi du gobelet – {equipe}",
       "duel": {
         "titre": "Duel",
         "numero": "Duel {numero} sur {total}",
@@ -671,6 +678,38 @@
           "goeland": "Goéland (piège)",
           "gober": "Gober (piège)",
           "gobelet": "GOBELET"
+        }
+      },
+      "tournoi": {
+        "titre": "Tournoi",
+        "joueurs": "{n} joueurs dans le tableau",
+        "tire": "Tableau tiré : {joueurs} joueurs, {exemptes} exemptés.",
+        "gobelets": "Gobelets (matchs en même temps)",
+        "estimation": "{sequences} séquences, environ {minutes} min",
+        "tirer": "Tirer le tableau",
+        "retirer": "Retirer le tableau",
+        "appelerPremiere": "Appeler la première séquence",
+        "appeler": "Séquence suivante",
+        "lancer": "Lancer la séquence",
+        "finSequence": "Fin de la séquence",
+        "voirVainqueur": "Voir le vainqueur",
+        "sequence": "Séquence {numero}",
+        "consigne": "Touchez le prénom de la personne qui a perdu.",
+        "compteur": "{faits} résultats sur {total}.",
+        "recherche": "Retrouver un prénom",
+        "aucun": "Aucun prénom ne correspond.",
+        "aPerdu": "{prenom} a perdu",
+        "annuler": "Annuler",
+        "annulerResultat": "Annuler le résultat du poste {poste}",
+        "personne": "Il faut au moins deux joueurs, dans deux équipes.",
+        "impossible": "Ça n'a pas marché : réessayez.",
+        "tours": {
+          "finale": "Finale",
+          "demi": "Demi-finales",
+          "quart": "Quarts de finale",
+          "huitieme": "Huitièmes de finale",
+          "seizieme": "Seizièmes de finale",
+          "places": "Tour de {places}"
         }
       },
       "explication": {

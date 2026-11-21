@@ -44,6 +44,9 @@
   --tu-regie-menu-min: 14rem;
   /* Préparation : colonne du nom d'un passage (équipe, « Question 1 »), en face de son menu. */
   --tu-regie-passage-nom: 12rem;
+  /* Tournoi du gobelet : une ligne de match (poste, deux prénoms), le champ des gobelets. */
+  --tu-regie-match-min: 22rem;
+  --tu-regie-gobelets: 12rem;
   /* Préparation du blind test : le champ « début de l'extrait », en secondes. */
   --tu-regie-debut: 7rem;
   /* Le lecteur d'écoute d'une musique au back-office (2026-11-15). */

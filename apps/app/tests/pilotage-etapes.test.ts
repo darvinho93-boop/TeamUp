@@ -20,6 +20,7 @@ const motifs = {
   cinemime: (equipe: string) => `Ciné ${equipe}`,
   photo: (equipe: string) => `Photo ${equipe}`,
   duel: (prenom: string, equipe: string) => `Duel ${prenom} ${equipe}`,
+  tournoi: (equipe: string) => `Tournoi ${equipe}`,
   blind: (n: number) => `Blind ${n}`,
   portrait: (cible: number, tour: number) => `Portrait ${cible} (${tour})`,
 };

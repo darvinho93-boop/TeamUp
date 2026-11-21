@@ -81,6 +81,8 @@ import { SIGNAL_MISES, useEtatSalle } from '@/ecran/useEtatSalle';
 import { Apercu } from './Apercu';
 import { BoutonConfirme } from './BoutonConfirme';
 import { PanneauDuel } from './PanneauDuel';
+import { PanneauTournoi } from './PanneauTournoi';
+import { estTournoi } from '@/lib/tournoi';
 import { PanneauAvis } from './PanneauAvis';
 import { PanneauConnaissance } from './PanneauConnaissance';
 import { PanneauMessages } from './PanneauMessages';
@@ -181,6 +183,7 @@ export function Pilotage({
         cinemime: (equipe) => t('motifCinemime', { equipe }),
         photo: (equipe) => t('motifPhoto', { equipe }),
         duel: (prenom, equipe) => t('motifDuel', { prenom, equipe }),
+        tournoi: (equipe) => t('motifTournoi', { equipe }),
         blind: (n) => t('motifBlind', { n }),
         portrait: (cible, tour) => t('motifPortrait', { cible, tour }),
       });
@@ -245,14 +248,24 @@ export function Pilotage({
           return;
         }
       }
-      const { error } = await supabase.rpc('enregistrer_etape', {
-        p_evenement: etat.evenement.id,
-        p_version: etat.pilotage.version,
-        p_pilotage: ecriture.pilotage as unknown as Json,
-        p_passage: ecriture.passage as unknown as Json,
-        p_manche: ecriture.manche as unknown as Json,
-        p_scores: ecriture.scores,
-      });
+      // Tournoi : les postes de la séquence et l'étape s'écrivent d'un bloc.
+      const { error } = ecriture.sequence
+        ? await supabase.rpc('ouvrir_sequence', {
+            p_manche: ecriture.sequence.manche_id,
+            p_version: etat.pilotage.version,
+            p_numero: ecriture.sequence.numero,
+            p_matchs: ecriture.sequence.matchs,
+            p_gobelets: ecriture.sequence.gobelets,
+            p_pilotage: ecriture.pilotage as unknown as Json,
+          })
+        : await supabase.rpc('enregistrer_etape', {
+            p_evenement: etat.evenement.id,
+            p_version: etat.pilotage.version,
+            p_pilotage: ecriture.pilotage as unknown as Json,
+            p_passage: ecriture.passage as unknown as Json,
+            p_manche: ecriture.manche as unknown as Json,
+            p_scores: ecriture.scores,
+          });
       if (error) {
         setAlerte(t(/périmé/.test(error.message) ? 'erreur.perime' : 'erreur.impossible'));
       } else {
@@ -564,14 +577,32 @@ export function Pilotage({
         {scene === 'jeu' && manche?.jeu === 'photo2' && (
           <PanneauPhoto etat={etat} manche={manche} decalageMs={decalageMs} agir={agir} />
         )}
-        {scene === 'jeu' && (manche?.jeu === 'grab' || manche?.jeu === 'cup') && (
-          <PanneauDuel
+        {scene === 'jeu' && manche && estTournoi(manche) && (
+          <PanneauTournoi
             etat={etat}
-            manche={manche as MancheSalle & { jeu: 'grab' | 'cup' }}
+            manche={manche}
             decalageMs={decalageMs}
             agir={agir}
+            apresTirage={async () => {
+              signaler();
+              await relire();
+            }}
+            apresResultat={async () => {
+              signaler(SIGNAL_MISES);
+              await relire();
+            }}
           />
         )}
+        {scene === 'jeu' &&
+          (manche?.jeu === 'grab' || manche?.jeu === 'cup') &&
+          !estTournoi(manche) && (
+            <PanneauDuel
+              etat={etat}
+              manche={manche as MancheSalle & { jeu: 'grab' | 'cup' }}
+              decalageMs={decalageMs}
+              agir={agir}
+            />
+          )}
         {(scene === 'jeu' || scene === 'intro') && manche && manche.statut !== 'a_venir' && (
           // Un jeu mal parti se relance d'ici, sans passer par la préparation (2026-11-15).
           <div className="tu-cluster">

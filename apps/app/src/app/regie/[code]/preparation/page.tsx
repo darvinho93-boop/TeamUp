@@ -2,6 +2,10 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Button, cx } from '@teamup/ui/react';
 import {
+  bornerGobelets,
+  GOBELETS_DEFAUT,
+  GOBELETS_MAX,
+  GOBELETS_MIN,
   CHRONO_CINEMIME_DEFAUT_S,
   CHRONO_CINEMIME_MAX_S,
   CHRONO_CINEMIME_MIN_S,
@@ -34,6 +38,7 @@ import { musiquesDe } from '@/lib/musiques';
 import { extraitBlind, jeuParEquipe, titresBlind } from '@/lib/pilotage';
 import { urlLogo } from '@/lib/logo';
 import { elementDuProgramme } from '@/lib/programme';
+import { estTournoi } from '@/lib/tournoi';
 import { evenementDeLaRegie } from '@/serveur/regie';
 import { FondDuJeu } from '@/regie/FondDuJeu';
 import { FormulaireProche } from '@/regie/FormulaireProche';
@@ -205,11 +210,21 @@ export default async function Preparation({
     programme
       .filter((m) => m.statut === 'a_venir' && m.jeu === 'blind')
       .reduce((n, m) => n + titresBlind(m).filter((x) => x.musique === null).length, 0);
+  // Le tournoi du gobelet se chiffre sur les invités annoncés, à défaut sur les inscrits.
+  const [{ data: attendus }, { count: inscrits }] = await Promise.all([
+    supabase.from('evenements').select('invites_attendus').eq('id', evenement.id).maybeSingle(),
+    supabase
+      .from('joueurs')
+      .select('id', { count: 'exact', head: true })
+      .eq('evenement_id', evenement.id),
+  ]);
+  const joueursPrevus = attendus?.invites_attendus ?? inscrits ?? 0;
   const duree = dureeProgramme(
     programme.map((m) =>
       elementDuProgramme({
         jeu: m.jeu,
         options: m.options,
+        joueursPrevus,
         // Lot 14 : avant la formation, une manche par équipe n'a pas encore ses passages.
         passages:
           m.passages.length > 0 || !jeuParEquipe(m.jeu)
@@ -392,6 +407,8 @@ export default async function Preparation({
                     </span>
                     <span className="tu-regie-item__meta">
                       {t(`statut.${m.statut}`)}
+                      {estTournoi(m) &&
+                        ` · ${t('beta.metaTournoi', { gobelets: bornerGobelets(m.options['gobelets']) })}`}
                       {m.jeu === 'blind' &&
                         ` · ${t('blind.extrait', { secondes: extraitBlind(m) })}`}
                       {m.jeu === 'portrait' &&
@@ -942,8 +959,33 @@ export default async function Preparation({
           {/* Tête, épaule, gobelet d'abord : aucun matériel, aucun contenu (spec v3). */}
           {(['cup', 'grab'] as const).map((jeu) => (
             <form key={jeu} action={ajouterDuels.bind(null, code, jeu)} className="tu-regie-item">
+              {/* Le gobelet se joue en tournoi par défaut (2026-11-21). */}
+              {jeu === 'cup' && (
+                <>
+                  <label className="tu-field">
+                    <span className="tu-field__label">{t('beta.format')}</span>
+                    <select className="tu-field__control" name="format" defaultValue="tournoi">
+                      <option value="tournoi">{t('beta.tournoi')}</option>
+                      <option value="duels">{t('beta.duelsSimples')}</option>
+                    </select>
+                  </label>
+                  <label className="tu-field">
+                    <span className="tu-field__label">{t('beta.gobelets')}</span>
+                    <input
+                      className="tu-field__control"
+                      name="gobelets"
+                      type="number"
+                      min={GOBELETS_MIN}
+                      max={GOBELETS_MAX}
+                      defaultValue={GOBELETS_DEFAUT}
+                    />
+                  </label>
+                </>
+              )}
               <label className="tu-field">
-                <span className="tu-field__label">{t('beta.duels')}</span>
+                <span className="tu-field__label">
+                  {jeu === 'cup' ? t('beta.duelsSiSimples') : t('beta.duels')}
+                </span>
                 <input
                   className="tu-field__control"
                   name="duels"

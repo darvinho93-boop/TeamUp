@@ -539,6 +539,80 @@
   flex: 0 1 var(--tu-regie-team-min);
 }
 
+/* Tournoi du gobelet (2026-11-21) : un match par poste, on touche le prénom de qui a perdu. */
+.tu-regie-tournoi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--tu-regie-match-min)), 1fr));
+  gap: var(--tu-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tu-regie-tournoi__gobelets {
+  max-width: var(--tu-regie-gobelets);
+}
+
+.tu-regie-tournoi__match {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: var(--tu-space-2);
+  padding: var(--tu-space-2);
+  border: var(--tu-border-width) solid var(--tu-border);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-surface);
+}
+
+.tu-regie-tournoi__poste {
+  align-self: center;
+  min-width: var(--tu-space-6);
+  font-family: var(--tu-font-display);
+  font-weight: 700;
+  text-align: center;
+}
+
+.tu-regie-tournoi__joueur {
+  min-height: var(--tu-regie-touche);
+  padding-inline: var(--tu-space-2);
+  border: var(--tu-btn-border-width) solid var(--tu-team-color);
+  border-radius: var(--tu-radius-md);
+  background: transparent;
+  color: var(--tu-text);
+  font: inherit;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.tu-regie-tournoi__joueur:disabled {
+  cursor: default;
+}
+
+.tu-regie-tournoi__joueur[data-etat='gagne'] {
+  background: var(--tu-team-color);
+  color: var(--tu-team-on);
+}
+
+.tu-regie-tournoi__joueur[data-etat='perdu'] {
+  border-style: dashed;
+  border-color: var(--tu-border);
+  color: var(--tu-text-muted);
+  text-decoration: line-through;
+}
+
+.tu-regie-tournoi__annuler {
+  min-height: var(--tu-tap-min);
+  padding-inline: var(--tu-space-2);
+  border: 0;
+  background: transparent;
+  color: var(--tu-text-muted);
+  font: inherit;
+  font-size: var(--tu-size-sm);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .tu-regie-chips {
   display: flex;
   flex-wrap: wrap;

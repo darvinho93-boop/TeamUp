@@ -345,7 +345,13 @@
         "titre": "Beta: one-on-one duels",
         "aide": "Not in the default programme (spec v3): keep them in reserve, to change pace after a long game.",
         "creneauCourt": "{minutes}-minute slot: the spec only recommends duels from 60 minutes.",
-        "duels": "Duels"
+        "duels": "Duels",
+        "format": "Format",
+        "tournoi": "Tournament (all players)",
+        "duelsSimples": "Single duels",
+        "gobelets": "Cups (tournament)",
+        "duelsSiSimples": "Duels (single format)",
+        "metaTournoi": "Tournament · {gobelets} cups"
       },
       "groupes": {
         "titre": "Groups to mix",
@@ -650,6 +656,7 @@
         "suivant": "Next theme"
       },
       "motifDuel": "Duel won by {prenom} – {equipe}",
+      "motifTournoi": "Cup tournament – {equipe}",
       "duel": {
         "titre": "Duel",
         "numero": "Duel {numero} of {total}",
@@ -671,6 +678,38 @@
           "goeland": "Gull (trap)",
           "gober": "Gobble (trap)",
           "gobelet": "CUP"
+        }
+      },
+      "tournoi": {
+        "titre": "Tournament",
+        "joueurs": "{n} players in the bracket",
+        "tire": "Bracket drawn: {joueurs} players, {exemptes} byes.",
+        "gobelets": "Cups (matches at once)",
+        "estimation": "{sequences} sequences, about {minutes} min",
+        "tirer": "Draw the bracket",
+        "retirer": "Redraw the bracket",
+        "appelerPremiere": "Call the first sequence",
+        "appeler": "Next sequence",
+        "lancer": "Start the sequence",
+        "finSequence": "End of the sequence",
+        "voirVainqueur": "Show the winner",
+        "sequence": "Sequence {numero}",
+        "consigne": "Tap the name of the person who lost.",
+        "compteur": "{faits} results out of {total}.",
+        "recherche": "Find a name",
+        "aucun": "No matching name.",
+        "aPerdu": "{prenom} lost",
+        "annuler": "Undo",
+        "annulerResultat": "Undo the result at station {poste}",
+        "personne": "You need at least two players, in two teams.",
+        "impossible": "That didn't work: try again.",
+        "tours": {
+          "finale": "Final",
+          "demi": "Semi-finals",
+          "quart": "Quarter-finals",
+          "huitieme": "Round of 16",
+          "seizieme": "Round of 32",
+          "places": "Round of {places}"
         }
       },
       "explication": {

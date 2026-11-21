@@ -6,6 +6,7 @@
 import type { GameCode, StatutManche, StatutPassage } from '@teamup/game';
 import type { MessageSalle } from './messages';
 import type { Langue } from './partie';
+import type { MatchSalle } from './tournoi';
 
 export type Scene =
   | 'ouverture'
@@ -144,6 +145,24 @@ export interface ConnaissanceSalle {
   membres: { prenom: string; capitaine: boolean }[];
 }
 
+/**
+ * Le tournoi du gobelet (2026-11-21), pour la manche à l'écran : la séquence en cours et la fin du
+ * tableau (quarts, demi-finales, finale). Avant le tirage, `tours` et `sequence` sont nuls.
+ */
+export interface TournoiSalle {
+  gobelets: number | null;
+  joueurs: number | null;
+  tours: number | null;
+  sequence: number | null;
+  /** Le tour de la séquence en cours. */
+  tour: number | null;
+  /** Il reste au moins un match à appeler. */
+  reste: boolean;
+  en_lice: number | null;
+  matchs: MatchSalle[];
+  tableau: MatchSalle[];
+}
+
 export interface EtatSalle {
   serveur_ms: number;
   evenement: {
@@ -196,6 +215,8 @@ export interface EtatSalle {
   connaissance?: ConnaissanceSalle | null;
   /** La régie seule : les cartes prêtes à être tirées (autorisées, non écartées). */
   cartes_pretes?: number | null;
+  /** Le tournoi du gobelet, si c'est la manche à l'écran. Absent sans la migration. */
+  tournoi?: TournoiSalle | null;
   equipes: EquipeSalle[];
   joueurs: number;
   /**

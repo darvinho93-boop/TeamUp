@@ -25,6 +25,7 @@ import {
   type ModePortrait,
   appliquerQuiz,
   appliquerSurenchere,
+  appliquerTournoi,
   CHRONO_QUESTION_S,
   chronoCinemimeS,
   CHRONO_SURENCHERE_DEFAUT_S,
@@ -46,6 +47,7 @@ import {
   type ActionPointsCommuns,
   type ActionQuiz,
   type ActionSurenchere,
+  type ActionTournoi,
   type BetaDuel,
   type Chrono,
   type Duelliste,
@@ -57,6 +59,7 @@ import {
   type EtapePointsCommuns,
   type EtapeQuiz,
   type EtapeSurenchere,
+  type EtapeTournoi,
   type GameCode,
   type ModeExplication,
   type ModeQuiz,
@@ -85,6 +88,15 @@ import {
   type PassageSalle,
   type Scene,
 } from './salle';
+import { estTournoi, etapeDeReprise } from './tournoi';
+
+/** Une séquence du tournoi à ouvrir : ses matchs, dans l'ordre des postes. */
+export interface SequenceAOuvrir {
+  manche_id: string;
+  numero: number;
+  matchs: string[];
+  gobelets: number;
+}
 
 export type Commande =
   | { type: 'scene'; scene: Exclude<Scene, 'intro' | 'jeu'> }
@@ -110,6 +122,11 @@ export type Commande =
   /** Portrait mystère (2026-11-18) ; les votes, eux, s'écrivent par leurs fonctions. */
   | { type: 'portrait'; action: ActionPortrait }
   | { type: 'duel'; action: ActionDuel }
+  /**
+   * Tournoi du gobelet (2026-11-21). `appeler` porte la séquence, `conclure` les points : la régie
+   * les calcule sur le tableau relu, que l'état de la salle ne contient pas en entier.
+   */
+  | { type: 'tournoi'; action: ActionTournoi; sequence?: SequenceAOuvrir; points?: ScoresParEquipe }
   | {
       type: 'photo';
       action:
@@ -152,6 +169,8 @@ export interface Ecriture {
   ouvrirLaSoiree: boolean;
   /** Nouvel ordre des passages, écrit par `ordonner_passages` avant l'étape (lot 13). */
   ordre: { manche_id: string; passages: string[] } | null;
+  /** Tournoi : la séquence appelée, écrite avec l'étape par `ouvrir_sequence`, d'un bloc. */
+  sequence: SequenceAOuvrir | null;
 }
 
 /** Libellés du journal des points, dans la langue de la régie. */
@@ -168,6 +187,8 @@ export interface Motifs {
   cinemime: (equipe: string) => string;
   photo: (equipe: string) => string;
   duel: (prenom: string, equipe: string) => string;
+  /** Tournoi du gobelet : une ligne par équipe récompensée. */
+  tournoi: (equipe: string) => string;
   /** Blind test : le numéro du titre trouvé. */
   blind: (titre: number) => string;
   /** Portrait mystère : le numéro de la cible et le tour où elle a été trouvée. */
@@ -405,6 +426,7 @@ export function calculerEtape(
     scores: [],
     ouvrirLaSoiree: false,
     ordre: null,
+    sequence: null,
   };
 
   try {
@@ -528,6 +550,16 @@ export function calculerEtape(
           if (!premier) return null;
           if (manche.statut === 'a_venir' && !grillePrete(manche)) return null;
           ecriture.pilotage = { ...base, passage_id: premier.id, etape: 'pret' };
+          ecriture.passage = { id: premier.id, statut: 'en_cours' };
+        } else if (estTournoi(manche)) {
+          // Un seul passage pour tout le tableau ; une reprise retombe où en était le tournoi.
+          const premier = passageSuivant(manche);
+          if (!premier) return null;
+          ecriture.pilotage = {
+            ...base,
+            passage_id: premier.id,
+            etape: etapeDeReprise(etat.tournoi),
+          };
           ecriture.passage = { id: premier.id, statut: 'en_cours' };
         } else if (estDuel(manche.jeu)) {
           // Un passage par duel : on commence par tirer les duellistes.
@@ -843,6 +875,38 @@ export function calculerEtape(
               equipe_id: equipe.id,
               points: suite.points,
               motif: motifs.cinemime(equipe.nom),
+              manche_id: manche.id,
+            });
+          }
+        }
+        return ecriture;
+      }
+
+      case 'tournoi': {
+        if (!manche || !passage || !estTournoi(manche)) return null;
+        const suite = appliquerTournoi(p.etape as EtapeTournoi, commande.action, {
+          sequenceJugee: (etat.tournoi?.matchs ?? []).every((m) => m.gagnant !== null),
+          resteAJouer: etat.tournoi?.reste ?? false,
+        });
+        Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
+        if (commande.action === 'appeler') {
+          if (!commande.sequence) return null;
+          ecriture.sequence = commande.sequence;
+        }
+        if (commande.action === 'conclure') {
+          if (!commande.points) return null;
+          ecriture.passage = {
+            id: passage.id,
+            statut: 'termine',
+            points: Object.values(commande.points).reduce((a, b) => a + b, 0),
+          };
+          for (const [numero, points] of Object.entries(commande.points)) {
+            const equipe = etat.equipes.find((e) => e.numero === Number(numero));
+            if (!equipe || points <= 0) continue;
+            ecriture.scores.push({
+              equipe_id: equipe.id,
+              points,
+              motif: motifs.tournoi(equipe.nom),
               manche_id: manche.id,
             });
           }

@@ -15,6 +15,7 @@ const SANS_MOTIF: Motifs = {
   cinemime: () => '',
   photo: () => '',
   duel: () => '',
+  tournoi: () => '',
   blind: () => '',
   portrait: () => '',
 };

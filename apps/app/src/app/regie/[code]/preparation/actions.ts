@@ -10,6 +10,9 @@ import {
   EXTRAIT_BLIND_DEFAUT_S,
   EXTRAIT_BLIND_MAX_S,
   EXTRAIT_BLIND_MIN_S,
+  GOBELETS_DEFAUT,
+  GOBELETS_MAX,
+  GOBELETS_MIN,
   TITRES_BLIND_DEFAUT,
   TITRES_BLIND_MAX,
   TITRES_BLIND_MIN,
@@ -146,7 +149,7 @@ async function nouvelleManche(
   supabase: ClientAnimateur,
   evenement: EvenementRegie,
   jeu: GameCode,
-  options: Record<string, number | string[] | { musique: null; debut_s: number }[]>,
+  options: Record<string, number | string | string[] | { musique: null; debut_s: number }[]>,
 ) {
   const { data: dernieres } = await supabase
     .from('manches')
@@ -487,15 +490,24 @@ export async function ajouterSurenchere(code: string, donnees: FormData) {
 }
 
 const Duels = z.coerce.number().int().min(1).max(8).catch(DUELS_DEFAUT);
+const FormatGobelet = z.enum(['tournoi', 'duels']).catch('tournoi');
+const Gobelets = z.coerce.number().int().min(GOBELETS_MIN).max(GOBELETS_MAX).catch(GOBELETS_DEFAUT);
 
 /**
  * Duels en bêta (spec v3) : un passage par duel, sans contenu. Les duellistes se tirent en
- * soirée, à la régie. Jamais ajoutés d'office : seulement par ce bouton.
+ * soirée, à la régie. Jamais ajoutés d'office : seulement par ce bouton. Tête, épaule, gobelet se
+ * joue par défaut en tournoi (2026-11-21) : un seul passage, le tableau se tire en soirée.
  */
 export async function ajouterDuels(code: string, jeu: 'grab' | 'cup', donnees: FormData) {
   const { supabase, evenement, rafraichir } = await contexte(code);
-  const duels = Duels.parse(donnees.get('duels'));
-  const mancheId = await nouvelleManche(supabase, evenement, jeu, { duels });
+  const tournoi = jeu === 'cup' && FormatGobelet.parse(donnees.get('format')) === 'tournoi';
+  const duels = tournoi ? 1 : Duels.parse(donnees.get('duels'));
+  const mancheId = await nouvelleManche(
+    supabase,
+    evenement,
+    jeu,
+    tournoi ? { format: 'tournoi', gobelets: Gobelets.parse(donnees.get('gobelets')) } : { duels },
+  );
   await supabase.from('passages').insert(
     Array.from({ length: duels }, (_, i) => ({
       manche_id: mancheId,
