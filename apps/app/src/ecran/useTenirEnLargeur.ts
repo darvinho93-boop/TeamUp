@@ -24,12 +24,19 @@ function mesurer(e: HTMLElement): { texte: number; place: number } {
 const TOLERANCE_PX = 0.05;
 
 /**
+ * Sans positionnement au sous-pixel (Chromium sans interface sous Linux), la largeur de chaque
+ * lettre s'arrondit au pixel : le texte ne suit pas sa police à la proportion près, et une seule
+ * réduction peut le laisser dépasser. Chaque essai réduit d'au moins 2 %.
+ */
+const ESSAIS_MAX = 8;
+
+/**
  * Un nom d'équipe (« Les Super Champions 2026 ») ou un prénom (« Balasubramaniam ») tient sur sa
  * ligne : chaque élément de `selecteur` qui dépasse de sa boîte voit sa police réduite d'autant,
  * lui seul, jusqu'à `min` de sa taille ; en deçà, les points de suspension de la feuille de style
  * reprennent la main. Les autres gardent leur taille (inventaire du 2026-10-24 : un seul nom long
- * coupé, ou réduisant toute une carte). La largeur d'un texte suit sa police : un passage suffit.
- * Recalculé quand `cle` change, au chargement des polices et quand le bloc change de taille.
+ * coupé, ou réduisant toute une carte).
+ * Recalculé quand `cle` change, à chaque police chargée et quand le bloc change de taille.
  */
 export function useTenirEnLargeur(
   ref: RefObject<HTMLElement | null>,
@@ -46,12 +53,15 @@ export function useTenirEnLargeur(
       for (const e of elements) e.style.fontSize = '';
       for (const e of elements) {
         if (!e.clientWidth) continue;
-        const { texte, place } = mesurer(e);
-        if (e.scrollWidth <= e.clientWidth + 1 && texte <= place + TOLERANCE_PX) continue;
         const taille = parseFloat(getComputedStyle(e).fontSize);
-        const manque = Math.min(place / texte, e.clientWidth / e.scrollWidth);
-        const ratio = Math.max(min, manque * 0.98);
-        e.style.fontSize = `${taille * ratio}px`;
+        let ratio = 1;
+        for (let essai = 0; essai < ESSAIS_MAX && ratio > min; essai++) {
+          const { texte, place } = mesurer(e);
+          if (e.scrollWidth <= e.clientWidth + 1 && texte <= place + TOLERANCE_PX) break;
+          const manque = Math.min(place / texte, e.clientWidth / e.scrollWidth);
+          ratio = Math.max(min, ratio * manque * 0.98);
+          e.style.fontSize = `${taille * ratio}px`;
+        }
       }
     };
 
@@ -60,10 +70,13 @@ export function useTenirEnLargeur(
     void document.fonts?.ready.then(() => {
       if (actif) ajuster();
     });
+    // `ready` peut être déjà résolu quand une graisse de plus arrive ensuite.
+    document.fonts?.addEventListener('loadingdone', ajuster);
     const observateur = new ResizeObserver(() => ajuster());
     observateur.observe(bloc);
     return () => {
       actif = false;
+      document.fonts?.removeEventListener('loadingdone', ajuster);
       observateur.disconnect();
     };
   }, [ref, cle, selecteur, min]);
