@@ -890,6 +890,7 @@ export type Database = {
           chemin: string;
           cree_le: string;
           id: string;
+          paroles: Json | null;
           taille: number;
           titre: string;
         };
@@ -899,6 +900,7 @@ export type Database = {
           chemin: string;
           cree_le?: string;
           id?: string;
+          paroles?: Json | null;
           taille: number;
           titre: string;
         };
@@ -908,6 +910,7 @@ export type Database = {
           chemin?: string;
           cree_le?: string;
           id?: string;
+          paroles?: Json | null;
           taille?: number;
           titre?: string;
         };
@@ -1641,6 +1644,7 @@ export type Database = {
         };
         Returns: string;
       };
+      paroles_bien_formees: { Args: { p_paroles: Json }; Returns: boolean };
       photos_du_joueur: {
         Args: { p_joueur: Database['public']['Tables']['joueurs']['Row'] };
         Returns: Json;
