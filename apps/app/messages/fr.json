@@ -774,7 +774,9 @@
         "suivant": "Titre suivant",
         "trouvePar": "Trouvé par {equipe}",
         "personne": "Personne n’a trouvé",
-        "extraitFini": "Extrait terminé : révèle le titre."
+        "extraitFini": "Extrait terminé : révèle le titre.",
+        "karaoke": "Karaoké en cours : coupe la chanson quand la salle a assez chanté.",
+        "couper": "Couper en fondu"
       },
       "avis": {
         "titre": "Avis des joueurs",
@@ -1197,7 +1199,8 @@
       "revele": "C’était…",
       "trouvePar": "Trouvé par {equipe} !",
       "personne": "Personne ne l’a trouvé !",
-      "bloquees": "Plus de buzz sur ce titre"
+      "bloquees": "Plus de buzz sur ce titre",
+      "chantez": "Tout le monde chante !"
     },
     "avis": "Donnez votre avis sur votre téléphone !",
     "portrait": {
@@ -1366,6 +1369,38 @@
       "ajouterBouton": "Ajouter",
       "envoi": "Envoi…",
       "ajoutee": "« {titre} » est ajoutée.",
+      "paroles": "Paroles",
+      "parolesCalees": "{n, plural, one {# ligne calée} other {# lignes calées}}",
+      "sansParoles": "sans paroles",
+      "edition": {
+        "retour": "← Retour aux musiques",
+        "titre": "Paroles : {titre}",
+        "aide": "Colle le texte de la chanson, une ligne par phrase chantée, ou un fichier .lrc déjà calé.",
+        "texte": "Paroles (texte ou .lrc)",
+        "preparer": "Préparer les lignes",
+        "etat": "{calees} sur {total} lignes calées",
+        "caler": "Caler depuis le début",
+        "aideCaler": "La chanson démarre : tape Espace au moment où chaque ligne commence.",
+        "marquer": "Cette ligne commence (Espace)",
+        "arreter": "Arrêter le calage",
+        "recaler": "Recaler d’ici",
+        "ecouter": "Écouter depuis cette ligne",
+        "reculer": "Plus tôt de 0,1 s",
+        "avancer": "Plus tard de 0,1 s",
+        "apercu": "Aperçu",
+        "enregistrer": "Enregistrer les paroles",
+        "enregistrees": "Paroles enregistrées.",
+        "retirer": "Retirer les paroles",
+        "confirmerRetirer": "Retirer les paroles de cette chanson ?",
+        "retirees": "Paroles retirées.",
+        "incompletes": "Chaque ligne doit avoir son instant, dans l’ordre de la chanson.",
+        "erreur": {
+          "vide": "Colle au moins une ligne.",
+          "longue": "Une ligne dépasse 120 caractères : coupe-la en deux.",
+          "trop": "Plus de 400 lignes : garde le passage à chanter.",
+          "echec": "L’enregistrement n’a pas abouti : réessaie."
+        }
+      },
       "erreur": {
         "titre": "Donne un titre de 1 à 80 caractères.",
         "format": "Ce fichier n’est pas un MP3.",

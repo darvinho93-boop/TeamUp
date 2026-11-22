@@ -49,31 +49,32 @@ export function BlindTest({
     relire();
   }
 
+  // Le karaoké (2026-11-23) se regarde sur le grand écran : ici, c'est déjà le titre révélé.
+  const revele = b.etape === 'revele' || b.etape === 'karaoke';
   // Le titre trouvé par son équipe : bandeau vert et vibration (2026-11-19).
-  const trouve = b.etape === 'revele' && b.equipe !== null && b.trouve_par === b.equipe;
+  const trouve = revele && b.equipe !== null && b.trouve_par === b.equipe;
   useVibration(trouve, VIBRATION_JUSTE);
 
   if (b.equipe === null) return <p className="tu-quiz__statut">{t('sansEquipe')}</p>;
 
   const aLaMain = b.etape === 'buzz' && b.buzz === b.equipe;
-  const statut =
-    b.etape === 'revele'
-      ? b.trouve_par === b.equipe
-        ? t('trouve')
-        : t('revele')
-      : aLaMain
-        ? t('aVous')
-        : b.etape === 'buzz'
-          ? t('autre')
-          : b.bloquee
-            ? t('bloquee')
-            : refus?.titre === b.titre && refus.cle === 'tard'
-              ? t('tropTard')
-              : b.etape === 'pret'
-                ? t('pret')
-                : capitaine
-                  ? t('aide')
-                  : t('coequipier');
+  const statut = revele
+    ? b.trouve_par === b.equipe
+      ? t('trouve')
+      : t('revele')
+    : aLaMain
+      ? t('aVous')
+      : b.etape === 'buzz'
+        ? t('autre')
+        : b.bloquee
+          ? t('bloquee')
+          : refus?.titre === b.titre && refus.cle === 'tard'
+            ? t('tropTard')
+            : b.etape === 'pret'
+              ? t('pret')
+              : capitaine
+                ? t('aide')
+                : t('coequipier');
 
   return (
     <div className="tu-quiz" data-testid="blind-joueur" data-etape={b.etape ?? ''}>

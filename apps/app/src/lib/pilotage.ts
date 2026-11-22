@@ -964,11 +964,14 @@ export function calculerEtape(
         );
         Object.assign(ecriture.pilotage, { etape: suite.etape, ...chronoDe(suite.chrono) });
         const gagnes = Object.values(suite.points ?? {}).reduce((a, b) => a + b, 0);
+        // Le titre est joué dès la bonne réponse (2026-11-23) : le karaoké n'est que sa fête.
+        const fini = suite.etape === 'revele' || suite.etape === 'karaoke';
         ecriture.passage = {
           id: passage.id,
-          statut: suite.etape === 'revele' ? 'termine' : 'en_cours',
+          statut: fini ? 'termine' : 'en_cours',
           resultat: resultatBlindVers(suite.resultat),
-          ...(suite.etape === 'revele' ? { points: gagnes } : {}),
+          // « Couper » ne porte aucun point : ceux de la bonne réponse restent.
+          ...(fini && commande.action.type !== 'couper' ? { points: gagnes } : {}),
         };
         for (const [numero, points] of Object.entries(suite.points ?? {})) {
           const equipe = etat.equipes.find((e) => e.numero === Number(numero));

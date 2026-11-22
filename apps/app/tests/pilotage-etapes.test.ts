@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { KARAOKE_MAX_S } from '@teamup/game';
 import {
   calculerEtape,
   mancheATerminer,
@@ -1120,7 +1121,7 @@ describe('le blind test, touche par touche', () => {
     });
   });
 
-  it('buzz de secours, puis bonne réponse : +100 à l’équipe, le titre est révélé', () => {
+  it('buzz de secours, puis bonne réponse : +100 à l’équipe et le karaoké', () => {
     const buzz = etape(
       enJeu('ecoute'),
       { type: 'blind', action: { type: 'buzz', equipe: 2 } },
@@ -1140,12 +1141,26 @@ describe('le blind test, touche par touche', () => {
       action: { type: 'bonne' },
     });
     expect(bonne).toMatchObject({
-      pilotage: { etape: 'revele', chrono: 'arreter' },
+      pilotage: { etape: 'karaoke', chrono: 'demarrer', chrono_duree_s: KARAOKE_MAX_S },
       passage: { id: 'b1', statut: 'termine', points: 100, resultat: { trouve_par: 2 } },
     });
     expect(bonne?.scores).toEqual([
       { equipe_id: 'e2', points: 100, motif: 'Blind 1', manche_id: 'bt' },
     ]);
+  });
+
+  it('couper le karaoké révèle le titre sans toucher aux points', () => {
+    const karaoke = enJeu('karaoke', { ecoute_ms: 5000, trouve_par: 2 });
+    karaoke.programme[0]!.passages[0]!.statut = 'termine';
+    // Pendant le karaoké, on ne saute pas au titre suivant sans le couper.
+    expect(etape(karaoke, { type: 'suivant' })).toBeNull();
+    const coupe = etape(karaoke, { type: 'blind', action: { type: 'couper' } });
+    expect(coupe).toMatchObject({
+      pilotage: { etape: 'revele', chrono: 'arreter' },
+      passage: { id: 'b1', statut: 'termine', resultat: { trouve_par: 2 } },
+    });
+    expect(coupe?.passage).not.toHaveProperty('points');
+    expect(coupe?.scores).toEqual([]);
   });
 
   it('mauvaise réponse : l’équipe est bloquée, la musique reprend quand la régie la relance', () => {

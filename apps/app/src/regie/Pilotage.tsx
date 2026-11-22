@@ -1359,12 +1359,13 @@ function PanneauBlind({ etat, manche, decalageMs, agir }: PanneauProps) {
           {tb('aLaMain', { equipe: nom(resultat.buzz) })}
         </p>
       )}
-      {bloquees.length > 0 && etape !== 'revele' && (
+      {bloquees.length > 0 && etape !== 'revele' && etape !== 'karaoke' && (
         <p className="tu-regie__muted" data-testid="blind-bloquees">
           {tb('bloquees', { equipes: bloquees.join(', ') })}
         </p>
       )}
-      {etape === 'revele' && (
+      {etape === 'karaoke' && <p className="tu-regie__muted">{tb('karaoke')}</p>}
+      {(etape === 'revele' || etape === 'karaoke') && (
         <p className="tu-regie-item__title" data-testid="blind-trouve">
           {resultat.trouvePar === null
             ? tb('personne')
@@ -1399,6 +1400,16 @@ function PanneauBlind({ etat, manche, decalageMs, agir }: PanneauProps) {
               {tb('mauvaise')}
             </Button>
           </>
+        )}
+        {etape === 'karaoke' && (
+          <Button
+            variant="accent"
+            size="lg"
+            className="tu-regie-keys__wide"
+            onClick={() => agir({ type: 'blind', action: { type: 'couper' } })}
+          >
+            {tb('couper')}
+          </Button>
         )}
         {etape === 'pause' && permises.includes('relancer') && (
           <Button

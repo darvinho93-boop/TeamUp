@@ -110,6 +110,16 @@
   --tu-stage-egaliseur: 16rem;
   --tu-stage-egaliseur-barre: 2.5rem;
   --tu-dur-egaliseur: 420ms;
+  /* Karaoké (2026-11-23) : la ligne chantée, ses voisines, la largeur qu'une ligne peut prendre. */
+  --tu-stage-karaoke-ligne: 7rem;
+  --tu-stage-karaoke-voisine: 3.5rem;
+  --tu-stage-karaoke-largeur: 100rem;
+  --tu-stage-karaoke-egaliseur: 4rem;
+  --tu-karaoke-voisine-opacite: 0.6;
+  /* Caler les paroles au back-office : le champ de texte, la liste des lignes, la colonne d'instant. */
+  --tu-paroles-texte: 14rem;
+  --tu-paroles-liste: 28rem;
+  --tu-paroles-instant: 6rem;
   /* Photo de fond d'un jeu (2026-11-15) : la part de beige du voile posé dessus (les textes
      restent lisibles sur toute la photo), et son fondu à l'arrivée. */
   --tu-stage-fond-voile: 75%;

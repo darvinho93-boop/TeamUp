@@ -128,7 +128,7 @@ export interface SurenchereJoueur {
  * si l'équipe du joueur peut buzzer. Jamais la musique ni la réponse.
  */
 export interface BlindJoueur {
-  /** `pret`, `ecoute`, `buzz`, `pause` ou `revele` (`packages/game`, pilotage du blind test). */
+  /** `pret`, `ecoute`, `buzz`, `pause`, `karaoke` ou `revele` (`packages/game`, blind test). */
   etape: string | null;
   titre: number | null;
   titres: number;

@@ -1,20 +1,28 @@
 'use client';
 
+import { useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
 import { POINTS_BLIND, resultatBlindDe, type EtapeBlind } from '@teamup/game';
+import type { LigneParoles } from '@/lib/paroles';
 import { extraitBlind, titresBlind } from '@/lib/pilotage';
 import { passageCourant, type EtatSalle, type MancheSalle } from '@/lib/salle';
 import { Celebration, useArrivee } from './Celebration';
 import { Chrono } from './Chrono';
+import { Karaoke } from './Karaoke';
 import { useCompteur } from './useCompteur';
 import { useMusiquesDuJeu } from './useMusiquesDuJeu';
+import { useParoles } from './useParoles';
+
+/** Une référence stable : le suivi du karaoké ne repart pas à chaque rendu. */
+const AUCUNE_PAROLE: readonly LigneParoles[] = [];
 
 /**
  * Le blind test à l'écran commun (2026-11-15). Écoute : un égaliseur, le temps d'extrait qui
  * reste, les équipes qui n'ont plus la main estompées. Buzz : l'équipe en grand, à sa couleur,
- * avec ses 7 s. Révélé : titre et artiste, l'équipe qui a trouvé, la fête. La musique, elle, part
- * du lecteur de l'écran (`useSons`), jamais de cette scène.
+ * avec ses 7 s. Bonne réponse : le karaoké (2026-11-23), jusqu'à la coupure de la régie. Révélé :
+ * titre et artiste, l'équipe qui a trouvé, la fête. La musique, elle, part du lecteur de l'écran
+ * (`useSons`), jamais de cette scène.
  */
 export function BlindTest({
   etat,
@@ -30,13 +38,20 @@ export function BlindTest({
   const passage = passageCourant(etat);
   const etape = etat.pilotage.etape as EtapeBlind | null;
   const resultat = resultatBlindDe(passage?.resultat);
-  const fete = useArrivee(etape === 'revele' && resultat.trouvePar !== null);
+  const fete = useArrivee(
+    (etape === 'karaoke' || etape === 'revele') && resultat.trouvePar !== null,
+  );
   // Les points de l'équipe qui a trouvé défilent sous le verdict (2026-11-19).
   const points = useCompteur(POINTS_BLIND, { actif: fete, delaiMs: 500 });
   const titres = titresBlind(manche);
-  // La réponse ne s'affiche qu'à `revele` ; l'écran lit la bibliothèque sous la session de
-  // l'animateur, comme la régie.
-  const musiques = useMusiquesDuJeu(titres.flatMap((x) => (x.musique ? [x.musique] : [])));
+  // La réponse ne s'affiche qu'au karaoké ou à `revele` ; l'écran lit la bibliothèque sous la
+  // session de l'animateur, comme la régie.
+  const idsMusiques = titres.flatMap((x) => (x.musique ? [x.musique] : []));
+  const musiques = useMusiquesDuJeu(idsMusiques);
+  const paroles = useParoles(idsMusiques);
+  // La fête a eu lieu au karaoké : le titre qui le suit ne relance pas les confettis.
+  const karaokeVu = useRef<string | null>(null);
+  if (etape === 'karaoke' && passage) karaokeVu.current = passage.id;
   if (!passage || !etape) return null;
 
   const equipe = (numero: number | null) => etat.equipes.find((e) => e.numero === numero);
@@ -88,6 +103,24 @@ export function BlindTest({
     );
   }
 
+  if (etape === 'karaoke') {
+    return (
+      <Karaoke
+        key={passage.id}
+        titre={musique?.titre ?? null}
+        artiste={musique?.artiste ?? null}
+        equipe={equipe(resultat.trouvePar)}
+        points={points}
+        fete={fete}
+        paroles={(titre?.musique && paroles.get(titre.musique)) || AUCUNE_PAROLE}
+        debutS={titre?.debutS ?? 0}
+        ecouteMs={resultat.ecouteMs}
+        chronoDepartMs={etat.pilotage.chrono_depart_ms}
+        decalageMs={decalageMs}
+      />
+    );
+  }
+
   if (etape === 'revele') {
     const gagnante = equipe(resultat.trouvePar);
     return (
@@ -109,7 +142,7 @@ export function BlindTest({
           {gagnante ? t('trouvePar', { equipe: gagnante.nom }) : t('personne')}
         </p>
         {gagnante && <p className="tu-verdict__points">{tEcran('points', { points })}</p>}
-        {fete && <Celebration force={2} />}
+        {fete && karaokeVu.current !== passage.id && <Celebration force={2} />}
       </div>
     );
   }

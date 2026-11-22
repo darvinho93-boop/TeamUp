@@ -774,7 +774,9 @@
         "suivant": "Next song",
         "trouvePar": "Found by {equipe}",
         "personne": "Nobody found it",
-        "extraitFini": "Excerpt over: reveal the song."
+        "extraitFini": "Excerpt over: reveal the song.",
+        "karaoke": "Karaoke running: cut the song when the room has sung enough.",
+        "couper": "Fade out"
       },
       "avis": {
         "titre": "Player feedback",
@@ -1197,7 +1199,8 @@
       "revele": "It was…",
       "trouvePar": "Found by {equipe}!",
       "personne": "Nobody found it!",
-      "bloquees": "No more buzzing on this song"
+      "bloquees": "No more buzzing on this song",
+      "chantez": "Everybody sing!"
     },
     "avis": "Share your feedback on your phone!",
     "portrait": {
@@ -1366,6 +1369,38 @@
       "ajouterBouton": "Add",
       "envoi": "Uploading…",
       "ajoutee": "“{titre}” has been added.",
+      "paroles": "Lyrics",
+      "parolesCalees": "{n, plural, one {# synced line} other {# synced lines}}",
+      "sansParoles": "no lyrics",
+      "edition": {
+        "retour": "← Back to music",
+        "titre": "Lyrics: {titre}",
+        "aide": "Paste the song text, one line per sung phrase, or an already synced .lrc file.",
+        "texte": "Lyrics (text or .lrc)",
+        "preparer": "Prepare the lines",
+        "etat": "{calees} of {total} lines synced",
+        "caler": "Sync from the start",
+        "aideCaler": "The song starts: press Space the moment each line begins.",
+        "marquer": "This line starts (Space)",
+        "arreter": "Stop syncing",
+        "recaler": "Resync from here",
+        "ecouter": "Listen from this line",
+        "reculer": "0.1 s earlier",
+        "avancer": "0.1 s later",
+        "apercu": "Preview",
+        "enregistrer": "Save the lyrics",
+        "enregistrees": "Lyrics saved.",
+        "retirer": "Remove the lyrics",
+        "confirmerRetirer": "Remove the lyrics of this song?",
+        "retirees": "Lyrics removed.",
+        "incompletes": "Every line needs its time, in the order of the song.",
+        "erreur": {
+          "vide": "Paste at least one line.",
+          "longue": "A line is over 120 characters: split it in two.",
+          "trop": "More than 400 lines: keep the part to sing.",
+          "echec": "Saving failed: try again."
+        }
+      },
       "erreur": {
         "titre": "Enter a title of 1 to 80 characters.",
         "format": "This file isn’t an MP3.",
