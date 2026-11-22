@@ -6,6 +6,7 @@ import {
   deroule,
   extraitA,
   fondA,
+  FONDU_KARAOKE_MS,
   instantDe,
   musiqueA,
   reglageDe,
@@ -31,6 +32,12 @@ const MARGE_MINUTEUR_MS = 20;
 export const SonsContexte = createContext<
   ((son: Son, apresMs?: number, montee?: Montee) => void) | null
 >(null);
+
+/**
+ * Où en est vraiment la chanson du karaoké (2026-11-23), en secondes : les paroles suivent ce qu'on
+ * entend. `null` partout sauf sur l'écran commun au son activé : l'horloge de la base prend le relais.
+ */
+export const PositionExtraitContexte = createContext<(() => number | null) | null>(null);
 
 declare global {
   interface Window {
@@ -218,6 +225,9 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
   const extrait = lecteur ? extraitA(etat, Date.now() + decalageMs, actives) : null;
   const extraitId = extrait?.id ?? null;
   const extraitFin = extrait?.jusquA ?? null;
+  // La chanson d'un karaoké s'en va en fondu, quelle que soit la touche qui la quitte (2026-11-23).
+  const extraitKaraoke = extrait?.karaoke === true;
+  const karaokeRef = useRef(false);
   const depuisRef = useRef(0);
   depuisRef.current = extrait?.depuisS ?? 0;
   const decalageRef = useRef(decalageMs);
@@ -225,7 +235,9 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
   const [tour, relancerExtrait] = useState(0);
   useEffect(() => {
     if (!lecteur) return;
-    lecteur.extrait(extraitId, depuisRef.current);
+    const fondu = !extraitId && karaokeRef.current ? FONDU_KARAOKE_MS / 1000 : undefined;
+    karaokeRef.current = extraitKaraoke;
+    lecteur.extrait(extraitId, depuisRef.current, fondu);
     if (extraitFin === null) return;
     const reste = extraitFin - (Date.now() + decalageRef.current);
     const fin = setTimeout(
@@ -233,18 +245,20 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
       Math.max(0, reste) + MARGE_MINUTEUR_MS,
     );
     return () => clearTimeout(fin);
-  }, [lecteur, extraitId, extraitFin, tour]);
+  }, [lecteur, extraitId, extraitFin, extraitKaraoke, tour]);
 
   const jouer = useCallback(
     (son: Son, apresMs?: number, montee?: Montee, dansLeSonMs?: number) =>
       lecteur?.jouer(son, apresMs, montee, dansLeSonMs),
     [lecteur],
   );
+  const positionExtrait = useCallback(() => lecteur?.positionExtrait() ?? null, [lecteur]);
 
   return {
     /** À proposer tant que le son n'est pas activé sur cet écran. */
     aActiver: !eteint && !lecteur,
     activer,
     jouer: eteint || !lecteur ? null : jouer,
+    positionExtrait: eteint || !lecteur ? null : positionExtrait,
   };
 }

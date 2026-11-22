@@ -41,10 +41,13 @@ export interface Lecteur {
   musique(cle: string | null): void;
   /**
    * Blind test (2026-11-15) : joue l'extrait `cle` à partir de `depuisS` secondes, sans boucle, ou
-   * l'arrête net (`null`) : un buzz coupe la musique sur-le-champ. Pas encore téléchargé, il part
-   * à la fin du téléchargement, à la seconde où il en serait.
+   * l'arrête (`null`) : net par défaut, un buzz coupe la musique sur-le-champ ; en `fonduS` secondes
+   * quand la régie coupe le karaoké. Pas encore téléchargé, il part à la fin du téléchargement, à
+   * la seconde où il en serait.
    */
-  extrait(cle: string | null, depuisS?: number): void;
+  extrait(cle: string | null, depuisS?: number, fonduS?: number): void;
+  /** Où en est vraiment la chanson qui joue, en secondes ; `null` si rien ne joue. */
+  positionExtrait(): number | null;
   regler(reglage: ReglageSon): void;
   /**
    * Met le lecteur en veille, ou le réveille. Réversible, contrairement à une fermeture : en
@@ -282,17 +285,20 @@ export async function creerLecteur(
         if (extraitVoulu?.cle === cle && !extraitJoue) lancerExtrait(adresse);
       });
     },
-    extrait(cle, depuisS = 0) {
+    extrait(cle, depuisS = 0, fonduS = COUPE_S) {
       // Déjà en train de jouer cet extrait : il continue (un rendu de plus ne le relance pas).
       if (cle !== null && cle === extraitVoulu?.cle && extraitJoue) return;
       if (extraitJoue) {
-        // Net : un buzz arrête la musique sur-le-champ.
+        // Net pour un buzz, en fondu pour la fin d'un karaoké.
         const { audio, gain } = extraitJoue;
         const t = contexte.currentTime;
         gain.gain.cancelScheduledValues(t);
         gain.gain.setValueAtTime(gain.gain.value, t);
-        gain.gain.linearRampToValueAtTime(0, t + COUPE_S);
-        setTimeout(() => audio.pause(), COUPE_S * 1000 + 20);
+        gain.gain.linearRampToValueAtTime(0, t + fonduS);
+        // Relancée entre-temps (le karaoké juste après le buzz) : la même piste continue.
+        setTimeout(() => {
+          if (extraitJoue?.audio !== audio) audio.pause();
+        }, fonduS * 1000 + 20);
         extraitJoue = null;
         journal.push({ son: 'extrait:-', a: Math.round(performance.now()) });
       }
@@ -301,6 +307,10 @@ export async function creerLecteur(
       void fichiers.get(cle)?.then((adresse) => {
         if (adresse && extraitVoulu?.cle === cle && !extraitJoue) lancerExtrait(adresse);
       });
+    },
+    positionExtrait() {
+      if (!extraitJoue || extraitJoue.audio.paused || extraitJoue.audio.ended) return null;
+      return extraitJoue.audio.currentTime;
     },
     musique(cle) {
       if (cle === musiqueVoulue) return;

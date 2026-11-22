@@ -489,6 +489,30 @@ describe('l’extrait du blind test (2026-11-15)', () => {
     });
   });
 
+  it('sonne à la bonne réponse, puis laisse la chanson s’éteindre seule', () => {
+    const jeu = instant({ scene: 'jeu', jeu: 'blind', mancheId: 'm1', passageId: 'p1' });
+    const karaoke = { ...jeu, etape: 'karaoke', chronoDepartMs: T0 };
+    expect(sonsPour({ ...jeu, etape: 'buzz' }, karaoke)).toEqual(['revelation']);
+    expect(sonsPour(karaoke, { ...jeu, etape: 'revele' })).toEqual([]);
+    // Personne n'a trouvé : la révélation sonne comme avant.
+    expect(sonsPour({ ...jeu, etape: 'pause' }, { ...jeu, etape: 'revele' })).toEqual([
+      'revelation',
+    ]);
+  });
+
+  it('au karaoké, repart du buzz et continue au-delà de l’extrait', () => {
+    expect(extraitA(salle('karaoke', { ecoute_ms: 8000 }), T0 + 2500, actives)).toEqual({
+      id: 'a',
+      depuisS: 55.5,
+      jusquA: T0 + 22_000,
+      karaoke: true,
+    });
+    const longue = salle('karaoke', { ecoute_ms: 30_000 });
+    longue.pilotage.chrono_duree_s = 600;
+    expect(extraitA(longue, T0 + 120_000, actives)?.depuisS).toBe(195);
+    expect(extraitA(salle('karaoke'), T0, new Set())).toBeNull();
+  });
+
   it('se tait hors de l’écoute, chrono écoulé, ou sans musique active', () => {
     for (const etape of ['pret', 'buzz', 'pause', 'revele']) {
       expect(extraitA(salle(etape), T0, actives)).toBeNull();

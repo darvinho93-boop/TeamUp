@@ -1,4 +1,4 @@
-import { positionExtraitMs, resultatBlindDe, type GameCode } from '@teamup/game';
+import { positionExtraitMs, positionKaraokeMs, resultatBlindDe, type GameCode } from '@teamup/game';
 import { musiquesDe } from './musiques';
 import { FINALE } from './ouverture';
 import { ETAPE_FORMATION, ETAPE_TIRAGE_ORDRE, extraitBlind, titresBlind } from './pilotage';
@@ -191,8 +191,8 @@ const VERDICTS: Partial<Record<GameCode, Record<string, Son>>> = {
     vainqueur: 'reussite',
   },
   // Blind test (2026-11-15) : le buzz (un vrai buzzer depuis le 2026-11-19), la mauvaise réponse,
-  // la révélation.
-  blind: { buzz: 'buzzer', pause: 'echec', revele: 'revelation' },
+  // la révélation, ou le coup de la bonne réponse quand le karaoké repart (2026-11-23).
+  blind: { buzz: 'buzzer', pause: 'echec', karaoke: 'revelation', revele: 'revelation' },
 };
 
 /** Les jeux dont le départ du chrono ne sonne pas : l'extrait du Blind test part, l'indice d'un tour
@@ -249,7 +249,10 @@ export function sonsPour(avant: Instant, apres: Instant): Son[] {
     const nouvelleEtape =
       avant.scene !== 'jeu' || avant.etape !== apres.etape || avant.passageId !== apres.passageId;
     const son = VERDICTS[apres.jeu]?.[apres.etape];
-    if (nouvelleEtape && son) sons.push(son);
+    // Le titre qui suit un karaoké est déjà connu : rien ne couvre le fondu de la chanson.
+    const apresKaraoke =
+      apres.jeu === 'blind' && apres.etape === 'revele' && avant.etape === 'karaoke';
+    if (nouvelleEtape && son && !apresKaraoke) sons.push(son);
     // Plateau (2026-11-19) : la question du quiz qui paraît, puis chacune de ses réponses.
     if (apres.jeu === 'qcm2' && apres.etape === 'question') {
       const memeQuestion = !nouvelleEtape;
@@ -332,6 +335,9 @@ export const NIVEAU_MUSIQUE = 0.45;
 /** L'extrait du blind test : c'est le jeu, il passe au premier plan. */
 export const NIVEAU_EXTRAIT = 0.9;
 
+/** Le fondu de la chanson quand la régie coupe le karaoké (2026-11-23). */
+export const FONDU_KARAOKE_MS = 3000;
+
 /**
  * Le fondu des musiques, à l'entrée comme à la sortie (le lecteur s'en sert pour toutes). Celle
  * du chrono commence à s'effacer d'autant avant les dix dernières secondes, pour que le premier
@@ -387,13 +393,15 @@ export interface ExtraitDuMoment {
   depuisS: number;
   /** Heure de la base (ms) où l'écoute s'arrête : le chrono de l'extrait est écoulé. */
   jusquA: number;
+  /** La chanson du karaoké : quand elle s'arrête, c'est en fondu. */
+  karaoke?: true;
 }
 
 /**
  * Blind test (2026-11-15) : l'extrait joue pendant l'écoute, à la seconde où il en est (début
  * choisi, écoute déjà faite, chrono en cours) ; deux écrans et un rechargement tombent donc au même
- * endroit. Rien hors de l'écoute, ni sans musique choisie et active. `maintenantMs` est à l'heure de
- * la base.
+ * endroit. Au karaoké (2026-11-23), la chanson repart du buzz et va au-delà de l'extrait. Rien
+ * ailleurs, ni sans musique choisie et active. `maintenantMs` est à l'heure de la base.
  */
 export function extraitA(
   etat: Pick<EtatSalle, 'pilotage' | 'programme'>,
@@ -407,7 +415,8 @@ export function extraitA(
     chrono_depart_ms: depart,
     chrono_duree_s: duree,
   } = etat.pilotage;
-  if (scene !== 'jeu' || etape !== 'ecoute' || depart === null || duree === null) return null;
+  if (scene !== 'jeu' || (etape !== 'ecoute' && etape !== 'karaoke')) return null;
+  if (depart === null || duree === null) return null;
   const manche = etat.programme.find((m) => m.id === etat.pilotage.manche_id);
   if (manche?.jeu !== 'blind') return null;
   const passage = manche.passages.find((p) => p.id === passage_id);
@@ -415,6 +424,14 @@ export function extraitA(
   if (!passage || !titre?.musique || !actives.has(titre.musique)) return null;
   const jusquA = depart + duree * 1000;
   if (maintenantMs >= jusquA) return null;
+  if (etape === 'karaoke') {
+    const position = positionKaraokeMs(
+      titre.debutS,
+      resultatBlindDe(passage.resultat),
+      maintenantMs - depart,
+    );
+    return { id: titre.musique, depuisS: position / 1000, jusquA, karaoke: true };
+  }
   const positionMs = positionExtraitMs(
     titre.debutS,
     resultatBlindDe(passage.resultat),
