@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   actionsBlind,
   appliquerBlind,
+  KARAOKE_MAX_S,
   peutBuzzer,
   POINTS_BLIND,
   positionExtraitMs,
+  positionKaraokeMs,
   REPONSE_BLIND_S,
   RESULTAT_BLIND_VIDE,
   resultatBlindDe,
@@ -43,19 +45,37 @@ describe('le blind test, titre par titre', () => {
     expect(() => appliquerBlind(ecoute, { type: 'buzz', equipe: 9 })).toThrow(/plus la main/);
   });
 
-  it('bonne réponse : +100 à l’équipe, le titre est révélé', () => {
+  it('bonne réponse : +100 à l’équipe, puis le karaoké jusqu’à la coupure de la régie', () => {
     const buzz = etat({
       etape: 'buzz',
       resultat: { ...RESULTAT_BLIND_VIDE, ecouteMs: 8_400, buzz: 2 },
     });
     expect(actionsBlind(buzz)).toEqual(['bonne', 'mauvaise']);
-    expect(appliquerBlind(buzz, { type: 'bonne' })).toEqual({
-      etape: 'revele',
-      chrono: 'arreter',
+    const karaoke = appliquerBlind(buzz, { type: 'bonne' });
+    expect(karaoke).toEqual({
+      etape: 'karaoke',
+      chrono: { demarrer: KARAOKE_MAX_S },
       resultat: { ...RESULTAT_BLIND_VIDE, ecouteMs: 8_400, trouvePar: 2 },
       points: { 2: POINTS_BLIND },
     });
     expect(POINTS_BLIND).toBe(100);
+
+    // Pendant le karaoké, une seule touche ; elle ne redonne aucun point.
+    const enKaraoke = etat({ etape: 'karaoke', resultat: karaoke.resultat });
+    expect(actionsBlind(enKaraoke)).toEqual(['couper']);
+    const coupe = appliquerBlind(enKaraoke, { type: 'couper' });
+    expect(coupe).toEqual({ etape: 'revele', chrono: 'arreter', resultat: karaoke.resultat });
+    expect(coupe.points).toBeUndefined();
+    expect(() => appliquerBlind(enKaraoke, { type: 'reveler' })).toThrow(/impossible/);
+  });
+
+  it('une bonne réponse sans équipe qui a la main ne lance pas de karaoké', () => {
+    const sansMain = etat({ etape: 'buzz', resultat: { ...RESULTAT_BLIND_VIDE, ecouteMs: 1_000 } });
+    expect(appliquerBlind(sansMain, { type: 'bonne' })).toMatchObject({
+      etape: 'revele',
+      chrono: 'arreter',
+      points: {},
+    });
   });
 
   it('mauvaise réponse : l’équipe est bloquée, la musique attend la régie, puis reprend', () => {
@@ -117,6 +137,13 @@ describe('la position de l’extrait', () => {
     expect(positionExtraitMs(45, { ecouteMs: 8_000 }, 'pause', 2_500, 30)).toBe(53_000);
     // Jamais au-delà de l'extrait.
     expect(positionExtraitMs(0, { ecouteMs: 25_000 }, 'ecoute', 60_000, 30)).toBe(30_000);
+  });
+
+  it('au karaoké, repart du buzz et continue au-delà de l’extrait', () => {
+    expect(positionKaraokeMs(45, { ecouteMs: 8_000 }, 0)).toBe(53_000);
+    expect(positionKaraokeMs(45, { ecouteMs: 8_000 }, 60_000)).toBe(113_000);
+    // Une horloge en avance sur la base ne fait pas reculer la chanson.
+    expect(positionKaraokeMs(0, { ecouteMs: 8_000 }, -500)).toBe(8_000);
   });
 });
 

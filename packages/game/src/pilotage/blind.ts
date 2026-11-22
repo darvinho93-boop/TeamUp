@@ -1,7 +1,7 @@
 /**
  * Pilotage du Blind test (2026-11-15), un titre par passage :
  *
- *   pret ──lancer──▶ ecoute ──buzz──▶ buzz ──bonne──▶ revele
+ *   pret ──lancer──▶ ecoute ──buzz──▶ buzz ──bonne──▶ karaoke ──couper──▶ revele
  *                      ▲                │
  *                      └──relancer── pause ◀──mauvaise
  *   ecoute, pause ──reveler──▶ revele
@@ -11,12 +11,14 @@
  * base, `buzzer_blind`, qui fait la même transition) ; la régie peut buzzer pour une équipe dont
  * le téléphone a lâché. `buzz` : la musique s'arrête, l'équipe a 7 s pour répondre à voix haute,
  * la régie juge. Une mauvaise réponse bloque l'équipe sur ce titre, et la musique ne reprend que
- * quand la régie la relance, là où elle s'était arrêtée.
+ * quand la régie la relance, là où elle s'était arrêtée. `karaoke` (2026-11-23) : la bonne réponse
+ * donne ses points et la chanson repart là où le buzz l'a coupée, paroles à l'écran, jusqu'à ce que
+ * la régie la coupe en fondu. Personne n'a trouvé : pas de karaoké.
  */
 
 import type { Chrono } from './transition';
 
-export type EtapeBlind = 'pret' | 'ecoute' | 'buzz' | 'pause' | 'revele';
+export type EtapeBlind = 'pret' | 'ecoute' | 'buzz' | 'pause' | 'karaoke' | 'revele';
 
 /** Un titre trouvé : le barème du Mime et des survivants du quiz. */
 export const POINTS_BLIND = 100;
@@ -30,6 +32,11 @@ export const EXTRAIT_BLIND_MAX_S = 90;
 export const TITRES_BLIND_MIN = 3;
 export const TITRES_BLIND_MAX = 20;
 export const TITRES_BLIND_DEFAUT = 8;
+/**
+ * Le chrono du karaoké n'est jamais affiché : c'est l'instant de départ qui compte (un second écran
+ * ou un rechargement retombe à la même seconde). Sa durée n'est qu'un plafond, la régie coupe avant.
+ */
+export const KARAOKE_MAX_S = 600;
 
 export type ActionBlind =
   | { type: 'lancer' }
@@ -37,7 +44,8 @@ export type ActionBlind =
   | { type: 'bonne' }
   | { type: 'mauvaise' }
   | { type: 'relancer' }
-  | { type: 'reveler' };
+  | { type: 'reveler' }
+  | { type: 'couper' };
 
 /** Ce qu'un titre garde de son déroulé (le résultat du passage). */
 export interface ResultatBlind {
@@ -108,6 +116,8 @@ export function actionsBlind(etat: EtatBlind): ActionBlind['type'][] {
       const quelquUn = etat.equipes.some((e) => peutBuzzer(etat, e));
       return reste && quelquUn ? ['relancer', 'reveler'] : ['reveler'];
     }
+    case 'karaoke':
+      return ['couper'];
     case 'revele':
       return [];
   }
@@ -141,12 +151,17 @@ export function appliquerBlind(etat: EtatBlind, action: ActionBlind): Transition
         resultat: { ...r, ecouteMs: ecouteA(etat), buzz: action.equipe },
       };
     case 'bonne':
-      return {
-        etape: 'revele',
-        chrono: 'arreter',
-        resultat: { ...r, buzz: null, trouvePar: r.buzz },
-        points: r.buzz === null ? {} : { [r.buzz]: POINTS_BLIND },
-      };
+      return r.buzz === null
+        ? { etape: 'revele', chrono: 'arreter', resultat: { ...r, trouvePar: null }, points: {} }
+        : {
+            etape: 'karaoke',
+            chrono: { demarrer: KARAOKE_MAX_S },
+            resultat: { ...r, buzz: null, trouvePar: r.buzz },
+            points: { [r.buzz]: POINTS_BLIND },
+          };
+    case 'couper':
+      // Les points sont déjà donnés : cette touche n'en porte aucun.
+      return { etape: 'revele', chrono: 'arreter', resultat: r };
     case 'mauvaise':
       return {
         etape: 'pause',
@@ -184,6 +199,18 @@ export function positionExtraitMs(
       ? Math.min(Math.max(0, ecouleMs), resteExtraitMs(extraitS, resultat.ecouteMs))
       : 0;
   return Math.max(0, debutS) * 1000 + resultat.ecouteMs + enCours;
+}
+
+/**
+ * Où en est la chanson pendant le karaoké, en ms depuis le début du fichier : là où le buzz l'a
+ * coupée, plus le temps écoulé depuis la bonne réponse. Sans le plafond de l'extrait : elle continue.
+ */
+export function positionKaraokeMs(
+  debutS: number,
+  resultat: Pick<ResultatBlind, 'ecouteMs'>,
+  ecouleMs: number,
+): number {
+  return Math.max(0, debutS) * 1000 + resultat.ecouteMs + Math.max(0, ecouleMs);
 }
 
 /** Le résultat d'un passage tel que la base le garde (clés en snake_case), lu sans confiance. */
