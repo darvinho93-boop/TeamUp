@@ -52,6 +52,107 @@
   }
 }
 
+/* Caler les paroles d'une chanson (karaoké du Blind test, 2026-11-23) : le texte, un aperçu sur
+   le marine de l'écran, puis une ligne par rangée avec son instant et ses réglages. */
+.tu-paroles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-4);
+}
+
+.tu-paroles__texte {
+  min-block-size: var(--tu-paroles-texte);
+  resize: vertical;
+}
+
+.tu-paroles__apercu {
+  --tu-paroles-avance: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-2);
+  padding: var(--tu-space-6) var(--tu-space-4);
+  border-radius: var(--tu-radius-md);
+  background: var(--tu-navy-900);
+  color: var(--tu-text-invert);
+  text-align: center;
+}
+
+.tu-paroles__voisine {
+  min-block-size: 1lh;
+  margin: 0;
+  font-size: var(--tu-size-sm);
+  opacity: var(--tu-karaoke-voisine-opacite);
+}
+
+.tu-paroles__courante {
+  position: relative;
+  min-block-size: 1lh;
+  margin: 0;
+  padding: var(--tu-space-1) var(--tu-space-3);
+  border-radius: var(--tu-radius-sm);
+  font-family: var(--tu-font-display);
+  font-size: var(--tu-size-xl);
+  font-weight: 700;
+}
+
+.tu-paroles__courante:lang(ta) {
+  font-family: var(--tu-font-tamil);
+}
+
+.tu-paroles__rempli {
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  border-radius: inherit;
+  background: var(--tu-success);
+  color: var(--tu-text-invert);
+  clip-path: inset(0 calc((1 - var(--tu-paroles-avance)) * 100%) 0 0);
+}
+
+.tu-paroles__liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tu-space-1);
+  max-block-size: var(--tu-paroles-liste);
+  margin: 0;
+  padding: var(--tu-space-1);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.tu-paroles__ligne {
+  display: grid;
+  grid-template-columns: var(--tu-paroles-instant) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--tu-space-2);
+  padding: var(--tu-space-1) var(--tu-space-2);
+  border-radius: var(--tu-radius-sm);
+}
+
+.tu-paroles__ligne[data-actif='true'] {
+  background: var(--tu-surface-muted);
+  font-weight: 600;
+}
+
+.tu-paroles__ligne[data-a-marquer='true'] {
+  outline: var(--tu-border-width) solid var(--tu-primary);
+}
+
+.tu-paroles__instant {
+  color: var(--tu-text-muted);
+  font-family: var(--tu-font-numeric);
+  font-variant-numeric: tabular-nums;
+}
+
+.tu-paroles__outils {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--tu-space-1);
+}
+
 .tu-admin-pastilles {
   display: flex;
   flex-wrap: wrap;

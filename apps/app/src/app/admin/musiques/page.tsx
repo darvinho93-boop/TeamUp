@@ -1,8 +1,10 @@
+import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { exigerAdmin } from '@/serveur/supabase-animateur';
 import { BasculeMusique } from '@/admin/BasculeMusique';
 import { FormulaireMusique } from '@/admin/FormulaireMusique';
 import { tailleLisible } from '@/lib/musiques';
+import { parolesDe } from '@/lib/paroles';
 
 export async function generateMetadata() {
   return { title: (await getTranslations('admin.musiques'))('titre') };
@@ -32,6 +34,9 @@ export default async function Musiques() {
       )
     : { data: [] };
   const ecoute = new Map((signees ?? []).map((s) => [s.path, s.signedUrl]));
+  // À part : sans la migration du karaoké, la bibliothèque reste lisible.
+  const { data: avecParoles } = await supabase.from('musiques').select('id, paroles');
+  const lignes = new Map((avecParoles ?? []).map((m) => [m.id, parolesDe(m.paroles).length]));
 
   return (
     <>
@@ -47,6 +52,7 @@ export default async function Musiques() {
           <ul className="tu-regie-list">
             {musiques.map((m) => {
               const url = ecoute.get(m.chemin);
+              const calees = lignes.get(m.id) ?? 0;
               return (
                 <li key={m.id} className="tu-regie-item" data-testid="musique">
                   <div className="tu-regie-item__main">
@@ -54,7 +60,8 @@ export default async function Musiques() {
                       {m.artiste ? `${m.titre} — ${m.artiste}` : m.titre}
                     </span>
                     <span className="tu-regie-item__meta">
-                      {tailleLisible(m.taille, langue)} · {m.actif ? t('active') : t('inactive')}
+                      {tailleLisible(m.taille, langue)} · {m.actif ? t('active') : t('inactive')} ·{' '}
+                      {calees > 0 ? t('parolesCalees', { n: calees }) : t('sansParoles')}
                     </span>
                     {url && (
                       // Une musique à écouter avant de la cocher : rien à sous-titrer.
@@ -69,6 +76,9 @@ export default async function Musiques() {
                     )}
                   </div>
                   <div className="tu-regie-item__actions">
+                    <Link href={`/admin/musiques/${m.id}/paroles`} className="tu-btn tu-btn--ghost">
+                      {t('paroles')}
+                    </Link>
                     <BasculeMusique id={m.id} titre={m.titre} actif={m.actif} />
                   </div>
                 </li>
