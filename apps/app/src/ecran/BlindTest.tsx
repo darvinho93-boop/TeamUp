@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
 import { POINTS_BLIND, resultatBlindDe, type EtapeBlind } from '@teamup/game';
@@ -50,8 +50,8 @@ export function BlindTest({
   const musiques = useMusiquesDuJeu(idsMusiques);
   const paroles = useParoles(idsMusiques);
   // La fête a eu lieu au karaoké : le titre qui le suit ne relance pas les confettis.
-  const karaokeVu = useRef<string | null>(null);
-  if (etape === 'karaoke' && passage) karaokeVu.current = passage.id;
+  const [karaokeVu, setKaraokeVu] = useState<string | null>(null);
+  if (etape === 'karaoke' && passage && karaokeVu !== passage.id) setKaraokeVu(passage.id);
   if (!passage || !etape) return null;
 
   const equipe = (numero: number | null) => etat.equipes.find((e) => e.numero === numero);
@@ -142,7 +142,7 @@ export function BlindTest({
           {gagnante ? t('trouvePar', { equipe: gagnante.nom }) : t('personne')}
         </p>
         {gagnante && <p className="tu-verdict__points">{tEcran('points', { points })}</p>}
-        {fete && karaokeVu.current !== passage.id && <Celebration force={2} />}
+        {fete && karaokeVu !== passage.id && <Celebration force={2} />}
       </div>
     );
   }
