@@ -180,6 +180,18 @@ export interface PhotosJoueur {
   themes: { theme_id: string; theme: string | null; envoyee_le: number | null }[];
 }
 
+/**
+ * Une ligne du classement au téléphone (2026-11-23), une fois le podium montré par le grand écran :
+ * sa place à l'écran, l'équipe, ses points. `ex_aequo` signale une égalité sans changer l'ordre.
+ */
+export interface LigneClassement {
+  rang: number;
+  numero: number;
+  nom: string;
+  points: number;
+  ex_aequo: boolean;
+}
+
 export interface EtatJoueur {
   joueur: {
     id: string;
@@ -230,6 +242,8 @@ export interface EtatJoueur {
   tournoi?: TournoiJoueur | null;
   /** `null` tant que la soirée n'a pas de manche photo. */
   photos: PhotosJoueur | null;
+  /** `null` tant que le podium n'a pas été entièrement montré ; absent sans la migration. */
+  classement?: LigneClassement[] | null;
   /** L'avis déjà donné par ce joueur ; absent sans la migration du 2026-11-18. */
   avis?: AvisDuJoueur | null;
   /** Sa carte « Faisons connaissance » (2026-11-18) ; absente sans la migration. */

@@ -1084,6 +1084,8 @@ export type Database = {
           membres_mode: string;
           messages_ouverts: boolean;
           passage_id: string | null;
+          podium_depart: string | null;
+          podium_publie: Json | null;
           scene: Database['public']['Enums']['scene'];
           son_actif: boolean;
           son_volume: number;
@@ -1102,6 +1104,8 @@ export type Database = {
           membres_mode?: string;
           messages_ouverts?: boolean;
           passage_id?: string | null;
+          podium_depart?: string | null;
+          podium_publie?: Json | null;
           scene?: Database['public']['Enums']['scene'];
           son_actif?: boolean;
           son_volume?: number;
@@ -1120,6 +1124,8 @@ export type Database = {
           membres_mode?: string;
           messages_ouverts?: boolean;
           passage_id?: string | null;
+          podium_depart?: string | null;
+          podium_publie?: Json | null;
           scene?: Database['public']['Enums']['scene'];
           son_actif?: boolean;
           son_volume?: number;
@@ -1447,6 +1453,11 @@ export type Database = {
         Args: { p_pilotage: Database['public']['Tables']['pilotage']['Row'] };
         Returns: boolean;
       };
+      classement_du_joueur: {
+        Args: { p_pilotage: Database['public']['Tables']['pilotage']['Row'] };
+        Returns: Json;
+      };
+      classement_podium: { Args: { p_evenement: string }; Returns: Json };
       cle_prenom: { Args: { p_prenom: string }; Returns: string };
       connaissance_ecran: {
         Args: {
