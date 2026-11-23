@@ -20,6 +20,8 @@ const ETALEMENT_MS = 250;
  */
 const ECART_MIN_MS = 750;
 const SIGNAL = 'relire';
+/** Une relecture qui ne répond pas ne doit ni bloquer l'écran ni arrêter les suivantes. */
+const DELAI_RELECTURE_MS = 8000;
 
 /**
  * État du téléphone, tenu à jour de deux façons :
@@ -37,6 +39,10 @@ export function useEtatJoueur(code: string, initial: EtatJoueur) {
   const [horsLigne, setHorsLigne] = useState(false);
   // Écart entre l'horloge de la base et celle du téléphone, pour le chrono du quiz.
   const [decalageMs, setDecalageMs] = useState(0);
+  // Faux au retour d'une veille ou du réseau, le temps de la relecture : aucune action n'est
+  // proposée sur un état périmé (2026-11-23). Jamais pendant la coupure elle-même : la Surenchère
+  // y garde ses mots en file d'attente.
+  const [aJour, setAJour] = useState(true);
   const relireRef = useRef<() => Promise<void>>(async () => {});
   const evenementId = etat.evenement.id;
 
@@ -45,48 +51,74 @@ export function useEtatJoueur(code: string, initial: EtatJoueur) {
     // L'heure de la base, quand l'état en porte une : le chrono du quiz et celui de la Surenchère
     // au téléphone se lisent à cette heure-là, jamais à celle du téléphone (une montre qui avance
     // de 45 s trouvait le chrono déjà fini, 2026-11-09).
-    const serveurMs = suivant.quiz?.serveur_ms ?? suivant.surenchere?.serveur_ms;
+    const serveurMs =
+      suivant.quiz?.serveur_ms ?? suivant.surenchere?.serveur_ms ?? suivant.portrait?.serveur_ms;
     if (serveurMs !== undefined) setDecalageMs(serveurMs - Date.now());
   }, []);
 
   useEffect(() => {
     let actif = true;
     let minuterie: ReturnType<typeof setTimeout> | undefined;
+    // Seule la dernière relecture lancée compte : une réponse partie avant la veille, arrivée
+    // après, ne vaut pas état à jour.
+    let derniere = 0;
 
     const relire = async () => {
       clearTimeout(minuterie);
+      const numero = ++derniere;
       try {
-        const reponse = await fetch(`/api/partie/${code}/etat`, { cache: 'no-store' });
+        const reponse = await fetch(`/api/partie/${code}/etat`, {
+          cache: 'no-store',
+          signal: AbortSignal.timeout(DELAI_RELECTURE_MS),
+        });
         // Session effacée côté base (joueur retiré, événement supprimé) : on repart de l'arrivée.
         if (reponse.status === 401) return router.refresh();
         if (!reponse.ok) throw new Error(`état : ${reponse.status}`);
         const suivant = (await reponse.json()) as EtatJoueur;
-        if (!actif) return;
+        if (!actif || numero !== derniere) return;
         recevoir(suivant);
         setHorsLigne(false);
+        setAJour(true);
       } catch {
-        if (actif) setHorsLigne(true);
+        if (actif && numero === derniere) {
+          setHorsLigne(true);
+          // Pas de relecture possible : le bandeau le dit, l'écran ne reste pas bloqué.
+          setAJour(true);
+        }
       }
-      if (actif) minuterie = setTimeout(() => void relire(), INTERVALLE_MS);
+      if (actif && numero === derniere) {
+        minuterie = setTimeout(() => void relire(), INTERVALLE_MS);
+      }
     };
     relireRef.current = relire;
 
-    const auRetour = () => void relire();
+    const aRelire = () => {
+      setAJour(false);
+      void relire();
+    };
     const aLaCoupure = () => setHorsLigne(true);
     const aLaVue = () => {
-      if (document.visibilityState === 'visible') void relire();
+      if (document.visibilityState === 'visible') aRelire();
+    };
+    // Page rendue par le cache d'historique : aucun `visibilitychange` ne l'annonce toujours.
+    const auRetourHistorique = (e: PageTransitionEvent) => {
+      if (e.persisted) aRelire();
     };
 
-    window.addEventListener('online', auRetour);
+    window.addEventListener('online', aRelire);
     window.addEventListener('offline', aLaCoupure);
+    window.addEventListener('pageshow', auRetourHistorique);
     document.addEventListener('visibilitychange', aLaVue);
-    minuterie = setTimeout(() => void relire(), INTERVALLE_MS);
+    // Dès l'ouverture : la page peut venir d'un préchargement (lien de la carte), donc d'avant la
+    // manche en cours, et c'est cette lecture qui cale l'horloge des chronos.
+    void relire();
 
     return () => {
       actif = false;
       clearTimeout(minuterie);
-      window.removeEventListener('online', auRetour);
+      window.removeEventListener('online', aRelire);
       window.removeEventListener('offline', aLaCoupure);
+      window.removeEventListener('pageshow', auRetourHistorique);
       document.removeEventListener('visibilitychange', aLaVue);
     };
   }, [code, router, recevoir]);
@@ -127,5 +159,5 @@ export function useEtatJoueur(code: string, initial: EtatJoueur) {
   const remplacer = recevoir;
   const relire = useCallback(() => void relireRef.current(), []);
 
-  return { etat, horsLigne, decalageMs, remplacer, relire };
+  return { etat, horsLigne, aJour, decalageMs, remplacer, relire };
 }
