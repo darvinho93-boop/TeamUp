@@ -1939,3 +1939,36 @@ viennent le signaler à la régie** ; **+100 / +60 / +30** (vainqueur, finaliste
 - Tests : `packages/game` (2 à 150 joueurs, 2 à 8 équipes), `tests/tournoi.test.ts`,
   `tests/arbre.test.ts`, `tests/tournoi-base.test.ts`, `e2e/tournoi.spec.ts` (du tirage au podium ;
   100 prénoms et 32 postes en 1 920 × 1 080, sans chevauchement ; `CAPTURES=<dossier>`).
+
+## Conventions posées le 2026-11-23 (karaoké du Blind test)
+
+Tranché le 2026-11-23, pour le mariage du 5 décembre : après une **bonne réponse**, la chanson
+**repart là où le buzz l'a coupée**, en **plein écran marine**, paroles à l'écran, la ligne chantée
+se remplissant à la couleur de l'équipe, **jusqu'à ce que la régie coupe en fondu** (3 s). Personne
+n'a trouvé : pas de karaoké.
+
+- **Écart assumé** au fond beige, comme la carte noire du Portrait mystère. L'équipe 2 garde sa
+  couleur d'équipe (le corail) : c'est son identité, pas un décor.
+- **Les paroles viennent de l'utilisateur** : elles sont protégées, Claude ne les recopie pas, et il
+  ne peut pas les caler à l'oreille. Sans paroles, la chanson joue sous « Tout le monde chante ! ».
+- Machine (`packages/game/src/pilotage/blind.ts`) : `buzz` → `bonne` → `karaoke` → `couper` →
+  `revele`. Les points tombent à « bonne » et le passage est terminé dès `karaoke` ; « Couper » ne
+  réécrit pas les points. Le chrono (`KARAOKE_MAX_S`, jamais affiché) ne sert qu'à dater le départ :
+  `positionKaraokeMs` donne la seconde de la chanson, donc un rechargement retombe au même endroit.
+- Base (migration `20261124090000`) : `musiques.paroles` (`[{ t_ms, texte }]`, instants croissants,
+  400 lignes et 120 caractères au plus, `paroles_bien_formees`). Lue par les animateurs, écrite par
+  l'admin, **aucune fonction joueur ne la lit**. `useParoles` la lit à part : sans la migration, le
+  jeu tient, seul le karaoké perd ses paroles.
+- Logique pure : `src/lib/paroles.ts` (texte ou `.lrc`, `vueKaraoke`, `rangees` : une ligne longue
+  passe sur deux rangées qui se remplissent l'une après l'autre).
+- Son : `extraitA` couvre `karaoke` ; `lecteur.extrait(cle, depuisS, fonduS)` s'arrête net pour un
+  buzz, en fondu pour un karaoké, quelle que soit la touche qui le quitte. Les paroles suivent ce que
+  joue vraiment le lecteur (`PositionExtraitContexte`), à défaut l'heure de la base (aperçu).
+- Écran : `src/ecran/Karaoke.tsx`, `karaoke.css`. Le remplissage s'écrit image par image dans
+  `--tu-karaoke-avance`, sans rendu React. Sous `prefers-reduced-motion`, la ligne change, déjà
+  pleine. Contrôle sans base : `/kit-ui/karaoke?equipe=1&texte=courte|longue|tamoul|aucune`.
+- Back-office : `/admin/musiques/[id]/paroles` (`src/admin/EditeurParoles.tsx`) : coller le texte ou
+  un `.lrc`, lancer la chanson, **Espace** au début de chaque ligne, ± 0,1 s, « Recaler d'ici ».
+- Tests : `packages/game`, `tests/paroles.test.ts`, `tests/sons.test.ts`,
+  `tests/pilotage-etapes.test.ts`, `tests/blind.test.ts` (aucune parole au téléphone),
+  `e2e/blind.spec.ts` (calage, défilement, rechargement, fondu mesuré ; `la-440-60s.mp3`).
