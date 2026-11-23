@@ -125,10 +125,13 @@ const PICTOS: Record<GameCode, { teinte: Teinte; trace: ReactNode }> = {
 export function ListeJeux({
   jeux,
   niveau = 'h2',
+  repliable = false,
 }: {
   jeux: readonly GameCode[];
   /** Le niveau du nom de chaque jeu : h3 sous un intertitre. */
   niveau?: 'h2' | 'h3';
+  /** La règle et la vidéo s'ouvrent au toucher du nom (onglet Les jeux du joueur). */
+  repliable?: boolean;
 }) {
   const t = useTranslations();
   const [video, setVideo] = useState<GameCode | null>(null);
@@ -137,6 +140,7 @@ export function ListeJeux({
     <>
       <ListeIllustree
         niveau={niveau}
+        repliable={repliable}
         elements={jeux.map((jeu) => ({
           id: jeu,
           ...PICTOS[jeu],

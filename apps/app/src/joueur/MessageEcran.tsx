@@ -10,20 +10,20 @@ type Erreur = 'vide' | 'long' | 'fermes' | 'termine' | 'serveur';
 /** Après la confirmation d'envoi, la fenêtre se referme seule, le temps de la lire. */
 const FERMETURE_MS = 2500;
 
-/** L'événement qui ouvre la fenêtre depuis l'écran d'attente (action texte, audit du 18/11). */
+/** L'événement qui ouvre la fenêtre : la bulle de la barre du bas en est le seul déclencheur. */
 const OUVRIR = 'tu-ouvrir-message';
 
-/** Ouvre la fenêtre du message, d'où qu'on soit : l'icône de l'en-tête reste seule à la porter. */
 export function ouvrirMessageEcran() {
   window.dispatchEvent(new Event(OUVRIR));
 }
 
 /**
- * Un message pour le grand écran (2026-11-15) : un bouton en face du logo, qui ouvre une petite
- * fenêtre. Le message paraît aussitôt sur l'écran commun, avec le prénom du joueur. La base
- * tranche (envois ouverts, 100 caractères, un message toutes les 20 s) ; le téléphone le dit.
+ * Un message pour le grand écran (2026-11-15), dans une petite fenêtre ouverte depuis l'onglet
+ * courant, où la refermer ramène. Le message paraît aussitôt sur l'écran commun, avec le prénom du
+ * joueur. La base tranche (envois ouverts, 100 caractères, un message toutes les 20 s) ; le
+ * téléphone le dit. `suspendu` : une manche prend la main, la fenêtre se ferme, le brouillon reste.
  */
-export function MessageEcran({ code }: { code: string }) {
+export function MessageEcran({ code, suspendu = false }: { code: string; suspendu?: boolean }) {
   const t = useTranslations('messageEcran');
   const dialogue = useRef<HTMLDialogElement>(null);
   const [texte, setTexte] = useState('');
@@ -46,22 +46,21 @@ export function MessageEcran({ code }: { code: string }) {
     };
   }, [attenteJusqua]);
 
-  const ouvrir = () => {
-    setEnvoye(false);
-    setErreur(undefined);
-    dialogue.current?.showModal();
-  };
   const fermer = () => dialogue.current?.close();
 
   useEffect(() => {
     const surDemande = () => {
       setEnvoye(false);
       setErreur(undefined);
-      dialogue.current?.showModal();
+      if (!dialogue.current?.open) dialogue.current?.showModal();
     };
     window.addEventListener(OUVRIR, surDemande);
     return () => window.removeEventListener(OUVRIR, surDemande);
   }, []);
+
+  useEffect(() => {
+    if (suspendu && dialogue.current?.open) dialogue.current.close();
+  }, [suspendu]);
 
   const attendre = (secondes: number) => {
     setAttenteJusqua(Date.now() + secondes * 1000);
@@ -108,68 +107,49 @@ export function MessageEcran({ code }: { code: string }) {
 
   const restants = caracteresRestants(texte);
   return (
-    <>
-      <button
-        type="button"
-        className="tu-player__outil"
-        onClick={ouvrir}
-        aria-label={t('ouvrir')}
-        title={t('ouvrir')}
-        data-testid="ouvrir-message"
-      >
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-      <dialog ref={dialogue} className="tu-carte-dialogue" aria-labelledby="titre-message">
-        <form className="tu-message-ecran" onSubmit={(e) => void envoyer(e)} noValidate>
-          <h2 id="titre-message" className="tu-message-ecran__titre">
-            {t('titre')}
-          </h2>
-          <p className="tu-player__lead">{t('aide')}</p>
-          <TextField
-            label={t('champ')}
-            multiline
-            value={texte}
-            onChange={(e) => {
-              setTexte(e.target.value);
-              setEnvoye(false);
-            }}
-            autoComplete="off"
-            enterKeyHint="done"
-            hint={t('restants', { n: Math.max(0, restants) })}
-            {...(erreur ? { error: t(erreur) } : {})}
-          />
-          <p className="tu-message-ecran__statut" role="status" data-testid="statut-message">
-            {envoi
-              ? t('envoi')
-              : envoye
-                ? t('envoye')
-                : attenteS > 0
-                  ? t('attente', { s: attenteS })
-                  : ''}
-          </p>
-          <div className="tu-player__actions">
-            <Button
-              type="submit"
-              variant="accent"
-              size="lg"
-              block
-              disabled={envoi || attenteS > 0 || restants < 0}
-            >
-              {t('envoyer')}
-            </Button>
-            <Button variant="ghost" size="lg" block onClick={fermer}>
-              {t('fermer')}
-            </Button>
-          </div>
-        </form>
-      </dialog>
-    </>
+    <dialog ref={dialogue} className="tu-carte-dialogue" aria-labelledby="titre-message">
+      <form className="tu-message-ecran" onSubmit={(e) => void envoyer(e)} noValidate>
+        <h2 id="titre-message" className="tu-message-ecran__titre">
+          {t('titre')}
+        </h2>
+        <p className="tu-player__lead">{t('aide')}</p>
+        <TextField
+          label={t('champ')}
+          multiline
+          value={texte}
+          onChange={(e) => {
+            setTexte(e.target.value);
+            setEnvoye(false);
+          }}
+          autoComplete="off"
+          enterKeyHint="done"
+          hint={t('restants', { n: Math.max(0, restants) })}
+          {...(erreur ? { error: t(erreur) } : {})}
+        />
+        <p className="tu-message-ecran__statut" role="status" data-testid="statut-message">
+          {envoi
+            ? t('envoi')
+            : envoye
+              ? t('envoye')
+              : attenteS > 0
+                ? t('attente', { s: attenteS })
+                : ''}
+        </p>
+        <div className="tu-player__actions">
+          <Button
+            type="submit"
+            variant="accent"
+            size="lg"
+            block
+            disabled={envoi || attenteS > 0 || restants < 0}
+          >
+            {t('envoyer')}
+          </Button>
+          <Button variant="ghost" size="lg" block onClick={fermer}>
+            {t('fermer')}
+          </Button>
+        </div>
+      </form>
+    </dialog>
   );
 }

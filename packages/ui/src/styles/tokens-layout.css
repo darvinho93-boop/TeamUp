@@ -17,6 +17,10 @@
 
   /* Écran joueur : colonne unique, même sur une tablette posée à plat. */
   --tu-player-max: 30rem;
+  --tu-player-nav-hauteur: 4.25rem; /* la barre du bas du téléphone, hors zone système */
+  --tu-player-nav-bulle: 3rem; /* la bulle corail du message */
+  --tu-player-ticket-rond: 5rem; /* le rond du logo, en coin de la carte « Ma partie » */
+  --tu-player-initiale: 2.5rem; /* initiale d'un membre, rang au classement */
 
   /* Carte Team Up! (/soirees, 2026-11-02) : interligne du grand « Team Up! » de l'accroche,
      confettis (rectangle, rayon, point), personnages de l'attente, pastilles d'étape. */

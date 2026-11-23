@@ -13,7 +13,7 @@
     "codeInconnu": "This code doesn't open any game: check it on the big screen."
   },
   "prenom": {
-    "titre": "What is your first name?",
+    "titre": "Your registration",
     "champ": "Your first name",
     "aide": "Your first name will appear on the big screen.",
     "bouton": "Continue",
@@ -22,22 +22,27 @@
     "complet": "The game is full.",
     "codeInconnu": "This game is no longer open.",
     "serveur": "That didn't work. Try again.",
-    "connexion": "Joining the game…"
+    "connexion": "Joining the game…",
+    "etape": "Registration · {n} of 2",
+    "groupe": "Choose your group to continue."
   },
   "groupe": {
     "titre": "Your group",
     "aide": "It helps mix the teams and is erased once the first game starts.",
-    "sansReponse": "I'd rather not say"
+    "sansReponse": "I'd rather not say",
+    "champ": "Group",
+    "champFacultatif": "Group (optional)",
+    "choisir": "Choose a group"
   },
   "capitaine": {
-    "titre": "Would you like to be captain?",
-    "aide": "The captain chooses the team name and, depending on the games, sends the photos or answers for the team from their phone. The captain will be drawn at random from the volunteers.",
-    "oui": "I volunteer",
-    "non": "I'd rather just play",
-    "nomTitre": "A name for your team?",
-    "nomAide": "If you're drawn as captain, your team will carry this name.",
-    "nomChamp": "Team name (optional)",
-    "nomBouton": "Confirm"
+    "titre": "Your role",
+    "nomChamp": "Proposed team name (optional)",
+    "membre": "Team member",
+    "volontaire": "Volunteer as captain",
+    "question": "What does the captain do?",
+    "explication": "The host draws the captains from the volunteers. If you are chosen, you name your team. Depending on the game, you buzz, answer or send a photo for it from your phone.",
+    "confirmer": "Confirm my registration",
+    "precedent": "Previous step"
   },
   "nomEquipe": {
     "ouvrir": "Rename the team",
@@ -54,7 +59,7 @@
   "messageEcran": {
     "ouvrir": "Message to the big screen",
     "titre": "A message for the big screen",
-    "aide": "Your message will be visible to the whole room, with your first name. Choose a message you are happy to share with everyone.",
+    "aide": "Your message will appear with your first name on the big screen.",
     "champ": "Your message",
     "restants": "{n, plural, =0 {No characters left} one {# character left} other {# characters left}}",
     "envoyer": "Post on the big screen",
@@ -125,8 +130,6 @@
   "equipe": {
     "surtitre": "Your team",
     "aide": "Look for the players of team {numero}: their screen shows the same number and the same colour. You can show your screen if you like. If you stay in your seat, the host will help you find your teammates.",
-    "bouton": "Back to the game",
-    "sansEquipe": "The teams will be formed soon: stay close!",
     "membres": "Your teammates",
     "capitaine": "captain",
     "numero": "Team {numero}"
@@ -1495,9 +1498,7 @@
     "telephone": "Your phone during the game",
     "telephoneAide": "It shows your team and its points. Some games will also ask you to use it.",
     "reseau": "Keep this page open. You can put your phone down; come back to this page when the host asks you to. Connect to the event Wi-Fi if there is one.",
-    "bouton": "Back to the game",
-    "revoir": "How to play",
-    "boutonArrivee": "Join the game"
+    "revoir": "How to play"
   },
   "proposition": {
     "titre": "A name for your team?",
@@ -1532,7 +1533,7 @@
     "revoir": "Watch the rules again",
     "accroche": "Tonight, we <nom>Team Up!</nom>",
     "slogan": "We play. We meet. We connect.",
-    "inscrire": "Join",
+    "inscrire": "Join this event",
     "retrouver": "Back to my game",
     "attendTitre": "What awaits you",
     "atout1Titre": "Mixed teams",
@@ -1586,7 +1587,6 @@
   "maCarte": {
     "ouvrir": "Create my card",
     "revoir": "My card",
-    "invitation": "A card to get to know each other: share your job or a fun fact, if you like.",
     "titre": "A card to get to know each other",
     "intro": "If your team wins a game, your card may be drawn at random and shown on the big screen. Every question is optional.",
     "age": "How old are you?",
@@ -1614,6 +1614,46 @@
       "anecdoteLong": "120 characters at most.",
       "termine": "The game is over.",
       "serveur": "That didn't work: please try again."
+    }
+  },
+  "parcours": {
+    "nav": {
+      "titre": "Player navigation",
+      "partie": "My game",
+      "jeux": "Games",
+      "message": "Message",
+      "equipe": "Team",
+      "classement": "Ranking"
+    },
+    "partie": {
+      "confirmee": "Registration confirmed",
+      "formation": "The host is forming the teams. Watch the big screen.",
+      "termine": "The game is over",
+      "merci": "Thanks for playing, {prenom}.",
+      "rejoindre": "Join {capitaine}, your captain.",
+      "voirRegles": "See the rules",
+      "voirEquipe": "See my team",
+      "voirPodium": "See the podium",
+      "liens": "Player area",
+      "instagram": "Follow Team Up! on Instagram"
+    },
+    "jeux": {
+      "titre": "Games",
+      "vide": "The event's programme will appear here."
+    },
+    "equipe": {
+      "formation": "Teams being formed",
+      "attente": "Your team will appear here.",
+      "vous": "You"
+    },
+    "classement": {
+      "titre": "Ranking",
+      "attente": "Scores will be available after the podium is announced.",
+      "final": "Final ranking",
+      "place": "Your team finishes {rang, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+      "vous": "Your team",
+      "exAequo": "tied",
+      "points": "{points, plural, one {# point} other {# points}}"
     }
   }
 }

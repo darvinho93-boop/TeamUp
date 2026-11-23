@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { redirect } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
@@ -11,6 +11,9 @@ import { SaisieCode } from '@/joueur/SaisieCode';
 import { etatDuJoueur, evenementPublic } from '@/serveur/partie';
 
 export const metadata: Metadata = { robots: { index: false } };
+
+// La barre du bas tient compte de la zone système ; le clavier réduit la page au lieu de la couvrir.
+export const viewport: Viewport = { viewportFit: 'cover', interactiveWidget: 'resizes-content' };
 
 /**
  * `app.teamup-game.fr/K7P2M9` : l'adresse du QR code. Un joueur qui a déjà sa session dans cette

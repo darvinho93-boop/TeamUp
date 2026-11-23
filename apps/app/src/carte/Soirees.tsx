@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties, ReactNode } from 'react';
+import { useEffect, type CSSProperties, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -9,6 +9,9 @@ import { estLangue, type SoireeDuJour } from '@/lib/partie';
 import { Fleche, Personnages, PERSOS_ATTENTE } from './decor';
 import { lienInscription } from './liens';
 import { ListeIllustree, type Teinte } from './ListeIllustree';
+
+/** Liste vide : une relecture toutes les 15 s, tant que la page est à l'écran. */
+const RELECTURE_MS = 15_000;
 
 /**
  * Confettis de l'accroche, comme sur la carte imprimée : posés autour du titre, jamais dessus
@@ -89,9 +92,19 @@ export function Soirees({
   const t = useTranslations('carte');
   const router = useRouter();
   const courante = estLangue(langue) ? langue : 'fr';
+  const vide = soirees.length === 0;
+
+  // Aucune soirée ouverte : la liste se relit seule pendant que l'invité attend.
+  useEffect(() => {
+    if (!vide) return;
+    const minuterie = setInterval(() => {
+      if (document.visibilityState === 'visible') router.refresh();
+    }, RELECTURE_MS);
+    return () => clearInterval(minuterie);
+  }, [vide, router]);
 
   return (
-    <div className="tu-player__body tu-carte" data-testid="soirees">
+    <div className={cx('tu-player__body tu-carte', vide && 'tu-carte--vide')} data-testid="soirees">
       <section className="tu-carte-accroche">
         <div className="tu-carte-confettis" aria-hidden="true">
           {CONFETTIS.map((c, i) => (
