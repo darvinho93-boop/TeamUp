@@ -22,8 +22,17 @@ export async function jetonDe(code: string): Promise<string | null> {
   return (await cookies()).get(nomCookie(code))?.value ?? null;
 }
 
-export async function nouvelleSession(code: string): Promise<string> {
-  const jeton = randomBytes(32).toString('base64url');
+/**
+ * Le jeton d'une demande d'inscription (2026-11-23) : la réponse peut se perdre après l'écriture
+ * en base, et le nouvel essai du même téléphone doit retrouver sa fiche au lieu de buter sur
+ * « prénom déjà pris ». Le navigateur ne connaît que la demande, jamais la valeur du cookie.
+ */
+export function jetonDeDemande(code: string, demande: string): string {
+  return createHash('sha256').update(`tu-arrivee:${code}:${demande}`).digest('base64url');
+}
+
+export async function nouvelleSession(code: string, jetonImpose?: string): Promise<string> {
+  const jeton = jetonImpose ?? randomBytes(32).toString('base64url');
   const domaine = domaineDuCookie((await headers()).get('host'));
   (await cookies()).set(nomCookie(code), jeton, {
     httpOnly: true,
