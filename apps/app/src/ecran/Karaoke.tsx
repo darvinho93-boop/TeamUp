@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState, type CSSProperties } from 'rea
 import { useTranslations } from 'next-intl';
 import { cx, teamModifier } from '@teamup/ui/react';
 import { positionKaraokeMs } from '@teamup/game';
-import { contientTamoul, vueKaraoke, type LigneParoles } from '@/lib/paroles';
+import { contientTamoul, rangees, vueKaraoke, type LigneParoles } from '@/lib/paroles';
 import { Celebration } from './Celebration';
 import { PositionExtraitContexte } from './sons/useSons';
 
@@ -76,6 +76,11 @@ export function Karaoke({
   const precedente = index > 0 ? paroles[index - 1]?.texte : undefined;
   const courante = index >= 0 ? paroles[index]?.texte : undefined;
   const suivante = paroles[index + 1]?.texte;
+  const rangeesCourantes = courante ? rangees(courante) : [];
+  // Sa plus longue rangée règle la taille de la ligne chantée, et ses voisines restent plus petites.
+  const tailleCourante = {
+    '--tu-karaoke-n-courant': Math.max(14, ...rangeesCourantes.map((r) => r.texte.length)),
+  } as CSSProperties;
 
   return (
     <div
@@ -94,7 +99,7 @@ export function Karaoke({
         {artiste && <p className="tu-karaoke__artiste">{artiste}</p>}
         {equipe && (
           <p className="tu-karaoke__equipe" data-testid="blind-verdict">
-            {t('trouvePar', { equipe: equipe.nom })} · {tEcran('points', { points })}
+            {equipe.nom} · {tEcran('points', { points })}
           </p>
         )}
       </header>
@@ -106,7 +111,13 @@ export function Karaoke({
           </p>
         </div>
       ) : (
-        <div className="tu-karaoke__lignes" data-testid="karaoke-lignes" data-index={index}>
+        <div
+          className="tu-karaoke__lignes"
+          style={tailleCourante}
+          data-testid="karaoke-lignes"
+          data-index={index}
+          data-tamoul={courante && contientTamoul(courante) ? true : undefined}
+        >
           <p
             className="tu-karaoke__ligne tu-karaoke__ligne--voisine"
             {...(precedente ? attributs(precedente) : {})}
@@ -118,12 +129,22 @@ export function Karaoke({
               key={index}
               className="tu-karaoke__ligne tu-karaoke__ligne--courante"
               data-testid="karaoke-ligne"
-              {...attributs(courante)}
+              lang={attributs(courante).lang}
             >
-              <span>{courante}</span>
-              <span className="tu-karaoke__rempli" aria-hidden="true">
-                {courante}
-              </span>
+              {rangeesCourantes.map((r) => (
+                <span
+                  key={r.debut}
+                  className="tu-karaoke__rangee"
+                  style={
+                    { '--tu-rangee-debut': r.debut, '--tu-rangee-part': r.part } as CSSProperties
+                  }
+                >
+                  <span>{r.texte}</span>
+                  <span className="tu-karaoke__rempli" aria-hidden="true">
+                    {r.texte}
+                  </span>
+                </span>
+              ))}
             </p>
           ) : (
             <p

@@ -9,6 +9,9 @@ import {
   parolesDe,
   parolesPretes,
   PAROLES_MAX_LIGNES,
+  RANGEE_MAX,
+  RANGEE_MAX_TAMOUL,
+  rangees,
   versLrc,
   vueKaraoke,
 } from '../src/lib/paroles';
@@ -143,5 +146,31 @@ describe('ce que montre l’écran', () => {
   it('reconnaît l’écriture tamoule', () => {
     expect(contientTamoul('வணக்கம்')).toBe(true);
     expect(contientTamoul('Vanakkam')).toBe(false);
+  });
+});
+
+describe('une ligne longue sur deux rangées', () => {
+  it('laisse une ligne courte entière', () => {
+    expect(rangees('Une ligne courte')).toEqual([{ texte: 'Une ligne courte', debut: 0, part: 1 }]);
+    expect(rangees('x'.repeat(RANGEE_MAX))).toHaveLength(1);
+  });
+
+  it('coupe à l’espace le plus proche du milieu, et se remplit rangée après rangée', () => {
+    const [a, b] = rangees('Une ligne assez longue pour tenir sur deux rangées');
+    expect(a!.texte).toBe('Une ligne assez longue pour');
+    expect(b!.texte).toBe('tenir sur deux rangées');
+    expect(a!.debut).toBe(0);
+    expect(b!.debut).toBeCloseTo(a!.part);
+    expect(a!.part + b!.part).toBeCloseTo(1);
+  });
+
+  it('coupe plus tôt en tamoul, dont les lettres sont plus larges', () => {
+    const tamoul = 'தமிழ் எழுத்துகள் சரியாகத் தெரிகிறதா';
+    expect(tamoul.length).toBeGreaterThan(RANGEE_MAX_TAMOUL);
+    expect(rangees(tamoul)).toHaveLength(2);
+  });
+
+  it('ne coupe pas un mot sans espace', () => {
+    expect(rangees('x'.repeat(60))).toHaveLength(1);
   });
 });

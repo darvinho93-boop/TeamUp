@@ -5,7 +5,7 @@
 
 .tu-karaoke {
   --tu-karaoke-avance: 0;
-  --tu-karaoke-car: 0.62;
+  --tu-karaoke-car: 0.58;
 
   display: flex;
   flex: 1;
@@ -66,6 +66,15 @@
 }
 
 .tu-karaoke__lignes {
+  --tu-karaoke-car-courant: 0.58;
+  --tu-karaoke-taille: min(
+    var(--tu-stage-karaoke-ligne),
+    calc(
+      var(--tu-stage-karaoke-largeur) /
+        (var(--tu-karaoke-n-courant, 14) * var(--tu-karaoke-car-courant))
+    )
+  );
+
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -74,6 +83,10 @@
   gap: var(--tu-space-8);
   inline-size: 100%;
   min-height: 0;
+}
+
+.tu-karaoke__lignes[data-tamoul] {
+  --tu-karaoke-car-courant: 0.68;
 }
 
 .tu-karaoke__ligne {
@@ -85,28 +98,36 @@
 }
 
 .tu-karaoke__ligne:lang(ta) {
-  --tu-karaoke-car: 0.82;
+  --tu-karaoke-car: 0.68;
 
   font-family: var(--tu-font-tamil);
 }
 
+/* Toujours plus petite que la ligne chantée, même quand celle-ci est longue. */
 .tu-karaoke__ligne--voisine {
   min-block-size: 1lh;
   font-size: min(
     var(--tu-stage-karaoke-voisine),
-    calc(var(--tu-stage-karaoke-largeur) / (var(--tu-karaoke-n, 14) * var(--tu-karaoke-car)))
+    calc(var(--tu-stage-karaoke-largeur) / (var(--tu-karaoke-n, 14) * var(--tu-karaoke-car))),
+    calc(var(--tu-karaoke-taille, var(--tu-stage-karaoke-ligne)) * var(--tu-karaoke-voisine-ratio))
   );
   opacity: var(--tu-karaoke-voisine-opacite);
 }
 
 .tu-karaoke__ligne--courante {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tu-space-2);
+  font-size: var(--tu-karaoke-taille, var(--tu-stage-karaoke-ligne));
+}
+
+/* Une rangée se remplit quand vient son tour : la seconde attend la fin de la première. */
+.tu-karaoke__rangee {
   position: relative;
+  display: block;
   padding: var(--tu-space-3) var(--tu-space-8);
   border-radius: var(--tu-radius-lg);
-  font-size: min(
-    var(--tu-stage-karaoke-ligne),
-    calc(var(--tu-stage-karaoke-largeur) / (var(--tu-karaoke-n, 14) * var(--tu-karaoke-car)))
-  );
 }
 
 .tu-karaoke__rempli {
@@ -116,7 +137,21 @@
   border-radius: inherit;
   background: var(--tu-team-color);
   color: var(--tu-team-on);
-  clip-path: inset(0 calc((1 - var(--tu-karaoke-avance)) * 100%) 0 0);
+  clip-path: inset(
+    0
+      calc(
+        (
+            1 -
+              clamp(
+                0,
+                (var(--tu-karaoke-avance) - var(--tu-rangee-debut, 0)) / var(--tu-rangee-part, 1),
+                1
+              )
+          ) *
+          100%
+      )
+      0 0
+  );
 }
 
 .tu-karaoke__egaliseur {

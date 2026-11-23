@@ -152,3 +152,35 @@ export function vueKaraoke(lignes: readonly LigneParoles[], positionMs: number):
 
 /** Une ligne en écriture tamoule : elle a besoin de sa police, et prend plus de place. */
 export const contientTamoul = (texte: string) => /[஀-௿]/.test(texte);
+
+/** Au-delà, une ligne passe sur deux rangées : elle resterait sinon trop petite pour la salle. */
+export const RANGEE_MAX = 34;
+export const RANGEE_MAX_TAMOUL = 26;
+
+export interface Rangee {
+  texte: string;
+  /** La part de la ligne chantée avant cette rangée, et la sienne (de 0 à 1). */
+  debut: number;
+  part: number;
+}
+
+/** Une ligne en une ou deux rangées, coupée à l'espace le plus proche du milieu. */
+export function rangees(texte: string): Rangee[] {
+  const seule: Rangee[] = [{ texte, debut: 0, part: 1 }];
+  if (texte.length <= (contientTamoul(texte) ? RANGEE_MAX_TAMOUL : RANGEE_MAX)) return seule;
+  const milieu = texte.length / 2;
+  let coupe = -1;
+  for (let i = 1; i < texte.length - 1; i++) {
+    if (texte[i] === ' ' && (coupe < 0 || Math.abs(i - milieu) < Math.abs(coupe - milieu))) {
+      coupe = i;
+    }
+  }
+  if (coupe < 0) return seule;
+  const a = texte.slice(0, coupe).trimEnd();
+  const b = texte.slice(coupe + 1).trimStart();
+  const total = a.length + b.length;
+  return [
+    { texte: a, debut: 0, part: a.length / total },
+    { texte: b, debut: a.length / total, part: b.length / total },
+  ];
+}

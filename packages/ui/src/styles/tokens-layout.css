@@ -116,6 +116,7 @@
   --tu-stage-karaoke-largeur: 100rem;
   --tu-stage-karaoke-egaliseur: 4rem;
   --tu-karaoke-voisine-opacite: 0.6;
+  --tu-karaoke-voisine-ratio: 0.6;
   /* Caler les paroles au back-office : le champ de texte, la liste des lignes, la colonne d'instant. */
   --tu-paroles-texte: 14rem;
   --tu-paroles-liste: 28rem;
