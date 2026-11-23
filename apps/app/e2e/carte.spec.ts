@@ -64,21 +64,21 @@ test('la carte Team Up! : cochée à la préparation, la soirée paraît et on s
   await expect(carte).toHaveCount(1);
   await telephone.getByLabel('Langue').selectOption('en');
   await expect(telephone.getByRole('heading', { name: 'Tonight, we Team Up!' })).toBeVisible();
-  await carte.getByRole('link', { name: 'Join', exact: true }).click();
+  await carte.getByRole('link', { name: 'Join this event' }).click();
   await expect(telephone).toHaveURL(`/${evenement.code}?carte=1`);
-  await expect(telephone.getByRole('heading', { name: 'What is your first name' })).toBeVisible();
+  await expect(telephone.getByRole('heading', { name: 'Your registration' })).toBeVisible();
   await expect(telephone.getByRole('button', { name: 'English' })).toHaveCount(0);
 
   // --- Inscrite, elle rescanne la carte restée sur la table : le bouton le dit et la ramène à
   // son écran, sans repasser par l'inscription.
   await telephone.getByLabel('First name').fill('Léa');
   await telephone.getByRole('button', { name: 'Continue' }).click();
-  await telephone.getByRole('button', { name: "I'd rather just play" }).click();
-  await expect(telephone.getByTestId('explication')).toBeVisible();
+  await telephone.getByRole('button', { name: 'Confirm my registration' }).click();
+  await expect(telephone.getByTestId('navigation-joueur')).toBeVisible();
   await telephone.goto('/soirees');
-  await expect(carte.getByRole('link', { name: 'Join', exact: true })).toHaveCount(0);
+  await expect(carte.getByRole('link', { name: 'Join this event' })).toHaveCount(0);
   await carte.getByRole('link', { name: 'Back to my game' }).click();
-  await expect(telephone.getByRole('heading', { name: 'Welcome, Léa' })).toBeVisible();
+  await expect(telephone.getByText('Welcome, Léa')).toBeVisible();
 
   // --- L'adresse du flyer tapée avec un accent et une majuscule mène quand même à la carte.
   await telephone.goto('/Soirées');

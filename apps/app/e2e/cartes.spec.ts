@@ -53,7 +53,6 @@ test('une carte autorisée se tire, se voit à la régie, puis à l’écran', a
   });
 
   // --- Ana remplit sa carte et accepte l'affichage ; l'aperçu suit la saisie.
-  await expect(ana.getByTestId('invitation-carte')).toBeVisible();
   await ana.getByRole('button', { name: 'Créer ma carte' }).click();
   await ana.getByLabel('Quel âge avez-vous').fill('34');
   await ana.getByLabel('Que faites-vous dans la vie').fill('Infirmière');

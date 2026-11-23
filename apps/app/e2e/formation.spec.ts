@@ -46,24 +46,24 @@ async function inscrire(browser: Browser, prenom: string, nom?: string): Promise
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill(prenom);
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await expect(page.getByRole('heading', { name: 'Souhaitez-vous être capitaine' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Votre rôle' })).toBeVisible();
   if (nom) {
-    await page.getByRole('button', { name: 'Je me propose' }).click();
-    await page.getByLabel("Nom d'équipe (facultatif)").fill(nom);
-    await page.getByRole('button', { name: 'Valider' }).click();
-  } else {
-    await page.getByRole('button', { name: 'Je préfère être participant' }).click();
+    await page.getByLabel('Me proposer comme capitaine').check();
+    await page.getByLabel("Nom d'équipe proposé (facultatif)").fill(nom);
   }
-  // Pas d'équipe encore : la page d'explication, puis l'attente.
-  await expect(page.getByTestId('explication')).toBeVisible();
+  await page.getByRole('button', { name: 'Confirmer mon inscription' }).click();
+  // Pas d'équipe encore : « Ma partie » le dit.
+  await expect(page.getByTestId('sans-equipe')).toBeVisible();
+  // Les jeux de la soirée, dans l'onglet : la règle et sa vidéo s'ouvrent au toucher.
+  await page.getByTestId('onglet-jeux').click();
   await expect(page.getByTestId('explication')).toContainText('Points communs');
-  // Les jeux de la soirée présentés comme sur la carte Team Up!, chacun avec sa vidéo.
+  await page.getByTestId('explication').getByRole('heading', { name: 'Points communs' }).click();
   await expect(
     page
       .getByTestId('explication')
       .getByRole('button', { name: /Voir les règles en vidéo.*Points communs/ }),
   ).toBeVisible();
-  await page.getByTestId('c-est-parti').click();
+  await page.getByTestId('onglet-partie').click();
   await expect(page.getByTestId('sans-equipe')).toBeVisible();
   return page;
 }
@@ -94,6 +94,7 @@ test('inscription sans équipe, formation par la régie, puis Points communs', a
 
   // --- Six inscrits, dont deux volontaires qui proposent un nom.
   const lea = await inscrire(browser, 'Léa', 'Les Lions');
+  await lea.getByTestId('onglet-equipe').click();
   await expect(lea.getByTestId('nom-propose')).toContainText('Les Lions');
   await inscrire(browser, 'Tom', 'Les Aigles');
   const autres = [];
@@ -130,6 +131,7 @@ test('inscription sans équipe, formation par la régie, puis Points communs', a
   await expect(noms.filter({ hasText: 'Les Tigres' })).toHaveCount(1);
   await expect(noms.filter({ hasText: 'Les Aigles' })).toHaveCount(1);
   await expect(lea.getByText('Les Tigres')).toBeVisible({ timeout: 10_000 });
+  await lea.getByTestId('onglet-partie').click();
   await expect(lea.getByTestId('capitaine')).toBeVisible();
   for (const page of autres) await expect(page.getByTestId('sans-equipe')).toHaveCount(0);
 

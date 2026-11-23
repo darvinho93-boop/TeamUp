@@ -30,13 +30,9 @@ async function arriver(browser: Browser, prenom: string, volontaire: boolean) {
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill(prenom);
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await expect(page.getByRole('heading', { name: 'Souhaitez-vous être capitaine' })).toBeVisible();
-  await page
-    .getByRole('button', { name: volontaire ? 'Je me propose' : 'Je préfère être participant' })
-    .click();
-  // Lot 14 : un volontaire propose un nom d'équipe (facultatif) avant d'entrer.
-  if (volontaire) await page.getByRole('button', { name: 'Valider' }).click();
-  await page.getByRole('button', { name: 'Retour à la partie' }).click();
+  await expect(page.getByRole('heading', { name: 'Votre rôle' })).toBeVisible();
+  if (volontaire) await page.getByLabel('Me proposer comme capitaine').check();
+  await page.getByRole('button', { name: 'Confirmer mon inscription' }).click();
   await expect(page.getByText(`Bienvenue, ${prenom}`)).toBeVisible();
   return page;
 }
@@ -80,6 +76,7 @@ test('un volontaire tiré capitaine renomme son équipe ; la régie peut bloquer
   await expect(nils.getByRole('button', { name: "Renommer l'équipe" })).toHaveCount(0);
 
   // --- Elle renomme l'équipe : l'écran suit sans aucune touche de régie.
+  await vera.getByTestId('onglet-equipe').click();
   await vera.getByRole('button', { name: "Renommer l'équipe" }).click();
   await vera.getByLabel("Nom de l'équipe").fill('Les Invincibles');
   await vera.getByRole('button', { name: 'Enregistrer' }).click();

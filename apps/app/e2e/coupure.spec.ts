@@ -17,9 +17,8 @@ test('une coupure réseau puis son retour reprennent la session, sans ressaisie'
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill('Léo');
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.getByRole('button', { name: 'Je préfère être participant' }).click();
-  await page.getByRole('button', { name: 'Retour à la partie' }).click();
-  await expect(page.getByRole('heading', { name: 'Bienvenue, Léo' })).toBeVisible();
+  await page.getByRole('button', { name: 'Confirmer mon inscription' }).click();
+  await expect(page.getByText('Bienvenue, Léo')).toBeVisible();
   await expect(page.getByTestId('points')).toHaveText('0 point');
 
   await context.setOffline(true);
@@ -42,7 +41,7 @@ test('une coupure réseau puis son retour reprennent la session, sans ressaisie'
   await context.setOffline(false);
   await expect(page.getByRole('status')).toHaveCount(0);
   await expect(page.getByTestId('points')).toHaveText('100 points');
-  await expect(page.getByRole('heading', { name: 'Bienvenue, Léo' })).toBeVisible();
+  await expect(page.getByText('Bienvenue, Léo')).toBeVisible();
 
   // Toujours le même joueur : la reprise n'a créé personne.
   const { count } = await service

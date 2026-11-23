@@ -17,8 +17,7 @@ async function arriver(browser: Browser, prenom: string) {
   await page.goto(`/${evenement.code}`);
   await page.getByLabel('Prénom').fill(prenom);
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.getByRole('button', { name: 'Je préfère être participant' }).click();
-  await page.getByRole('button', { name: 'Retour à la partie' }).click();
+  await page.getByRole('button', { name: 'Confirmer mon inscription' }).click();
   await expect(page.getByText(`Bienvenue, ${prenom}`)).toBeVisible();
   return page;
 }

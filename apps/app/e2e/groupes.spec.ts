@@ -35,20 +35,20 @@ test('groupes nommés à la préparation, choisis au téléphone, comptés à la
   const telephone = await (await browser.newContext()).newPage();
   await telephone.goto(`/${evenement.code}`);
   await telephone.getByLabel('Prénom').fill('Lina');
+  const champ = telephone.getByLabel('Groupe (facultatif)');
+  await expect(champ.getByRole('option', { name: 'Je préfère ne pas répondre' })).toHaveCount(1);
+  await champ.selectOption({ label: 'Côté mariée' });
   await telephone.getByRole('button', { name: 'Continuer' }).click();
-  await expect(telephone.getByRole('heading', { name: 'Votre groupe' })).toBeVisible();
-  await expect(telephone.getByRole('button', { name: 'Je préfère ne pas répondre' })).toBeVisible();
-  await telephone.getByRole('button', { name: 'Côté mariée' }).click();
-  await telephone.getByRole('button', { name: 'Je préfère être participant' }).click();
+  await telephone.getByRole('button', { name: 'Confirmer mon inscription' }).click();
   await expect(telephone.getByText('Votre équipe', { exact: true })).toBeVisible();
 
   // --- Un autre préfère ne pas répondre : il rejoint quand même.
   const discret = await (await browser.newContext()).newPage();
   await discret.goto(`/${evenement.code}`);
   await discret.getByLabel('Prénom').fill('Noé');
+  await expect(discret.getByLabel('Groupe (facultatif)')).toHaveValue('');
   await discret.getByRole('button', { name: 'Continuer' }).click();
-  await discret.getByRole('button', { name: 'Je préfère ne pas répondre' }).click();
-  await discret.getByRole('button', { name: 'Je préfère être participant' }).click();
+  await discret.getByRole('button', { name: 'Confirmer mon inscription' }).click();
   await expect(discret.getByText('Votre équipe', { exact: true })).toBeVisible();
 
   // --- La Salle montre la répartition à l'arrivée : un seul invité compté, côté mariée.
@@ -62,8 +62,8 @@ test('groupes nommés à la préparation, choisis au téléphone, comptés à la
 test('une soirée sans groupes saute l’étape', async ({ page }) => {
   await page.goto(`/${sansGroupes.code}`);
   await page.getByLabel('Prénom').fill('Sam');
+  await expect(page.getByLabel(/^Groupe/)).toHaveCount(0);
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.getByRole('button', { name: 'Je préfère être participant' }).click();
+  await page.getByRole('button', { name: 'Confirmer mon inscription' }).click();
   await expect(page.getByText('Votre équipe', { exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Votre groupe' })).toHaveCount(0);
 });
