@@ -5,11 +5,12 @@ import { clientService, creerEvenementJetable, supprimerEvenements } from '../te
 /**
  * Blind test (2026-11-15), de la préparation au dernier titre : l'admin dépose la musique,
  * l'animateur prépare les titres, deux capitaines buzzent depuis leur téléphone. Mauvaise réponse
- * (équipe bloquée, la régie relance), bonne réponse (+100, le titre à l'écran), buzz de secours
- * par la régie, révélation sans gagnant.
+ * (équipe bloquée, la régie relance), bonne réponse (+100, puis le karaoké jusqu'au fondu de la
+ * régie, 2026-11-23), buzz de secours par la régie, révélation sans gagnant.
  */
 
-const MP3 = fileURLToPath(new URL('./fichiers/la-440.mp3', import.meta.url));
+// 60 s : la chanson doit encore jouer pendant tout le karaoké, jusqu'au fondu mesuré.
+const MP3 = fileURLToPath(new URL('./fichiers/la-440-60s.mp3', import.meta.url));
 const crees: string[] = [];
 const titre = `Blind ${Date.now()}`;
 
@@ -56,6 +57,25 @@ const journal = (ecran: Page) =>
       ).__tuLecteur?.journal.map((j) => j.son) ?? [],
   );
 
+type AvecMesure = { __tuLecteur?: { mesure(): { niveau: number } } };
+const niveau = (ecran: Page) =>
+  ecran.evaluate(() => (window as unknown as AvecMesure).__tuLecteur?.mesure().niveau ?? 0);
+/** Le niveau de sortie relevé toutes les 100 ms, pendant six secondes. */
+const releverNiveaux = (ecran: Page) =>
+  ecran.evaluate(
+    () =>
+      new Promise<number[]>((fin) => {
+        const releves: number[] = [];
+        const minuteur = setInterval(() => {
+          releves.push((window as unknown as AvecMesure).__tuLecteur?.mesure().niveau ?? 0);
+          if (releves.length >= 60) {
+            clearInterval(minuteur);
+            fin(releves);
+          }
+        }, 100);
+      }),
+  );
+
 test('blind test : buzz, mauvaise réponse, relance, bonne réponse, secours de la régie', async ({
   browser,
   baseURL,
@@ -76,6 +96,42 @@ test('blind test : buzz, mauvaise réponse, relance, bonne réponse, secours de 
   );
   const { data: musique } = await service.from('musiques').select('id').eq('titre', titre).single();
   const id = (musique as { id: string }).id;
+
+  // --- Ses paroles (2026-11-23) : deux lignes calées à la touche Espace, puis un .lrc complet.
+  await admin.goto(`/admin/musiques/${id}/paroles`);
+  const champ = admin.getByTestId('paroles-texte');
+  const preparer = admin.getByRole('button', { name: 'Préparer les lignes' });
+  // Un champ rempli avant l'hydratation serait perdu : on recommence jusqu'à ce qu'il compte.
+  await expect(async () => {
+    await champ.fill('Première ligne\nDeuxième ligne');
+    await preparer.click();
+    await expect(admin.getByTestId('paroles-ligne')).toHaveCount(2, { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await admin.getByRole('button', { name: 'Caler depuis le début' }).click();
+  const temps = () => admin.locator('audio').evaluate((a: HTMLAudioElement) => a.currentTime);
+  await expect.poll(temps, { timeout: 10_000 }).toBeGreaterThan(0.2);
+  await admin.keyboard.press('Space');
+  await expect(admin.getByTestId('paroles-etat')).toHaveText('1 sur 2 lignes calées');
+  const apresLaPremiere = await temps();
+  await expect.poll(temps, { timeout: 5000 }).toBeGreaterThan(apresLaPremiere + 0.2);
+  await admin.keyboard.press('Space');
+  await expect(admin.getByTestId('paroles-etat')).toHaveText('2 sur 2 lignes calées');
+  await expect(admin.getByTestId('paroles-apercu')).toContainText('ligne');
+
+  await champ.fill(
+    Array.from(
+      { length: 60 },
+      (_, i) => `[00:${String(i).padStart(2, '0')}.00] Ligne chantée ${i}`,
+    ).join('\n'),
+  );
+  await preparer.click();
+  await expect(admin.getByTestId('paroles-etat')).toHaveText('60 sur 60 lignes calées');
+  await admin.getByRole('button', { name: 'Enregistrer les paroles' }).click();
+  await expect(admin.getByTestId('paroles-message')).toHaveText('Paroles enregistrées.');
+  await admin.goto('/admin/musiques');
+  await expect(admin.getByTestId('musique').filter({ hasText: titre })).toContainText(
+    '60 lignes calées',
+  );
 
   // --- Une soirée à deux équipes, deux capitaines au téléphone.
   const ev = await creerEvenementJetable({ equipes: 2, langues: ['fr'] });
@@ -193,12 +249,57 @@ test('blind test : buzz, mauvaise réponse, relance, bonne réponse, secours de 
   await capturer(ana, 'telephone-bloque');
   await capturer(ecran, 'ecran-ecoute-bloquee');
 
-  // --- Bao buzze, bonne réponse : +100, le titre à l'écran.
+  // --- Bao buzze, bonne réponse : +100, et la chanson repart en karaoké.
   await expect(bao.getByTestId('buzzer')).toBeEnabled({ timeout: 10_000 });
   await bao.getByTestId('buzzer').click();
   await expect(scene('buzz')).toBeVisible({ timeout: 5000 });
   await regie.getByRole('button', { name: 'Bonne réponse (+100)' }).click();
+  await expect(scene('karaoke')).toBeVisible({ timeout: 10_000 });
+  await expect(ecran.getByTestId('blind-reponse')).toHaveText(titre);
+  await expect(ecran.getByTestId('blind-verdict')).toContainText(`Équipe ${numeroDe('Bao')}`);
+  // La chanson repart : troisième départ de l'extrait (écoute, relance, karaoké).
+  await expect
+    .poll(async () => (await journal(ecran)).filter((s) => s === `extrait:${id}`).length, {
+      timeout: 10_000,
+    })
+    .toBe(3);
+
+  // Les paroles défilent, et la ligne chantée se remplit.
+  const lignes = ecran.getByTestId('karaoke-lignes');
+  const rang = async () => Number(await lignes.getAttribute('data-index'));
+  const premierRang = await rang();
+  await expect.poll(rang, { timeout: 8000 }).toBeGreaterThan(premierRang);
+  await expect(ecran.getByTestId('karaoke-ligne')).toContainText('Ligne chantée');
+  const avance = () =>
+    ecran
+      .locator('.tu-karaoke')
+      .evaluate((el: HTMLElement) => Number(el.style.getPropertyValue('--tu-karaoke-avance')));
+  await expect.poll(avance, { timeout: 3000 }).toBeGreaterThan(0);
+  await capturer(ecran, 'ecran-karaoke');
+
+  // Le téléphone voit le verdict, jamais les paroles.
+  await expect(bao.getByTestId('statut-blind')).toHaveText(/Bravo/, { timeout: 10_000 });
+  await expect(bao.getByText(/Ligne chantée/)).toHaveCount(0);
+  await expect(ana.getByText(/Ligne chantée/)).toHaveCount(0);
+
+  // Rechargé, l'écran retombe au même endroit de la chanson, pas au point du buzz.
+  const avantRechargement = await rang();
+  await ecran.reload();
+  await expect(scene('karaoke')).toBeVisible({ timeout: 15_000 });
+  await expect.poll(rang, { timeout: 10_000 }).toBeGreaterThanOrEqual(avantRechargement);
+  await ecran.getByRole('button', { name: 'Activer le son' }).click();
+  await expect.poll(() => journal(ecran), { timeout: 15_000 }).toContain(`extrait:${id}`);
+  await expect.poll(() => niveau(ecran), { timeout: 10_000 }).toBeGreaterThan(0.02);
+
+  // « Couper en fondu » : le niveau descend par paliers jusqu'au silence, sans son par-dessus.
+  const releve = releverNiveaux(ecran);
+  await regie.getByRole('button', { name: 'Couper en fondu' }).click();
   await expect(scene('revele')).toBeVisible({ timeout: 10_000 });
+  const niveaux = await releve;
+  const plein = Math.max(...niveaux.slice(0, 3));
+  expect(plein).toBeGreaterThan(0.02);
+  expect(niveaux.filter((n) => n > plein * 0.15 && n < plein * 0.85).length).toBeGreaterThan(3);
+  expect(niveaux.at(-1)!).toBeLessThan(0.002);
   await expect(ecran.getByTestId('blind-reponse')).toHaveText(titre);
   await expect(ecran.getByTestId('blind-verdict')).toContainText(`Équipe ${numeroDe('Bao')}`);
   await capturer(ecran, 'ecran-revele');

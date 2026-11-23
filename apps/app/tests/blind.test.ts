@@ -151,6 +151,7 @@ avecBase('le buzzer du blind test', () => {
         artiste: 'Artiste secret',
         chemin: `${crypto.randomUUID()}.mp3`,
         taille: 10,
+        paroles: [{ t_ms: 0, texte: 'Parole secrète' }],
       })
       .select('id')
       .single();
@@ -177,9 +178,57 @@ avecBase('le buzzer du blind test', () => {
     expect(texte).not.toContain('Réponse secrète');
     expect(texte).not.toContain('Artiste secret');
     expect(texte).not.toContain('.mp3');
+
+    // Au karaoké (2026-11-23), le téléphone sait qui a trouvé, jamais les paroles.
+    await service
+      .from('passages')
+      .update({ statut: 'termine', resultat: { ecoute_ms: 1000, trouve_par: 2 } })
+      .eq('id', titre);
+    await service
+      .from('pilotage')
+      .update({ etape: 'karaoke', chrono_depart: new Date().toISOString(), chrono_duree_s: 600 })
+      .eq('evenement_id', evenement.id);
+    const auKaraoke = await etat('Bruno');
+    expect(auKaraoke.blind).toMatchObject({ etape: 'karaoke', trouve_par: 2, peut_buzzer: false });
+    expect(JSON.stringify(auKaraoke)).not.toContain('Parole secrète');
+    expect((await buzzer('Alice')).erreur).toMatch(/trop tard/);
+
     await service
       .from('musiques')
       .delete()
       .eq('id', musique!['id'] as string);
+  });
+
+  it('garde les paroles fermées sans compte, et refuse des paroles mal formées', async () => {
+    const service = clientService();
+    const { data: musique } = await service
+      .from('musiques')
+      .insert({
+        titre: 'Paroles contrôlées',
+        chemin: `${crypto.randomUUID()}.mp3`,
+        taille: 10,
+        paroles: [{ t_ms: 0, texte: 'Une ligne' }],
+      })
+      .select('id')
+      .single();
+    const id = musique!['id'] as string;
+
+    const { data: anon } = await clientAnon().from('musiques').select('paroles').eq('id', id);
+    expect(anon ?? []).toHaveLength(0);
+
+    for (const paroles of [
+      [],
+      [
+        { t_ms: 10, texte: 'même' },
+        { t_ms: 10, texte: 'instant' },
+      ],
+      [{ t_ms: -1, texte: 'négatif' }],
+      [{ t_ms: 0, texte: '   ' }],
+      [{ t_ms: 0, texte: 'x'.repeat(121) }],
+    ]) {
+      const { error } = await service.from('musiques').update({ paroles }).eq('id', id);
+      expect(error, JSON.stringify(paroles)).not.toBeNull();
+    }
+    await service.from('musiques').delete().eq('id', id);
   });
 });
