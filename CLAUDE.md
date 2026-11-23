@@ -1972,3 +1972,33 @@ n'a trouvé : pas de karaoké.
 - Tests : `packages/game`, `tests/paroles.test.ts`, `tests/sons.test.ts`,
   `tests/pilotage-etapes.test.ts`, `tests/blind.test.ts` (aucune parole au téléphone),
   `e2e/blind.spec.ts` (calage, défilement, rechargement, fondu mesuré ; `la-440-60s.mp3`).
+
+## Conventions posées le 2026-11-23 (parcours joueur sur téléphone)
+
+Suit `docs/parcours-joueur-mobile.md` et sa maquette (`livrables/maquettes-joueur/`). Inscription
+en deux étapes (« Votre inscription », « Votre rôle »), puis une barre du bas : Ma partie, Les jeux,
+Message, Équipe, Classement. Écarts à la maquette : **pas de barre sur un formulaire** (revenue à la
+fermeture du clavier, elle avalait l'appui sur « Enregistrer ») ; le message part **directement**
+sur le grand écran (règle du 2026-11-14), il n'est pas sélectionné par l'animateur.
+
+- Arbitrage du direct : `prioriteDuDirect` (`src/lib/priorite.ts`, pur, testé), à l'heure de la
+  base. `urgent` : la vue du jeu passe devant l'onglet, le formulaire ou la boîte ouverts, la barre
+  s'efface. Il retombe à la réponse ou à la fin du chrono (+ 1 s, comme la base).
+- `EcranJoueur` garde la vue du jeu montée (une mise ou un mot en cours d'envoi survit à un
+  changement d'onglet) et les formulaires ouverts aussi (`brouillons`, masqués par `hidden`). Un
+  `<dialog>` modal ne reste jamais ouvert dans un bloc masqué : il rendrait la page inerte.
+- `useEtatJoueur.aJour` : faux au retour d'une veille ou du réseau, le temps de la relecture (la vue
+  du jeu est `inert`). **Jamais pendant la coupure** : la Surenchère y garde ses mots en file. L'état
+  se relit aussi à l'ouverture (une page préchargée par un lien peut dater d'avant la manche).
+- Inscription : `demande` (48 hexa, tirée par le téléphone, gardée dans l'onglet jusqu'à la réussite)
+  dérive le jeton de session (`jetonDeDemande`). Une réponse perdue se rattrape sans « prénom déjà
+  pris ». Prise en compte seulement en `application/json` : un formulaire d'un autre site ne choisit
+  pas le jeton d'une session.
+- Classement (migration `20261125090000`) : `pilotage.podium_depart` et `podium_publie`, écrits
+  **uniquement** par le déclencheur `pilotage_suivre_podium`. Publié **5 s** après l'arrivée du
+  podium (3,5 s d'animation, plus la marge de l'écran) ; une scène quittée avant ne publie rien ;
+  une fois quittée, les téléphones gardent le dernier podium montré. Rang = place à l'écran (points,
+  puis numéro) ; une égalité garde cet ordre et s'affiche « ex æquo ». Une clôture ne publie rien.
+- Tests : `tests/priorite.test.ts`, `tests/classement-public.test.ts`, `e2e/parcours-joueur.spec.ts`
+  (la recette du document). `surenchere-casse` échoue sur sa latence sur ce poste, comme en CI avant
+  ce changement. Les appels directs à Kong s'y figent 10 à 20 s pendant les e2e (mesuré).
