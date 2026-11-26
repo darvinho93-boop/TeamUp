@@ -225,10 +225,19 @@ avecBase('le buzzer du blind test', () => {
       [{ t_ms: -1, texte: 'négatif' }],
       [{ t_ms: 0, texte: '   ' }],
       [{ t_ms: 0, texte: 'x'.repeat(121) }],
+      // La version en lettres latines (2026-11-26) : une chaîne, non vide, de 120 au plus.
+      [{ t_ms: 0, texte: 'Une ligne', latin: 3 }],
+      [{ t_ms: 0, texte: 'Une ligne', latin: '  ' }],
+      [{ t_ms: 0, texte: 'Une ligne', latin: 'x'.repeat(121) }],
     ]) {
       const { error } = await service.from('musiques').update({ paroles }).eq('id', id);
       expect(error, JSON.stringify(paroles)).not.toBeNull();
     }
+    const { error: avecLatin } = await service
+      .from('musiques')
+      .update({ paroles: [{ t_ms: 0, texte: 'ஒரு வரி', latin: 'Oru vari' }] })
+      .eq('id', id);
+    expect(avecLatin).toBeNull();
     await service.from('musiques').delete().eq('id', id);
   });
 });
