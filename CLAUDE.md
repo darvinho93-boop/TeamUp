@@ -1969,6 +1969,17 @@ n'a trouvé : pas de karaoké.
   pleine. Contrôle sans base : `/kit-ui/karaoke?equipe=1&texte=courte|longue|tamoul|aucune`.
 - Back-office : `/admin/musiques/[id]/paroles` (`src/admin/EditeurParoles.tsx`) : coller le texte ou
   un `.lrc`, lancer la chanson, **Espace** au début de chaque ligne, ± 0,1 s, « Recaler d'ici ».
+- **Ligne en lettres latines** (2026-11-26, pour les chansons tamoules) : une clé facultative `latin`
+  par ligne (`{ t_ms, texte, latin? }`, mêmes limites que le texte, vérifiée par
+  `paroles_bien_formees`, migration `20261126090000`). Collée dans un second champ de l'éditeur,
+  **ligne pour ligne** (un nombre de lignes différent est refusé, les deux comptes affichés) ; les
+  instants viennent des paroles, à défaut d'un `.lrc` collé en latin. Relire les mêmes paroles
+  garde le calage (`garderInstants`). À l'écran, sous chaque ligne, plus petite
+  (`--tu-karaoke-latin-ratio`), sur une rangée réduite à la largeur ; sous la ligne chantée, elle
+  se remplit sur toute la durée de la ligne. Contrôle : `/kit-ui/karaoke?texte=latin`.
+- Les paroles **ne sont jamais récupérées par Claude** (redemandé le 2026-11-26, même pour une soirée
+  en famille) : l'utilisateur les télécharge (LRCGET pour les `.lrc`, tamil2lyrics pour le tamoul
+  et sa version latine) ; Claude importe et cale ce qu'il fournit.
 - Tests : `packages/game`, `tests/paroles.test.ts`, `tests/sons.test.ts`,
   `tests/pilotage-etapes.test.ts`, `tests/blind.test.ts` (aucune parole au téléphone),
   `e2e/blind.spec.ts` (calage, défilement, rechargement, fondu mesuré ; `la-440-60s.mp3`).
