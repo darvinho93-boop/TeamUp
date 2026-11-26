@@ -1394,6 +1394,8 @@
         "avancer": "0.1 s later",
         "apercu": "Preview",
         "enregistrer": "Save the lyrics",
+        "enregistrerDebut": "Save the first {n} lines",
+        "aideDebut": "Only the first {n} lines are timed: the karaoke starts at the buzz, so the start of the song is often enough. The following lines will be left out.",
         "enregistrees": "Lyrics saved.",
         "retirer": "Remove the lyrics",
         "confirmerRetirer": "Remove the lyrics of this song?",

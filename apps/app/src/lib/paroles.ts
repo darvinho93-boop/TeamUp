@@ -128,6 +128,17 @@ export function parolesPretes(lignes: readonly LigneBrouillon[]): LigneParoles[]
   return pretes;
 }
 
+/**
+ * Le début calé d'une chanson (2026-11-26) : quand les premières lignes ont leur instant et que
+ * toutes les suivantes attendent encore, ces premières lignes, prêtes à enregistrer. Le karaoké
+ * part au buzz et la régie le coupe vite : caler le début suffit souvent. Sinon, `null`.
+ */
+export function debutCale(lignes: readonly LigneBrouillon[]): LigneParoles[] | null {
+  const premiere = lignes.findIndex((l) => l.t_ms === null);
+  if (premiere <= 0 || lignes.slice(premiere).some((l) => l.t_ms !== null)) return null;
+  return parolesPretes(lignes.slice(0, premiere));
+}
+
 const deux = (n: number) => String(n).padStart(2, '0');
 
 /** Un instant lisible et réutilisable dans un `.lrc` : `01:23.450`. */

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   contientTamoul,
   DUREE_DERNIERE_LIGNE_MS,
+  debutCale,
   DUREE_LIGNE_MAX_MS,
   garderInstants,
   horodatage,
@@ -139,6 +140,42 @@ describe('la version en lettres latines (2026-11-26)', () => {
     expect(versLatin(deux)).toBe('A\nB');
     expect(lireParoles(versLrc(deux), versLatin(deux)).lignes).toEqual(deux);
     expect(versLatin([{ t_ms: 0, texte: 'a' }])).toBe('');
+  });
+});
+
+describe('le début calé seul (2026-11-26)', () => {
+  it('garde les premières lignes calées quand toutes les suivantes attendent', () => {
+    expect(
+      debutCale([
+        { t_ms: 0, texte: 'a', latin: 'A' },
+        { t_ms: 10, texte: 'b' },
+        { t_ms: null, texte: 'c' },
+        { t_ms: null, texte: 'd' },
+      ]),
+    ).toEqual([
+      { t_ms: 0, texte: 'a', latin: 'A' },
+      { t_ms: 10, texte: 'b' },
+    ]);
+  });
+
+  it('refuse un trou au milieu, rien de calé, ou un début dans le désordre', () => {
+    expect(
+      debutCale([
+        { t_ms: 0, texte: 'a' },
+        { t_ms: null, texte: 'b' },
+        { t_ms: 20, texte: 'c' },
+      ]),
+    ).toBeNull();
+    expect(debutCale([{ t_ms: null, texte: 'a' }])).toBeNull();
+    expect(
+      debutCale([
+        { t_ms: 10, texte: 'a' },
+        { t_ms: 5, texte: 'b' },
+        { t_ms: null, texte: 'c' },
+      ]),
+    ).toBeNull();
+    // Tout calé : ce n'est pas un début, c'est la chanson entière (parolesPretes).
+    expect(debutCale([{ t_ms: 0, texte: 'a' }])).toBeNull();
   });
 });
 

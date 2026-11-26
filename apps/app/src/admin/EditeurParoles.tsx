@@ -7,6 +7,7 @@ import { Button } from '@teamup/ui/react';
 import { enregistrerParoles } from '@/app/admin/musiques/actions';
 import {
   contientTamoul,
+  debutCale,
   garderInstants,
   horodatage,
   lireParoles,
@@ -67,6 +68,9 @@ export function EditeurParoles({
         .sort((a, b) => a.t_ms - b.t_ms),
     [lignes],
   );
+
+  /** Seulement le début calé (les lignes suivantes attendent encore) : on peut l'enregistrer seul. */
+  const debut = useMemo(() => (parolesPretes(lignes) ? null : debutCale(lignes)), [lignes]);
 
   const marquer = useCallback(() => {
     const lecteur = audio.current;
@@ -172,7 +176,8 @@ export function EditeurParoles({
     );
 
   function enregistrer() {
-    const pretes = parolesPretes(lignes);
+    // Tout calé, ou seulement le début : les lignes suivantes, pas calées, sont laissées de côté.
+    const pretes = parolesPretes(lignes) ?? debut;
     if (!pretes) {
       setMessage({ genre: 'erreur', cle: 'incompletes' });
       return;
@@ -302,6 +307,11 @@ export function EditeurParoles({
             )}
           </div>
           {rang !== null && <p className="tu-regie__muted">{t('aideCaler')}</p>}
+          {debut && (
+            <p className="tu-regie__muted" data-testid="paroles-debut">
+              {t('aideDebut', { n: debut.length })}
+            </p>
+          )}
 
           <ol className="tu-paroles__liste">
             {lignes.map((l, i) => (
@@ -378,7 +388,7 @@ export function EditeurParoles({
           onClick={enregistrer}
           disabled={enCours || !lignes.length}
         >
-          {t('enregistrer')}
+          {debut ? t('enregistrerDebut', { n: debut.length }) : t('enregistrer')}
         </Button>
         {initiales.length > 0 && (
           <BoutonConfirme

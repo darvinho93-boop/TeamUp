@@ -1394,6 +1394,8 @@
         "avancer": "Plus tard de 0,1 s",
         "apercu": "Aperçu",
         "enregistrer": "Enregistrer les paroles",
+        "enregistrerDebut": "Enregistrer les {n} premières lignes",
+        "aideDebut": "Seules les {n} premières lignes sont calées : le karaoké part au buzz, le début de la chanson suffit souvent. Les lignes suivantes seront laissées de côté.",
         "enregistrees": "Paroles enregistrées.",
         "retirer": "Retirer les paroles",
         "confirmerRetirer": "Retirer les paroles de cette chanson ?",
