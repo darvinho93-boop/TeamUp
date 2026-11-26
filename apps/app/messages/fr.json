@@ -1380,6 +1380,8 @@
         "titre": "Paroles : {titre}",
         "aide": "Colle le texte de la chanson, une ligne par phrase chantée, ou un fichier .lrc déjà calé.",
         "texte": "Paroles (texte ou .lrc)",
+        "latin": "En lettres latines (facultatif)",
+        "aideLatin": "La même chanson en lettres latines, une ligne pour chaque ligne des paroles, dans le même ordre : elle s’affiche dessous à l’écran. Un .lrc ici donne ses instants à des paroles qui n’en ont pas.",
         "preparer": "Préparer les lignes",
         "etat": "{calees} sur {total} lignes calées",
         "caler": "Caler depuis le début",
@@ -1401,6 +1403,7 @@
           "vide": "Colle au moins une ligne.",
           "longue": "Une ligne dépasse 120 caractères : coupe-la en deux.",
           "trop": "Plus de 400 lignes : garde le passage à chanter.",
+          "latin": "Les paroles ont {texte} lignes, la version en lettres latines {latin} : il en faut autant, dans le même ordre.",
           "echec": "L’enregistrement n’a pas abouti : réessaie."
         }
       },

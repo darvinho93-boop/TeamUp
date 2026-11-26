@@ -111,6 +111,23 @@
   clip-path: inset(0 calc((1 - var(--tu-paroles-avance)) * 100%) 0 0);
 }
 
+/* La version en lettres latines (2026-11-26), sous la ligne chantée de l'aperçu et dans la liste. */
+.tu-paroles__latin {
+  margin: 0;
+  font-size: var(--tu-size-base);
+}
+
+.tu-paroles__textes {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.tu-paroles__latin-ligne {
+  color: var(--tu-text-muted);
+  font-size: var(--tu-size-sm);
+}
+
 .tu-paroles__liste {
   display: flex;
   flex-direction: column;

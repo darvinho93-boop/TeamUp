@@ -25,11 +25,20 @@ const TEXTES: Record<string, readonly string[]> = {
   aucune: [],
 };
 
+/** Les mêmes phrases tamoules en lettres latines, sous chacune (`texte=latin`). */
+const LATIN = [
+  'Idhu karaoke thiraikkaana oru sodhanai vari',
+  'Thamizh ezhuthugal sariyaaga therigiradhaa endru paarkkirom',
+  'Aduththa vari inge kaaththirukkiradhu',
+];
+
 export function KitKaraoke({ equipe, texte }: { equipe: number; texte: string }) {
   const [cadre, echelle] = useEchelleScene('contenir', 1);
-  const paroles: LigneParoles[] = (TEXTES[texte] ?? []).map((l, i) => ({
+  const latin = texte === 'latin';
+  const paroles: LigneParoles[] = (TEXTES[latin ? 'tamoul' : texte] ?? []).map((l, i) => ({
     t_ms: i * 4000,
     texte: l,
+    ...(latin ? { latin: LATIN[i]! } : {}),
   }));
   return (
     <div

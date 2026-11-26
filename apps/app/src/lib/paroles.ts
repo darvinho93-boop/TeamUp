@@ -1,7 +1,8 @@
 /**
  * Les paroles du karaoké (2026-11-23), règles pures : lire ce que l'admin colle (texte brut ou
  * fichier `.lrc`), dire si c'est prêt à enregistrer, et ce que l'écran montre à un instant donné.
- * Mêmes limites que `paroles_bien_formees` en base.
+ * Mêmes limites que `paroles_bien_formees` en base. Depuis le 2026-11-26, une ligne peut porter
+ * sa version en lettres latines (`latin`), affichée dessous : collée à part, ligne pour ligne.
  */
 
 export const PAROLES_MAX_LIGNES = 400;
@@ -14,26 +15,27 @@ export const DUREE_DERNIERE_LIGNE_MS = 4000;
 export interface LigneParoles {
   t_ms: number;
   texte: string;
+  /** La même ligne en lettres latines, sous l'écriture tamoule. */
+  latin?: string | undefined;
 }
 
 /** Une ligne en cours de calage : pas encore d'instant tant qu'on n'a pas tapé dessus. */
 export interface LigneBrouillon {
   t_ms: number | null;
   texte: string;
+  latin?: string | undefined;
 }
 
-export type RefusParoles = 'vide' | 'longue' | 'trop';
+/** `latin` : la version en lettres latines n'a pas autant de lignes que les paroles. */
+export type RefusParoles = 'vide' | 'longue' | 'trop' | 'latin';
 
 const HORODATAGES = /^(?:\[\d{1,3}:\d{2}(?:[.:]\d{1,3})?\]\s*)+/;
 const HORODATAGE = /\[(\d{1,3}):(\d{2})(?:[.:](\d{1,3}))?\]/g;
 /** Les en-têtes d'un `.lrc` : `[ar:Artiste]`, `[ti:Titre]`, `[offset:0]`… */
 const EN_TETE = /^\[[a-z]+:.*\]$/i;
 
-/** Lit du texte brut (une ligne par ligne chantée) ou un `.lrc` (déjà calé). */
-export function lireParoles(brut: string): {
-  lignes: LigneBrouillon[];
-  refus: RefusParoles | null;
-} {
+/** Les lignes d'un texte brut (sans instants) ou d'un `.lrc` (rangé par instant). */
+function lireLignes(brut: string): LigneBrouillon[] {
   const lignes: LigneBrouillon[] = [];
   for (const ligne of brut.split(/\r?\n/)) {
     const propre = ligne.trim();
@@ -56,15 +58,58 @@ export function lireParoles(brut: string): {
   if (lignes.every((l) => l.t_ms !== null)) {
     lignes.sort((a, b) => a.t_ms! - b.t_ms!);
   }
+  return lignes;
+}
+
+/**
+ * Lit les paroles (texte brut, une ligne par ligne chantée, ou `.lrc` déjà calé) et, à part,
+ * leur version en lettres latines, rangée ligne pour ligne sous elles. Les instants viennent des
+ * paroles ; à défaut, de la version latine (un `.lrc` en lettres latines sous un texte tamoul).
+ */
+export function lireParoles(
+  brut: string,
+  brutLatin = '',
+): {
+  lignes: LigneBrouillon[];
+  refus: RefusParoles | null;
+  /** Les lignes de la version latine, pour dire l'écart quand elles ne tombent pas juste. */
+  latines: number;
+} {
+  const lus = lireLignes(brut);
+  const latines = lireLignes(brutLatin);
+  const lignes =
+    latines.length > 0 && latines.length === lus.length
+      ? lus.map((l, i) => ({
+          t_ms: l.t_ms ?? latines[i]!.t_ms,
+          texte: l.texte,
+          latin: latines[i]!.texte,
+        }))
+      : lus;
   const refus: RefusParoles | null =
     lignes.length === 0
       ? 'vide'
       : lignes.length > PAROLES_MAX_LIGNES
         ? 'trop'
-        : lignes.some((l) => l.texte.length > LIGNE_MAX)
-          ? 'longue'
-          : null;
-  return { lignes, refus };
+        : latines.length > 0 && latines.length !== lus.length
+          ? 'latin'
+          : lignes.some((l) => l.texte.length > LIGNE_MAX || (l.latin?.length ?? 0) > LIGNE_MAX)
+            ? 'longue'
+            : null;
+  return { lignes, refus, latines: latines.length };
+}
+
+/**
+ * Relire des paroles sans instants ne perd pas le calage déjà fait : une ligne restée la même, à
+ * la même place, garde son instant (pour ajouter la version latine après coup, par exemple).
+ */
+export function garderInstants(
+  nouvelles: readonly LigneBrouillon[],
+  anciennes: readonly LigneBrouillon[],
+): LigneBrouillon[] {
+  if (nouvelles.length !== anciennes.length) return [...nouvelles];
+  return nouvelles.map((l, i) =>
+    l.t_ms === null && anciennes[i]!.texte === l.texte ? { ...l, t_ms: anciennes[i]!.t_ms } : l,
+  );
 }
 
 /** Les lignes prêtes à enregistrer, ou `null` : une ligne sans instant, ou deux dans le désordre. */
@@ -72,10 +117,12 @@ export function parolesPretes(lignes: readonly LigneBrouillon[]): LigneParoles[]
   if (lignes.length === 0 || lignes.length > PAROLES_MAX_LIGNES) return null;
   const pretes: LigneParoles[] = [];
   let avant = -1;
-  for (const { t_ms, texte } of lignes) {
+  for (const { t_ms, texte, latin } of lignes) {
     if (t_ms === null || !Number.isInteger(t_ms) || t_ms <= avant) return null;
     if (!texte.trim() || texte.length > LIGNE_MAX) return null;
-    pretes.push({ t_ms, texte });
+    const enLatin = latin?.trim();
+    if (enLatin && enLatin.length > LIGNE_MAX) return null;
+    pretes.push(enLatin ? { t_ms, texte, latin: enLatin } : { t_ms, texte });
     avant = t_ms;
   }
   return pretes;
@@ -99,14 +146,24 @@ export function versLrc(lignes: readonly LigneBrouillon[]): string {
     .join('\n');
 }
 
+/** La version latine à remettre dans son champ : rien tant qu'une ligne n'en a pas. */
+export function versLatin(lignes: readonly LigneBrouillon[]): string {
+  return lignes.length > 0 && lignes.every((l) => l.latin)
+    ? lignes.map((l) => l.latin).join('\n')
+    : '';
+}
+
 /** Les paroles lues en base, sans confiance : rien d'utilisable donne une liste vide. */
 export function parolesDe(brut: unknown): LigneParoles[] {
   if (!Array.isArray(brut)) return [];
   return brut.flatMap((l: unknown) => {
-    const ligne = l as { t_ms?: unknown; texte?: unknown } | null;
-    return typeof ligne?.t_ms === 'number' && typeof ligne.texte === 'string'
-      ? [{ t_ms: ligne.t_ms, texte: ligne.texte }]
-      : [];
+    const ligne = l as { t_ms?: unknown; texte?: unknown; latin?: unknown } | null;
+    if (typeof ligne?.t_ms !== 'number' || typeof ligne.texte !== 'string') return [];
+    return [
+      typeof ligne.latin === 'string' && ligne.latin.trim()
+        ? { t_ms: ligne.t_ms, texte: ligne.texte, latin: ligne.latin }
+        : { t_ms: ligne.t_ms, texte: ligne.texte },
+    ];
   });
 }
 

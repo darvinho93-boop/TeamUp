@@ -1380,6 +1380,8 @@
         "titre": "Lyrics: {titre}",
         "aide": "Paste the song text, one line per sung phrase, or an already synced .lrc file.",
         "texte": "Lyrics (text or .lrc)",
+        "latin": "In Latin letters (optional)",
+        "aideLatin": "The same song in Latin letters, one line for each line of the lyrics, in the same order: it shows underneath on screen. A .lrc here gives its timings to lyrics that have none.",
         "preparer": "Prepare the lines",
         "etat": "{calees} of {total} lines synced",
         "caler": "Sync from the start",
@@ -1401,6 +1403,7 @@
           "vide": "Paste at least one line.",
           "longue": "A line is over 120 characters: split it in two.",
           "trop": "More than 400 lines: keep the part to sing.",
+          "latin": "The lyrics have {texte} lines and the Latin-letter version {latin}: they need the same number, in the same order.",
           "echec": "Saving failed: try again."
         }
       },

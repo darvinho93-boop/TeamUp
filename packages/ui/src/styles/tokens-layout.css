@@ -121,6 +121,10 @@
   --tu-stage-karaoke-egaliseur: 4rem;
   --tu-karaoke-voisine-opacite: 0.6;
   --tu-karaoke-voisine-ratio: 0.6;
+  /* La ligne en lettres latines sous la ligne tamoule (2026-11-26) : sa part de la taille de la
+     ligne, et la largeur moyenne d'un caractère latin (en em) pour la réduire à la scène. */
+  --tu-karaoke-latin-ratio: 0.6;
+  --tu-karaoke-car-latin: 0.58;
   /* Caler les paroles au back-office : le champ de texte, la liste des lignes, la colonne d'instant. */
   --tu-paroles-texte: 14rem;
   --tu-paroles-liste: 28rem;

@@ -7,9 +7,11 @@ import { Button } from '@teamup/ui/react';
 import { enregistrerParoles } from '@/app/admin/musiques/actions';
 import {
   contientTamoul,
+  garderInstants,
   horodatage,
   lireParoles,
   parolesPretes,
+  versLatin,
   versLrc,
   vueKaraoke,
   type LigneBrouillon,
@@ -22,7 +24,8 @@ type Message =
   | {
       genre: 'erreur';
       cle: 'incompletes' | 'erreur.vide' | 'erreur.longue' | 'erreur.trop' | 'erreur.echec';
-    };
+    }
+  | { genre: 'erreur'; cle: 'erreur.latin'; valeurs: { texte: number; latin: number } };
 
 const PAS_MS = 100;
 const langueDe = (texte: string) => (contientTamoul(texte) ? 'ta' : 'und');
@@ -30,6 +33,7 @@ const langueDe = (texte: string) => (contientTamoul(texte) ? 'ta' : 'und');
 /**
  * Caler les paroles d'une chanson (2026-11-23) : coller le texte ou un `.lrc`, lancer la chanson,
  * taper Espace au début de chaque ligne, corriger au dixième de seconde, relire dans l'aperçu.
+ * Depuis le 2026-11-26, un second champ prend la version en lettres latines, ligne pour ligne.
  */
 export function EditeurParoles({
   id,
@@ -48,6 +52,7 @@ export function EditeurParoles({
   const apercu = useRef<HTMLDivElement>(null);
   const aMarquer = useRef<HTMLLIElement>(null);
   const [texte, setTexte] = useState(() => versLrc(initiales));
+  const [latin, setLatin] = useState(() => versLatin(initiales));
   const [lignes, setLignes] = useState<LigneBrouillon[]>(() => [...initiales]);
   /** La ligne qui attend son instant ; `null` hors du calage. */
   const [rang, setRang] = useState<number | null>(null);
@@ -58,7 +63,7 @@ export function EditeurParoles({
   const calees = useMemo(
     () =>
       lignes
-        .flatMap((l) => (l.t_ms === null ? [] : [{ t_ms: l.t_ms, texte: l.texte }]))
+        .flatMap((l) => (l.t_ms === null ? [] : [{ t_ms: l.t_ms, texte: l.texte, latin: l.latin }]))
         .sort((a, b) => a.t_ms - b.t_ms),
     [lignes],
   );
@@ -115,14 +120,23 @@ export function EditeurParoles({
 
   function preparer() {
     setMessage(null);
-    const lu = lireParoles(texte);
+    const lu = lireParoles(texte, latin);
+    if (lu.refus === 'latin') {
+      setMessage({
+        genre: 'erreur',
+        cle: 'erreur.latin',
+        valeurs: { texte: lu.lignes.length, latin: lu.latines },
+      });
+      return;
+    }
     if (lu.refus) {
       setMessage({ genre: 'erreur', cle: `erreur.${lu.refus}` });
       return;
     }
     audio.current?.pause();
     setRang(null);
-    setLignes(lu.lignes);
+    // Le calage déjà fait reste : ajouter la version latine ne le défait pas.
+    setLignes((avant) => garderInstants(lu.lignes, avant));
   }
 
   /** Reprend le calage à la ligne `depuis`, un peu avant elle : la ligne d'avant sert d'élan. */
@@ -170,6 +184,7 @@ export function EditeurParoles({
       );
       if (ok) {
         setTexte(versLrc(pretes));
+        setLatin(versLatin(pretes));
         router.refresh();
       }
     });
@@ -184,6 +199,7 @@ export function EditeurParoles({
         setRang(null);
         setLignes([]);
         setTexte('');
+        setLatin('');
         router.refresh();
       }
     });
@@ -191,6 +207,7 @@ export function EditeurParoles({
 
   const precedente = calees[indexApercu - 1]?.texte;
   const courante = calees[indexApercu]?.texte;
+  const latinCourant = calees[indexApercu]?.latin;
   const suivante = calees[indexApercu + 1]?.texte;
   const tCourant = calees[indexApercu]?.t_ms;
 
@@ -205,6 +222,17 @@ export function EditeurParoles({
             onChange={(e) => setTexte(e.target.value)}
             spellCheck={false}
             data-testid="paroles-texte"
+          />
+        </label>
+        <label className="tu-field">
+          <span className="tu-field__label">{t('latin')}</span>
+          <span className="tu-field__hint">{t('aideLatin')}</span>
+          <textarea
+            className="tu-field__control tu-paroles__texte"
+            value={latin}
+            onChange={(e) => setLatin(e.target.value)}
+            spellCheck={false}
+            data-testid="paroles-latin"
           />
         </label>
         <div>
@@ -247,6 +275,11 @@ export function EditeurParoles({
                 </span>
               )}
             </p>
+            {latinCourant && (
+              <p className="tu-paroles__latin" data-testid="paroles-apercu-latin">
+                {latinCourant}
+              </p>
+            )}
             <p className="tu-paroles__voisine" lang={langueDe(suivante ?? '')}>
               {suivante ?? ' '}
             </p>
@@ -283,7 +316,10 @@ export function EditeurParoles({
                 <span className="tu-paroles__instant">
                   {l.t_ms === null ? '—' : horodatage(l.t_ms)}
                 </span>
-                <span lang={langueDe(l.texte)}>{l.texte}</span>
+                <span className="tu-paroles__textes">
+                  <span lang={langueDe(l.texte)}>{l.texte}</span>
+                  {l.latin && <span className="tu-paroles__latin-ligne">{l.latin}</span>}
+                </span>
                 <span className="tu-paroles__outils">
                   {l.t_ms !== null && (
                     <>
@@ -332,7 +368,7 @@ export function EditeurParoles({
           role={message.genre === 'ok' ? 'status' : 'alert'}
           data-testid="paroles-message"
         >
-          {t(message.cle)}
+          {message.cle === 'erreur.latin' ? t(message.cle, message.valeurs) : t(message.cle)}
         </p>
       )}
       <div className="tu-regie-keys">

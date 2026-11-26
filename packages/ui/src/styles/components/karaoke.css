@@ -154,6 +154,24 @@
   );
 }
 
+/* La version en lettres latines (2026-11-26), sous la ligne tamoule : plus petite qu'elle, sur une
+   seule rangée, réduite à la largeur de la scène. Sous la ligne chantée, elle se remplit aussi. */
+.tu-karaoke__latin {
+  display: block;
+  font-family: var(--tu-font-display);
+  font-size: min(
+    calc(1em * var(--tu-karaoke-latin-ratio)),
+    calc(
+      var(--tu-stage-karaoke-largeur) /
+        (var(--tu-karaoke-n-latin, 14) * var(--tu-karaoke-car-latin))
+    )
+  );
+}
+
+.tu-karaoke__rangee.tu-karaoke__latin {
+  padding-block: var(--tu-space-1);
+}
+
 .tu-karaoke__egaliseur {
   flex: none;
   height: var(--tu-stage-karaoke-egaliseur);

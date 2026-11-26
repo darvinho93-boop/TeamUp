@@ -3,6 +3,7 @@ import {
   contientTamoul,
   DUREE_DERNIERE_LIGNE_MS,
   DUREE_LIGNE_MAX_MS,
+  garderInstants,
   horodatage,
   lireParoles,
   LIGNE_MAX,
@@ -12,6 +13,7 @@ import {
   RANGEE_MAX,
   RANGEE_MAX_TAMOUL,
   rangees,
+  versLatin,
   versLrc,
   vueKaraoke,
 } from '../src/lib/paroles';
@@ -24,6 +26,7 @@ describe('lire les paroles collées', () => {
         { t_ms: null, texte: 'Deuxième ligne' },
       ],
       refus: null,
+      latines: 0,
     });
   });
 
@@ -61,6 +64,81 @@ describe('lire les paroles collées', () => {
     expect(horodatage(83_450)).toBe('01:23.450');
     expect(lireParoles(versLrc(lignes)).lignes).toEqual(lignes);
     expect(versLrc([{ t_ms: null, texte: 'Pas calée' }])).toBe('Pas calée');
+  });
+});
+
+describe('la version en lettres latines (2026-11-26)', () => {
+  it('se range ligne pour ligne sous les paroles', () => {
+    expect(
+      lireParoles('[00:01.00] வணக்கம்\n[00:03.00] நன்றி', 'Vanakkam\n\nNandri ').lignes,
+    ).toEqual([
+      { t_ms: 1000, texte: 'வணக்கம்', latin: 'Vanakkam' },
+      { t_ms: 3000, texte: 'நன்றி', latin: 'Nandri' },
+    ]);
+  });
+
+  it('donne ses instants à des paroles qui n’en ont pas, jamais l’inverse', () => {
+    expect(lireParoles('Une\nDeux', '[00:05.00] Two\n[00:02.00] One').lignes).toEqual([
+      { t_ms: 2000, texte: 'Une', latin: 'One' },
+      { t_ms: 5000, texte: 'Deux', latin: 'Two' },
+    ]);
+    expect(lireParoles('[00:01.00] Une', '[00:09.00] One').lignes).toEqual([
+      { t_ms: 1000, texte: 'Une', latin: 'One' },
+    ]);
+  });
+
+  it('refuse un nombre de lignes différent, et une ligne latine trop longue', () => {
+    expect(lireParoles('Une\nDeux', 'One')).toMatchObject({ refus: 'latin', latines: 1 });
+    expect(lireParoles('Une', 'x'.repeat(LIGNE_MAX + 1)).refus).toBe('longue');
+    expect(lireParoles('Une', '').refus).toBeNull();
+  });
+
+  it('ne défait pas le calage quand on relit les mêmes paroles', () => {
+    const calees = [
+      { t_ms: 1000, texte: 'Une' },
+      { t_ms: 2000, texte: 'Deux' },
+    ];
+    expect(garderInstants(lireParoles('Une\nDeux', 'One\nTwo').lignes, calees)).toEqual([
+      { t_ms: 1000, texte: 'Une', latin: 'One' },
+      { t_ms: 2000, texte: 'Deux', latin: 'Two' },
+    ]);
+    // Une ligne changée perd son instant ; un autre nombre de lignes repart de zéro.
+    expect(garderInstants(lireParoles('Une\nAutre').lignes, calees).map((l) => l.t_ms)).toEqual([
+      1000,
+      null,
+    ]);
+    expect(garderInstants(lireParoles('Une').lignes, calees)).toEqual([
+      { t_ms: null, texte: 'Une' },
+    ]);
+  });
+
+  it('s’enregistre, se relit et revient dans son champ', () => {
+    expect(
+      parolesPretes([
+        { t_ms: 0, texte: 'a', latin: ' A ' },
+        { t_ms: 10, texte: 'b' },
+      ]),
+    ).toEqual([
+      { t_ms: 0, texte: 'a', latin: 'A' },
+      { t_ms: 10, texte: 'b' },
+    ]);
+    expect(parolesPretes([{ t_ms: 0, texte: 'a', latin: 'x'.repeat(LIGNE_MAX + 1) }])).toBeNull();
+    expect(
+      parolesDe([
+        { t_ms: 0, texte: 'a', latin: 'A' },
+        { t_ms: 1, texte: 'b', latin: 3 },
+      ]),
+    ).toEqual([
+      { t_ms: 0, texte: 'a', latin: 'A' },
+      { t_ms: 1, texte: 'b' },
+    ]);
+    const deux = [
+      { t_ms: 0, texte: 'a', latin: 'A' },
+      { t_ms: 1, texte: 'b', latin: 'B' },
+    ];
+    expect(versLatin(deux)).toBe('A\nB');
+    expect(lireParoles(versLrc(deux), versLatin(deux)).lignes).toEqual(deux);
+    expect(versLatin([{ t_ms: 0, texte: 'a' }])).toBe('');
   });
 });
 

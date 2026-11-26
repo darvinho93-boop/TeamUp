@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { PAROLES_MAX_LIGNES, parolesPretes } from '@/lib/paroles';
+import { PAROLES_MAX_LIGNES, parolesPretes, type LigneBrouillon } from '@/lib/paroles';
 import { exigerAdmin } from '@/serveur/supabase-animateur';
 
 /** Désactiver ou réactiver une musique : rien ne se supprime, comme pour les contenus. */
@@ -16,7 +16,13 @@ export async function basculerMusique(id: string, actif: boolean): Promise<boole
 const Saisie = z.object({
   id: z.string().uuid(),
   lignes: z
-    .array(z.object({ t_ms: z.number().int().nonnegative().nullable(), texte: z.string() }))
+    .array(
+      z.object({
+        t_ms: z.number().int().nonnegative().nullable(),
+        texte: z.string(),
+        latin: z.string().optional(),
+      }),
+    )
     .max(PAROLES_MAX_LIGNES)
     .nullable(),
 });
@@ -27,7 +33,7 @@ const Saisie = z.object({
  */
 export async function enregistrerParoles(
   id: string,
-  lignes: { t_ms: number | null; texte: string }[] | null,
+  lignes: readonly LigneBrouillon[] | null,
 ): Promise<boolean> {
   const { supabase } = await exigerAdmin();
   const saisie = Saisie.safeParse({ id, lignes });
@@ -36,7 +42,14 @@ export async function enregistrerParoles(
   if (saisie.data.lignes !== null && !pretes) return false;
   const { data, error } = await supabase
     .from('musiques')
-    .update({ paroles: pretes?.map((l) => ({ t_ms: l.t_ms, texte: l.texte })) ?? null })
+    .update({
+      paroles:
+        pretes?.map((l) =>
+          l.latin
+            ? { t_ms: l.t_ms, texte: l.texte, latin: l.latin }
+            : { t_ms: l.t_ms, texte: l.texte },
+        ) ?? null,
+    })
     .eq('id', saisie.data.id)
     .select('id');
   revalidatePath('/admin/musiques');

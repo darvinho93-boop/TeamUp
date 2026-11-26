@@ -14,6 +14,29 @@ const attributs = (texte: string) => ({
   style: { '--tu-karaoke-n': Math.max(14, texte.length) } as CSSProperties,
 });
 
+/** La version en lettres latines (2026-11-26), sous la ligne, réduite pour tenir sur une rangée. */
+const attributsLatin = (ligne: LigneParoles) => ({
+  lang: contientTamoul(ligne.texte) ? 'ta-Latn' : undefined,
+  style: { '--tu-karaoke-n-latin': Math.max(14, ligne.latin?.length ?? 0) } as CSSProperties,
+});
+
+/** Une ligne voisine, avec sa version latine dessous s'il y en a une. */
+function Voisine({ ligne }: { ligne: LigneParoles | undefined }) {
+  return (
+    <p
+      className="tu-karaoke__ligne tu-karaoke__ligne--voisine"
+      {...(ligne ? attributs(ligne.texte) : {})}
+    >
+      {ligne?.texte ?? ' '}
+      {ligne?.latin && (
+        <span className="tu-karaoke__latin" {...attributsLatin(ligne)}>
+          {ligne.latin}
+        </span>
+      )}
+    </p>
+  );
+}
+
 /**
  * Le karaoké du Blind test (2026-11-23), plein écran marine : la ligne chantée se remplit à la
  * couleur de l'équipe qui a trouvé, entre la précédente et la suivante. La position vient de ce
@@ -73,9 +96,10 @@ export function Karaoke({
     return () => cancelAnimationFrame(image);
   }, [paroles, debutS, ecouteMs, chronoDepartMs, decalageMs, positionExtrait]);
 
-  const precedente = index > 0 ? paroles[index - 1]?.texte : undefined;
-  const courante = index >= 0 ? paroles[index]?.texte : undefined;
-  const suivante = paroles[index + 1]?.texte;
+  const precedente = index > 0 ? paroles[index - 1] : undefined;
+  const ligneCourante = index >= 0 ? paroles[index] : undefined;
+  const courante = ligneCourante?.texte;
+  const suivante = paroles[index + 1];
   const rangeesCourantes = courante ? rangees(courante) : [];
   // Sa plus longue rangée règle la taille de la ligne chantée, et ses voisines restent plus petites.
   const tailleCourante = {
@@ -118,12 +142,7 @@ export function Karaoke({
           data-index={index}
           data-tamoul={courante && contientTamoul(courante) ? true : undefined}
         >
-          <p
-            className="tu-karaoke__ligne tu-karaoke__ligne--voisine"
-            {...(precedente ? attributs(precedente) : {})}
-          >
-            {precedente ?? ' '}
-          </p>
+          <Voisine ligne={precedente} />
           {courante ? (
             <p
               key={index}
@@ -145,6 +164,20 @@ export function Karaoke({
                   </span>
                 </span>
               ))}
+              {/* Elle se remplit sur toute la ligne chantée, pendant que ses rangées tamoules
+                  se remplissent l'une après l'autre. */}
+              {ligneCourante?.latin && (
+                <span
+                  className="tu-karaoke__rangee tu-karaoke__latin"
+                  data-testid="karaoke-latin"
+                  {...attributsLatin(ligneCourante)}
+                >
+                  <span>{ligneCourante.latin}</span>
+                  <span className="tu-karaoke__rempli" aria-hidden="true">
+                    {ligneCourante.latin}
+                  </span>
+                </span>
+              )}
             </p>
           ) : (
             <p
@@ -155,12 +188,7 @@ export function Karaoke({
               ♪ ♪ ♪
             </p>
           )}
-          <p
-            className="tu-karaoke__ligne tu-karaoke__ligne--voisine"
-            {...(suivante ? attributs(suivante) : {})}
-          >
-            {suivante ?? ' '}
-          </p>
+          <Voisine ligne={suivante} />
         </div>
       )}
 

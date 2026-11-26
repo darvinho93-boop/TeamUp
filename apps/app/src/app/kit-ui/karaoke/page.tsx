@@ -3,7 +3,8 @@ import { KitKaraoke } from './KitKaraoke';
 export const metadata = { title: 'Karaoké (contrôle)' };
 
 /**
- * Page de contrôle du karaoké, sans base : `?equipe=1` à 8, `&texte=courte|longue|tamoul|aucune`.
+ * Page de contrôle du karaoké, sans base : `?equipe=1` à 8,
+ * `&texte=courte|longue|tamoul|latin|aucune` (`latin` : le tamoul avec ses lettres latines dessous).
  * Des phrases d'essai, jamais de vraies paroles.
  */
 export default async function PageKitKaraoke({ searchParams }: PageProps<'/kit-ui/karaoke'>) {
@@ -13,7 +14,7 @@ export default async function PageKitKaraoke({ searchParams }: PageProps<'/kit-u
   return (
     <KitKaraoke
       equipe={Number.isInteger(n) ? Math.min(8, Math.max(1, n)) : 3}
-      texte={['courte', 'longue', 'tamoul', 'aucune'].includes(texte) ? texte : 'courte'}
+      texte={['courte', 'longue', 'tamoul', 'latin', 'aucune'].includes(texte) ? texte : 'courte'}
     />
   );
 }
