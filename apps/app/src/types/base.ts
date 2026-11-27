@@ -1262,6 +1262,38 @@ export type Database = {
           },
         ];
       };
+      themes_soiree: {
+        Row: {
+          cree_le: string;
+          evenement_id: string;
+          fichiers: Json;
+          reglages: Json;
+          theme: string;
+        };
+        Insert: {
+          cree_le?: string;
+          evenement_id: string;
+          fichiers: Json;
+          reglages?: Json;
+          theme: string;
+        };
+        Update: {
+          cree_le?: string;
+          evenement_id?: string;
+          fichiers?: Json;
+          reglages?: Json;
+          theme?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'themes_soiree_evenement_id_fkey';
+            columns: ['evenement_id'];
+            isOneToOne: true;
+            referencedRelation: 'evenements';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       tirages_cartes: {
         Row: {
           cree_le: string;
