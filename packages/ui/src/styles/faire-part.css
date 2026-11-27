@@ -1,0 +1,1040 @@
+/* Thème « faire-part » de l'écran commun (2026-11-27), fait pour le mariage du 5 décembre : la
+   soirée prend l'univers du faire-part de ses hôtes. Leurs fichiers (illustration, monogramme,
+   prénoms, rinceaux, grain du papier) arrivent du bucket privé « themes » en variables
+   (--tu-fp-…-image, --tu-fp-grain) ; leur palette et les mesures sont dans tokens-layout.css.
+   Écarts assumés à la charte, pour une soirée à thème seulement : le papier au lieu du beige,
+   Cormorant et Jost, le pictogramme dans leurs couleurs. Importée par l'app seule. */
+
+@import '@fontsource/cormorant/latin-400.css';
+@import '@fontsource/cormorant/latin-400-italic.css';
+@import '@fontsource/cormorant/latin-500.css';
+@import '@fontsource/jost/latin-300.css';
+@import '@fontsource/jost/latin-400.css';
+@import '@fontsource/jost/latin-500.css';
+
+/* ---------------------------------------------------------------- L'accueil, formé */
+
+.tu-fp-accueil {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--tu-fp-papier);
+  color: var(--tu-fp-sapin);
+  font-family: var(--tu-fp-sans);
+  font-weight: 300;
+}
+
+.tu-fp-accueil > * {
+  position: absolute;
+}
+
+/* Le papier : blanc chaud au centre, le grain par-dessus tout, comme la carte. */
+.tu-fp-fond {
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 75% at 50% 45%,
+    var(--tu-fp-papier-coeur) 0%,
+    var(--tu-fp-papier) 55%,
+    var(--tu-fp-papier-bord) 100%
+  );
+}
+
+.tu-fp-fond::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--tu-fp-grain);
+  opacity: 0.22;
+}
+
+.tu-fp-rinceau {
+  top: 0;
+  bottom: 0;
+  width: var(--tu-fp-rinceau);
+  background: var(--tu-fp-rinceau-image) 0 0 / var(--tu-fp-rinceau) auto repeat-y;
+  opacity: 0.55;
+}
+
+.tu-fp-rinceau--g {
+  left: var(--tu-fp-rinceau-retrait);
+}
+
+.tu-fp-rinceau--d {
+  right: var(--tu-fp-rinceau-retrait);
+  transform: scaleX(-1);
+}
+
+.tu-fp-insta {
+  top: var(--tu-fp-insta-haut);
+  left: var(--tu-fp-coin-x);
+  color: var(--tu-fp-sauge-fonce);
+  font-size: var(--tu-fp-insta-taille);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.tu-fp-marque {
+  top: var(--tu-fp-marque-haut);
+  right: var(--tu-fp-coin-x);
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-3);
+  color: var(--tu-fp-or);
+  font-size: var(--tu-fp-marque-taille);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tu-fp-marque .tu-picto {
+  --tu-picto-taille: var(--tu-fp-marque-picto);
+}
+
+/* Le pictogramme dans leurs couleurs : sapin, or, champagne, sauge. */
+.tu-fp-accueil .tu-picto__teinte--navy {
+  --tu-picto-teinte: var(--tu-fp-sapin);
+}
+
+.tu-fp-accueil .tu-picto__teinte--corail {
+  --tu-picto-teinte: var(--tu-fp-or-vrai);
+}
+
+.tu-fp-accueil .tu-picto__teinte--sable {
+  --tu-picto-teinte: var(--tu-fp-champagne);
+}
+
+.tu-fp-accueil .tu-picto__teinte--vert {
+  --tu-picto-teinte: var(--tu-fp-sauge);
+}
+
+.tu-fp-marque .tu-picto__teinte {
+  --tu-picto-teinte-opacite: 1;
+}
+
+/* La carte des hôtes, à gauche. */
+.tu-fp-carte {
+  top: var(--tu-fp-carte-haut);
+  left: var(--tu-fp-carte-gauche);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--tu-fp-carte-largeur);
+}
+
+.tu-fp-illustration {
+  width: var(--tu-fp-illustration);
+}
+
+.tu-fp-illustration svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Le monogramme se range sous l'illustration : sa boîte d'entrée (à côté du pictogramme), réduite. */
+.tu-fp-mh-place {
+  position: relative;
+  width: var(--tu-fp-mh-largeur);
+  height: var(--tu-fp-mh-hauteur);
+  margin: var(--tu-fp-mh-marge-haut) 0 var(--tu-fp-mh-marge-bas);
+  transform: scale(var(--tu-fp-mh-echelle));
+}
+
+.tu-fp-mh {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tu-fp-prenoms {
+  display: block;
+  width: var(--tu-fp-prenoms);
+  height: auto;
+  margin-top: var(--tu-space-1);
+}
+
+.tu-fp-accueil .tu-fp-date {
+  margin-top: var(--tu-space-1);
+  font-family: var(--tu-fp-serif);
+  font-size: var(--tu-fp-date);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+/* L'encadré du QR code, à droite : le papier, un filet or, un second filet vert dedans. */
+.tu-fp-encadre {
+  top: var(--tu-fp-encadre-haut);
+  left: var(--tu-fp-encadre-gauche);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--tu-fp-encadre-largeur);
+  height: var(--tu-fp-encadre-hauteur);
+  padding: var(--tu-space-10) var(--tu-space-10) var(--tu-space-6);
+  border: 1px solid var(--tu-fp-filet);
+  border-radius: var(--tu-fp-encadre-rayon);
+  background: var(--tu-fp-papier);
+  box-shadow: var(--tu-fp-ombre);
+  text-align: center;
+}
+
+.tu-fp-encadre::before {
+  content: '';
+  position: absolute;
+  inset: var(--tu-fp-encadre-filet);
+  border: 1px solid var(--tu-fp-filet-vert);
+  border-radius: var(--tu-fp-encadre-filet-rayon);
+  pointer-events: none;
+}
+
+.tu-fp-titre {
+  font-family: var(--tu-fp-serif);
+  font-size: var(--tu-fp-titre);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.tu-fp-qr {
+  flex: none;
+  width: var(--tu-fp-qr);
+  height: var(--tu-fp-qr);
+  margin-top: var(--tu-space-6);
+}
+
+.tu-fp-qr svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Le QR code dans l'encre de la carte, sur son papier. */
+.tu-fp-qr svg path[fill] {
+  fill: var(--tu-fp-papier);
+}
+
+.tu-fp-qr svg path[stroke] {
+  stroke: var(--tu-fp-sapin);
+}
+
+.tu-fp-accueil .tu-fp-puis {
+  margin-top: var(--tu-space-5);
+  font-family: var(--tu-fp-serif);
+  font-size: var(--tu-fp-puis);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.tu-fp-accueil .tu-fp-lien {
+  margin-top: var(--tu-space-2);
+  color: var(--tu-fp-doux);
+  font-size: var(--tu-fp-lien);
+  line-height: 1.3;
+}
+
+.tu-fp-lien b {
+  color: var(--tu-fp-sapin);
+  font-weight: 500;
+}
+
+.tu-fp-accueil .tu-fp-compte {
+  display: flex;
+  align-items: center;
+  gap: var(--tu-space-3);
+  margin-top: auto;
+  color: var(--tu-fp-or-heures);
+  font-family: var(--tu-fp-serif);
+  font-size: var(--tu-fp-compte);
+  font-style: italic;
+  line-height: 1;
+}
+
+/* Une feuille, à la place d'une puce. */
+.tu-fp-feuille {
+  flex: none;
+  width: var(--tu-fp-feuille);
+  height: calc(var(--tu-fp-feuille) * 1.6);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: var(--tu-fp-or);
+  transform: rotate(35deg);
+}
+
+.tu-fp-accueil .tu-fp-encadre .tu-stage-bienvenue {
+  min-height: calc(var(--tu-fp-compte) * 2.4);
+  margin-top: var(--tu-space-2);
+  color: var(--tu-fp-sapin);
+  font-family: var(--tu-fp-serif);
+  font-size: var(--tu-fp-compte);
+  font-weight: 500;
+}
+
+/* Les prénoms des inscrits, en bas, en petites capitales dorées. */
+.tu-fp-bandeau {
+  right: var(--tu-fp-bandeau-bord);
+  bottom: var(--tu-fp-bandeau-bas);
+  left: var(--tu-fp-bandeau-bord);
+}
+
+.tu-fp-bandeau .tu-bandeau {
+  gap: var(--tu-space-1);
+  margin-inline: 0;
+}
+
+.tu-fp-bandeau .tu-bandeau__rangee {
+  min-height: 0;
+}
+
+.tu-fp-bandeau .tu-bandeau__prenom {
+  margin-inline-end: var(--tu-space-6);
+  padding: var(--tu-space-1) 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--tu-fp-or);
+  font-family: var(--tu-fp-sans);
+  font-size: var(--tu-size-lg);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.tu-fp-bandeau .tu-bandeau__prenom--nouveau {
+  animation: tu-fp-nouveau var(--tu-dur-bandeau-arrivee) var(--tu-ease) both;
+}
+
+@keyframes tu-fp-nouveau {
+  0% {
+    max-width: 0;
+    margin-inline-end: 0;
+    opacity: 0;
+    color: var(--tu-fp-sapin);
+  }
+
+  35% {
+    max-width: var(--tu-bandeau-prenom-max);
+    margin-inline-end: var(--tu-space-6);
+    opacity: 1;
+    color: var(--tu-fp-sapin);
+  }
+
+  100% {
+    color: var(--tu-fp-or);
+  }
+}
+
+/* ---------------------------------------------------------------- L'entrée */
+
+/* Maquette D v6 (2026-11-27) : la musique des hôtes jouée telle quelle, l'écran la suit. Les
+   instants viennent de entreeFairePart (lib/faire-part.ts), en variables posées sur la scène,
+   comptés depuis le début de la passe finale : --tu-fp-n (premières notes), --tu-fp-p1, -p2, -p3
+   (les trois passages du motif avant l'orchestre), --tu-fp-b (la bascule), --tu-fp-a-coin,
+   -encadre, -qr, -textes, -compte (un par temps ensuite), --tu-fp-temps (un temps).
+   Les places, mesurées au montage (AccueilFairePart) : la lueur et les éclats des notes partent
+   du pictogramme de la passe finale (--tu-fp-hx, --tu-fp-hy) ; l'éclat, l'onde, la gerbe et le ×
+   de la bascule, du milieu entre la carte et le logo rangé (--tu-fp-ox, --tu-fp-oy). */
+.tu-fp-ronds {
+  inset: 0;
+}
+
+.tu-fp-halo,
+.tu-fp-eclat,
+.tu-fp-onde {
+  border-radius: var(--tu-radius-pill);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tu-fp-halo {
+  top: calc(var(--tu-fp-hy) - var(--tu-fp-halo) / 2);
+  left: calc(var(--tu-fp-hx) - var(--tu-fp-halo) / 2);
+  width: var(--tu-fp-halo);
+  height: var(--tu-fp-halo);
+  background: radial-gradient(
+    circle closest-side,
+    var(--tu-fp-halo-coeur) 0%,
+    var(--tu-fp-halo-milieu) 38%,
+    var(--tu-fp-halo-bord) 64%,
+    var(--tu-fp-or-vide) 100%
+  );
+}
+
+.tu-fp-eclat {
+  top: calc(var(--tu-fp-oy) - var(--tu-fp-eclat) / 2);
+  left: calc(var(--tu-fp-ox) - var(--tu-fp-eclat) / 2);
+  width: var(--tu-fp-eclat);
+  height: var(--tu-fp-eclat);
+  background: radial-gradient(
+    circle closest-side,
+    var(--tu-fp-eclat-blanc) 0%,
+    var(--tu-fp-eclat-creme) 20%,
+    var(--tu-fp-eclat-dore) 48%,
+    var(--tu-fp-or-vide) 100%
+  );
+}
+
+.tu-fp-onde {
+  top: calc(var(--tu-fp-oy) - var(--tu-fp-onde) / 2);
+  left: calc(var(--tu-fp-ox) - var(--tu-fp-onde) / 2);
+  width: var(--tu-fp-onde);
+  height: var(--tu-fp-onde);
+  background: radial-gradient(
+    circle closest-side,
+    var(--tu-fp-or-vide) 83%,
+    var(--tu-fp-onde-voile) 90.5%,
+    var(--tu-fp-onde-lumiere) 96.4%,
+    var(--tu-fp-onde-or) 98.6%,
+    var(--tu-fp-or-vide) 100%
+  );
+}
+
+.tu-fp-scintillements {
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Un éclat sur chaque première note, autour du logo… */
+.tu-fp-scintillements i {
+  position: absolute;
+  top: calc(var(--tu-fp-hy) + var(--tu-fp-dy) - var(--tu-fp-t) / 2);
+  left: calc(var(--tu-fp-hx) + var(--tu-fp-dx) - var(--tu-fp-t) / 2);
+  width: var(--tu-fp-t);
+  height: var(--tu-fp-t);
+  background: radial-gradient(
+    circle,
+    var(--tu-fp-eclat-blanc) 0 6%,
+    var(--tu-fp-scintille) 14%,
+    var(--tu-fp-or-vide) 46%
+  );
+  opacity: 0;
+}
+
+/* … puis sur les passages du motif, à leur place sur la scène. */
+.tu-fp-scintillements--passages i {
+  top: calc(var(--tu-fp-sy) - var(--tu-fp-t) / 2);
+  left: calc(var(--tu-fp-sx) - var(--tu-fp-t) / 2);
+}
+
+.tu-fp-scintillements i::before,
+.tu-fp-scintillements i::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: linear-gradient(
+    transparent,
+    var(--tu-fp-scintille-trait) 35%,
+    var(--tu-fp-eclat-blanc) 50%,
+    var(--tu-fp-scintille-trait) 65%,
+    transparent
+  );
+}
+
+.tu-fp-scintillements i::after {
+  transform: rotate(90deg);
+}
+
+/* Team Up! × leur carte : le ×, au point de la bascule. */
+.tu-fp-croix {
+  top: calc(var(--tu-fp-oy) - var(--tu-fp-croix) * 0.59);
+  left: calc(var(--tu-fp-ox) - var(--tu-fp-croix-boite) / 2);
+  width: var(--tu-fp-croix-boite);
+  color: var(--tu-fp-or-heures);
+  font-family: var(--tu-fp-serif);
+  font-size: var(--tu-fp-croix);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1;
+  text-align: center;
+  opacity: 0;
+}
+
+/* Le pictogramme qui se range avec le nom, prend leurs couleurs, puis gagne le coin. */
+.tu-fp-vol {
+  top: 0;
+  left: 0;
+  width: var(--tu-picto-lg);
+  height: var(--tu-picto-lg);
+  opacity: 0;
+  transform-origin: 0 0;
+  transform: translate(var(--tu-fp-x0), var(--tu-fp-y0));
+  pointer-events: none;
+}
+
+.tu-fp-gerbe,
+.tu-fp-flotte {
+  inset: 0;
+  pointer-events: none;
+}
+
+.tu-fp-gerbe__feuille,
+.tu-fp-flotte__feuille {
+  position: absolute;
+  width: var(--tu-fp-f);
+  height: calc(var(--tu-fp-f) * 1.6);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: var(--tu-fp-or-vrai);
+  opacity: 0;
+}
+
+.tu-fp-gerbe__feuille {
+  top: var(--tu-fp-oy);
+  left: var(--tu-fp-ox);
+  margin: calc(var(--tu-fp-f) * -0.8) 0 0 calc(var(--tu-fp-f) * -0.5);
+}
+
+/* Les feuilles qui flottent tombent du haut de la scène. */
+.tu-fp-flotte__feuille {
+  top: calc(var(--tu-fp-f) * -2);
+  left: var(--tu-fp-fx);
+}
+
+.tu-fp-feuille-teinte--1 {
+  background: var(--tu-fp-or-clair);
+}
+
+.tu-fp-feuille-teinte--2 {
+  background: var(--tu-fp-sauge);
+}
+
+.tu-fp-feuille-teinte--3 {
+  background: var(--tu-fp-champagne);
+}
+
+/* Avant la bascule, le beige de Team Up! : le papier ne s'est pas encore répandu. */
+.tu-fp-accueil--entree {
+  background: var(--tu-bg);
+}
+
+.tu-fp-accueil--entree .tu-fp-fond {
+  clip-path: circle(0 at var(--tu-fp-ox) var(--tu-fp-oy));
+}
+
+/* La carte se dessine à sa place, à gauche : rien n'y paraît avant son passage. */
+.tu-fp-accueil--entree .tu-fp-illustration svg {
+  fill-opacity: 0;
+}
+
+.tu-fp-accueil--entree .tu-fp-illustration .tu-fp-trace {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+.tu-fp-accueil--entree .tu-fp-illustration .tu-fp-pointille {
+  stroke-opacity: 0;
+}
+
+.tu-fp-accueil--entree .tu-fp-marque .tu-picto {
+  visibility: hidden;
+}
+
+/* Un reflet passe sur le monogramme quand il paraît. */
+.tu-fp-accueil--entree .tu-fp-mh-place::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, var(--tu-fp-brille) 50%, transparent 62%)
+    120% 0 / 300% 100% no-repeat;
+  mask: var(--tu-fp-mh-image) center / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* La scène paraît sans fondu : la passe finale continue la boucle de l'ouverture. */
+  .tu-stage__body.tu-fp-accueil--entree {
+    animation: none;
+  }
+
+  /* Les premières notes : la lueur s'allume derrière le logo, un éclat sur chaque note. Au premier
+     passage, elle s'ouvre entre le logo et la carte ; puis elle grandit avec la musique jusqu'à
+     l'orchestre, et s'efface sous l'éclat de la bascule. */
+  .tu-fp-accueil--entree .tu-fp-halo {
+    animation:
+      tu-fp-lueur max(100ms, calc(var(--tu-fp-p1) - var(--tu-fp-n)))
+        cubic-bezier(0.45, 0, 0.75, 0.6) calc(var(--tu-fp-n) + 50ms) both,
+      tu-fp-lueur-ouvre 2.4s cubic-bezier(0.6, 0, 0.25, 1) var(--tu-fp-p1) forwards,
+      tu-fp-lueur-monte max(100ms, calc(var(--tu-fp-b) - var(--tu-fp-p1) - 2.4s))
+        cubic-bezier(0.5, 0, 0.9, 0.5) calc(var(--tu-fp-p1) + 2.4s) forwards,
+      tu-sortie 0.45s ease var(--tu-fp-b) forwards;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-scintillements i {
+    animation: tu-fp-scintille 1s ease-out var(--tu-fp-quand) both;
+  }
+
+  /* 1er passage : le logo de la passe finale se range à droite. Son pictogramme passe la main à
+     celui qui vole (même mouvement), son nom suit la passe finale qui le porte. */
+  .tu-fp-accueil--entree .tu-fp-ronds {
+    animation: tu-fp-cote 2.4s cubic-bezier(0.6, 0, 0.25, 1) var(--tu-fp-p1) both;
+  }
+
+  .tu-fp-accueil--entree .tu-ronds--finale .tu-ronds__logo .tu-picto {
+    animation: tu-fp-cache 1ms linear var(--tu-fp-p1) forwards;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-vol {
+    animation:
+      tu-fp-montre 1ms linear var(--tu-fp-p1) forwards,
+      tu-fp-range 2.4s cubic-bezier(0.6, 0, 0.25, 1) var(--tu-fp-p1) forwards,
+      tu-fp-coin 1.15s cubic-bezier(0.55, 0, 0.2, 1) var(--tu-fp-a-coin) forwards;
+  }
+
+  /* … et la mairie se dessine en traits d'or, d'un bout à l'autre de la mesure. */
+  .tu-fp-accueil--entree .tu-fp-illustration .tu-fp-trace {
+    animation:
+      tu-fp-trace 1.2s ease-in-out calc(var(--tu-fp-p1) + var(--tu-fp-part) * 2.6s) both,
+      tu-fp-dore 1.8s ease var(--tu-fp-p2) both;
+  }
+
+  /* 2e passage : elle prend ses couleurs, le monogramme paraît, les rinceaux poussent. */
+  .tu-fp-accueil--entree .tu-fp-illustration svg {
+    animation: tu-fp-remplit 1.8s ease var(--tu-fp-p2) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-illustration .tu-fp-pointille {
+    animation: tu-fp-trait 1s ease calc(var(--tu-fp-p2) + 470ms) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-mh {
+    animation: tu-fp-apparait 1.4s cubic-bezier(0.3, 0, 0.2, 1)
+      calc(var(--tu-fp-p2) + var(--tu-fp-temps)) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-mh-place::after {
+    animation: tu-fp-reflet 1.6s ease-in-out calc(var(--tu-fp-p2) + var(--tu-fp-temps) + 500ms) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-rinceau {
+    animation: tu-fp-pousse 2.6s cubic-bezier(0.4, 0, 0.2, 1) var(--tu-fp-p2) both;
+  }
+
+  /* 3e passage : les prénoms s'écrivent, la date paraît, des feuilles flottent. */
+  .tu-fp-accueil--entree .tu-fp-prenoms {
+    mask: linear-gradient(90deg, black 0 45%, transparent 55% 100%) 0 0 / 220% 100% no-repeat;
+    animation: tu-fp-ecrit 2.4s cubic-bezier(0.5, 0, 0.4, 1) var(--tu-fp-p3) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-date {
+    animation: tu-fp-entre 1.2s cubic-bezier(0.2, 0.7, 0.2, 1)
+      calc(var(--tu-fp-p3) + 2 * var(--tu-fp-temps)) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-flotte__feuille {
+    animation: tu-fp-flotte var(--tu-fp-duree) cubic-bezier(0.3, 0.1, 0.6, 1)
+      calc(var(--tu-fp-p3) + var(--tu-fp-retard)) both;
+  }
+
+  /* La bascule, quand l'orchestre entre : l'éclat, l'onde, le papier, les feuilles ; le logo
+     prend leurs couleurs ; Team Up! × leur carte. */
+  .tu-fp-accueil--entree .tu-fp-eclat {
+    animation: tu-fp-eclat 1.3s cubic-bezier(0.2, 0.7, 0.3, 1) var(--tu-fp-b) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-onde {
+    animation: tu-fp-onde 1.25s cubic-bezier(0.12, 0.62, 0.3, 1) var(--tu-fp-b) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-fond {
+    animation: tu-fp-vague 1.25s cubic-bezier(0.12, 0.62, 0.3, 1) var(--tu-fp-b) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-gerbe__feuille {
+    animation: tu-fp-gerbe var(--tu-fp-duree) cubic-bezier(0.08, 0.7, 0.3, 1)
+      calc(var(--tu-fp-b) + var(--tu-fp-retard)) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-vol .tu-picto__teinte {
+    animation: tu-fp-montre 0.9s ease calc(var(--tu-fp-b) + 50ms) forwards;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-vol .tu-picto__teinte--corail {
+    animation-delay: calc(var(--tu-fp-b) + 150ms);
+  }
+
+  .tu-fp-accueil--entree .tu-fp-vol .tu-picto__teinte--sable {
+    animation-delay: calc(var(--tu-fp-b) + 250ms);
+  }
+
+  .tu-fp-accueil--entree .tu-fp-vol .tu-picto__teinte--vert {
+    animation-delay: calc(var(--tu-fp-b) + 350ms);
+  }
+
+  .tu-fp-accueil--entree .tu-ronds--finale .tu-ronds__nom {
+    animation:
+      tu-ronds-nom-finale var(--tu-dur-ronds-cycle) var(--tu-ease)
+        calc(var(--tu-finale-depuis, 0ms) * -1) both,
+      tu-fp-encre 0.9s ease calc(var(--tu-fp-b) + 100ms) forwards,
+      tu-sortie 0.5s ease var(--tu-fp-a-coin) forwards;
+  }
+
+  .tu-fp-accueil--entree .tu-ronds__nom .tu-wordmark__up {
+    animation: tu-fp-encre-sauge 0.9s ease calc(var(--tu-fp-b) + 220ms) forwards;
+  }
+
+  .tu-fp-accueil--entree .tu-ronds__nom .tu-wordmark__bang {
+    animation: tu-fp-encre-or 0.9s ease calc(var(--tu-fp-b) + 340ms) forwards;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-croix {
+    animation:
+      tu-fp-entre 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--tu-fp-b) + 80ms) both,
+      tu-sortie 0.5s ease var(--tu-fp-a-coin) forwards;
+  }
+
+  /* Puis un élément par temps : le logo gagne le coin, l'encadré arrive, le QR code s'y pose, ses
+     consignes, le compte des joueurs et leurs prénoms. */
+  .tu-fp-accueil--entree .tu-fp-insta {
+    animation: tu-fp-fond 1s ease calc(var(--tu-fp-a-coin) + 700ms) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-marque {
+    animation: tu-fp-fond 1s ease calc(var(--tu-fp-a-coin) + 900ms) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-encadre {
+    animation: tu-fp-arrive 1s cubic-bezier(0.2, 0.7, 0.2, 1) var(--tu-fp-a-encadre) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-qr {
+    animation: tu-fp-pose 0.8s cubic-bezier(0.2, 0.8, 0.3, 1.25) var(--tu-fp-a-qr) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-puis,
+  .tu-fp-accueil--entree .tu-fp-lien {
+    animation: tu-fp-entre 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--tu-fp-a-textes) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-compte {
+    animation: tu-fp-entre 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--tu-fp-a-compte) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-bandeau {
+    animation: tu-fp-fond 1s ease var(--tu-fp-a-compte) both;
+  }
+}
+
+/* Sans mouvement, l'écran n'entre jamais par là (Salle.tsx) : l'accueil est déjà formé. */
+
+@keyframes tu-fp-lueur {
+  from {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+
+  to {
+    opacity: 0.75;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes tu-fp-lueur-ouvre {
+  from {
+    opacity: 0.75;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 0.7;
+    transform: translate(var(--tu-fp-dhx), var(--tu-fp-dhy)) scale(1.1);
+  }
+}
+
+@keyframes tu-fp-lueur-monte {
+  from {
+    opacity: 0.7;
+    transform: translate(var(--tu-fp-dhx), var(--tu-fp-dhy)) scale(1.1);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(var(--tu-fp-dhx), var(--tu-fp-dhy)) scale(1.75);
+  }
+}
+
+@keyframes tu-fp-scintille {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(0deg);
+  }
+
+  22% {
+    opacity: 1;
+    transform: scale(1) rotate(20deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.55) rotate(60deg);
+  }
+}
+
+@keyframes tu-fp-cote {
+  to {
+    transform: translateX(var(--tu-fp-cote-x)) scale(var(--tu-fp-s1));
+  }
+}
+
+@keyframes tu-fp-range {
+  from {
+    transform: translate(var(--tu-fp-x0), var(--tu-fp-y0));
+  }
+
+  to {
+    transform: translate(var(--tu-fp-x1), var(--tu-fp-y1)) scale(var(--tu-fp-s1));
+  }
+}
+
+@keyframes tu-fp-coin {
+  from {
+    transform: translate(var(--tu-fp-x1), var(--tu-fp-y1)) scale(var(--tu-fp-s1));
+  }
+
+  to {
+    transform: translate(var(--tu-fp-x2), var(--tu-fp-y2)) scale(var(--tu-fp-s2));
+  }
+}
+
+@keyframes tu-fp-eclat {
+  0% {
+    opacity: 0;
+    transform: scale(0.15);
+  }
+
+  12% {
+    opacity: 1;
+    transform: scale(0.55);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes tu-fp-onde {
+  0% {
+    opacity: 1;
+    transform: scale(0);
+  }
+
+  72% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes tu-fp-vague {
+  to {
+    clip-path: circle(var(--tu-fp-vague) at var(--tu-fp-ox) var(--tu-fp-oy));
+  }
+}
+
+@keyframes tu-fp-gerbe {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--tu-fp-r0)) scale(0.3);
+  }
+
+  8% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--tu-fp-gx), var(--tu-fp-gy)) rotate(var(--tu-fp-r1)) scale(1);
+  }
+}
+
+@keyframes tu-fp-flotte {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(var(--tu-fp-r0));
+  }
+
+  15% {
+    opacity: 0.85;
+  }
+
+  75% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(var(--tu-fp-gx), var(--tu-fp-gy)) rotate(calc(var(--tu-fp-r0) + 200deg));
+  }
+}
+
+@keyframes tu-fp-pousse {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes tu-fp-cache {
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes tu-fp-montre {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tu-fp-encre {
+  to {
+    color: var(--tu-fp-sapin);
+  }
+}
+
+@keyframes tu-fp-encre-sauge {
+  to {
+    color: var(--tu-fp-sauge);
+  }
+}
+
+@keyframes tu-fp-encre-or {
+  to {
+    color: var(--tu-fp-or-vrai);
+  }
+}
+
+@keyframes tu-fp-entre {
+  from {
+    opacity: 0;
+    transform: translateY(var(--tu-space-6));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes tu-fp-apparait {
+  from {
+    opacity: 0;
+    clip-path: circle(0% at 50% 50%);
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: circle(75% at 50% 50%);
+    transform: none;
+  }
+}
+
+@keyframes tu-fp-reflet {
+  from {
+    background-position: 120% 0;
+  }
+
+  to {
+    background-position: -20% 0;
+  }
+}
+
+@keyframes tu-fp-trace {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Les traits se dessinent en or, puis prennent leur couleur quand l'illustration se remplit. */
+@keyframes tu-fp-dore {
+  from {
+    stroke: var(--tu-fp-or-vrai);
+  }
+}
+
+@keyframes tu-fp-remplit {
+  from {
+    fill-opacity: 0;
+  }
+
+  to {
+    fill-opacity: 1;
+  }
+}
+
+@keyframes tu-fp-trait {
+  from {
+    stroke-opacity: 0;
+  }
+
+  to {
+    stroke-opacity: 1;
+  }
+}
+
+@keyframes tu-fp-fond {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tu-fp-ecrit {
+  from {
+    mask-position: 100% 0;
+  }
+
+  to {
+    mask-position: 0 0;
+  }
+}
+
+@keyframes tu-fp-arrive {
+  from {
+    opacity: 0;
+    transform: translateX(var(--tu-fp-arrivee-qr));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes tu-fp-pose {
+  from {
+    opacity: 0;
+    transform: scale(0.78);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

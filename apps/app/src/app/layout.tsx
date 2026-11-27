@@ -7,6 +7,8 @@ import favicon32 from '@teamup/brand/icons/favicon32.png';
 import appleTouchIcon from '@teamup/brand/icons/appletouchicon.png';
 import '@teamup/ui/styles.css';
 import '@teamup/ui/fonts-tamil.css';
+// Le thème « faire-part » d'une soirée (2026-11-27) : ses polices ne se téléchargent que s'il sert.
+import '@teamup/ui/faire-part.css';
 
 export const metadata: Metadata = {
   title: { default: 'Team Up!', template: '%s · Team Up!' },

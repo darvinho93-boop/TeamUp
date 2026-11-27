@@ -334,6 +334,88 @@
 
   /* Fond du pictogramme Surenchère, repris de la maquette (ambre très clair). */
   --tu-amber-50: #fdf3d9;
+
+  /* Thème « faire-part » de l'écran commun (2026-11-27, mariage du 5 décembre) : la palette de la
+     charte des hôtes, pour une soirée à thème seulement (faire-part.css). */
+  --tu-fp-serif: 'Cormorant', georgia, serif;
+  --tu-fp-sans: 'Jost', system-ui, sans-serif;
+  --tu-fp-papier: #fcfaf4;
+  --tu-fp-papier-coeur: #fffdf8;
+  --tu-fp-papier-bord: #f1eadb;
+  --tu-fp-ivoire: #f6f2e9;
+  --tu-fp-sapin: #2e4638;
+  --tu-fp-nuit: #223528;
+  --tu-fp-doux: #4f6553;
+  --tu-fp-sauge-fonce: #6e8570;
+  --tu-fp-sauge: #93a98d;
+  --tu-fp-or-vrai: #c9a227;
+  --tu-fp-or-clair: #d8ae45;
+  --tu-fp-or: #ae8c5a;
+  --tu-fp-or-heures: #a07e4c;
+  --tu-fp-champagne: #e0c9a0;
+  --tu-fp-filet: rgb(174 140 90 / 55%);
+  --tu-fp-filet-vert: rgb(46 70 56 / 22%);
+  --tu-fp-ombre: 0 1.375rem 3.125rem rgb(46 70 56 / 11%), 0 0.125rem 0.375rem rgb(46 70 56 / 6%);
+  --tu-fp-eclat-blanc: #fff;
+  --tu-fp-eclat-creme: rgb(255 249 230 / 96%);
+  --tu-fp-eclat-dore: rgb(240 214 150 / 55%);
+  --tu-fp-or-vide: rgb(216 174 69 / 0%);
+  --tu-fp-onde-voile: rgb(216 174 69 / 30%);
+  --tu-fp-onde-lumiere: rgb(255 247 226 / 97%);
+  --tu-fp-onde-or: rgb(201 162 39 / 60%);
+  --tu-fp-halo-coeur: rgb(240 214 150 / 60%);
+  --tu-fp-halo-milieu: rgb(226 190 105 / 30%);
+  --tu-fp-halo-bord: rgb(216 174 69 / 10%);
+  --tu-fp-scintille: rgb(255 240 200 / 90%);
+  --tu-fp-scintille-trait: #e9c76e;
+  --tu-fp-brille: rgb(255 251 236 / 95%);
+
+  /* Ses mesures, pour une scène de 1 920 × 1 080 (120 × 67,5 rem). */
+  --tu-fp-rinceau: 7.375rem;
+  --tu-fp-rinceau-retrait: 0.875rem;
+  --tu-fp-coin-x: 10.5rem;
+  --tu-fp-insta-haut: 3.25rem;
+  --tu-fp-insta-taille: 1.375rem;
+  --tu-fp-marque-haut: 2.375rem;
+  --tu-fp-marque-taille: 1.1875rem;
+  --tu-fp-marque-picto: 3.875rem;
+  --tu-fp-carte-gauche: 9.375rem;
+  --tu-fp-carte-haut: 5.75rem;
+  --tu-fp-carte-largeur: 56.25rem;
+  --tu-fp-illustration: 32.5rem;
+  --tu-fp-monogramme: 7.375rem;
+  --tu-fp-prenoms: 41.25rem;
+  --tu-fp-date: 2.875rem;
+  --tu-fp-encadre-gauche: 65.625rem;
+  --tu-fp-encadre-haut: 6.25rem;
+  --tu-fp-encadre-largeur: 43.125rem;
+  --tu-fp-encadre-hauteur: 54rem;
+  --tu-fp-encadre-rayon: 1.125rem;
+  --tu-fp-encadre-filet: 0.5625rem;
+  --tu-fp-encadre-filet-rayon: 0.6875rem;
+  --tu-fp-libelle: 1.125rem;
+  --tu-fp-titre: 4.875rem;
+  --tu-fp-qr: 29rem; /* agrandi par rapport à la maquette (25,6) : scanné du fond de la salle */
+  --tu-fp-puis: 2.625rem;
+  --tu-fp-lien: 1.5625rem;
+  --tu-fp-compte: 1.875rem;
+  --tu-fp-bandeau-bord: 10.625rem;
+  --tu-fp-bandeau-bas: 1.25rem;
+  --tu-fp-feuille: 0.625rem;
+  /* L'entrée (maquette D v6) : l'encadré arrive de la droite, le × au point de la bascule. La boîte
+     du monogramme (17 × 18,75 rem, réduite) vient de la v5, où il entrait en grand. */
+  --tu-fp-arrivee-qr: 10rem;
+  --tu-fp-croix: 11.875rem;
+  --tu-fp-croix-boite: 18.75rem;
+  --tu-fp-mh-largeur: 17rem;
+  --tu-fp-mh-hauteur: 18.75rem;
+  --tu-fp-mh-marge-haut: -4.1875rem;
+  --tu-fp-mh-marge-bas: -5.6875rem;
+  --tu-fp-mh-echelle: 0.3933;
+  --tu-fp-halo: 65rem;
+  --tu-fp-onde: 162.5rem;
+  --tu-fp-eclat: 87.5rem;
+  --tu-fp-vague: 81.25rem;
 }
 
 @media (max-width: 75rem) {

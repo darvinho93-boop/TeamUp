@@ -84,6 +84,8 @@ import { rangsDExtinction, SUSPENSE_MS } from '@/lib/suspense';
 import { INTERLUDE_MS, reglageDe } from '@/lib/sons';
 import { extraitDe } from '@/lib/extraits';
 import { VideoDeScene } from './VideoDeScene';
+import { AccueilFairePart } from './faire-part/AccueilFairePart';
+import { ThemeContexte } from './faire-part/useThemeSoiree';
 
 /** L'entrée du nom d'un jeu, après l'interlude (`--tu-dur-verdict`). */
 const ENTREE_TITRE_MS = 700;
@@ -107,11 +109,17 @@ interface Props {
 /** La scène que la régie a choisie : c'est tout ce que l'écran commun montre. */
 export function Scene(props: Props) {
   const { etat } = props;
+  // Une soirée à thème (2026-11-27) a son accueil, aux couleurs de ses hôtes.
+  const theme = useContext(ThemeContexte);
   switch (etat.pilotage.scene) {
     case 'ouverture':
       return <Ouverture />;
     case 'accueil':
-      return <Accueil {...props} />;
+      return theme ? (
+        <AccueilFairePart etat={etat} qrSvg={props.qrSvg} adresse={props.adresse} />
+      ) : (
+        <Accueil {...props} />
+      );
     case 'equipes':
       // Lot 14 : avant la formation par la régie, les inscrits attendent leurs équipes.
       return etat.equipes.length === 0 ? (
