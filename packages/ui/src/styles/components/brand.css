@@ -32,6 +32,16 @@
   user-select: none;
 }
 
+/* La silhouette d'un calque, à repeindre par un thème de soirée (2026-11-27) : invisible sinon. */
+.tu-picto__teinte {
+  position: absolute;
+  inset: 0;
+  background: var(--tu-picto-teinte, transparent);
+  opacity: var(--tu-picto-teinte-opacite, 0);
+  pointer-events: none;
+  mask: var(--tu-calque) center / contain no-repeat;
+}
+
 /* Le logo et le nom côte à côte, dans un en-tête. */
 .tu-marque {
   display: inline-flex;
