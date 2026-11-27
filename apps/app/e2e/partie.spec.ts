@@ -154,18 +154,18 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
   ] as const) {
     await mesurer(
       `afficher ${numero}`,
-      () => regie.getByRole('button', { name: 'Afficher' }).click(),
+      () => regie.getByRole('button', { name: 'Montrer le point commun à la salle' }).click(),
       ecran.getByTestId('point-commun'),
     );
     await mesurer(
       `masquer ${numero}`,
-      () => regie.getByRole('button', { name: 'Masquer' }).click(),
+      () => regie.getByRole('button', { name: 'Cacher le point commun' }).click(),
       scene('list2', 'masque'),
     );
     await expect(ecran.getByTestId('point-commun')).toHaveCount(0);
     await mesurer(
       `lancer ${numero}`,
-      () => regie.getByRole('button', { name: 'Lancer' }).click(),
+      () => regie.getByRole('button', { name: 'Démarrer le chrono' }).click(),
       scene('list2', 'lance'),
     );
     await expect(ecran.getByTestId('chrono')).not.toHaveText('2:10', { timeout: 3000 });

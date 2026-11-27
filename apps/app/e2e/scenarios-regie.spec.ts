@@ -196,7 +196,7 @@ async function jouerJusquauBout(regie: Page, ecran: Page, jeu: 'list2' | 'mime2'
     const finie = regie.getByText('Présente un jeu du programme pour le lancer.');
     const pret =
       jeu === 'list2'
-        ? regie.getByRole('button', { name: 'Afficher', exact: true })
+        ? regie.getByRole('button', { name: 'Montrer le point commun à la salle' })
         : regie.getByRole('button', { name: 'Montrer le mot au premier de la file' });
     await expect(
       sansEquipe.or(commencer).or(pret).or(terminer).or(suivant).or(finie).first(),
@@ -225,16 +225,21 @@ async function jouerJusquauBout(regie: Page, ecran: Page, jeu: 'list2' | 'mime2'
       journal.push('commencer');
       continue;
     }
-    // Après un verdict, « Afficher » reste visible mais grisé : seule une touche active compte.
+    // Après un verdict, « Montrer le point commun » reste visible mais grisé : seule une touche active compte.
     if ((await pret.isVisible()) && (await pret.isEnabled())) {
       if (jeu === 'list2') {
         await pret.click();
-        await regie.getByRole('button', { name: 'Masquer' }).click();
+        await regie.getByRole('button', { name: 'Cacher le point commun' }).click();
       } else {
         await pret.click();
         await regie.getByTestId('regie-mot').click();
       }
-      await regie.getByRole('button', { name: 'Lancer' }).click();
+      await regie
+        .getByRole('button', {
+          name:
+            jeu === 'list2' ? 'Démarrer le chrono' : 'Masquer le mot en salle et lancer le mime',
+        })
+        .click();
       await confirmer(regie, jeu === 'list2' ? 'Échec' : 'Raté');
       await expect(ecran.getByTestId('verdict')).toBeVisible({ timeout: 5000 });
       joues += 1;

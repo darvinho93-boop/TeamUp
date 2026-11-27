@@ -90,9 +90,10 @@ if (await touche('Présenter', 350)) {
 await touche('Commencer : Points communs');
 await prendre(ecran, 'ecran-08-jeu-pret');
 await prendre(regie, 'regie-03-pilotage');
-if (await touche('Afficher')) await prendre(ecran, 'ecran-09-jeu-consigne');
-if (await touche('Masquer')) await prendre(ecran, 'ecran-10-jeu-masque');
-if (await touche('Lancer', 2500)) {
+if (await touche('Montrer le point commun à la salle'))
+  await prendre(ecran, 'ecran-09-jeu-consigne');
+if (await touche('Cacher le point commun')) await prendre(ecran, 'ecran-10-jeu-masque');
+if (await touche('Démarrer le chrono', 2500)) {
   await prendre(ecran, 'ecran-11-jeu-lance');
   await prendre(regie, 'regie-04-pilotage-lance');
   await regie.getByRole('button', { name: 'Valider', exact: true }).click();

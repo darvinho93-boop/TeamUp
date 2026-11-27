@@ -175,7 +175,11 @@ function Accueil({ etat, qrSvg, adresse }: Props) {
             <Pictogramme taille="coin" />
             <Wordmark className="tu-stage-accueil__logo" />
           </span>
-          <p className="tu-stage__l">{t('rejoindre')}</p>
+          {/* Le geste d'abord, puis l'étape suivante (audit du 2026-11-26). */}
+          <p className="tu-stage__l" data-testid="scannez">
+            {t('scannez')}
+          </p>
+          <p className="tu-stage__m">{t('puisPrenom')}</p>
           <p className="tu-stage-code" data-testid="code">
             {etat.evenement.code}
           </p>
@@ -774,6 +778,9 @@ function PointsCommuns({ etat, decalageMs }: Props) {
         <div className="tu-stage-centre">
           {/* Rien du point commun : l'équipe rouvre les yeux et ne doit pas le lire. */}
           <p className="tu-stage__xl">{t('ouvrezLesYeux', { equipe: equipe.nom })}</p>
+          <p className="tu-stage__l" data-testid="qui-est-debout">
+            {t('quiEstDebout')}
+          </p>
         </div>
       )}
 

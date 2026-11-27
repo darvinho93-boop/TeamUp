@@ -622,18 +622,58 @@ export function Pilotage({
             <p className="tu-regie__section-title" data-testid="regie-a-l-ecran">
               {t('aLEcran', { scene: t(`scene.${scene}`) })}
             </p>
-            <p className="tu-regie__muted">{t('choisirJeu')}</p>
-            {/* Cartes « Faisons connaissance » (2026-11-18) ; absent sans la migration. */}
-            {etat.connaissance !== undefined && (
-              <PanneauConnaissance
-                etat={etat}
-                agir={agir}
-                apresEcriture={async () => {
-                  signaler();
-                  await relire();
-                }}
-              />
+            {/* Ouvrir les inscriptions d'un geste, en haut de la page (audit du 2026-11-26) : la
+                même commande que la touche « Accueil » des scènes, tout en bas sur un portable. */}
+            {scene === 'ouverture' && (
+              <Button
+                variant="accent"
+                size="lg"
+                className="tu-regie-keys__wide"
+                onClick={() => agir({ type: 'scene', scene: 'accueil' })}
+                data-testid="ouvrir-inscriptions"
+              >
+                {t('ouvrirInscriptions')}
+              </Button>
             )}
+            {scene === 'accueil' && (
+              <>
+                <p className="tu-regie__muted" role="status" data-testid="qr-a-l-ecran">
+                  {t('qrALEcran', { n: etat.joueurs })}
+                </p>
+                {etat.equipes.length > 0 ? (
+                  <Button
+                    variant="accent"
+                    size="lg"
+                    className="tu-regie-keys__wide"
+                    onClick={() => agir({ type: 'devoilerEquipes' })}
+                  >
+                    {t('devoilerEquipes')}
+                  </Button>
+                ) : (
+                  etat.joueurs > 0 && (
+                    <Link href={`/regie/${code}/salle`} className="tu-regie__lien">
+                      {t('formerALaSalle')}
+                    </Link>
+                  )
+                )}
+              </>
+            )}
+            {scene !== 'ouverture' && scene !== 'accueil' && (
+              <p className="tu-regie__muted">{t('choisirJeu')}</p>
+            )}
+            {/* Cartes « Faisons connaissance » (2026-11-18) ; absent sans la migration. Rien à
+                tirer avant la fin d'un premier jeu : le panneau attend jusque-là. */}
+            {etat.connaissance !== undefined &&
+              etat.programme.some((m) => m.statut === 'terminee') && (
+                <PanneauConnaissance
+                  etat={etat}
+                  agir={agir}
+                  apresEcriture={async () => {
+                    signaler();
+                    await relire();
+                  }}
+                />
+              )}
           </>
         )}
       </div>
@@ -1030,20 +1070,21 @@ function PanneauPointsCommuns({ etat, manche, decalageMs, agir }: PanneauProps) 
       {etape === 'lance' && jeu.arret && (
         <p className="tu-regie__muted" data-testid="regie-arret" role="status">
           {jeu.arret.repriseDansMs === null
-            ? t('arretIndice')
+            ? t('arretIndice', { n: Math.min(etat.pilotage.indices + 1, 2) })
             : t('reprise', { s: Math.ceil(jeu.arret.repriseDansMs / 1000) })}
         </p>
       )}
       <div className="tu-regie-keys">
-        {touche('afficher', t('afficher'))}
-        {touche('masquer', t('masquer'))}
-        {touche('lancer', t('lancer'))}
+        {/* Chaque touche dit ce que la salle verra (audit du 2026-11-26). */}
+        {touche('afficher', t('pcMontrer'))}
+        {touche('masquer', t('pcCacher'))}
+        {touche('lancer', t('pcDemarrer'))}
         <Button
           variant={permises.includes('indice') ? 'accent' : 'primary'}
           disabled={!permises.includes('indice')}
           onClick={() => agir({ type: 'pointsCommuns', action: 'indice' })}
         >
-          {t('indice', { n: etat.pilotage.indices })}
+          {t('pcIndice', { n: Math.min(etat.pilotage.indices + 1, 2) })}
         </Button>
         <BoutonConfirme
           disabled={!permises.includes('valider')}

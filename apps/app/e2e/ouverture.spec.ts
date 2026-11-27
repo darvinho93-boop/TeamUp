@@ -38,13 +38,18 @@ test('l’ouverture mène à la page du QR code par le logo Team Up!', async ({ 
   await expect(ecran.locator('[data-scene="ouverture"] .tu-rond')).toHaveCount(4);
   await expect(ecran.locator('[data-en-direct="true"]')).toBeVisible({ timeout: 15_000 });
 
-  // --- « Accueil » au pilotage : le logo Team Up! une dernière fois, puis la page du QR.
+  // --- « Afficher le QR d'inscription », en haut du pilotage (2026-11-27) : le logo Team Up!
+  // une dernière fois, puis la page du QR. Sur un portable, sans faire défiler la page.
+  await regie.setViewportSize({ width: 1366, height: 768 });
   await regie.goto(`/regie/${evenement.code}/pilotage`);
   await expect(regie.getByRole('button', { name: 'Ouverture' })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
-  await regie.getByRole('button', { name: 'Accueil', exact: true }).click();
+  const ouvrir = regie.getByTestId('ouvrir-inscriptions');
+  await expect(ouvrir).toBeInViewport();
+  await ouvrir.click();
+  await expect(regie.getByTestId('qr-a-l-ecran')).toBeVisible();
 
   // La passe finale prend la boucle au vol, ou après la fin du cycle si la boucle défaisait déjà
   // le logo (l'écran reste alors sur l'ouverture) : le logo et son nom, puis la page du QR code.
@@ -55,4 +60,5 @@ test('l’ouverture mène à la page du QR code par le logo Team Up!', async ({ 
   await expect(finale).toHaveCount(0, { timeout: 12_000 });
   await expect(ecran.locator('[data-scene="accueil"]')).toBeVisible();
   await expect(ecran.getByTestId('code')).toHaveText(evenement.code);
+  await expect(ecran.getByTestId('scannez')).toHaveText('Scannez pour jouer');
 });
