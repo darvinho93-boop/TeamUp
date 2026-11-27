@@ -663,7 +663,9 @@
         "montrer": "Show the word to the first in line",
         "revoir": "Show the word again",
         "pourJ1": "For the first in line only",
-        "fermer": "Tap to hide",
+        "fermer": "Close the word on this screen",
+        "lancer": "Hide the word from the room and start the mime",
+        "visible": "Word visible on the big screen",
         "mot": "The word",
         "trouve": "Found",
         "rate": "Missed"

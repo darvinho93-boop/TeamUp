@@ -1908,6 +1908,14 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
         {equipe.nom}
       </p>
 
+      {etape === 'secret' && (
+        // Ce que voit la salle se déduit de l'étape partagée : fermer le mot ici (« motOuvert »)
+        // ne le retire que de ce poste (audit du 2026-11-26).
+        <p className="tu-regie__alert" role="status" data-testid="mot-visible-salle">
+          {tm('visible')}
+        </p>
+      )}
+
       {motOuvert && (
         // Le mot, pour J1 seul : il vient le lire sur l'écran de régie (spec v3, jeu 04).
         <button
@@ -1971,7 +1979,7 @@ function PanneauMime({ etat, manche, decalageMs, agir }: PanneauProps) {
                 agir({ type: 'mime', action: 'lancer' });
               }}
             >
-              {t('lancer')}
+              {tm('lancer')}
             </Button>
           </>
         )}

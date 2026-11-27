@@ -349,14 +349,19 @@ test('le quiz donne les mêmes points à la croix et au téléphone ; le mime se
     const etat = await telephones[0]!.get(`/api/partie/${code}/etat`);
     expect(await etat.text()).not.toContain(mot);
     await regie.getByTestId('regie-mot').click();
+    // Fermé à la régie, le mot reste à l'écran de la salle, et la régie le dit (2026-11-27).
+    await expect(regie.getByTestId('mot-visible-salle')).toBeVisible();
+    await expect(ecran.getByTestId('mot')).toContainText(mot);
 
     await mesurer(
       `lancer ${numero}`,
-      () => regie.getByRole('button', { name: 'Lancer' }).click(),
+      () =>
+        regie.getByRole('button', { name: 'Masquer le mot en salle et lancer le mime' }).click(),
       scene('mime2', 'lance'),
     );
     // La chaîne est lancée : le mot quitte l'écran (le reste de la file pourrait se retourner).
     await expect(ecran.getByText(mot)).toHaveCount(0);
+    await expect(regie.getByTestId('mot-visible-salle')).toHaveCount(0);
     await mesurer(
       `${verdict} ${numero}`,
       () => confirmer(regie, verdict),

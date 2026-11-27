@@ -663,7 +663,9 @@
         "montrer": "Montrer le mot au premier de la file",
         "revoir": "Revoir le mot",
         "pourJ1": "Pour le premier de la file seulement",
-        "fermer": "Touchez pour masquer",
+        "fermer": "Fermer le mot en régie",
+        "lancer": "Masquer le mot en salle et lancer le mime",
+        "visible": "Mot visible sur le grand écran",
         "mot": "Le mot",
         "trouve": "Trouvé",
         "rate": "Raté"
