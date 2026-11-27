@@ -266,13 +266,60 @@
   transform: rotate(35deg);
 }
 
+/* « Bienvenue, Camille ! » : une ligne de la carte, pas la pastille verte de Team Up!. Le message
+   n'a pas de largeur propre (`contain: inline-size`) : dans l'encadré, qui centre son contenu, il
+   prend toute la largeur (sinon il tombait à un caractère, lettres empilées). */
 .tu-fp-accueil .tu-fp-encadre .tu-stage-bienvenue {
-  min-height: calc(var(--tu-fp-compte) * 2.4);
+  align-self: stretch;
+  display: flex;
+  justify-content: center;
+  min-height: calc(var(--tu-fp-bienvenue) * 2.5);
   margin-top: var(--tu-space-2);
+}
+
+.tu-fp-accueil .tu-stage-bienvenue__texte {
+  position: relative;
+  padding: 0 0 0 calc(var(--tu-fp-feuille) * 2.4);
+  border-radius: 0;
+  background: none;
   color: var(--tu-fp-sapin);
   font-family: var(--tu-fp-serif);
-  font-size: var(--tu-fp-compte);
+  font-size: var(--tu-fp-bienvenue);
+  font-style: italic;
   font-weight: 500;
+  line-height: 1.15;
+  text-align: center;
+  animation-name: tu-fp-bienvenue;
+}
+
+/* La feuille d'or devant le message, comme devant le compte des joueurs. */
+.tu-fp-accueil .tu-stage-bienvenue__texte::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--tu-fp-bienvenue) * 0.35);
+  left: 0;
+  width: var(--tu-fp-feuille);
+  height: calc(var(--tu-fp-feuille) * 1.6);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: var(--tu-fp-or-vrai);
+  transform: rotate(35deg);
+}
+
+@keyframes tu-fp-bienvenue {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--tu-space-3));
+  }
+
+  12%,
+  85% {
+    opacity: 1;
+    transform: none;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Les prénoms des inscrits, en bas, en petites capitales dorées. */
@@ -365,11 +412,14 @@
   );
 }
 
+/* Les calques de la bascule sont dessinés deux à quatre fois plus petits, puis agrandis par
+   transform jusqu'à leur taille (--tu-fp-eclat, -onde, -vague) : six fois moins de pixels à peindre
+   au montage, pour un rendu de dégradés et de cercle doux identique à l'œil. */
 .tu-fp-eclat {
-  top: calc(var(--tu-fp-oy) - var(--tu-fp-eclat) / 2);
-  left: calc(var(--tu-fp-ox) - var(--tu-fp-eclat) / 2);
-  width: var(--tu-fp-eclat);
-  height: var(--tu-fp-eclat);
+  top: calc(var(--tu-fp-oy) - var(--tu-fp-eclat) / 4);
+  left: calc(var(--tu-fp-ox) - var(--tu-fp-eclat) / 4);
+  width: calc(var(--tu-fp-eclat) / 2);
+  height: calc(var(--tu-fp-eclat) / 2);
   background: radial-gradient(
     circle closest-side,
     var(--tu-fp-eclat-blanc) 0%,
@@ -380,10 +430,10 @@
 }
 
 .tu-fp-onde {
-  top: calc(var(--tu-fp-oy) - var(--tu-fp-onde) / 2);
-  left: calc(var(--tu-fp-ox) - var(--tu-fp-onde) / 2);
-  width: var(--tu-fp-onde);
-  height: var(--tu-fp-onde);
+  top: calc(var(--tu-fp-oy) - var(--tu-fp-onde) / 4);
+  left: calc(var(--tu-fp-ox) - var(--tu-fp-onde) / 4);
+  width: calc(var(--tu-fp-onde) / 2);
+  height: calc(var(--tu-fp-onde) / 2);
   background: radial-gradient(
     circle closest-side,
     var(--tu-fp-or-vide) 83%,
@@ -516,22 +566,82 @@
   background: var(--tu-bg);
 }
 
-.tu-fp-accueil--entree .tu-fp-fond {
-  clip-path: circle(0 at var(--tu-fp-ox) var(--tu-fp-oy));
+/* Fluidité (2026-11-28) : ce qui bouge pendant l'entrée a son propre calque, que la carte graphique
+   déplace sans repeindre ; aucune découpe ni couleur animée sur une grande surface. */
+.tu-fp-accueil--entree .tu-fp-ronds,
+.tu-fp-accueil--entree .tu-fp-halo,
+.tu-fp-accueil--entree .tu-fp-eclat,
+.tu-fp-accueil--entree .tu-fp-onde,
+.tu-fp-accueil--entree .tu-fp-vague,
+.tu-fp-accueil--entree .tu-fp-vol,
+.tu-fp-accueil--entree .tu-fp-rinceau-cache,
+.tu-fp-accueil--entree .tu-fp-gerbe__feuille,
+.tu-fp-accueil--entree .tu-fp-flotte__feuille {
+  will-change: transform, opacity;
 }
 
-/* La carte se dessine à sa place, à gauche : rien n'y paraît avant son passage. */
+/* Le papier se répand : un cercle de papier grandit (transform) depuis le point de la bascule, puis
+   le fond, avec son grain et ses bords, le relaie en fondu. */
+.tu-fp-accueil--entree .tu-fp-fond {
+  opacity: 0;
+}
+
+.tu-fp-vague {
+  top: calc(var(--tu-fp-oy) - var(--tu-fp-vague) / 4);
+  left: calc(var(--tu-fp-ox) - var(--tu-fp-vague) / 4);
+  width: calc(var(--tu-fp-vague) / 2);
+  height: calc(var(--tu-fp-vague) / 2);
+  border-radius: var(--tu-radius-pill);
+  background: var(--tu-fp-papier);
+  transform: scale(0);
+}
+
+/* Les rinceaux se découvrent sous un cache de la couleur du fond qui se retire vers le bas. */
+.tu-fp-rinceau-cache {
+  top: 0;
+  bottom: 0;
+  width: calc(var(--tu-fp-rinceau) + var(--tu-fp-rinceau-retrait));
+  background: var(--tu-bg);
+  transform-origin: 50% 100%;
+}
+
+.tu-fp-rinceau-cache--g {
+  left: 0;
+}
+
+.tu-fp-rinceau-cache--d {
+  right: 0;
+}
+
+/* La carte se dessine à sa place, à gauche : rien n'y paraît avant son passage. Les traits se
+   dessinent en or ; l'illustration en couleurs (le même SVG, en image) les relaie en fondu. */
+.tu-fp-accueil--entree .tu-fp-illustration {
+  position: relative;
+  contain: layout paint;
+}
+
 .tu-fp-accueil--entree .tu-fp-illustration svg {
   fill-opacity: 0;
+  will-change: opacity;
 }
 
 .tu-fp-accueil--entree .tu-fp-illustration .tu-fp-trace {
+  stroke: var(--tu-fp-or-vrai);
   stroke-dasharray: 1 1;
   stroke-dashoffset: 1;
 }
 
 .tu-fp-accueil--entree .tu-fp-illustration .tu-fp-pointille {
   stroke-opacity: 0;
+}
+
+.tu-fp-illustration__couleurs {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  will-change: opacity;
 }
 
 .tu-fp-accueil--entree .tu-fp-marque .tu-picto {
@@ -590,18 +700,17 @@
 
   /* … et la mairie se dessine en traits d'or, d'un bout à l'autre de la mesure. */
   .tu-fp-accueil--entree .tu-fp-illustration .tu-fp-trace {
-    animation:
-      tu-fp-trace 1.2s ease-in-out calc(var(--tu-fp-p1) + var(--tu-fp-part) * 2.6s) both,
-      tu-fp-dore 1.8s ease var(--tu-fp-p2) both;
+    animation: tu-fp-trace 1.2s ease-in-out calc(var(--tu-fp-p1) + var(--tu-fp-part) * 2.6s) both;
   }
 
-  /* 2e passage : elle prend ses couleurs, le monogramme paraît, les rinceaux poussent. */
+  /* 2e passage : elle prend ses couleurs (fondu de l'image sur le dessin d'or), le monogramme
+     paraît, les rinceaux poussent. */
+  .tu-fp-accueil--entree .tu-fp-illustration__couleurs {
+    animation: tu-fp-fond 1.8s ease var(--tu-fp-p2) both;
+  }
+
   .tu-fp-accueil--entree .tu-fp-illustration svg {
-    animation: tu-fp-remplit 1.8s ease var(--tu-fp-p2) both;
-  }
-
-  .tu-fp-accueil--entree .tu-fp-illustration .tu-fp-pointille {
-    animation: tu-fp-trait 1s ease calc(var(--tu-fp-p2) + 470ms) both;
+    animation: tu-sortie 1.8s ease var(--tu-fp-p2) forwards;
   }
 
   .tu-fp-accueil--entree .tu-fp-mh {
@@ -613,8 +722,8 @@
     animation: tu-fp-reflet 1.6s ease-in-out calc(var(--tu-fp-p2) + var(--tu-fp-temps) + 500ms) both;
   }
 
-  .tu-fp-accueil--entree .tu-fp-rinceau {
-    animation: tu-fp-pousse 2.6s cubic-bezier(0.4, 0, 0.2, 1) var(--tu-fp-p2) both;
+  .tu-fp-accueil--entree .tu-fp-rinceau-cache {
+    animation: tu-fp-decouvre 2.6s cubic-bezier(0.4, 0, 0.2, 1) var(--tu-fp-p2) both;
   }
 
   /* 3e passage : les prénoms s'écrivent, la date paraît, des feuilles flottent. */
@@ -643,8 +752,12 @@
     animation: tu-fp-onde 1.25s cubic-bezier(0.12, 0.62, 0.3, 1) var(--tu-fp-b) both;
   }
 
-  .tu-fp-accueil--entree .tu-fp-fond {
+  .tu-fp-accueil--entree .tu-fp-vague {
     animation: tu-fp-vague 1.25s cubic-bezier(0.12, 0.62, 0.3, 1) var(--tu-fp-b) both;
+  }
+
+  .tu-fp-accueil--entree .tu-fp-fond {
+    animation: tu-fp-fond 0.6s ease calc(var(--tu-fp-b) + 0.9s) both;
   }
 
   .tu-fp-accueil--entree .tu-fp-gerbe__feuille {
@@ -806,17 +919,17 @@
 @keyframes tu-fp-eclat {
   0% {
     opacity: 0;
-    transform: scale(0.15);
+    transform: scale(0.3);
   }
 
   12% {
     opacity: 1;
-    transform: scale(0.55);
+    transform: scale(1.1);
   }
 
   100% {
     opacity: 0;
-    transform: scale(1.35);
+    transform: scale(2.7);
   }
 }
 
@@ -832,13 +945,28 @@
 
   100% {
     opacity: 0;
-    transform: scale(1);
+    transform: scale(2);
   }
 }
 
 @keyframes tu-fp-vague {
+  from {
+    transform: scale(0);
+  }
+
   to {
-    clip-path: circle(var(--tu-fp-vague) at var(--tu-fp-ox) var(--tu-fp-oy));
+    transform: scale(4);
+  }
+}
+
+/* Le cache des rinceaux se retire vers le bas. */
+@keyframes tu-fp-decouvre {
+  from {
+    transform: scaleY(1);
+  }
+
+  to {
+    transform: scaleY(0);
   }
 }
 
@@ -879,16 +1007,6 @@
   100% {
     opacity: 0;
     transform: translate(var(--tu-fp-gx), var(--tu-fp-gy)) rotate(calc(var(--tu-fp-r0) + 200deg));
-  }
-}
-
-@keyframes tu-fp-pousse {
-  from {
-    clip-path: inset(0 0 100% 0);
-  }
-
-  to {
-    clip-path: inset(0);
   }
 }
 
@@ -968,33 +1086,6 @@
   }
 }
 
-/* Les traits se dessinent en or, puis prennent leur couleur quand l'illustration se remplit. */
-@keyframes tu-fp-dore {
-  from {
-    stroke: var(--tu-fp-or-vrai);
-  }
-}
-
-@keyframes tu-fp-remplit {
-  from {
-    fill-opacity: 0;
-  }
-
-  to {
-    fill-opacity: 1;
-  }
-}
-
-@keyframes tu-fp-trait {
-  from {
-    stroke-opacity: 0;
-  }
-
-  to {
-    stroke-opacity: 1;
-  }
-}
-
 @keyframes tu-fp-fond {
   from {
     opacity: 0;
@@ -1036,5 +1127,38 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------- Le bonus (2026-11-28) */
+
+/* La chanson des hôtes en karaoké : le karaoké du Blind test sur le sapin, la ligne chantée qui se
+   remplit en or, les titres en Cormorant, les rinceaux sur les bords. L'enveloppe n'a pas de boîte :
+   elle ne fait que passer ses variables au karaoké, qui est le corps de la scène. */
+.tu-fp-bonus {
+  --tu-navy-900: var(--tu-fp-nuit);
+  --tu-team-color: var(--tu-fp-or-vrai);
+  --tu-team-on: var(--tu-fp-sapin);
+  --tu-font-display: var(--tu-fp-serif);
+
+  display: contents;
+}
+
+.tu-fp-bonus .tu-karaoke__titre {
+  color: var(--tu-fp-champagne);
+  font-weight: 500;
+}
+
+.tu-fp-bonus > .tu-fp-rinceau {
+  position: absolute;
+  z-index: 1;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Coupée : la chanson s'efface en fondu (3 s, le son aussi), les paroles avec elle. */
+@media (prefers-reduced-motion: no-preference) {
+  .tu-fp-bonus[data-coupe] .tu-karaoke__lignes {
+    animation: tu-sortie 3s ease forwards;
   }
 }

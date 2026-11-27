@@ -198,6 +198,8 @@ export function AccueilFairePart({ etat, qrSvg, adresse }: Props) {
       data-depuis={entree ? depuis : undefined}
       style={style}
     >
+      {/* Le papier qui se répand à la bascule, sous le fond qui le relaie (faire-part.css). */}
+      {entree && <div className="tu-fp-vague" />}
       <div className="tu-fp-fond" />
       {entree && (
         <>
@@ -244,6 +246,12 @@ export function AccueilFairePart({ etat, qrSvg, adresse }: Props) {
       )}
       <div className="tu-fp-rinceau tu-fp-rinceau--g" />
       <div className="tu-fp-rinceau tu-fp-rinceau--d" />
+      {entree && (
+        <>
+          <div className="tu-fp-rinceau-cache tu-fp-rinceau-cache--g" />
+          <div className="tu-fp-rinceau-cache tu-fp-rinceau-cache--d" />
+        </>
+      )}
       <p className="tu-fp-insta" data-testid="insta-coin">
         {INSTAGRAM.pseudo}
       </p>
@@ -253,7 +261,18 @@ export function AccueilFairePart({ etat, qrSvg, adresse }: Props) {
       </p>
       {entree && <p className="tu-fp-croix">×</p>}
       <div className="tu-fp-carte">
-        <div className="tu-fp-illustration" dangerouslySetInnerHTML={{ __html: illustration }} />
+        <div className="tu-fp-illustration">
+          <div dangerouslySetInnerHTML={{ __html: illustration }} />
+          {/* Pendant l'entrée, l'illustration en couleurs relaie en fondu le dessin d'or : un fondu
+              d'image au lieu de 300 traits recolorés un à un. En image, un SVG n'exécute rien. */}
+          {entree && (
+            <img
+              className="tu-fp-illustration__couleurs"
+              src={url(theme.fichiers.illustration)}
+              alt=""
+            />
+          )}
+        </div>
         <div className="tu-fp-mh-place">
           {/* Fichiers du thème, déjà téléchargés (`blob:`) : rien à optimiser côté Next. */}
           <img className="tu-fp-mh" src={url(theme.fichiers.monogramme)} alt="" />
