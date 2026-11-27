@@ -2122,3 +2122,34 @@ soir (maquette D v6, « laisse la musique se jouer pleinement ») :
 - Tests : `tests/faire-part.test.ts`, `tests/themes-base.test.ts` (droits, bucket, cascade) et
   `e2e/theme-faire-part.spec.ts`. Ce dernier travaille avec des fichiers fabriqués et un SVG
   piégé, vérifie l'heure des sons au journal du lecteur, et accepte `CAPTURES=<dossier>`.
+
+## Conventions posées le 2026-11-28 (soirée sur le PC, sans internet)
+
+Tranché le 2026-11-27 pour le mariage du 5 décembre (PS4EPT, 29 joueurs) : la salle n'a pas de bon
+réseau, la soirée se joue **depuis le PC de l'animateur**, qui sert l'app sur le wifi du routeur
+(Cudy, réseau `TeamUp`, PC en `192.168.10.244`). C'est le secours prévu au lot 15 (http sur
+l'adresse du PC, `TU_RESEAU_LOCAL=1`), pas le lot 15 complet (https, Caddy, base à part), remis à
+plus tard. Mode d'emploi : `docs/soiree-sur-pc.md`.
+
+- `pnpm soiree:descendre --code CODE` (`apps/app/scripts/descendre-soiree.mjs`) recopie une soirée
+  de l'en-ligne vers la base du PC.
+  - **L'en-ligne n'est que lu.** La clé de service est demandée à la CLI Supabase (projet lié),
+    gardée en mémoire. Une cible en ligne est refusée.
+  - Mêmes identifiants des deux côtés (mêmes migrations) : le compte de l'animateur (créé sur le
+    PC, mot de passe tiré au hasard et donné une fois), la soirée, son pilotage, ses groupes et
+    équipes, ses contenus et ceux de la banque que son programme cite (tout identifiant de
+    `manches.options`, les passages, la grille du Portrait), ses musiques, son programme, son thème,
+    et les fichiers des buckets `musiques`, `extraits`, `fonds`, `logos`, `themes`.
+  - **Jamais les joueurs** : les invités s'inscrivent le soir même sur le wifi du PC.
+  - Relancée, elle refait la copie (l'ancienne part en cascade) sans retélécharger un fichier de
+    même taille. Une copie jouée sur le PC (joueurs ou points) ne se remplace qu'avec
+    `--remise-a-zero`. Elle finit par comparer lignes et tailles de fichiers des deux côtés.
+- `pnpm soiree:pc --code CODE` (`apps/app/scripts/soiree-pc.mjs`) vérifie la base locale et la
+  soirée, construit l'app **pour l'adresse du PC** dans `.next-machine` (l'adresse est écrite dans
+  le code envoyé aux navigateurs ; reconstruite seulement si elle change), puis la sert sur
+  `0.0.0.0:3000` avec `TU_RESEAU_LOCAL=1`. `--ip 127.0.0.1` : une répétition sur le PC seul.
+- **Une page en http ouverte par une adresse IP n'est pas un contexte sécurisé** : pas de
+  `crypto.randomUUID` (le lecteur de l'écran restait muet). `identifiantAleatoire`
+  (`src/lib/identifiant.ts`) le remplace partout dans le navigateur ; ne plus appeler
+  `crypto.randomUUID` côté client. L'écran s'ouvre de préférence sur le PC par `localhost`.
+- Après une descente, ne plus lancer `pnpm db:reset` : il efface la base du PC.
