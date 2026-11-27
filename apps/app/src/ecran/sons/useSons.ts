@@ -6,6 +6,7 @@ import {
   deroule,
   extraitA,
   fondA,
+  fondDuTheme,
   FONDU_KARAOKE_MS,
   instantDe,
   musiqueA,
@@ -51,7 +52,19 @@ declare global {
  * changement d'état joue ce que `sonsPour` en dit, la musique de fond suit le moment, et le
  * volume suit la régie.
  */
-export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
+export function useSons(
+  etat: EtatSalle,
+  eteint: boolean,
+  decalageMs: number,
+  /**
+   * Soirée à thème (2026-11-27) : ses musiques téléchargées, et si l'entrée à thème est en cours
+   * (son ambiance attend alors la fin de la musique d'arrivée).
+   */
+  theme: {
+    sons: { musique: string | null; ambiance: string | null } | null;
+    entreeEnCours: boolean;
+  } = { sons: null, entreeEnCours: false },
+) {
   const [lecteur, setLecteur] = useState<Lecteur | null>(null);
   const precedent = useRef<Instant | null>(null);
   const reglage = reglageDe(etat);
@@ -131,6 +144,19 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
     bruitageMs,
   ]);
 
+  // Les musiques du thème, décodées d'avance dès que le son est activé.
+  const musiqueTheme = theme.sons?.musique ?? null;
+  const ambianceTheme = theme.sons?.ambiance ?? null;
+  useEffect(() => {
+    if (lecteur && (musiqueTheme || ambianceTheme))
+      void lecteur.chargerTheme({ musique: musiqueTheme, ambiance: ambianceTheme });
+  }, [lecteur, musiqueTheme, ambianceTheme]);
+  // La musique d'arrivée accompagne l'accueil : elle s'arrête en fondu si la régie le quitte.
+  useEffect(() => {
+    if (scene !== 'accueil') lecteur?.arreterFairePart();
+  }, [lecteur, scene]);
+  const { entreeEnCours } = theme;
+
   // La musique de fond du moment. Celle d'une explication s'arrête avec elle : l'étape reste
   // « explication » tant que la régie n'a rien touché, mais le script, lui, a une fin.
   const { chrono_depart_ms: depart, chrono_duree_s: duree } = etat.pilotage;
@@ -149,7 +175,7 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
       bruitageMs: null,
     });
     if (fond !== 'explication' || depart === null || duree === null) {
-      lecteur.fond(fond);
+      lecteur.fond(fondDuTheme(fond, { scene, ambianceTheme: !!ambianceTheme, entreeEnCours }));
       return;
     }
     const reste = depart + duree * 1000 - (Date.now() + decalageMs);
@@ -157,7 +183,20 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
     if (reste <= 0) return;
     const fin = setTimeout(() => lecteur.fond(null), reste);
     return () => clearTimeout(fin);
-  }, [lecteur, scene, etape, mancheId, passageId, jeu, joueurs, depart, duree, decalageMs]);
+  }, [
+    lecteur,
+    scene,
+    etape,
+    mancheId,
+    passageId,
+    jeu,
+    joueurs,
+    depart,
+    duree,
+    decalageMs,
+    ambianceTheme,
+    entreeEnCours,
+  ]);
 
   // Les musiques du jeu présenté (2026-11-15) : lues dans la bibliothèque dès la présentation,
   // puis téléchargées d'avance. Seules les actives jouent ; une musique retirée de la bibliothèque
@@ -253,12 +292,18 @@ export function useSons(etat: EtatSalle, eteint: boolean, decalageMs: number) {
     [lecteur],
   );
   const positionExtrait = useCallback(() => lecteur?.positionExtrait() ?? null, [lecteur]);
+  const jouerFairePart = useCallback(
+    (apresMs?: number, dansLeSonMs?: number) => lecteur?.jouerFairePart(apresMs, dansLeSonMs),
+    [lecteur],
+  );
 
   return {
     /** À proposer tant que le son n'est pas activé sur cet écran. */
     aActiver: !eteint && !lecteur,
     activer,
     jouer: eteint || !lecteur ? null : jouer,
+    /** La musique d'arrivée d'une soirée à thème (`null` sans son). */
+    jouerFairePart: eteint || !lecteur ? null : jouerFairePart,
     positionExtrait: eteint || !lecteur ? null : positionExtrait,
   };
 }

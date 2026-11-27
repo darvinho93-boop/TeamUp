@@ -90,6 +90,30 @@ export function estBattement(son: Son): boolean {
 /** Les musiques de fond, en boucle : une seule joue à la fois. */
 export type Fond = 'ambiance' | 'explication';
 
+/**
+ * Soirée à thème (2026-11-27) : l'ambiance de ses hôtes remplace celle de Team Up!, sauf à
+ * l'ouverture, qui reste celle de toutes les soirées. Elle ne part pas pendant l'entrée à thème :
+ * jusqu'à la bascule, rien ne doit trahir la surprise (le lecteur la lance après leur musique).
+ */
+export type FondJoue = Fond | 'ambiance-theme';
+
+export function fondDuTheme(
+  fond: Fond | null,
+  {
+    scene,
+    ambianceTheme,
+    entreeEnCours,
+  }: { scene: string; ambianceTheme: boolean; entreeEnCours: boolean },
+): FondJoue | null {
+  if (fond !== 'ambiance' || !ambianceTheme || scene === 'ouverture' || entreeEnCours) return fond;
+  return 'ambiance-theme';
+}
+
+/** La musique d'arrivée d'une soirée à thème part au niveau du reel qu'elle relaie. */
+export const NIVEAU_FAIRE_PART = NIVEAUX.finale;
+/** L'ambiance d'une soirée à thème, au niveau de celle de Team Up!. */
+export const NIVEAU_AMBIANCE_THEME = NIVEAUX.ambiance;
+
 /** Pendant qu'un son joue, la musique de fond s'efface à cette fraction de son niveau. */
 export const FOND_SOUS_UN_SON = 0.25;
 

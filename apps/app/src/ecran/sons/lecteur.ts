@@ -3,11 +3,13 @@ import {
   fichierDe,
   FOND_SOUS_UN_SON,
   FONDU_MUSIQUE_MS,
+  NIVEAU_AMBIANCE_THEME,
   NIVEAU_EXTRAIT,
+  NIVEAU_FAIRE_PART,
   NIVEAU_MUSIQUE,
   NIVEAUX,
   SONS,
-  type Fond,
+  type FondJoue,
   type Montee,
   type ReglageSon,
   type Son,
@@ -19,6 +21,8 @@ const FONDU_S = FONDU_MUSIQUE_MS / 1000;
 const ESPACE_ARRIVEES_MS = 600;
 /** Un son coupé par le suivant s'éteint en un clin d'œil, sans clic. */
 const COUPE_S = 0.06;
+/** Les sons d'une soirée à thème (2026-11-27), téléchargés de son bucket. */
+type SonTheme = 'faire-part' | 'ambiance-theme';
 /** Le canal par lequel les onglets d'un même navigateur se passent le son. */
 const CANAL = 'teamup-son';
 
@@ -30,7 +34,20 @@ export interface Lecteur {
    */
   jouer(son: Son, apresMs?: number, montee?: Montee, dansLeSonMs?: number): void;
   /** La musique de fond, en boucle : en changer ou l'éteindre (`null`), en fondu. */
-  fond(son: Fond | null): void;
+  fond(son: FondJoue | null): void;
+  /**
+   * Soirée à thème (2026-11-27) : décode d'avance sa musique d'arrivée et son ambiance, déjà
+   * téléchargées (adresses `blob:`). Sans elles, rien ne change.
+   */
+  chargerTheme(sons: { musique: string | null; ambiance: string | null }): Promise<void>;
+  /**
+   * La musique d'arrivée d'une soirée à thème : elle part quand le reel s'éteint, sans le couper
+   * (revu le 2026-11-27) ; la musique de fond s'arrête et ne reprend qu'à sa fin. Les autres sons
+   * (une arrivée) se posent dessus sans la couper.
+   */
+  jouerFairePart(apresMs?: number, dansLeSonMs?: number): void;
+  /** L'arrête en fondu (la régie a quitté l'accueil) ; la musique de fond reprend. */
+  arreterFairePart(): void;
   /**
    * Télécharge d'avance un MP3 de la bibliothèque (2026-11-15), gardé tel quel en mémoire (un
    * MP3 décodé pèserait dix fois plus) : il joue sans délai, même si le réseau tombe ensuite ou
@@ -61,7 +78,7 @@ export interface Lecteur {
    * Ce qui a été joué, pour les contrôles : le nom du son et l'instant (ms). Une musique y paraît
    * en `musique:<id>` à son départ, `musique:-` à son arrêt.
    */
-  journal: { son: Son | `musique:${string}` | `extrait:${string}`; a: number }[];
+  journal: { son: Son | SonTheme | `musique:${string}` | `extrait:${string}`; a: number }[];
   /** Le dernier réglage appliqué, pour les contrôles. */
   reglage: ReglageSon;
 }
@@ -92,7 +109,7 @@ export async function creerLecteur(
   sortie.connect(sonde);
   const echantillons = new Float32Array(sonde.fftSize);
 
-  const tampons = new Map<Son, AudioBuffer>();
+  const tampons = new Map<Son | SonTheme, AudioBuffer>();
   await Promise.all(
     SONS.map(async (son) => {
       const reponse = await fetch(fichierDe(son));
@@ -103,7 +120,13 @@ export async function creerLecteur(
 
   const journal: Lecteur['journal'] = [];
   let derniereArrivee = 0;
-  let boucle: { son: Fond; source: AudioBufferSourceNode; gain: GainNode } | null = null;
+  let boucle: { son: FondJoue; source: AudioBufferSourceNode; gain: GainNode } | null = null;
+  /** La musique de fond demandée : celle qui reprend après la musique d'arrivée d'un thème. */
+  let fondVoulu: FondJoue | null = null;
+  /** La musique d'arrivée d'une soirée à thème, tant qu'elle joue. */
+  let fairePart: { source: AudioBufferSourceNode; gain: GainNode } | null = null;
+  const niveauDuFond = (son: FondJoue) =>
+    son === 'ambiance-theme' ? NIVEAU_AMBIANCE_THEME : NIVEAUX[son];
   /** Le son (hors battements) qui joue encore : le suivant le coupera. */
   let enCours: { source: AudioBufferSourceNode; gain: GainNode } | null = null;
 
@@ -168,7 +191,7 @@ export async function creerLecteur(
       gain.setTargetAtTime(niveau * FOND_SOUS_UN_SON, t, COUPE_S);
       gain.setTargetAtTime(niveau, t + dureeS, FONDU_S / 3);
     };
-    if (boucle) sous(boucle.gain.gain, NIVEAUX[boucle.son]);
+    if (boucle) sous(boucle.gain.gain, niveauDuFond(boucle.son));
     const piste = musiqueVoulue ? pistes.get(musiqueVoulue) : undefined;
     if (piste && !piste.audio.paused) sous(piste.gain.gain, NIVEAU_MUSIQUE);
   };
@@ -203,7 +226,19 @@ export async function creerLecteur(
     journal.push({ son: `musique:${cle}`, a: Math.round(performance.now()) });
   };
 
-  const source = (son: Son, niveau: number, vitesse = 1) => {
+  /** Éteint la musique de fond en fondu. */
+  const arreterLaBoucle = () => {
+    if (!boucle) return;
+    const t = contexte.currentTime;
+    const { source: noeud, gain } = boucle;
+    boucle = null;
+    gain.gain.cancelScheduledValues(t);
+    gain.gain.setValueAtTime(gain.gain.value, t);
+    gain.gain.linearRampToValueAtTime(0, t + FONDU_S);
+    noeud.stop(t + FONDU_S);
+  };
+
+  const source = (son: Son | SonTheme, niveau: number, vitesse = 1) => {
     const tampon = tampons.get(son);
     if (!tampon) return null;
     const noeud = contexte.createBufferSource();
@@ -246,25 +281,70 @@ export async function creerLecteur(
       voix.source.start(0, dansLeSonMs / 1000);
       journal.push({ son, a: Math.round(maintenant) });
     },
-    fond(son) {
+    fond(voulu) {
+      fondVoulu = voulu;
+      // Pendant la musique d'arrivée d'un thème, la musique de fond attend sa fin.
+      if (fairePart) return;
+      // L'ambiance d'un thème pas encore décodée : celle de Team Up! en attendant.
+      const son = voulu === 'ambiance-theme' && !tampons.has(voulu) ? 'ambiance' : voulu;
       if (boucle?.son === son || (!boucle && !son)) return;
       const t = contexte.currentTime;
-      if (boucle) {
-        const { source: noeud, gain } = boucle;
-        boucle = null;
-        gain.gain.cancelScheduledValues(t);
-        gain.gain.setValueAtTime(gain.gain.value, t);
-        gain.gain.linearRampToValueAtTime(0, t + FONDU_S);
-        noeud.stop(t + FONDU_S);
-      }
+      arreterLaBoucle();
       if (!son) return;
       const voix = source(son, 0);
       if (!voix) return;
       voix.source.loop = true;
-      voix.gain.gain.linearRampToValueAtTime(NIVEAUX[son], t + FONDU_S);
+      voix.gain.gain.linearRampToValueAtTime(niveauDuFond(son), t + FONDU_S);
       voix.source.start();
       boucle = { son, ...voix };
       journal.push({ son, a: Math.round(performance.now()) });
+    },
+    async chargerTheme({ musique, ambiance }) {
+      const aDecoder: [SonTheme, string | null][] = [
+        ['faire-part', musique],
+        ['ambiance-theme', ambiance],
+      ];
+      await Promise.all(
+        aDecoder.map(async ([son, adresse]) => {
+          if (!adresse || tampons.has(son)) return;
+          try {
+            const reponse = await fetch(adresse);
+            tampons.set(son, await contexte.decodeAudioData(await reponse.arrayBuffer()));
+          } catch {
+            // Illisible : la soirée garde les sons de Team Up!.
+          }
+        }),
+      );
+      // L'ambiance du thème arrive : elle prend la place de celle de Team Up! si on l'attendait.
+      if (fondVoulu === 'ambiance-theme') lecteur.fond(fondVoulu);
+    },
+    jouerFairePart(apresMs = 0, dansLeSonMs = 0) {
+      if (apresMs > 0) {
+        setTimeout(() => lecteur.jouerFairePart(0, dansLeSonMs), apresMs);
+        return;
+      }
+      const voix = source('faire-part', NIVEAU_FAIRE_PART);
+      if (!voix || fairePart) return;
+      arreterLaBoucle();
+      fairePart = voix;
+      voix.source.onended = () => {
+        if (fairePart !== voix) return;
+        fairePart = null;
+        lecteur.fond(fondVoulu);
+      };
+      voix.source.start(0, dansLeSonMs / 1000);
+      journal.push({ son: 'faire-part', a: Math.round(performance.now()) });
+    },
+    arreterFairePart() {
+      if (!fairePart) return;
+      const { source: noeud, gain } = fairePart;
+      fairePart = null;
+      const t = contexte.currentTime;
+      gain.gain.cancelScheduledValues(t);
+      gain.gain.setValueAtTime(gain.gain.value, t);
+      gain.gain.linearRampToValueAtTime(0, t + FONDU_S);
+      noeud.stop(t + FONDU_S);
+      lecteur.fond(fondVoulu);
     },
     charger(cle, url) {
       let fichier = fichiers.get(cle);
@@ -296,9 +376,12 @@ export async function creerLecteur(
         gain.gain.setValueAtTime(gain.gain.value, t);
         gain.gain.linearRampToValueAtTime(0, t + fonduS);
         // Relancée entre-temps (le karaoké juste après le buzz) : la même piste continue.
-        setTimeout(() => {
-          if (extraitJoue?.audio !== audio) audio.pause();
-        }, fonduS * 1000 + 20);
+        setTimeout(
+          () => {
+            if (extraitJoue?.audio !== audio) audio.pause();
+          },
+          fonduS * 1000 + 20,
+        );
         extraitJoue = null;
         journal.push({ son: 'extrait:-', a: Math.round(performance.now()) });
       }
