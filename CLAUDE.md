@@ -2044,3 +2044,81 @@ l'objet, Surenchère au téléphone, classement, régie rangée) reste à planif
 - Gobelet : au tournoi, « Poste n · Qui a perdu ? » puis « Au tour suivant : … » sur chaque poste ;
   au duel (et à Attrape l'objet), « Qui a gagné le duel ? » et « {prénom} gagne · +50 pour
   {équipe} », « Refaire le tirage du duo ». Les deux sens d'arbitrage sont écrits là où l'on touche.
+
+## Conventions posées le 2026-11-27 (thème « faire-part » d'une soirée)
+
+Tranché le 2026-11-27 pour le mariage du 5 décembre : l'écran commun d'une soirée peut prendre
+l'univers du **faire-part de ses hôtes**. L'ouverture classique reste, reel compris. Revu le même
+soir (maquette D v6, « laisse la musique se jouer pleinement ») :
+
+- quand le reel s'est éteint, **leur musique joue telle quelle**, sans coupe ni filtre ;
+- **l'écran la suit** : un élément de plus à chacun des passages du motif qui précèdent l'orchestre
+  (le logo se range à droite et leur mairie se dessine en traits d'or ; elle prend ses couleurs
+  avec leur monogramme ; leurs prénoms et la date) ;
+- quand l'orchestre entre, la **bascule** : le papier se répand, les feuilles jaillissent, le logo
+  prend leurs couleurs, Team Up! × leur carte ;
+- puis **un élément par temps** jusqu'au QR code (24 s environ après « Accueil »).
+  Le thème vaut **pour cette soirée et ses copies seulement**.
+
+- **Écarts assumés à la charte**, pour une soirée à thème seulement :
+  - le fond papier au lieu du beige ;
+  - les polices Cormorant et Jost (OFL, `@fontsource`, `@teamup/ui/faire-part.css`) ;
+  - le pictogramme recoloré (`Pictogramme teinte` : une silhouette masquée par calque) ;
+  - pas de corail en décor.
+  - Le tamoul reste en Noto Sans Tamil.
+- **Rien des hôtes dans le dépôt** (il est public). Leurs fichiers (monogramme, prénoms en
+  image, illustration SVG, rinceaux, grain, musiques) sont dans le bucket **privé** `themes` :
+  - tout animateur lit, pour qu'une copie de soirée lise les fichiers de l'originale ;
+  - personne n'écrit depuis l'app.
+    Leurs textes (date, merci) et les réglages de la musique (`orchestre_ms`, `temps_ms`, `notes_ms`) sont
+    dans `themes_soiree` (migration `20261127090000`) : lue par l'animateur de la soirée, écrite
+    par la **clé de service seule**.
+- **Aucune touche ne pose un thème.** On le fait avec `node apps/app/scripts/theme-soiree.mjs` :
+  - `--code CODE --dossier <dossier hors dépôt avec theme.json>` ;
+  - `--copier-de CODE --vers COPIE` ;
+  - `--retirer CODE`.
+  - La base visée est celle de `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`, à défaut celle de
+    `apps/app/.env.local`.
+- **Côté écran**, `useThemeSoiree` (`src/ecran/faire-part/`) lit la ligne, puis
+  `useFichiersLocaux('themes', …)` télécharge tout dès l'ouverture.
+  - Le thème n'habille qu'une fois toutes les images là ; l'aperçu de la régie le montre, sans
+    les musiques.
+  - Une ligne mal formée (`themeDe`, `src/lib/faire-part.ts`), un fichier manquant ou une base
+    sans la migration laissent l'écran Team Up! habituel.
+  - Si « Accueil » est touché avant la fin des téléchargements, la passe finale classique joue.
+- **L'illustration** est insérée dans la page pour se dessiner trait par trait. Elle est d'abord
+  nettoyée (`illustrationDe`) :
+  - ne restent que formes et dégradés, sans script, `on*`, lien sortant ni `url()` externe ;
+  - les traits reçoivent `pathLength=1` et leur part du dessin (`--tu-fp-part`, de 0 à 1) : le
+    dessin prend une mesure, quel que soit le nombre de traits ; les pointillés paraissent après.
+- **L'entrée** (`AccueilFairePart` sous `EntreeContexte`, `faire-part.css`) remplace la surcouche
+  `Finale` quand le thème est prêt au passage :
+  - même `raccordFinale` et mêmes ronds (`Ronds mode="finale"`) ;
+  - **tout le minutage vient de `entreeFairePart`** (`src/lib/faire-part.ts`, testé), en ms depuis
+    le début de la passe finale, posé en variables sur la scène (moins `depuisMs`) :
+    - `--tu-fp-n` : la musique part à `DEPART_MUSIQUE_MS` (6 950 ms), dans les 250 dernières ms
+      du reel (testé sur le fichier) ;
+    - `--tu-fp-b` : la bascule, `DEPART_MUSIQUE_MS + orchestre_ms` ;
+    - `--tu-fp-p1` à `-p3` : les trois mesures avant elle (4 × `temps_ms`, 937 ms par défaut),
+      jamais avant les premières notes ;
+    - `--tu-fp-a-coin`, `-encadre`, `-qr`, `-textes`, `-compte` : les temps 2 à 6 après elle
+      (`APRES_BASCULE_TEMPS`) ; `--tu-fp-temps`, un temps.
+  - Le pictogramme qui vole mesure ses places au montage, en rem de scène : départ (celui de la
+    passe finale), rangé (le même déplacement que le logo, `COTE`), coin. La lueur part du logo ;
+    l'éclat, l'onde, la gerbe et le ×, du milieu entre la carte et le logo rangé.
+  - Une animation qui en prolonge une autre sur la même propriété (la lueur) s'enchaîne en
+    `forwards` à partir de l'état où l'autre s'arrête : en `both`, elle s'imposerait dès le début.
+  - Au rechargement, dans l'aperçu et sans mouvement, l'accueil s'affiche déjà formé.
+- **Le son** :
+  - la musique d'arrivée est un **WAV** préparé hors de l'app : le morceau entier, 50 ms avant sa
+    première note, seul le souffle de ses deux premières secondes retiré. Un MP3 décalerait le
+    temps de la bascule ;
+  - elle part par `lecteur.jouerFairePart` à `DEPART_MUSIQUE_MS`, **sans couper le reel**, qui
+    finit de s'éteindre ; la musique de fond s'arrête et ne reprend qu'à sa fin ;
+  - les autres sons, comme une arrivée, se posent dessus sans la couper ;
+  - quitter l'accueil l'arrête en fondu ;
+  - l'ambiance des hôtes (`fichiers.ambiance`, facultative) remplace celle de Team Up! hors de
+    l'ouverture (`fondDuTheme`), jamais pendant l'entrée.
+- Tests : `tests/faire-part.test.ts`, `tests/themes-base.test.ts` (droits, bucket, cascade) et
+  `e2e/theme-faire-part.spec.ts`. Ce dernier travaille avec des fichiers fabriqués et un SVG
+  piégé, vérifie l'heure des sons au journal du lecteur, et accepte `CAPTURES=<dossier>`.
