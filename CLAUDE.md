@@ -2013,3 +2013,34 @@ sur le grand écran (règle du 2026-11-14), il n'est pas sélectionné par l'ani
 - Tests : `tests/priorite.test.ts`, `tests/classement-public.test.ts`, `e2e/parcours-joueur.spec.ts`
   (la recette du document). `surenchere-casse` échoue sur sa latence sur ce poste, comme en CI avant
   ce changement. Les appels directs à Kong s'y figent 10 à 20 s pendant les e2e (mesuré).
+
+## Conventions posées le 2026-11-27 (conduite des jeux, lot A)
+
+Tiré de l'audit de l'écran commun et de la régie (26-27/11, `docs/audit-ecran-commun-et-regie.md`
+et `docs/brief-claude-ecran-commun-et-regie.md`, hors dépôt) : **une touche de régie dit ce que la
+salle verra ou qui marque**, et l'écran dit qui joue et quoi faire. Lot A, avant le mariage du 5 :
+aucune migration, règles et barèmes inchangés. Le lot B (Quiz, Portrait mystère, Photo, Attrape
+l'objet, Surenchère au téléphone, classement, régie rangée) reste à planifier.
+
+- Ouverture : « Afficher le QR d'inscription » en tête du panneau du jeu (la commande de la touche
+  Accueil) ; à l'accueil, le nombre d'inscrits, puis « Dévoiler les équipes » ou le lien vers la
+  Salle. Faire connaissance n'y paraît qu'après un premier jeu terminé. L'écran d'accueil dit
+  « Scannez pour jouer », puis « Puis indiquez votre prénom. ». `ouverture.spec` vérifie la touche
+  dans la fenêtre à 1 366 × 768.
+- Points communs : clés propres au jeu (`pcMontrer`, `pcCacher`, `pcDemarrer`, `pcIndice` : le
+  prochain indice) ; à l'étape masquée, « Qu'ont en commun les personnes debout ? ».
+- Surenchère à la voix : l'équipe du champion se touche **avant** « Adjugé » ; la commande
+  `adjuger` la porte et l'écrit dans `passages.resultat.equipe_champion` dès le chrono (l'écran la
+  nomme, un rechargement de la régie la garde) ; `champion` la corrige pendant le chrono sans
+  toucher au chrono. Rien au mode téléphones.
+- Blind test : au buzz, le nom seul en grand, puis « À vous de répondre ! » ; après une erreur,
+  « Les autres capitaines, préparez vos buzzers ! » (ou « Plus de buzz sur ce titre ») ; régie :
+  « Titre trouvé · +100 pour {équipe} », « Réponse incorrecte », « Relancer la musique pour les
+  autres équipes ».
+- Mime : « Fermer le mot en régie » ne referme que ce poste ; « Masquer le mot en salle et lancer
+  le mime » ; « Mot visible sur le grand écran » pendant l'étape `secret`, déduit de l'étape.
+- Ciné-mime : « Rejouer la scène muette au groupe 1 », « Rejouer avec le son pour toute la
+  salle » ; à la revue, « Toute la salle peut regarder ! ».
+- Gobelet : au tournoi, « Poste n · Qui a perdu ? » puis « Au tour suivant : … » sur chaque poste ;
+  au duel (et à Attrape l'objet), « Qui a gagné le duel ? » et « {prénom} gagne · +50 pour
+  {équipe} », « Refaire le tirage du duo ». Les deux sens d'arbitrage sont écrits là où l'on touche.
