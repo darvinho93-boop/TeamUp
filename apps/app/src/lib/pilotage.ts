@@ -136,7 +136,13 @@ export type Commande =
   /** Un passage de Points communs ou de Mime resté sans équipe (panne du 2026-10-31) : 0 point. */
   | { type: 'passer' }
   | { type: 'devoiler'; passageId: string }
-  | { type: 'adjuger' }
+  /**
+   * À la voix, l'équipe du champion est connue à l'adjudication (2026-11-27) : elle part avec le
+   * chrono, l'écran la nomme pendant le défi, et un rechargement de la régie ne la perd plus.
+   */
+  | { type: 'adjuger'; equipeChampion?: number }
+  /** À la voix, pendant le chrono : corriger l'équipe annoncée à l'adjudication. */
+  | { type: 'champion'; equipeChampion: number }
   | { type: 'verdict'; tenu: boolean; equipeChampion: number }
   /** Surenchère en mode téléphones : le podium du thème, d'après les mots non rayés. */
   | { type: 'classer' }
@@ -1062,6 +1068,20 @@ export function calculerEtape(
         return ecriture;
       }
 
+      case 'champion': {
+        // Rien ne change que l'équipe gardée sur le passage : l'étape et le chrono restent.
+        // Une manche lancée sans mode se joue à la voix.
+        if (manche?.jeu !== 'enchere2' || modeDeLaSurenchere(manche) === 'telephones') return null;
+        if (p.etape !== 'chrono' || !passage) return null;
+        if (!etat.equipes.some((e) => e.numero === commande.equipeChampion)) return null;
+        ecriture.passage = {
+          id: passage.id,
+          statut: 'en_cours',
+          resultat: { equipe_champion: commande.equipeChampion },
+        };
+        return ecriture;
+      }
+
       case 'devoiler':
       case 'adjuger':
       case 'verdict':
@@ -1107,6 +1127,19 @@ export function calculerEtape(
         });
         if (commande.type === 'devoiler') {
           ecriture.passage = { id: commande.passageId, statut: 'en_cours' };
+        }
+        if (
+          commande.type === 'adjuger' &&
+          modeS !== 'telephones' &&
+          commande.equipeChampion !== undefined &&
+          passage
+        ) {
+          if (!etat.equipes.some((e) => e.numero === commande.equipeChampion)) return null;
+          ecriture.passage = {
+            id: passage.id,
+            statut: 'en_cours',
+            resultat: { equipe_champion: commande.equipeChampion },
+          };
         }
         if (suite.points && suite.resultat && passage) {
           const points = suite.points;

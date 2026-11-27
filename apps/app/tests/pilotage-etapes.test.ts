@@ -230,6 +230,34 @@ describe('une touche de la régie', () => {
     });
   });
 
+  it('Surenchère à la voix : l’équipe du champion part avec le chrono (2026-11-27)', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'se', passage_id: 't1', etape: 'sujet' });
+    const ecriture = etape(e, { type: 'adjuger', equipeChampion: 2 });
+    expect(ecriture?.pilotage).toMatchObject({ etape: 'chrono', chrono: 'demarrer' });
+    expect(ecriture?.passage).toEqual({
+      id: 't1',
+      statut: 'en_cours',
+      resultat: { equipe_champion: 2 },
+    });
+    // Une équipe qui n'existe pas : la touche ne part pas.
+    expect(etape(e, { type: 'adjuger', equipeChampion: 9 })).toBeNull();
+  });
+
+  it('Surenchère à la voix : l’équipe se corrige pendant le chrono, sans toucher au chrono', () => {
+    const e = etat({ scene: 'jeu', manche_id: 'se', passage_id: 't1', etape: 'chrono' });
+    const ecriture = etape(e, { type: 'champion', equipeChampion: 3 });
+    expect(ecriture?.pilotage).toMatchObject({ etape: 'chrono', chrono: 'garder' });
+    expect(ecriture?.passage).toEqual({
+      id: 't1',
+      statut: 'en_cours',
+      resultat: { equipe_champion: 3 },
+    });
+    expect(ecriture?.scores).toEqual([]);
+    // Hors du chrono, rien à corriger.
+    const avant = etat({ scene: 'jeu', manche_id: 'se', passage_id: 't1', etape: 'sujet' });
+    expect(etape(avant, { type: 'champion', equipeChampion: 3 })).toBeNull();
+  });
+
   it('Surenchère ratée : +20 aux autres équipes qui ont des joueurs', () => {
     const e = etat({ scene: 'jeu', manche_id: 'se', passage_id: 't1', etape: 'chrono' });
     const ecriture = etape(e, { type: 'verdict', tenu: false, equipeChampion: 1 });
@@ -293,6 +321,20 @@ describe('une touche de la régie', () => {
       expect(
         etape(enJeu({ passage_id: 't1', etape: 'sujet' }), { type: 'adjuger' })?.pilotage,
       ).toMatchObject({ etape: 'chrono', chrono: 'demarrer', chrono_duree_s: 75 });
+    });
+
+    it('n’a pas d’équipe du champion : ni à l’adjudication, ni pendant le chrono', () => {
+      const ecriture = etape(enJeu({ passage_id: 't1', etape: 'sujet' }), {
+        type: 'adjuger',
+        equipeChampion: 1,
+      });
+      expect(ecriture?.passage).toBeNull();
+      expect(
+        etape(enJeu({ passage_id: 't1', etape: 'chrono' }), {
+          type: 'champion',
+          equipeChampion: 1,
+        }),
+      ).toBeNull();
     });
 
     it('classe le thème d’après les mots non rayés : +100, +60, +30', () => {

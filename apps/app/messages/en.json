@@ -574,8 +574,10 @@
       "devoiler": "Reveal",
       "joue": "played",
       "adjuger": "Sold! Start the timer ({secondes} s)",
+      "adjugerA": "Sold to {equipe}! Start the timer ({secondes} s)",
       "champion": "Champion's team",
       "championAvant": "First tap the champion’s team: “Kept” and “Missed” then unlock.",
+      "championAvantAdjuger": "First tap the champion’s team: “Sold” then unlocks.",
       "tenu": "Kept",
       "rate": "Missed",
       "retour": "Back to the themes",
@@ -1062,6 +1064,7 @@
     "sujet": "The topic",
     "tenu": "Bet kept!",
     "perdu": "Bet missed!",
+    "releveLeDefi": "<equipe>{nom}</equipe> takes up the challenge!",
     "surenchereMots": {
       "capitaines": "Captains, grab your phones!",
       "mots": "{n, plural, =0 {0 words} one {# word} other {# words}}",

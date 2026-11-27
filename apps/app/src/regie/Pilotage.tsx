@@ -1142,6 +1142,12 @@ function PanneauSurenchere({
   const chronoS = chronoSurenchere(manche, modeDeLaSurenchere(manche));
   const texte = (valeurs: ParLangue | null, cle: string) =>
     texteParLangue(valeurs, cle, [langue])[0]?.texte ?? '—';
+  // Le choix de ce poste d'abord, sinon celui gardé sur le passage à l'adjudication : un
+  // rechargement de la régie retombe sur la même équipe.
+  const championGarde = passage?.resultat['equipe_champion'];
+  const championChoisi =
+    champion ?? (etape === 'chrono' && typeof championGarde === 'number' ? championGarde : null);
+  const championEquipe = etat.equipes.find((e) => e.numero === championChoisi) ?? null;
 
   if (etape === 'themes' || !passage) {
     return (
@@ -1197,9 +1203,46 @@ function PanneauSurenchere({
         <p className="tu-regie__muted">{texte(passage.public, 'theme')}</p>
         <p className="tu-regie-item__title">{texte(passage.secret, 'sujet')}</p>
       </div>
+      {/* L'équipe du champion se touche avant l'adjudication (2026-11-27) : elle part avec le
+          chrono, l'écran la nomme pendant le défi. Pendant le chrono, elle se corrige encore. */}
+      {(etape === 'sujet' || etape === 'chrono') && (
+        <fieldset className="tu-regie__choices" data-testid="regie-champion">
+          <legend className="tu-field__label">{t('champion')}</legend>
+          {etat.equipes.map((e) => (
+            <Button
+              key={e.id}
+              variant={championChoisi === e.numero ? 'primary' : 'ghost'}
+              aria-pressed={championChoisi === e.numero}
+              onClick={() => {
+                setChampion(e.numero);
+                if (etape === 'chrono' && e.numero !== championChoisi) {
+                  agir({ type: 'champion', equipeChampion: e.numero });
+                }
+              }}
+            >
+              {e.nom}
+            </Button>
+          ))}
+        </fieldset>
+      )}
+      {/* Sans équipe choisie, les touches restent grisées : on dit pourquoi. */}
+      {(etape === 'sujet' || etape === 'chrono') && championChoisi === null && (
+        <p className="tu-regie__muted" role="status" data-testid="regie-champion-avant">
+          {t(etape === 'sujet' ? 'championAvantAdjuger' : 'championAvant')}
+        </p>
+      )}
       {etape === 'sujet' && (
-        <Button variant="accent" size="lg" onClick={() => agir({ type: 'adjuger' })}>
-          {t('adjuger', { secondes: chronoS })}
+        <Button
+          variant="accent"
+          size="lg"
+          disabled={championChoisi === null}
+          onClick={() =>
+            championChoisi !== null && agir({ type: 'adjuger', equipeChampion: championChoisi })
+          }
+        >
+          {championEquipe
+            ? t('adjugerA', { equipe: championEquipe.nom, secondes: chronoS })
+            : t('adjuger', { secondes: chronoS })}
         </Button>
       )}
       {etape === 'chrono' && (
@@ -1210,38 +1253,23 @@ function PanneauSurenchere({
             decalageMs={decalageMs}
             className="tu-regie-timer"
           />
-          <fieldset className="tu-regie__choices">
-            <legend className="tu-field__label">{t('champion')}</legend>
-            {etat.equipes.map((e) => (
-              <Button
-                key={e.id}
-                variant={champion === e.numero ? 'primary' : 'ghost'}
-                aria-pressed={champion === e.numero}
-                onClick={() => setChampion(e.numero)}
-              >
-                {e.nom}
-              </Button>
-            ))}
-          </fieldset>
-          {/* Sans équipe choisie, les deux touches restent grisées : on dit pourquoi. */}
-          {champion === null && (
-            <p className="tu-regie__muted" role="status" data-testid="regie-champion-avant">
-              {t('championAvant')}
-            </p>
-          )}
           <div className="tu-regie-keys">
             <BoutonConfirme
-              disabled={champion === null}
+              disabled={championChoisi === null}
               confirmation={t('confirmer', { action: t('tenu') })}
-              onConfirm={() => agir({ type: 'verdict', tenu: true, equipeChampion: champion! })}
+              onConfirm={() =>
+                agir({ type: 'verdict', tenu: true, equipeChampion: championChoisi! })
+              }
             >
               {t('tenu')}
             </BoutonConfirme>
             <BoutonConfirme
               variant="ghost"
-              disabled={champion === null}
+              disabled={championChoisi === null}
               confirmation={t('confirmer', { action: t('rate') })}
-              onConfirm={() => agir({ type: 'verdict', tenu: false, equipeChampion: champion! })}
+              onConfirm={() =>
+                agir({ type: 'verdict', tenu: false, equipeChampion: championChoisi! })
+              }
             >
               {t('rate')}
             </BoutonConfirme>

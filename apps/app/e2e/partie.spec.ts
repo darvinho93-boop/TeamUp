@@ -209,15 +209,17 @@ test('une partie complète se pilote depuis la régie, écran à jour en moins d
       () => regie.getByRole('button', { name: 'Dévoiler' }).first().click(),
       ecran.getByTestId('sujet'),
     );
+    await regie
+      .getByRole('group', { name: 'Équipe du champion' })
+      .getByRole('button', { name: champion })
+      .click();
     await mesurer(
       `adjuger (${champion})`,
       () => regie.getByRole('button', { name: /Adjugé/ }).click(),
       scene('enchere2', 'chrono'),
     );
-    await regie
-      .getByRole('group', { name: 'Équipe du champion' })
-      .getByRole('button', { name: champion })
-      .click();
+    // L'équipe adjugée est nommée à l'écran pendant le défi (2026-11-27).
+    await expect(ecran.getByTestId('defi')).toContainText(champion);
     await mesurer(
       `${verdict} (${champion})`,
       () => confirmer(regie, verdict),

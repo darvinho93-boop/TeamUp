@@ -954,6 +954,24 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
         textes={texteParLangue(passage.public, 'theme', langues)}
       />
       <div className="tu-stage-centre tu-stage-reveal">
+        {/* À la voix, l'équipe adjugée est nommée pendant le défi (2026-11-27). */}
+        {etape === 'chrono' && champion && (
+          <p className="tu-stage__l" data-testid="defi">
+            {t.rich('releveLeDefi', {
+              nom: champion.nom,
+              equipe: (morceaux) => (
+                <span
+                  className={cx(
+                    'tu-team tu-team--badge tu-stage-badge--grand',
+                    teamModifier(champion.numero),
+                  )}
+                >
+                  {morceaux}
+                </span>
+              ),
+            })}
+          </p>
+        )}
         <p className="tu-stage__m tu-stage__muted">{t('sujet')}</p>
         <Multilingue
           testId="sujet"

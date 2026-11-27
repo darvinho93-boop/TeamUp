@@ -574,8 +574,10 @@
       "devoiler": "Dévoiler",
       "joue": "joué",
       "adjuger": "Adjugé ! Lancer le chrono ({secondes} s)",
+      "adjugerA": "Adjugé à {equipe} ! Lancer le chrono ({secondes} s)",
       "champion": "Équipe du champion",
       "championAvant": "Touche d’abord l’équipe du champion : « Tenu » et « Raté » s’ouvrent ensuite.",
+      "championAvantAdjuger": "Touche d’abord l’équipe du champion : « Adjugé » s’ouvre ensuite.",
       "tenu": "Tenu",
       "rate": "Raté",
       "retour": "Retour aux thèmes",
@@ -1062,6 +1064,7 @@
     "sujet": "Le sujet",
     "tenu": "Pari tenu !",
     "perdu": "Pari raté !",
+    "releveLeDefi": "<equipe>{nom}</equipe> relève le défi !",
     "surenchereMots": {
       "capitaines": "Capitaines, à vos téléphones !",
       "mots": "{n, plural, =0 {0 mot} one {# mot} other {# mots}}",
