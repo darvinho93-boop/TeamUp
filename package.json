@@ -21,6 +21,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local --schema public > apps/app/src/types/base.ts",
+    "soiree:descendre": "node apps/app/scripts/descendre-soiree.mjs",
+    "soiree:pc": "node apps/app/scripts/soiree-pc.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",

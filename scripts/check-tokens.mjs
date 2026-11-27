@@ -19,6 +19,7 @@ const EXTENSIONS = new Set(['.css', '.astro', '.tsx', '.ts']);
 const IGNORED_DIRS = new Set([
   'node_modules',
   '.next',
+  '.next-machine',
   '.astro',
   '.turbo',
   '.vercel',
