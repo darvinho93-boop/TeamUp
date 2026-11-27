@@ -229,6 +229,7 @@ test('blind test : buzz, mauvaise réponse, relance, bonne réponse, secours de 
   const latence = Date.now() - depart;
   test.info().annotations.push({ type: 'latence buzz → écran', description: `${latence} ms` });
   await expect(ecran.getByTestId('blind-equipe')).toContainText(`Équipe ${numeroDe('Ana')}`);
+  await expect(ecran.getByTestId('blind-a-vous')).toHaveText('À vous de répondre !');
   await expect.poll(() => journal(ecran)).toContain('extrait:-');
   await expect(ana.getByTestId('statut-blind')).toHaveText(/À vous/, { timeout: 10_000 });
   await expect(bao.getByTestId('statut-blind')).toHaveText(/Une autre équipe a buzzé/, {
@@ -239,10 +240,14 @@ test('blind test : buzz, mauvaise réponse, relance, bonne réponse, secours de 
   await capturer(regie, 'regie-buzz');
 
   // --- Mauvaise réponse : Ana ne buzze plus, la musique attend la régie.
-  await regie.getByRole('button', { name: 'Mauvaise réponse' }).click();
+  await regie.getByRole('button', { name: 'Réponse incorrecte' }).click();
   await expect(scene('pause')).toBeVisible({ timeout: 10_000 });
+  // Les autres équipes savent qu'elles vont rejouer, avant que la musique reparte.
+  await expect(ecran.getByTestId('blind-suite')).toHaveText(
+    'Les autres capitaines, préparez vos buzzers !',
+  );
   await capturer(ecran, 'ecran-pause');
-  await regie.getByRole('button', { name: 'Relancer la musique' }).click();
+  await regie.getByRole('button', { name: 'Relancer la musique pour les autres équipes' }).click();
   await expect(scene('ecoute')).toBeVisible({ timeout: 10_000 });
   await expect(ana.getByTestId('statut-blind')).toHaveText(/Plus de buzz/, { timeout: 10_000 });
   await expect(ana.getByTestId('buzzer')).toHaveCount(0);
@@ -253,7 +258,9 @@ test('blind test : buzz, mauvaise réponse, relance, bonne réponse, secours de 
   await expect(bao.getByTestId('buzzer')).toBeEnabled({ timeout: 10_000 });
   await bao.getByTestId('buzzer').click();
   await expect(scene('buzz')).toBeVisible({ timeout: 5000 });
-  await regie.getByRole('button', { name: 'Bonne réponse (+100)' }).click();
+  await regie
+    .getByRole('button', { name: `Titre trouvé · +100 pour Équipe ${numeroDe('Bao')}` })
+    .click();
   await expect(scene('karaoke')).toBeVisible({ timeout: 10_000 });
   await expect(ecran.getByTestId('blind-reponse')).toHaveText(titre);
   await expect(ecran.getByTestId('blind-verdict')).toContainText(`Équipe ${numeroDe('Bao')}`);
@@ -321,7 +328,7 @@ test('blind test : buzz, mauvaise réponse, relance, bonne réponse, secours de 
   await expect(scene('ecoute')).toBeVisible({ timeout: 10_000 });
   await regie.getByRole('button', { name: `Buzz Équipe ${numeroDe('Ana')}` }).click();
   await expect(scene('buzz')).toBeVisible({ timeout: 10_000 });
-  await regie.getByRole('button', { name: 'Mauvaise réponse' }).click();
+  await regie.getByRole('button', { name: 'Réponse incorrecte' }).click();
   await expect(scene('pause')).toBeVisible({ timeout: 10_000 });
   await regie.getByRole('button', { name: 'Révéler le titre' }).click();
   await expect(scene('revele')).toBeVisible({ timeout: 10_000 });

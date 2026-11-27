@@ -79,15 +79,16 @@ export function BlindTest({
         data-etape={etape}
       >
         {numero}
+        {/* Le nom seul en grand, puis la consigne : « Les Comètes a buzzé ! » sonnait faux avec
+            un nom au pluriel (audit du 2026-11-26). */}
         <p className="tu-stage__giant tu-stage-blind__equipe" data-testid="blind-equipe">
-          {qui
-            ? etape === 'buzz'
-              ? t('buzz', { equipe: qui.nom })
-              : t('rate', { equipe: qui.nom })
-            : ''}
+          {qui ? (etape === 'buzz' ? qui.nom : t('rate', { equipe: qui.nom })) : ''}
         </p>
         {etape === 'buzz' ? (
           <>
+            <p className="tu-stage__xl" data-testid="blind-a-vous">
+              {t('aVous')}
+            </p>
             <Chrono
               departMs={etat.pilotage.chrono_depart_ms}
               dureeS={etat.pilotage.chrono_duree_s ?? 7}
@@ -97,7 +98,12 @@ export function BlindTest({
             <p className="tu-stage__xl">{t('reponse')}</p>
           </>
         ) : (
-          <p className="tu-stage__xl">{t('attente')}</p>
+          // La musique ne reprend que sur la touche de la régie : les autres équipes s'y préparent.
+          <p className="tu-stage__xl" data-testid="blind-suite">
+            {enJeu.some((e) => !resultat.bloquees.includes(e.numero))
+              ? t('autresCapitaines')
+              : t('bloquees')}
+          </p>
         )}
       </div>
     );

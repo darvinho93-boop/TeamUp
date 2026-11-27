@@ -1463,7 +1463,7 @@ function PanneauBlind({ etat, manche, decalageMs, agir }: PanneauProps) {
               size="lg"
               onClick={() => agir({ type: 'blind', action: { type: 'bonne' } })}
             >
-              {tb('bonne')}
+              {tb('bonne', { equipe: nom(resultat.buzz) })}
             </Button>
             <Button size="lg" onClick={() => agir({ type: 'blind', action: { type: 'mauvaise' } })}>
               {tb('mauvaise')}
