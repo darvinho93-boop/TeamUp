@@ -201,12 +201,19 @@ test('tournoi : du tirage au podium, avec les perdants notés à la régie', asy
 
   // --- Une correction : le mauvais prénom touché, puis annulé, puis le bon.
   const lignes = regie.getByTestId('tournoi-matchs').locator('li');
+  // Au tournoi, la question porte sur le perdant, au contraire du duel (2026-11-27).
+  await expect(lignes.nth(0).getByTestId('tournoi-question')).toHaveText(
+    /^Poste \d+ · Qui a perdu.\?$/,
+  );
   await lignes
     .nth(0)
     .getByRole('button', { name: /a perdu/ })
     .nth(0)
     .click();
   await expect(regie.getByTestId('tournoi-compteur')).toContainText('1 résultat sur 4');
+  await expect(lignes.nth(0).getByTestId('tournoi-question')).toHaveText(
+    /^Poste \d+ · Au tour suivant.: \S/,
+  );
   await expect(ecran.locator('[data-testid="poste-1"][data-juge="true"]')).toBeVisible({
     timeout: 10_000,
   });

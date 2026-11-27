@@ -555,7 +555,7 @@
 
 .tu-regie-tournoi__match {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   align-items: stretch;
   gap: var(--tu-space-2);
   padding: var(--tu-space-2);
@@ -564,12 +564,17 @@
   background: var(--tu-surface);
 }
 
-.tu-regie-tournoi__poste {
-  align-self: center;
-  min-width: var(--tu-space-6);
+/* « Poste n · Qui a perdu ? », puis « Poste n · Au tour suivant : … », sur toute la largeur. */
+.tu-regie-tournoi__question {
+  grid-column: 1 / -1;
+  margin: 0;
   font-family: var(--tu-font-display);
+  font-size: var(--tu-size-sm);
   font-weight: 700;
-  text-align: center;
+}
+
+.tu-regie-tournoi__match[data-juge='true'] .tu-regie-tournoi__question {
+  color: var(--tu-success);
 }
 
 .tu-regie-tournoi__joueur {

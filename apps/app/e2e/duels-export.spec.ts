@@ -129,9 +129,11 @@ test('un duel donne +50 au vainqueur ; l’export porte les scores et les photos
   await expect(regie.getByTestId('sequence')).toContainText('GOBELET');
   await expect(ecran.getByText('GOBELET')).toHaveCount(0);
 
-  const gagne = regie.getByRole('button', { name: 'Malik gagne' });
+  // La touche nomme le gagnant, l'équipe qui marque et le gain (2026-11-27).
+  await expect(regie.getByTestId('duel-question')).toHaveText('Qui a gagné le duel ?');
+  const gagne = regie.getByRole('button', { name: /^Malik gagne · \+50 pour / });
   await gagne.click();
-  await regie.getByRole('button', { name: 'Confirmer : Malik gagne' }).click();
+  await regie.getByRole('button', { name: /^Confirmer.: Malik gagne · \+50 pour / }).click();
   await expect(scene('gagne')).toBeVisible({ timeout: 10_000 });
   await expect(ecran.getByTestId('verdict-duel')).toHaveText('+50 points');
 

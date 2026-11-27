@@ -6,6 +6,7 @@ import { Button, cx, teamModifier } from '@teamup/ui/react';
 import {
   aleaDepuis,
   chronoDuelS,
+  POINTS_DUEL,
   passageSuivant,
   sequenceGobelet,
   tirerDuel,
@@ -159,18 +160,32 @@ export function PanneauDuel({
             {t('lancer')}
           </Button>
         )}
+        {/* Au duel, on touche le GAGNANT, au contraire du tournoi (audit du 2026-11-26) : la
+            question et l'équipe qui marque sont écrites sur la touche. */}
+        {etape === 'chrono' && duellistes && (
+          <p className="tu-regie__section-title tu-regie-keys__wide" data-testid="duel-question">
+            {td('quiAGagne')}
+          </p>
+        )}
         {etape === 'chrono' &&
-          duellistes?.map((d, i) => (
-            <BoutonConfirme
-              key={d.joueur_id}
-              confirmation={t('confirmer', { action: td('gagne', { prenom: d.prenom }) })}
-              onConfirm={() =>
-                agir({ type: 'duel', action: { type: 'verdict', gagnant: i as 0 | 1 } })
-              }
-            >
-              {td('gagne', { prenom: d.prenom })}
-            </BoutonConfirme>
-          ))}
+          duellistes?.map((d, i) => {
+            const libelle = td('gagne', {
+              prenom: d.prenom,
+              equipe: nomDe.get(d.equipe) ?? '—',
+              points: POINTS_DUEL,
+            });
+            return (
+              <BoutonConfirme
+                key={d.joueur_id}
+                confirmation={t('confirmer', { action: libelle })}
+                onConfirm={() =>
+                  agir({ type: 'duel', action: { type: 'verdict', gagnant: i as 0 | 1 } })
+                }
+              >
+                {libelle}
+              </BoutonConfirme>
+            );
+          })}
         {fini && suivant && (
           <Button
             variant="accent"

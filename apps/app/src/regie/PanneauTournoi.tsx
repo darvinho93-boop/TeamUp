@@ -392,7 +392,16 @@ export function PanneauTournoi({
               const gagnant = gagnantDe(m);
               return (
                 <li key={m.id} className="tu-regie-tournoi__match" data-juge={gagnant !== null}>
-                  <span className="tu-regie-tournoi__poste">{m.poste}</span>
+                  {/* La question posée au-dessus des prénoms : on touche celui qui a PERDU, au
+                      contraire du duel (audit du 2026-11-26) ; noté, qui passe au tour suivant. */}
+                  <p className="tu-regie-tournoi__question" data-testid="tournoi-question">
+                    {gagnant === null
+                      ? t('quiAPerdu', { poste: m.poste ?? 0 })
+                      : t('auTourSuivant', {
+                          poste: m.poste ?? 0,
+                          prenom: (gagnant === 0 ? m.a : m.b)?.prenom ?? '—',
+                        })}
+                  </p>
                   {([0, 1] as const).map((cote) => {
                     const joueur = cote === 0 ? m.a : m.b;
                     if (!joueur) return null;
