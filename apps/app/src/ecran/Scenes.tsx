@@ -1730,6 +1730,10 @@ function CineMime({ etat, decalageMs }: Props) {
           <Pastille equipe={equipe} grande />
           <Multilingue testId="film" textes={films} />
         </div>
+        {/* Les groupes dos tourné peuvent se retourner : la scène repasse pour tous. */}
+        <p className="tu-stage__l" data-testid="toute-la-salle">
+          {tc('toutLaSalle')}
+        </p>
         <div
           className={cx(
             'tu-stage-cine__cadre',

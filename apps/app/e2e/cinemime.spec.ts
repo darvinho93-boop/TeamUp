@@ -200,8 +200,8 @@ test('une scène muette, mimée de groupe en groupe, puis rejouée avec le son a
   await expect(ecran.getByRole('button', { name: 'Activer le son' })).toHaveCount(0);
   await rienAuTelephone();
 
-  // « Revoir la scène » la relance depuis le début.
-  await regie.getByRole('button', { name: 'Revoir la scène', exact: true }).click();
+  // « Rejouer la scène muette au groupe 1 » la relance depuis le début.
+  await regie.getByRole('button', { name: 'Rejouer la scène muette au groupe 1' }).click();
   await expect(scene('extrait')).toContainText('Seul le groupe 1 regarde');
   await expect.poll(async () => (await lecture(ecran)).enPause, { timeout: 10_000 }).toBe(false);
 
@@ -227,7 +227,7 @@ test('une scène muette, mimée de groupe en groupe, puis rejouée avec le son a
   await capturer(ecran, 'trouve');
 
   // --- La revue : la scène rejoue, avec le son, sous le titre du film.
-  await regie.getByRole('button', { name: 'Revoir la scène avec le son' }).click();
+  await regie.getByRole('button', { name: 'Rejouer avec le son pour toute la salle' }).click();
   await expect(scene('revue')).toBeVisible();
   await expect(ecran.getByTestId('scene-video')).toHaveAttribute('data-son', 'oui');
   await expect
@@ -240,6 +240,9 @@ test('une scène muette, mimée de groupe en groupe, puis rejouée avec le son a
     )
     .toBe(true);
   await expect(scene('revue').getByTestId('film')).toContainText(film);
+  await expect(scene('revue').getByTestId('toute-la-salle')).toHaveText(
+    'Toute la salle peut regarder !',
+  );
   await capturer(ecran, 'revue');
   await capturer(regie, 'regie-revue');
 

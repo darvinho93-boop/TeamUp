@@ -840,11 +840,11 @@
         "film": "Le film (pour vous seul)",
         "consigne": "L'équipe forme ses groupes : le groupe 1 face à l'écran, les autres dos tourné.",
         "montrer": "Montrer la scène (sans le son)",
-        "revoir": "Revoir la scène",
+        "revoir": "Rejouer la scène muette au groupe 1",
         "lancer": "Lancer le mime",
         "trouve": "Trouvé",
         "rate": "Raté",
-        "rejouer": "Revoir la scène avec le son",
+        "rejouer": "Rejouer avec le son pour toute la salle",
         "sansVideo": "Cette scène n'a plus de vidéo : donnez le verdict, ou passez à la suite."
       }
     },
@@ -1277,7 +1277,8 @@
       "aVous": "Groupe 1, à vous de mimer !",
       "sansSon": "Sans le son",
       "chaine": "La scène passe de groupe en groupe… le dernier groupe trouve le film !",
-      "leFilm": "Le film"
+      "leFilm": "Le film",
+      "toutLaSalle": "Toute la salle peut regarder !"
     }
   },
   "admin": {

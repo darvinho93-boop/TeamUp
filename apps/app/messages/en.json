@@ -840,11 +840,11 @@
         "film": "The movie (for you only)",
         "consigne": "The team forms its groups: group 1 faces the screen, the others turn their backs.",
         "montrer": "Show the scene (no sound)",
-        "revoir": "Show the scene again",
+        "revoir": "Replay the silent scene for group 1",
         "lancer": "Start the mime",
         "trouve": "Found",
         "rate": "Missed",
-        "rejouer": "Replay the scene with sound",
+        "rejouer": "Replay with sound for the whole room",
         "sansVideo": "This scene has no video any more: give the verdict, or move on."
       }
     },
@@ -1277,7 +1277,8 @@
       "aVous": "Group 1, your turn to mime!",
       "sansSon": "No sound",
       "chaine": "The scene goes from group to group… the last group names the movie!",
-      "leFilm": "The movie"
+      "leFilm": "The movie",
+      "toutLaSalle": "Everyone can watch now!"
     }
   },
   "admin": {
