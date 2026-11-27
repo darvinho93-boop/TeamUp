@@ -956,7 +956,7 @@ function Surenchere({ etat, decalageMs, manche }: Props & { manche: MancheSalle 
       <div className="tu-stage-centre tu-stage-reveal">
         {/* À la voix, l'équipe adjugée est nommée pendant le défi (2026-11-27). */}
         {etape === 'chrono' && champion && (
-          <p className="tu-stage__l" data-testid="defi">
+          <p className="tu-stage__l tu-stage-defi" data-testid="defi">
             {t.rich('releveLeDefi', {
               nom: champion.nom,
               equipe: (morceaux) => (

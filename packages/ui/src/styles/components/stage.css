@@ -938,6 +938,16 @@
   overflow-wrap: break-word;
 }
 
+/* « {équipe} relève le défi ! » (2026-11-27) : la pastille et la phrase sur une ligne, centrées. */
+.tu-stage-defi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tu-space-3);
+  margin: 0;
+}
+
 .tu-stage-surenchere .tu-stage-multi {
   --tu-multi-taille: calc(var(--tu-size-3xl) * var(--tu-surenchere-echelle));
 }
