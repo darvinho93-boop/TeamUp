@@ -3,20 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { EtatJoueur, RefusPhoto } from '@/lib/partie';
 import { compresserPhoto } from '@/lib/compression';
+import { identifiantAleatoire } from '@/lib/identifiant';
 import { cleEnvoi, enAttente, mettreEnFile, retirer, type EnvoiEnAttente } from './filePhotos';
-
-/**
- * Identifiant v4 de l'envoi. `crypto.randomUUID` n'existe qu'en contexte sécurisé : sur le réseau
- * local (`pnpm dev:host`, en http), on le fabrique à partir de `getRandomValues`.
- */
-function nouvelIdentifiant(): string {
-  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
-  const o = crypto.getRandomValues(new Uint8Array(16));
-  o[6] = (o[6]! & 0x0f) | 0x40;
-  o[8] = (o[8]! & 0x3f) | 0x80;
-  const h = Array.from(o, (x) => x.toString(16).padStart(2, '0')).join('');
-  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
-}
 
 /** Tant qu'une photo attend, on retente à ce rythme, en plus des retours du réseau. */
 const RELANCE_MS = 15_000;
@@ -123,7 +111,7 @@ export function useFilePhotos(code: string, remplacer: (etat: EtatJoueur) => voi
         cle: cleEnvoi(code, themeId),
         code,
         theme_id: themeId,
-        envoi_id: nouvelIdentifiant(),
+        envoi_id: identifiantAleatoire(),
         photo,
         prise_le: Date.now(),
       });

@@ -14,6 +14,7 @@ import {
   type ReglageSon,
   type Son,
 } from '@/lib/sons';
+import { identifiantAleatoire } from '@/lib/identifiant';
 
 /** Fondu d'une musique de fond, à l'entrée comme à la sortie, et du volume quand la régie le change. */
 const FONDU_S = FONDU_MUSIQUE_MS / 1000;
@@ -91,7 +92,8 @@ export interface Lecteur {
 export async function creerLecteur(
   reglage: ReglageSon,
   {
-    groupe = crypto.randomUUID(),
+    // Pas `crypto.randomUUID` : absent d'un écran ouvert en http par l'adresse du PC de la salle.
+    groupe = identifiantAleatoire(),
     surCession,
   }: {
     /** Les lecteurs d'un même groupe cohabitent dans un onglet sans se couper le son. */
