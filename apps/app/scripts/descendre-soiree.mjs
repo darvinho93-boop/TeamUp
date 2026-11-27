@@ -145,6 +145,8 @@ const ramasser = (valeur) => {
 manches.forEach((m) => ramasser(m.options));
 passages.forEach((p) => ramasser(p.contenu_id));
 grilles.forEach((g) => ramasser(g.cartes));
+// Le thème cite aussi une musique : son bonus (2026-11-28), hors du programme.
+themes.forEach((t) => ramasser(t.reglages));
 const proches = await lire('contenus', 'evenement_id', [soiree.id]);
 const deLaBanque = await lire('contenus', 'id', [...cites]);
 const contenus = [...new Map([...proches, ...deLaBanque].map((c) => [c.id, c])).values()];

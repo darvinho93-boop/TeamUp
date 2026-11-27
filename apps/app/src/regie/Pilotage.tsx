@@ -87,6 +87,7 @@ import { PanneauAvis } from './PanneauAvis';
 import { PanneauConnaissance } from './PanneauConnaissance';
 import { PanneauMessages } from './PanneauMessages';
 import { BoiteASons } from './BoiteASons';
+import { BonusSoiree } from './BonusSoiree';
 import { PanneauPortrait } from './PanneauPortrait';
 import { grillePrete, modeDuPortrait } from '@/lib/portrait';
 
@@ -744,6 +745,8 @@ export function Pilotage({
             </Button>
           ))}
         </div>
+        {/* Le bonus d'une soirée à thème (2026-11-28) : absent sans thème ni bonus. */}
+        <BonusSoiree etat={etat} agir={agir} />
         {/* Les équipes formées à la Salle se dévoilent ici, quand l'animateur le décide ;
             rejouable (2026-11-04). Une action, pas une scène : hors du groupe des scènes. */}
         {etat.equipes.length > 0 && (

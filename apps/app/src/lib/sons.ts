@@ -426,11 +426,14 @@ export interface ExtraitDuMoment {
  * choisi, écoute déjà faite, chrono en cours) ; deux écrans et un rechargement tombent donc au même
  * endroit. Au karaoké (2026-11-23), la chanson repart du buzz et va au-delà de l'extrait. Rien
  * ailleurs, ni sans musique choisie et active. `maintenantMs` est à l'heure de la base.
+ * Le bonus d'une soirée à thème (2026-11-28, `bonus` : la musique choisie par ses hôtes) se chante
+ * de même, de son début, tant que la régie ne l'a pas coupé.
  */
 export function extraitA(
   etat: Pick<EtatSalle, 'pilotage' | 'programme'>,
   maintenantMs: number,
   actives: ReadonlySet<string>,
+  bonus: string | null = null,
 ): ExtraitDuMoment | null {
   const {
     scene,
@@ -439,6 +442,13 @@ export function extraitA(
     chrono_depart_ms: depart,
     chrono_duree_s: duree,
   } = etat.pilotage;
+  if (scene === 'bonus') {
+    if (etape !== 'karaoke' || !bonus || !actives.has(bonus)) return null;
+    if (depart === null || duree === null) return null;
+    const jusquA = depart + duree * 1000;
+    if (maintenantMs >= jusquA) return null;
+    return { id: bonus, depuisS: Math.max(0, maintenantMs - depart) / 1000, jusquA, karaoke: true };
+  }
   if (scene !== 'jeu' || (etape !== 'ecoute' && etape !== 'karaoke')) return null;
   if (depart === null || duree === null) return null;
   const manche = etat.programme.find((m) => m.id === etat.pilotage.manche_id);

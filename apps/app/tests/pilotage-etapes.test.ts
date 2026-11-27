@@ -556,6 +556,8 @@ describe('une touche de la régie', () => {
       expect(etape(e, { type: 'scene', scene: 'scores' })).toBeNull();
       expect(etape(e, { type: 'intro', mancheId: 'pc' })).toBeNull();
       expect(etape(e, { type: 'devoilerEquipes' })).toBeNull();
+      // Le bonus d'une soirée à thème (2026-11-28) attend lui aussi les points du quiz.
+      expect(etape(e, { type: 'bonus', etape: 'karaoke' })).toBeNull();
       // La validation, elle, passe ; ensuite les scènes se rouvrent.
       expect(etape(e, { type: 'survivants', survivants: { 1: 1 } })?.pilotage.etape).toBe(
         'resultat',
@@ -1332,6 +1334,30 @@ describe('le Portrait mystère, touche par touche', () => {
         type: 'portrait',
         action: { type: 'noire' },
       }),
+    ).toBeNull();
+  });
+});
+
+describe('le bonus d’une soirée à thème (2026-11-28)', () => {
+  it('lance la chanson à une heure posée par la base, puis la coupe', () => {
+    const accueil = etat({ scene: 'accueil' });
+    const lance = etape(accueil, { type: 'bonus', etape: 'karaoke' });
+    expect(lance?.pilotage).toMatchObject({
+      scene: 'bonus',
+      etape: 'karaoke',
+      chrono: 'demarrer',
+    });
+    expect(lance?.pilotage.chrono_duree_s).toBeGreaterThanOrEqual(300);
+    // Couper : seulement une chanson qui joue ; le départ reste (l'écran s'efface en fondu).
+    const enCours = etat({ scene: 'bonus', etape: 'karaoke' });
+    expect(etape(enCours, { type: 'bonus', etape: 'couper' })?.pilotage).toMatchObject({
+      scene: 'bonus',
+      etape: 'couper',
+      chrono: 'garder',
+    });
+    expect(etape(accueil, { type: 'bonus', etape: 'couper' })).toBeNull();
+    expect(
+      etape(etat({ scene: 'bonus', etape: 'couper' }), { type: 'bonus', etape: 'couper' }),
     ).toBeNull();
   });
 });

@@ -514,9 +514,15 @@
         "podium": "Podium",
         "instagram": "Instagram",
         "cloture": "Closing",
-        "connaissance": "Get to know"
+        "connaissance": "Get to know",
+        "bonus": "Bonus"
       },
       "devoilerEquipes": "Reveal the teams",
+      "bonus": {
+        "lancer": "Bonus: {titre}",
+        "lancerAction": "start the bonus",
+        "couper": "Fade out the bonus"
+      },
       "programme": "Tonight's programme",
       "statut": {
         "a_venir": "upcoming",

@@ -514,9 +514,15 @@
         "podium": "வெற்றி மேடை",
         "instagram": "இன்ஸ்டாகிராம்",
         "cloture": "நிறைவு",
-        "connaissance": "அறிமுகம்"
+        "connaissance": "அறிமுகம்",
+        "bonus": "போனஸ்"
       },
       "devoilerEquipes": "அணிகளை வெளிப்படுத்து",
+      "bonus": {
+        "lancer": "போனஸ்: {titre}",
+        "lancerAction": "போனஸைத் தொடங்கு",
+        "couper": "போனஸை மெதுவாக நிறுத்து"
+      },
       "programme": "இன்றைய நிரல்",
       "statut": {
         "a_venir": "வரவிருக்கிறது",

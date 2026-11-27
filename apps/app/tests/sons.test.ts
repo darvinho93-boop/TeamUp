@@ -513,6 +513,26 @@ describe('l’extrait du blind test (2026-11-15)', () => {
     expect(extraitA(salle('karaoke'), T0, new Set())).toBeNull();
   });
 
+  it('chante le bonus d’une soirée à thème de son début, jusqu’à la coupe (2026-11-28)', () => {
+    const bonus = (etape: string) => {
+      const s = salle(etape);
+      s.pilotage = { ...s.pilotage, scene: 'bonus', manche_id: null, passage_id: null };
+      s.pilotage.chrono_duree_s = 600;
+      return s;
+    };
+    const avecBonus = new Set(['b']);
+    expect(extraitA(bonus('karaoke'), T0 + 42_500, avecBonus, 'b')).toEqual({
+      id: 'b',
+      depuisS: 42.5,
+      jusquA: T0 + 600_000,
+      karaoke: true,
+    });
+    // Coupé, pas de bonus au thème, ou sa musique pas (encore) prête : silence.
+    expect(extraitA(bonus('couper'), T0 + 42_500, avecBonus, 'b')).toBeNull();
+    expect(extraitA(bonus('karaoke'), T0 + 42_500, avecBonus)).toBeNull();
+    expect(extraitA(bonus('karaoke'), T0 + 42_500, new Set(), 'b')).toBeNull();
+  });
+
   it('se tait hors de l’écoute, chrono écoulé, ou sans musique active', () => {
     for (const etape of ['pret', 'buzz', 'pause', 'revele']) {
       expect(extraitA(salle(etape), T0, actives)).toBeNull();

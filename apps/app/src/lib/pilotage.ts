@@ -39,6 +39,7 @@ import {
   resultatBlindVers,
   scriptExplication,
   EXTRAIT_BLIND_DEFAUT_S,
+  KARAOKE_MAX_S,
   type ActionBlind,
   type ActionCinemime,
   type ActionDuel,
@@ -151,7 +152,12 @@ export type Commande =
   /** Le dévoilement animé des équipes formées (2026-11-04), rejouable. */
   | { type: 'devoilerEquipes' }
   /** Cartes « Faisons connaissance » (2026-11-18) : le dernier tirage, présenté à l'écran. */
-  | { type: 'connaissance' };
+  | { type: 'connaissance' }
+  /**
+   * Le bonus d'une soirée à thème (2026-11-28) : sa chanson en karaoké, quand la régie juge
+   * l'ambiance bonne, puis coupée en fondu.
+   */
+  | { type: 'bonus'; etape: 'karaoke' | 'couper' };
 
 export interface Ecriture {
   pilotage: {
@@ -351,7 +357,8 @@ export function quitteLeJeu(commande: Commande): boolean {
     commande.type === 'scene' ||
     commande.type === 'intro' ||
     commande.type === 'devoilerEquipes' ||
-    commande.type === 'connaissance'
+    commande.type === 'connaissance' ||
+    commande.type === 'bonus'
   );
 }
 
@@ -450,6 +457,20 @@ export function calculerEtape(
         ecriture.pilotage.scene = 'equipes';
         ecriture.pilotage.etape = ETAPE_FORMATION;
         Object.assign(ecriture.pilotage, chronoDe({ demarrer: DUREE_DEVOILEMENT_MS / 1000 }));
+        return ecriture;
+
+      case 'bonus':
+        if (commande.etape === 'karaoke') {
+          // La chanson part du début à l'heure posée par la base : le chrono (jamais affiché) ne sert
+          // qu'à dater le départ, comme le karaoké du Blind test.
+          ecriture.pilotage.scene = 'bonus';
+          ecriture.pilotage.etape = 'karaoke';
+          Object.assign(ecriture.pilotage, chronoDe({ demarrer: KARAOKE_MAX_S }));
+          return ecriture;
+        }
+        // Couper : seulement une chanson qui joue ; le départ reste, l'écran s'efface en fondu.
+        if (etat.pilotage.scene !== 'bonus' || etat.pilotage.etape !== 'karaoke') return null;
+        ecriture.pilotage.etape = 'couper';
         return ecriture;
 
       case 'connaissance':

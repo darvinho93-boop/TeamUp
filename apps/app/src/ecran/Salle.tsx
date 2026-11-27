@@ -155,6 +155,7 @@ export function Salle({
   const sons = useSons(etat, apercu, decalageMs, {
     sons: theme?.sons ?? null,
     entreeEnCours: enCours,
+    bonus: theme?.theme.reglages.bonus?.musique ?? null,
   });
   useEffect(() => {
     jouerRef.current = sons.jouer;

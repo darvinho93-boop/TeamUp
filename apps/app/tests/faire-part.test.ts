@@ -42,6 +42,16 @@ describe('un thème faire-part', () => {
     ).toBe(500);
   });
 
+  it('lit le bonus de la soirée, et ignore un bonus mal formé sans perdre le thème', () => {
+    const musique = '72190b56-cc0a-4c76-9c2f-3a91117d0ecd';
+    expect(
+      themeDe({ ...LIGNE, reglages: { ...LIGNE.reglages, bonus: { musique } } })?.reglages.bonus,
+    ).toEqual({ musique });
+    const douteux = themeDe({ ...LIGNE, reglages: { ...LIGNE.reglages, bonus: { musique: 'x' } } });
+    expect(douteux).not.toBeNull();
+    expect(douteux?.reglages.bonus).toBeUndefined();
+  });
+
   it('refuse une ligne incomplète ou douteuse : l’écran reste celui de Team Up!', () => {
     expect(themeDe(null)).toBeNull();
     expect(themeDe({ ...LIGNE, theme: 'autre' })).toBeNull();

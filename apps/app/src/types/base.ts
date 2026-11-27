@@ -1890,6 +1890,7 @@ export type Database = {
         | 'jeu'
         | 'scores'
         | 'connaissance'
+        | 'bonus'
         | 'podium'
         | 'instagram'
         | 'cloture';
@@ -2042,6 +2043,7 @@ export const Constants = {
         'jeu',
         'scores',
         'connaissance',
+        'bonus',
         'podium',
         'instagram',
         'cloture',

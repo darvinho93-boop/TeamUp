@@ -514,9 +514,15 @@
         "podium": "Podium",
         "instagram": "Instagram",
         "cloture": "Clôture",
-        "connaissance": "Faire connaissance"
+        "connaissance": "Faire connaissance",
+        "bonus": "Bonus"
       },
       "devoilerEquipes": "Dévoiler les équipes",
+      "bonus": {
+        "lancer": "Bonus : {titre}",
+        "lancerAction": "lancer le bonus",
+        "couper": "Couper le bonus en fondu"
+      },
       "programme": "Programme de la soirée",
       "statut": {
         "a_venir": "à venir",

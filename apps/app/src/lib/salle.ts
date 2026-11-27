@@ -17,6 +17,7 @@ export type Scene =
   | 'jeu'
   | 'scores'
   | 'connaissance'
+  | 'bonus'
   | 'podium'
   | 'instagram'
   | 'cloture';

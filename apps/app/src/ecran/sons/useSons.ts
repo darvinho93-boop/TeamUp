@@ -63,8 +63,11 @@ export function useSons(
   theme: {
     sons: { musique: string | null; ambiance: string | null } | null;
     entreeEnCours: boolean;
+    /** Le bonus de la soirée (2026-11-28) : une musique de la bibliothèque, ou `null`. */
+    bonus?: string | null;
   } = { sons: null, entreeEnCours: false },
 ) {
+  const bonus = theme.bonus ?? null;
   const [lecteur, setLecteur] = useState<Lecteur | null>(null);
   const precedent = useRef<Instant | null>(null);
   const reglage = reglageDe(etat);
@@ -209,6 +212,8 @@ export function useSons(
       ...(mancheEnCours?.jeu === 'blind'
         ? titresBlind(mancheEnCours).flatMap((x) => (x.musique ? [x.musique] : []))
         : []),
+      // Le bonus d'une soirée à thème : prêt dès l'ouverture, la régie le lance quand elle veut.
+      ...(bonus ? [bonus] : []),
     ]),
   ].join('|');
   const [actives, setActives] = useState<ReadonlySet<string>>(() => new Set());
@@ -261,7 +266,7 @@ export function useSons(
   // L'extrait du blind test : il part à l'écoute, à la seconde où il en est, et s'arrête net au
   // buzz (l'étape change) ou quand le chrono de l'extrait est écoulé. Le décalage d'horloge se
   // réestime à chaque relecture : il passe par une référence, sans quoi l'extrait repartirait.
-  const extrait = lecteur ? extraitA(etat, Date.now() + decalageMs, actives) : null;
+  const extrait = lecteur ? extraitA(etat, Date.now() + decalageMs, actives, bonus) : null;
   const extraitId = extrait?.id ?? null;
   const extraitFin = extrait?.jusquA ?? null;
   // La chanson d'un karaoké s'en va en fondu, quelle que soit la touche qui la quitte (2026-11-23).

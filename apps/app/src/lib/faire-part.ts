@@ -35,6 +35,11 @@ export interface ReglagesFairePart {
   tempsMs: number;
   /** Les notes des premières mesures (ms depuis le début de la musique) : un éclat sur chacune. */
   notesMs: number[];
+  /**
+   * Le bonus de la soirée (2026-11-28) : une musique de la bibliothèque, chantée en karaoké quand
+   * la régie le décide (scène `bonus`). Facultatif.
+   */
+  bonus?: { musique: string };
 }
 
 export interface ThemeFairePart {
@@ -56,6 +61,8 @@ const ROLES_OBLIGATOIRES = [
 const CHEMIN = /^[a-z0-9][a-z0-9-]*(\/[a-z0-9][a-z0-9._-]*)+$/;
 const estChemin = (x: unknown): x is string =>
   typeof x === 'string' && CHEMIN.test(x) && !x.includes('..');
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 /** L'orchestre entre au plus tard 20 s après le début : au-delà, l'attente serait trop longue. */
 const ORCHESTRE_MAX_MS = 20_000;
@@ -92,6 +99,12 @@ export function themeDe(ligne: unknown): ThemeFairePart | null {
     (n): n is number => typeof n === 'number' && n >= 0 && n < orchestreMs,
   );
   const merci = typeof r['merci'] === 'string' && r['merci'].trim() ? r['merci'].trim() : undefined;
+  // Un bonus mal formé est ignoré : le reste du thème tient.
+  const bonus = r['bonus'] as Record<string, unknown> | undefined;
+  const musiqueBonus =
+    bonus && typeof bonus['musique'] === 'string' && UUID.test(bonus['musique'])
+      ? bonus['musique']
+      : null;
   return {
     theme: 'faire-part',
     fichiers: {
@@ -106,6 +119,7 @@ export function themeDe(ligne: unknown): ThemeFairePart | null {
     reglages: {
       date,
       ...(merci ? { merci } : {}),
+      ...(musiqueBonus ? { bonus: { musique: musiqueBonus } } : {}),
       orchestreMs,
       tempsMs,
       notesMs: notes.slice(0, 12),

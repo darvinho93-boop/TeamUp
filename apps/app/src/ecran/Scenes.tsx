@@ -85,6 +85,7 @@ import { INTERLUDE_MS, reglageDe } from '@/lib/sons';
 import { extraitDe } from '@/lib/extraits';
 import { VideoDeScene } from './VideoDeScene';
 import { AccueilFairePart } from './faire-part/AccueilFairePart';
+import { BonusFairePart } from './faire-part/BonusFairePart';
 import { ThemeContexte } from './faire-part/useThemeSoiree';
 
 /** L'entrée du nom d'un jeu, après l'interlude (`--tu-dur-verdict`). */
@@ -137,6 +138,8 @@ export function Scene(props: Props) {
       return <Scores etat={etat} />;
     case 'connaissance':
       return <Connaissance etat={etat} decalageMs={props.decalageMs} />;
+    case 'bonus':
+      return <BonusFairePart etat={etat} decalageMs={props.decalageMs} />;
     case 'podium':
       return <Podium etat={etat} />;
     case 'instagram':
