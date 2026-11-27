@@ -2153,3 +2153,30 @@ plus tard. Mode d'emploi : `docs/soiree-sur-pc.md`.
   (`src/lib/identifiant.ts`) le remplace partout dans le navigateur ; ne plus appeler
   `crypto.randomUUID` côté client. L'écran s'ouvre de préférence sur le PC par `localhost`.
 - Après une descente, ne plus lancer `pnpm db:reset` : il efface la base du PC.
+
+## Conventions posées le 2026-11-28 (thème : fluidité de l'entrée, bonus)
+
+- **Fluidité de l'entrée à thème**, mesurée image par image (`requestAnimationFrame`) :
+  - l'entrée ne repeint plus de grandes surfaces ;
+  - la mairie se dessine en or, puis l'illustration en couleurs (le même SVG, en `<img>`, qui
+    n'exécute rien) la relaie en fondu, au lieu de 300 traits recolorés un à un ;
+  - le papier de la bascule est un cercle qui grandit par `transform` (`.tu-fp-vague`), relayé par
+    le fond en fondu ;
+  - les rinceaux sont découverts par un cache qui se retire (`.tu-fp-rinceau-cache`) ;
+  - les grands calques (éclat, onde, cercle) sont dessinés deux à quatre fois plus petits, puis
+    agrandis : sinon leur peinture au montage figeait le départ (200 ms) ;
+  - **ne pas réintroduire** de `clip-path`, ni de couleur ou d'opacité animées sur des centaines
+    d'éléments.
+- **Accueil à thème** : le « Bienvenue, … » s'étire sur l'encadré (`align-self: stretch` ; avec
+  `contain: inline-size` il tombait à un caractère de large) et devient une ligne de la carte.
+- **Bonus d'une soirée à thème** : `themes_soiree.reglages.bonus = { musique }` (une musique de la
+  bibliothèque), lu par `themeDe` ; un bonus mal formé est ignoré, le thème tient.
+  - Scène `bonus` (migration `20261128090000`, seule). Commande `{ type: 'bonus', etape:
+'karaoke' | 'couper' }` : chrono posé par la base (`KARAOKE_MAX_S`), il quitte un jeu comme
+    une scène libre.
+  - Régie : `BonusSoiree` (deux appuis pour lancer, un pour couper), absent sans bonus.
+  - Écran : `BonusFairePart`, le karaoké du Blind test sans équipe ni points, sur le sapin, la
+    ligne chantée en or.
+  - Son : `extraitA(…, bonus)`, de son début, fondu de 3 s à la coupe. La chanson est téléchargée
+    dès l'ouverture de l'écran.
+  - La descente vers le PC ramasse aussi les identifiants cités par le thème.
