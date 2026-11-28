@@ -108,6 +108,7 @@ export function Salle({
   const [passage, setPassage] = useState(0);
   const [finaleDe, setFinaleDe] = useState(0);
   const [depuisMs, setDepuisMs] = useState(0);
+  const [debutMs, setDebutMs] = useState(0);
   const [termine, setTermine] = useState(0);
   // L'entrée à thème remplace la passe finale quand le thème est prêt au passage.
   const [entreeThemee, setEntreeThemee] = useState(false);
@@ -125,12 +126,17 @@ export function Salle({
   const enFinale = enCours && finaleDe === passage;
   const sceneAffichee = finDeBoucle ? 'ouverture' : scene;
 
-  // Les sons partent avec la passe finale, pas au clic : le lecteur du moment, pris au vol.
-  const jouerRef = useRef<ReturnType<typeof useSons>['jouer']>(null);
+  // Les sons partent avec la passe finale, pas au clic : le lecteur du moment, pris au vol. Ils
+  // visent, sur l'horloge audio, l'instant où la passe doit commencer (`departMs`), sur lequel ses
+  // animations se calent aussi (2026-11-28) : un minuteur en retard ou un premier rendu lourd ne
+  // décale plus l'un de l'autre.
+  const jouerARef = useRef<ReturnType<typeof useSons>['jouerA']>(null);
   const jouerFairePartRef = useRef<ReturnType<typeof useSons>['jouerFairePart']>(null);
   useEffect(() => {
     if (!passage) return;
-    const { attenteMs, depuisMs: depuis } = raccordFinale(performance.now() - debutBoucle.current);
+    const maintenant = performance.now();
+    const { attenteMs, depuisMs: depuis } = raccordFinale(maintenant - debutBoucle.current);
+    const departMs = maintenant + attenteMs;
     // Soirée à thème : l'accueil se forme lui-même, sur la musique de ses hôtes, qui part là où
     // le QR code paraissait. Décidé une fois pour toutes au passage.
     const aTheme = themeRef.current;
@@ -138,11 +144,12 @@ export function Salle({
     const duree = minutage ? minutage.fin + MARGE_ENTREE_MS : FINALE.fin;
     const debut = setTimeout(() => {
       setDepuisMs(depuis);
+      setDebutMs(departMs);
       setEntreeThemee(minutage !== null);
       setFinaleDe(passage);
       for (const pas of sonsDeLaFinale(depuis))
-        jouerRef.current?.(pas.son, pas.apresMs, undefined, pas.dansLeSonMs);
-      if (minutage) jouerFairePartRef.current?.(minutage.notes - depuis);
+        jouerARef.current?.(pas.son, departMs + pas.apresMs - (pas.dansLeSonMs ?? 0));
+      if (minutage) jouerFairePartRef.current?.(departMs + minutage.notes - depuis);
     }, attenteMs);
     const fin = setTimeout(() => setTermine(passage), attenteMs + duree - depuis);
     return () => {
@@ -158,12 +165,12 @@ export function Salle({
     bonus: theme?.theme.reglages.bonus?.musique ?? null,
   });
   useEffect(() => {
-    jouerRef.current = sons.jouer;
+    jouerARef.current = sons.jouerA;
     jouerFairePartRef.current = sons.jouerFairePart;
-  }, [sons.jouer, sons.jouerFairePart]);
+  }, [sons.jouerA, sons.jouerFairePart]);
   const entree = useMemo(
-    () => (enFinale && entreeThemee ? { depuisMs } : null),
-    [enFinale, entreeThemee, depuisMs],
+    () => (enFinale && entreeThemee ? { depuisMs, debutMs } : null),
+    [enFinale, entreeThemee, depuisMs, debutMs],
   );
 
   return (
@@ -234,7 +241,9 @@ export function Salle({
                         <Pictogramme taille="lg" anime />
                       </div>
                     )}
-                    {enFinale && !entreeThemee && <Finale key={passage} depuisMs={depuisMs} />}
+                    {enFinale && !entreeThemee && (
+                      <Finale key={passage} depuisMs={depuisMs} debutMs={debutMs} />
+                    )}
                     {/* Les messages des joueurs et de la régie, par-dessus toutes les scènes (2026-11-15) ;
               dans l'aperçu aussi : l'animateur voit ce que voit la salle. */}
                     {etat.messages && (

@@ -22,9 +22,11 @@ export const ThemeContexte = createContext<ThemeCharge | null>(null);
 
 /**
  * L'entrée à thème en cours (l'ouverture se change en accueil), avec l'instant de la passe finale
- * où elle a repris la boucle ; `null` le reste du temps : l'accueil s'affiche alors déjà formé.
+ * où elle a repris la boucle (`depuisMs`) et celui où elle a commencé (`debutMs`, horloge de
+ * `performance.now()`, sur lequel se calent ses animations et ses sons) ; `null` le reste du
+ * temps : l'accueil s'affiche alors déjà formé.
  */
-export const EntreeContexte = createContext<{ depuisMs: number } | null>(null);
+export const EntreeContexte = createContext<{ depuisMs: number; debutMs: number } | null>(null);
 
 /**
  * Le thème de la soirée (2026-11-27), lu sous la session de l'animateur, puis ses fichiers

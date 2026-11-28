@@ -296,17 +296,17 @@ export function useSons(
       lecteur?.jouer(son, apresMs, montee, dansLeSonMs),
     [lecteur],
   );
+  const jouerA = useCallback((son: Son, aMs: number) => lecteur?.jouerA(son, aMs), [lecteur]);
   const positionExtrait = useCallback(() => lecteur?.positionExtrait() ?? null, [lecteur]);
-  const jouerFairePart = useCallback(
-    (apresMs?: number, dansLeSonMs?: number) => lecteur?.jouerFairePart(apresMs, dansLeSonMs),
-    [lecteur],
-  );
+  const jouerFairePart = useCallback((aMs: number) => lecteur?.jouerFairePart(aMs), [lecteur]);
 
   return {
     /** À proposer tant que le son n'est pas activé sur cet écran. */
     aActiver: !eteint && !lecteur,
     activer,
     jouer: eteint || !lecteur ? null : jouer,
+    /** Un son calé sur une animation, à un instant de `performance.now()` (`null` sans son). */
+    jouerA: eteint || !lecteur ? null : jouerA,
     /** La musique d'arrivée d'une soirée à thème (`null` sans son). */
     jouerFairePart: eteint || !lecteur ? null : jouerFairePart,
     positionExtrait: eteint || !lecteur ? null : positionExtrait,

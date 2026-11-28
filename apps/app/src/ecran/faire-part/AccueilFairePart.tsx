@@ -9,6 +9,7 @@ import { INSTAGRAM } from '@/marque/instagram';
 import { Pictogramme } from '@/marque/Pictogramme';
 import { Ronds } from '@/marque/Ronds';
 import { BandeauPrenoms, MessageBienvenue, useArrivees } from '../BandeauPrenoms';
+import { useAnimationsCalees } from '../useAnimationsCalees';
 import { EntreeContexte, ThemeContexte, type ThemeCharge } from './useThemeSoiree';
 
 /** Une scène fait 1 920 px de large pour 120 rem : un rem, 16 px de scène. */
@@ -163,6 +164,9 @@ export function AccueilFairePart({ etat, qrSvg, adresse }: Props) {
     };
     for (const [nom, valeur] of Object.entries(reglages)) scene.style.setProperty(nom, valeur);
   }, [entree]);
+  // Ses délais se comptent depuis le début de l'entrée, comme les sons : pas depuis la fin de son
+  // premier rendu, lourd (2026-11-28).
+  useAnimationsCalees(racine, entree?.debutMs ?? null);
 
   const minutage = entreeFairePart(theme.reglages);
   const depuis = entree?.depuisMs ?? 0;

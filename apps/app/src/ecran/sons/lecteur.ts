@@ -26,6 +26,13 @@ const COUPE_S = 0.06;
 type SonTheme = 'faire-part' | 'ambiance-theme';
 /** Le canal par lequel les onglets d'un même navigateur se passent le son. */
 const CANAL = 'teamup-son';
+/**
+ * Un son calé sur une animation (le reel de la passe finale, la musique d'arrivée d'un thème) se
+ * programme sur l'horloge audio, au plus tôt ce délai avant son instant. Un minuteur du navigateur
+ * part en retard quand la page est occupée (le premier rendu de l'entrée à thème : la musique
+ * arrivait 0,3 s trop tôt sur le reel, mesuré le 2026-11-28) ; l'horloge audio, jamais.
+ */
+const ANTICIPATION_MS = 500;
 
 export interface Lecteur {
   /**
@@ -34,6 +41,12 @@ export interface Lecteur {
    * `dansLeSonMs` le prend en route (la passe finale reprise en cours de boucle).
    */
   jouer(son: Son, apresMs?: number, montee?: Montee, dansLeSonMs?: number): void;
+  /**
+   * Joue un son calé sur une animation (2026-11-28) : il sort des haut-parleurs à l'instant `aMs`
+   * (horloge de `performance.now()`, celle des animations), programmé sur l'horloge audio. Un
+   * instant passé le prend en route d'autant : il reste calé.
+   */
+  jouerA(son: Son, aMs: number): void;
   /** La musique de fond, en boucle : en changer ou l'éteindre (`null`), en fondu. */
   fond(son: FondJoue | null): void;
   /**
@@ -44,9 +57,9 @@ export interface Lecteur {
   /**
    * La musique d'arrivée d'une soirée à thème : elle part quand le reel s'éteint, sans le couper
    * (revu le 2026-11-27) ; la musique de fond s'arrête et ne reprend qu'à sa fin. Les autres sons
-   * (une arrivée) se posent dessus sans la couper.
+   * (une arrivée) se posent dessus sans la couper. Calée comme `jouerA`, à l'instant `aMs`.
    */
-  jouerFairePart(apresMs?: number, dansLeSonMs?: number): void;
+  jouerFairePart(aMs: number): void;
   /** L'arrête en fondu (la régie a quitté l'accueil) ; la musique de fond reprend. */
   arreterFairePart(): void;
   /**
@@ -77,9 +90,15 @@ export interface Lecteur {
   mesure(): { etat: AudioContextState; niveau: number };
   /**
    * Ce qui a été joué, pour les contrôles : le nom du son et l'instant (ms). Une musique y paraît
-   * en `musique:<id>` à son départ, `musique:-` à son arrêt.
+   * en `musique:<id>` à son départ, `musique:-` à son arrêt. Un son calé (`jouerA`, la musique
+   * d'arrivée) porte en plus `audio` : l'instant de l'horloge audio (s) où tombe le début du
+   * fichier, qui se compare d'un son à l'autre sans les aléas des minuteurs.
    */
-  journal: { son: Son | SonTheme | `musique:${string}` | `extrait:${string}`; a: number }[];
+  journal: {
+    son: Son | SonTheme | `musique:${string}` | `extrait:${string}`;
+    a: number;
+    audio?: number;
+  }[];
   /** Le dernier réglage appliqué, pour les contrôles. */
   reglage: ReglageSon;
 }
@@ -129,8 +148,11 @@ export async function creerLecteur(
   let fairePart: { source: AudioBufferSourceNode; gain: GainNode } | null = null;
   const niveauDuFond = (son: FondJoue) =>
     son === 'ambiance-theme' ? NIVEAU_AMBIANCE_THEME : NIVEAUX[son];
-  /** Le son (hors battements) qui joue encore : le suivant le coupera. */
-  let enCours: { source: AudioBufferSourceNode; gain: GainNode } | null = null;
+  /**
+   * Le son (hors battements) qui joue encore, ou qui va partir (`debutS`, horloge audio) : le
+   * suivant le coupera.
+   */
+  let enCours: { source: AudioBufferSourceNode; gain: GainNode; debutS: number } | null = null;
 
   /** Les musiques téléchargées (adresse locale du fichier), puis leur lecteur une fois jouées. */
   const fichiers = new Map<string, Promise<string | null>>();
@@ -186,8 +208,7 @@ export async function creerLecteur(
   }
 
   /** La musique de fond et celle du chrono s'effacent sous un son, puis reviennent. */
-  const effacerLeFond = (dureeS: number) => {
-    const t = contexte.currentTime;
+  const effacerLeFond = (dureeS: number, t = contexte.currentTime) => {
     const sous = (gain: AudioParam, niveau: number) => {
       gain.cancelScheduledValues(t);
       gain.setTargetAtTime(niveau * FOND_SOUS_UN_SON, t, COUPE_S);
@@ -228,13 +249,13 @@ export async function creerLecteur(
     journal.push({ son: `musique:${cle}`, a: Math.round(performance.now()) });
   };
 
-  /** Éteint la musique de fond en fondu. */
-  const arreterLaBoucle = () => {
+  /** Éteint la musique de fond en fondu, tout de suite ou à l'instant `debutS` (horloge audio). */
+  const arreterLaBoucle = (debutS = contexte.currentTime) => {
     if (!boucle) return;
-    const t = contexte.currentTime;
+    const t = Math.max(debutS, contexte.currentTime);
     const { source: noeud, gain } = boucle;
     boucle = null;
-    gain.gain.cancelScheduledValues(t);
+    gain.gain.cancelScheduledValues(contexte.currentTime);
     gain.gain.setValueAtTime(gain.gain.value, t);
     gain.gain.linearRampToValueAtTime(0, t + FONDU_S);
     noeud.stop(t + FONDU_S);
@@ -252,6 +273,50 @@ export async function creerLecteur(
     return { source: noeud, gain };
   };
 
+  /**
+   * L'instant de l'horloge audio où un son doit partir pour sortir des haut-parleurs à `aMs`
+   * (horloge de `performance.now()`), latence de sortie comprise quand le navigateur la donne. En
+   * retard, il part tout de suite, pris en route d'autant (`dansS`).
+   */
+  const calage = (aMs: number) => {
+    const maintenant = contexte.currentTime;
+    const { contextTime, performanceTime } = contexte.getOutputTimestamp();
+    const quand =
+      contextTime !== undefined &&
+      performanceTime !== undefined &&
+      performanceTime > 0 &&
+      Math.abs(performance.now() - performanceTime) < 1000
+        ? contextTime + (aMs - performanceTime) / 1000
+        : maintenant + (aMs - performance.now()) / 1000;
+    return quand >= maintenant
+      ? { quand, dansS: 0 }
+      : { quand: maintenant, dansS: maintenant - quand };
+  };
+
+  /** Joue un son à l'instant `quand` de l'horloge audio, pris à `dansS` secondes de son début. */
+  const lancer = (son: Son, quand: number, dansS: number, montee?: Montee) => {
+    const voix = source(son, NIVEAUX[son] * (montee?.gain ?? 1), montee?.vitesse);
+    if (!voix) return false;
+    if (!estBattement(son)) {
+      // Un son à la fois : celui qui jouait encore s'éteint, la musique de fond s'efface dessous.
+      // Un son programmé plus tard (le reel calé sur l'entrée) ne se coupe pas : celui-ci passe avant.
+      if (!enCours || enCours.debutS <= quand) {
+        if (enCours) {
+          enCours.gain.gain.setTargetAtTime(0, quand, COUPE_S / 3);
+          enCours.source.stop(quand + COUPE_S);
+        }
+        const suivi = { ...voix, debutS: quand };
+        enCours = suivi;
+        voix.source.onended = () => {
+          if (enCours === suivi) enCours = null;
+        };
+      }
+      effacerLeFond(Math.max(0, (voix.source.buffer?.duration ?? 1) - dansS), quand);
+    }
+    voix.source.start(quand, dansS);
+    return true;
+  };
+
   const lecteur: Lecteur = {
     journal,
     reglage,
@@ -265,23 +330,22 @@ export async function creerLecteur(
         if (maintenant - derniereArrivee < ESPACE_ARRIVEES_MS) return;
         derniereArrivee = maintenant;
       }
-      const voix = source(son, NIVEAUX[son] * (montee?.gain ?? 1), montee?.vitesse);
-      if (!voix) return;
-      if (!estBattement(son)) {
-        // Un son à la fois : celui qui jouait encore s'éteint, la musique de fond s'efface dessous.
-        if (enCours) {
-          const t = contexte.currentTime;
-          enCours.gain.gain.setTargetAtTime(0, t, COUPE_S / 3);
-          enCours.source.stop(t + COUPE_S);
-        }
-        enCours = voix;
-        voix.source.onended = () => {
-          if (enCours === voix) enCours = null;
-        };
-        effacerLeFond(Math.max(0, (voix.source.buffer?.duration ?? 1) - dansLeSonMs / 1000));
+      if (lancer(son, contexte.currentTime, dansLeSonMs / 1000, montee))
+        journal.push({ son, a: Math.round(maintenant) });
+    },
+    jouerA(son, aMs) {
+      const reste = aMs - performance.now() - ANTICIPATION_MS;
+      if (reste > 0) {
+        setTimeout(() => lecteur.jouerA(son, aMs), reste);
+        return;
       }
-      voix.source.start(0, dansLeSonMs / 1000);
-      journal.push({ son, a: Math.round(maintenant) });
+      const { quand, dansS } = calage(aMs);
+      if (lancer(son, quand, dansS))
+        journal.push({
+          son,
+          a: Math.round(Math.max(aMs, performance.now())),
+          audio: quand - dansS,
+        });
     },
     fond(voulu) {
       fondVoulu = voulu;
@@ -320,22 +384,28 @@ export async function creerLecteur(
       // L'ambiance du thème arrive : elle prend la place de celle de Team Up! si on l'attendait.
       if (fondVoulu === 'ambiance-theme') lecteur.fond(fondVoulu);
     },
-    jouerFairePart(apresMs = 0, dansLeSonMs = 0) {
-      if (apresMs > 0) {
-        setTimeout(() => lecteur.jouerFairePart(0, dansLeSonMs), apresMs);
+    jouerFairePart(aMs) {
+      const reste = aMs - performance.now() - ANTICIPATION_MS;
+      if (reste > 0) {
+        setTimeout(() => lecteur.jouerFairePart(aMs), reste);
         return;
       }
       const voix = source('faire-part', NIVEAU_FAIRE_PART);
       if (!voix || fairePart) return;
-      arreterLaBoucle();
+      const { quand, dansS } = calage(aMs);
+      arreterLaBoucle(quand);
       fairePart = voix;
       voix.source.onended = () => {
         if (fairePart !== voix) return;
         fairePart = null;
         lecteur.fond(fondVoulu);
       };
-      voix.source.start(0, dansLeSonMs / 1000);
-      journal.push({ son: 'faire-part', a: Math.round(performance.now()) });
+      voix.source.start(quand, dansS);
+      journal.push({
+        son: 'faire-part',
+        a: Math.round(Math.max(aMs, performance.now())),
+        audio: quand - dansS,
+      });
     },
     arreterFairePart() {
       if (!fairePart) return;

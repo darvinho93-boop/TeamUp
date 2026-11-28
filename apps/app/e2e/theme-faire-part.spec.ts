@@ -131,6 +131,13 @@ test('l’ouverture classique se change en accueil aux couleurs des hôtes, sur 
   await expect(ecran.getByTestId('finale')).toHaveCount(0);
   await expect(entree.locator('.tu-ronds--finale')).toBeVisible();
   const depuis = Number(await entree.getAttribute('data-depuis'));
+  // Ses animations se comptent toutes depuis un même instant, celui sur lequel les sons sont calés
+  // (2026-11-28), et non depuis la fin de son premier rendu.
+  const departs = await entree.evaluate((el) => [
+    ...new Set(el.getAnimations({ subtree: true }).map((a) => Number(a.startTime))),
+  ]);
+  expect(departs).toHaveLength(1);
+  const departMs = departs[0]!;
   if (process.env['CAPTURES']) {
     for (const t of [2000, 6000, 9000, 12_000]) {
       await ecran.waitForTimeout(t === 2000 ? 2000 : 3000);
@@ -162,14 +169,17 @@ test('l’ouverture classique se change en accueil aux couleurs des hôtes, sur 
   const fairePart = journal.find((j) => j.son === 'faire-part');
   expect(finale).toBeDefined();
   expect(fairePart).toBeDefined();
-  // Le reel part à 2 332 ms de la passe (ou en route quand elle reprend la boucle plus loin), la
-  // musique des hôtes quand il s'éteint, à 6 950 ms (DEPART_MUSIQUE_MS).
-  const ecart = DEPART_MUSIQUE_MS - Math.max(depuis, 2332);
-  expect(Math.abs(fairePart!.a - finale!.a - ecart)).toBeLessThan(150);
-  // L'ambiance de Team Up! s'est tue sous elle (le thème n'a pas d'ambiance propre).
+  // Le reel commence à 2 332 ms de la passe (pris en route quand elle reprend la boucle plus loin),
+  // la musique des hôtes quand il s'éteint, à 6 950 ms (DEPART_MUSIQUE_MS). Tous deux programmés
+  // sur l'horloge audio (2026-11-28) : leur écart s'y mesure à la milliseconde, sans les aléas des
+  // minuteurs (0,3 s de trop mesurés en ligne le 2026-11-28, quand ils en dépendaient).
+  const ecartAudioMs = (fairePart!.audio! - finale!.audio!) * 1000;
+  expect(Math.abs(ecartAudioMs - (DEPART_MUSIQUE_MS - 2332))).toBeLessThan(10);
+  // Et la musique vise l'instant des animations, programmée avant son heure.
+  expect(Math.abs(fairePart!.a - (departMs + DEPART_MUSIQUE_MS - depuis))).toBeLessThanOrEqual(1);
   test.info().annotations.push({
     type: 'sons',
-    description: JSON.stringify({ depuis, ecart: fairePart!.a - finale!.a }),
+    description: JSON.stringify({ depuis, ecartAudioMs: Math.round(ecartAudioMs * 10) / 10 }),
   });
 
   // Rechargé : l'accueil déjà formé, sans entrée.
