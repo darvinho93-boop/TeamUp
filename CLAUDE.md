@@ -2146,7 +2146,8 @@ plus tard. Mode d'emploi : `docs/soiree-sur-pc.md`.
     `--remise-a-zero`. Elle finit par comparer lignes et tailles de fichiers des deux côtés.
 - `pnpm soiree:pc --code CODE` (`apps/app/scripts/soiree-pc.mjs`) vérifie la base locale et la
   soirée, construit l'app **pour l'adresse du PC** dans `.next-machine` (l'adresse est écrite dans
-  le code envoyé aux navigateurs ; reconstruite seulement si elle change), puis la sert sur
+  le code envoyé aux navigateurs ; reconstruite quand elle change, ou le code : dernier commit et
+  empreinte des modifications en cours, notés dans `.next-machine/tu-adresse.txt`), puis la sert sur
   `0.0.0.0:3000` avec `TU_RESEAU_LOCAL=1`. `--ip 127.0.0.1` : une répétition sur le PC seul.
 - **Une page en http ouverte par une adresse IP n'est pas un contexte sécurisé** : pas de
   `crypto.randomUUID` (le lecteur de l'écran restait muet). `identifiantAleatoire`

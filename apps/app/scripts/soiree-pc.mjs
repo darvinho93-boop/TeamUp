@@ -9,11 +9,14 @@
  *
  * Avant de démarrer : la base locale répond et la soirée y est (`descendre-soiree.mjs`). La
  * version est construite une fois pour l'adresse (elle est écrite dans le code envoyé aux
- * navigateurs), dans `.next-machine` : la version de développement et celle des tests restent.
+ * navigateurs) et pour la version du code (refaite dès que le code a changé : un correctif
+ * arrive donc jusqu'à la soirée), dans `.next-machine` : la version de développement et celle des
+ * tests restent.
  * Puis l'app démarre sur le port 3000 de toutes les interfaces, cookie des joueurs en http
  * (`TU_RESEAU_LOCAL=1`). Ctrl+C l'arrête.
  */
 import { execFileSync, spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { networkInterfaces } from 'node:os';
 import { parseArgs } from 'node:util';
@@ -75,7 +78,25 @@ if (!soiree)
     `${CODE} n'est pas sur ce PC : node apps/app/scripts/descendre-soiree.mjs --code ${CODE}`,
   );
 
-// La version construite pour cette adresse.
+// La version construite pour cette adresse et ce code : le dernier commit, plus l'empreinte des
+// modifications pas encore commitées de ce qui part dans l'app (sans git, l'adresse seule).
+const git = (args) =>
+  execFileSync('git', args, { cwd: APP, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+const versionDuCode = (() => {
+  try {
+    const chemins = ['.', '../../packages', '../../design'];
+    const enCours =
+      git(['diff', 'HEAD', '--', ...chemins]) +
+      git(['ls-files', '--others', '--exclude-standard', '--', 'src', '../../packages']);
+    const commit = git(['rev-parse', 'HEAD']).trim();
+    return enCours
+      ? `${commit}+${createHash('sha256').update(enCours).digest('hex').slice(0, 12)}`
+      : commit;
+  } catch {
+    return null;
+  }
+})();
+const voulue = [ip, versionDuCode].filter(Boolean).join(' ');
 const marque = new URL(`${DOSSIER}/tu-adresse.txt`, APP);
 const construitePour = existsSync(marque) ? readFileSync(marque, 'utf8').trim() : null;
 const pnpm = (args, envSup) =>
@@ -85,13 +106,17 @@ const pnpm = (args, envSup) =>
     shell: true,
     env: { ...process.env, TU_DIST_DIR: DOSSIER, ...envSup },
   });
-if (options.reconstruire || construitePour !== ip) {
-  console.log(`Construction de l'app pour http://${ip}:${PORT} (quelques minutes)…`);
+if (options.reconstruire || construitePour !== voulue) {
+  console.log(
+    construitePour?.split(' ')[0] === ip
+      ? `Le code a changé depuis la dernière construction : construction de l'app (quelques minutes)…`
+      : `Construction de l'app pour http://${ip}:${PORT} (quelques minutes)…`,
+  );
   pnpm(['exec', 'next', 'build'], {
     NEXT_PUBLIC_SUPABASE_URL: `http://${ip}:54321`,
     NEXT_PUBLIC_APP_URL: `http://${ip}:${PORT}`,
   });
-  writeFileSync(marque, ip);
+  writeFileSync(marque, voulue);
 }
 
 console.log(`

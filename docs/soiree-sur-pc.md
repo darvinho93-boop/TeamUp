@@ -14,7 +14,9 @@ branchent et scannent le QR de l'écran. Rien ne passe par internet pendant la s
    - La première fois, le script donne le mot de passe du compte d'animateur **sur le PC**. Ce
      compte garde ton e-mail habituel.
 3. PC branché au routeur, lancer une fois `pnpm soiree:pc --code PS4EPT`.
-   - Il construit l'app pour l'adresse du PC sur le routeur, puis la démarre.
+   - Il construit l'app pour l'adresse du PC sur le routeur, puis la démarre. Il la reconstruit
+     aussi quand le code a changé depuis (quelques minutes) : la relancer après chaque mise à
+     jour, pour ne pas découvrir la construction sur place.
    - Vérifier que l'écran s'ouvre, puis l'arrêter avec Ctrl+C.
 
 **Après la descente, ne plus lancer `pnpm db:reset`** : il efface la base du PC.
