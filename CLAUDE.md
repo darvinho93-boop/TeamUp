@@ -2180,3 +2180,17 @@ plus tard. Mode d'emploi : `docs/soiree-sur-pc.md`.
   - Son : `extraitA(…, bonus)`, de son début, fondu de 3 s à la coupe. La chanson est téléchargée
     dès l'ouverture de l'écran.
   - La descente vers le PC ramasse aussi les identifiants cités par le thème.
+- **Sons de la passe finale calés sur l'horloge audio** (même jour). Avant, le reel et la musique
+  d'arrivée partaient de deux minuteurs, que le premier rendu de l'entrée retardait : en ligne, la
+  musique est arrivée 0,3 s trop tôt par rapport au reel.
+  - `Salle.tsx` fixe l'instant où la passe doit commencer (`departMs`, horloge de
+    `performance.now()`) ; les deux sons le visent (`lecteur.jouerA`, `jouerFairePart(aMs)`).
+  - Le lecteur les programme sur l'horloge audio (`start(quand)`), au plus tôt 500 ms avant leur
+    heure, latence de sortie comprise (`getOutputTimestamp`). Un son en retard est pris en route,
+    pour rester calé.
+  - Un son programmé plus tard ne se fait pas couper par un son qui part avant lui.
+  - Les animations de la passe, à thème (`AccueilFairePart`) ou classique (`Finale`), se calent sur
+    le même instant au montage (`useAnimationsCalees`, `startTime`), avant la première image.
+  - Le journal du lecteur note `audio` pour un son calé : l'instant, sur l'horloge audio, du début
+    du fichier. `theme-faire-part.spec` exige 4 618 ms entre le reel et la musique, à 10 ms près
+    (mesuré : 4 618), et le même départ pour toutes les animations de l'entrée.
